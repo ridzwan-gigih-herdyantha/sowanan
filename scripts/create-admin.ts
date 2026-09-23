@@ -1,0 +1,27 @@
+// Membuat satu-satunya akun admin (PRD 2.8: tidak ada halaman registrasi).
+// Pakai: pnpm create-admin   (membaca .env.local)
+// Matikan juga "Allow new users to sign up" di Supabase Dashboard > Authentication.
+import { createClient } from "@supabase/supabase-js";
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const email = process.env.ADMIN_EMAIL;
+const password = process.env.ADMIN_PASSWORD;
+
+if (!url || !serviceKey || !email || !password) {
+  console.error("Set NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAIL, ADMIN_PASSWORD di .env.local");
+  process.exit(1);
+}
+if (password.length < 12) {
+  console.error("ADMIN_PASSWORD minimal 12 karakter.");
+  process.exit(1);
+}
+
+const supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
+const { data, error } = await supabase.auth.admin.createUser({ email, password, email_confirm: true });
+
+if (error) {
+  console.error("Gagal membuat admin:", error.message);
+  process.exit(1);
+}
+console.log("Admin dibuat:", data.user.email);

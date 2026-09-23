@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sowanan
 
-## Getting Started
+Website jasa undangan pernikahan digital — sowanan.com. Next.js 16 (App Router, Cache Components) + Supabase + Tailwind v4.
 
-First, run the development server:
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # isi kredensial Supabase & Meta Pixel
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Tanpa env Supabase, homepage tetap jalan dengan `DEFAULT_SETTINGS` di `src/lib/settings.ts`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Supabase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Buat project (region Singapore), jalankan `supabase/schema.sql` di SQL Editor.
+2. Authentication → matikan "Allow new users to sign up".
+3. Isi `ADMIN_EMAIL` dan `ADMIN_PASSWORD` di `.env.local`, lalu `pnpm create-admin`.
 
-## Learn More
+## Struktur
 
-To learn more about Next.js, take a look at the following resources:
+| Path | Isi |
+| --- | --- |
+| `src/app/page.tsx` | Homepage, static; nilai dari `getSettings()` |
+| `src/app/[slug]` | Halaman undangan (noindex) |
+| `src/app/ketentuan` | Ketentuan layanan |
+| `src/app/admin` | Pengaturan admin (noindex) |
+| `src/lib/settings.ts` | Pengaturan + cache (`cacheTag("settings")`, invalidate dengan `updateTag`) |
+| `src/lib/reserved-slugs.ts` | Slug terlarang + validasi |
+| `src/components/meta-pixel.tsx` | Meta Pixel + event Lead/Contact untuk semua link `wa.me` |
+| `supabase/schema.sql` | Tabel settings, invitations, rsvps, wishes, login_attempts |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`pnpm dev` · `pnpm build` · `pnpm typecheck` · `pnpm lint` · `pnpm create-admin`
