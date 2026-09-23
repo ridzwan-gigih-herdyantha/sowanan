@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Container, btn } from "@/components/ui";
+import { Container, btn, cx } from "@/components/ui";
 
 const links = [
   { href: "#tema", label: "Pilihan Tema" },
@@ -14,7 +14,7 @@ export function SiteHeader({ waHref }: { waHref: string }) {
       <Container className="flex items-center justify-between gap-4 py-[22px]">
         <Link href="/" className="font-serif text-[26px] leading-tight tracking-[.5px] text-ink no-underline">
           Sowanan
-          <span className="-mt-1 block font-sans text-[11px] tracking-[2px] text-ink-mute">
+          <span className="-mt-1 block font-sans text-[10px] tracking-[1.5px] text-ink-mute sm:text-[11px] sm:tracking-[2px]">
             UNDANGAN PERNIKAHAN DIGITAL
           </span>
         </Link>
@@ -28,7 +28,7 @@ export function SiteHeader({ waHref }: { waHref: string }) {
               {l.label}
             </a>
           ))}
-          <a href={waHref} className={btn.dark}>
+          <a href={waHref} className={cx(btn.dark, "shrink-0 whitespace-nowrap max-sm:px-4 max-sm:py-2.5")}>
             Pesan Sekarang
           </a>
         </nav>
