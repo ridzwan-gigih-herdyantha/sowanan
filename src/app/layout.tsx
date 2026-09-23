@@ -21,9 +21,8 @@ const jost = Jost({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `${SITE_NAME} — Undangan Pernikahan Digital`, template: `%s | ${SITE_NAME}` },
+  title: { default: `${SITE_NAME} | Undangan Pernikahan Digital`, template: `%s | ${SITE_NAME}` },
   openGraph: { siteName: SITE_NAME, locale: "id_ID", type: "website" },
-  // Verifikasi domain Meta Business Portfolio (PRD 2.6)
   other: process.env.META_DOMAIN_VERIFICATION
     ? { "facebook-domain-verification": process.env.META_DOMAIN_VERIFICATION }
     : undefined,

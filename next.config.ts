@@ -6,12 +6,10 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
-      // Foto undangan dari Supabase Storage
       { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
     ],
   },
   async redirects() {
-    // Domain utama non-www (PRD 2.7)
     return [
       {
         source: "/:path*",

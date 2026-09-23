@@ -1,4 +1,3 @@
-// PRD 2.5: slug yang tidak boleh dipakai undangan supaya tidak bentrok dengan halaman sistem.
 export const RESERVED_SLUGS = new Set([
   "tema",
   "harga",
@@ -13,7 +12,6 @@ export const RESERVED_SLUGS = new Set([
   "demo",
   "panduan",
   "kontak",
-  // File/route teknis
   "img",
   "sitemap.xml",
   "robots.txt",

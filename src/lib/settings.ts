@@ -5,7 +5,6 @@ import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 
 export const SETTINGS_TAG = "settings";
 
-// PRD 2.8: isi form halaman pengaturan admin.
 export const settingsSchema = z.object({
   waNumber: z.string().regex(/^628\d{7,12}$/, "Format nomor 628xxx"),
   priceHemat: z.number().int().nonnegative(),
@@ -24,7 +23,6 @@ export const settingsSchema = z.object({
 
 export type Settings = z.infer<typeof settingsSchema>;
 
-// Nilai default dipakai kalau tabel kosong / Supabase belum tersambung.
 // TODO: ganti dengan nilai asli dari tim Sowanan sebelum launch.
 export const DEFAULT_SETTINGS: Settings = {
   waNumber: "6281234567890",
@@ -42,8 +40,6 @@ export const DEFAULT_SETTINGS: Settings = {
   operatingHours: "08.00 sampai 20.00",
 };
 
-// Di-cache sampai admin menyimpan (updateTag(SETTINGS_TAG)),
-// jadi homepage tidak query database di tiap kunjungan.
 export async function getSettings(): Promise<Settings> {
   "use cache";
   cacheTag(SETTINGS_TAG);

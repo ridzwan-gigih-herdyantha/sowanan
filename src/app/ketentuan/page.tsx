@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/ketentuan" },
 };
 
-// Placeholder: isi ketentuan (PRD 2.3) ditulis di langkah berikutnya.
 export default function KetentuanPage() {
   return (
     <main className="mx-auto max-w-[70ch] px-5 py-24">

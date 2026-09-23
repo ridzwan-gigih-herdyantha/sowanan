@@ -1,7 +1,3 @@
--- Schema Sowanan. Jalankan di Supabase SQL Editor.
--- Semua tabel RLS aktif tanpa policy publik: akses hanya lewat server (service role).
-
--- Pengaturan admin (PRD 2.8): satu baris, isi divalidasi di aplikasi (src/lib/settings.ts).
 create table if not exists public.settings (
   id smallint primary key default 1 check (id = 1),
   data jsonb not null default '{}'::jsonb,
@@ -9,7 +5,6 @@ create table if not exists public.settings (
 );
 insert into public.settings (id) values (1) on conflict (id) do nothing;
 
--- Undangan. Slug permanen setelah disebar (PRD 4).
 create table if not exists public.invitations (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
@@ -20,14 +15,12 @@ create table if not exists public.invitations (
   updated_at timestamptz not null default now()
 );
 
--- Lapis kedua slug terlarang (PRD 2.5), selain validasi di src/lib/reserved-slugs.ts.
 alter table public.invitations drop constraint if exists invitations_slug_not_reserved;
 alter table public.invitations add constraint invitations_slug_not_reserved check (
   slug not in ('tema','harga','order','ketentuan','masuk','kelola','blog',
                'reseller','admin','api','demo','panduan','kontak','img')
 );
 
--- RSVP: hanya nama dan jumlah kehadiran (PRD 2.3, kebijakan data tamu).
 create table if not exists public.rsvps (
   id bigint generated always as identity primary key,
   invitation_id uuid not null references public.invitations(id) on delete cascade,
@@ -38,7 +31,6 @@ create table if not exists public.rsvps (
 );
 create index if not exists rsvps_invitation_idx on public.rsvps (invitation_id, created_at desc);
 
--- Buku ucapan.
 create table if not exists public.wishes (
   id bigint generated always as identity primary key,
   invitation_id uuid not null references public.invitations(id) on delete cascade,
@@ -48,7 +40,6 @@ create table if not exists public.wishes (
 );
 create index if not exists wishes_invitation_idx on public.wishes (invitation_id, created_at desc);
 
--- Rate limit login admin, 5 percobaan per menit (PRD 2.8).
 create table if not exists public.login_attempts (
   id bigint generated always as identity primary key,
   ip text not null,

@@ -1,6 +1,3 @@
-// Membuat satu-satunya akun admin (PRD 2.8: tidak ada halaman registrasi).
-// Pakai: pnpm create-admin   (membaca .env.local)
-// Matikan juga "Allow new users to sign up" di Supabase Dashboard > Authentication.
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

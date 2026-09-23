@@ -1,8 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-// Client service-role: hanya dipakai di server (server action, server component).
-// Semua tabel dikunci RLS untuk publik, jadi tulis/baca data lewat client ini.
 let client: SupabaseClient | null = null;
 
 export function hasSupabase(): boolean {

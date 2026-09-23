@@ -1,6 +1,6 @@
 # Sowanan
 
-Website jasa undangan pernikahan digital — sowanan.com. Next.js 16 (App Router, Cache Components) + Supabase + Tailwind v4.
+Website jasa undangan pernikahan digital | sowanan.com. Next.js 16 (App Router, Cache Components) + Supabase + Tailwind v4.
 
 ## Setup
 

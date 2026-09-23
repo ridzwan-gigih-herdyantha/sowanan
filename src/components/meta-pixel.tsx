@@ -11,8 +11,6 @@ declare global {
 
 const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
-// PRD 2.6: Meta Pixel di semua halaman, event Lead + Contact di setiap klik WhatsApp.
-// Satu listener di document, jadi link WhatsApp tetap <a> biasa tanpa JS sendiri.
 export function MetaPixel() {
   useEffect(() => {
     if (!PIXEL_ID) return;

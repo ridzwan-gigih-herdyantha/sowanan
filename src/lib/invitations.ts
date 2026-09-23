@@ -1,2 +1,17 @@
-// Dua undangan contoh (PRD 2.2). Data undangan klien nanti diambil dari tabel `invitations`.
-export const DEMO_SLUGS = ["andi-rina", "bagas-sekar"] as const;
+export const DEMO_INVITATIONS = {
+  "andi-rina": { groom: "Andi", bride: "Rina", date: "2026-12-12T09:00:00+07:00" },
+  "bagas-sekar": { groom: "Bagas", bride: "Sekar", date: "2027-02-14T10:00:00+07:00" },
+} as const;
+
+export type DemoSlug = keyof typeof DEMO_INVITATIONS;
+export const DEMO_SLUGS = Object.keys(DEMO_INVITATIONS) as DemoSlug[];
+
+export function formatEventDate(iso: string): string {
+  return new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(iso));
+}
