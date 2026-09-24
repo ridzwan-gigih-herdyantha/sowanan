@@ -1,12 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const email = process.env.ADMIN_EMAIL;
 const password = process.env.ADMIN_PASSWORD;
 
-if (!url || !serviceKey || !email || !password) {
-  console.error("Set NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAIL, ADMIN_PASSWORD di .env.local");
+if (!rawUrl || !serviceKey || !email || !password) {
+  console.error("Set NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAIL, ADMIN_PASSWORD di .env");
   process.exit(1);
 }
 if (password.length < 12) {
@@ -14,7 +14,7 @@ if (password.length < 12) {
   process.exit(1);
 }
 
-const supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
+const supabase = createClient(new URL(rawUrl).origin, serviceKey, { auth: { persistSession: false } });
 const { data, error } = await supabase.auth.admin.createUser({ email, password, email_confirm: true });
 
 if (error) {

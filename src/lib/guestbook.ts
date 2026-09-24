@@ -9,23 +9,37 @@ export const wishesTag = (slug: string) => `wishes-${slug}`;
 export async function getInvitationId(slug: string): Promise<string | null> {
   "use cache";
   cacheTag(`invitation-${slug}`);
+  if (!hasSupabase()) {
+    cacheLife("max");
+    return null;
+  }
+  const { data, error } = await supabaseAdmin().from("invitations").select("id").eq("slug", slug).maybeSingle();
+  if (error || !data) {
+    cacheLife("minutes");
+    return null;
+  }
   cacheLife("max");
-  if (!hasSupabase()) return null;
-  const { data } = await supabaseAdmin().from("invitations").select("id").eq("slug", slug).maybeSingle();
-  return data?.id ?? null;
+  return data.id;
 }
 
 export async function getWishes(slug: string): Promise<Wish[]> {
   "use cache";
   cacheTag(wishesTag(slug));
-  cacheLife("max");
   const id = await getInvitationId(slug);
-  if (!id) return [];
-  const { data } = await supabaseAdmin()
+  if (!id) {
+    cacheLife("minutes");
+    return [];
+  }
+  const { data, error } = await supabaseAdmin()
     .from("wishes")
     .select("name, message")
     .eq("invitation_id", id)
     .order("created_at", { ascending: false })
     .limit(30);
-  return data ?? [];
+  if (error) {
+    cacheLife("minutes");
+    return [];
+  }
+  cacheLife("max");
+  return data;
 }
