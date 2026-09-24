@@ -1,23 +1,7 @@
-import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Jost } from "next/font/google";
+import type { Metadata } from "next";
 import { MetaPixel } from "@/components/meta-pixel";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
-
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const jost = Jost({
-  variable: "--font-jost",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -28,13 +12,9 @@ export const metadata: Metadata = {
     : undefined,
 };
 
-export const viewport: Viewport = {
-  themeColor: "#FAF7F2",
-};
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id" className={`${cormorant.variable} ${jost.variable}`}>
+    <html lang="id">
       <body>
         {children}
         <MetaPixel />

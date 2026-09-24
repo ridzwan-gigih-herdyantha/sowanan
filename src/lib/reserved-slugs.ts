@@ -13,6 +13,7 @@ export const RESERVED_SLUGS = new Set([
   "panduan",
   "kontak",
   "img",
+  "undangan",
   "sitemap.xml",
   "robots.txt",
   "favicon.ico",
