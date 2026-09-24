@@ -76,22 +76,22 @@ export const invitation = {
     { src: "/img/andi-rina/polaroid-3.jpg", caption: "jalan pulang", rotate: -2 },
   ],
   gallery: [
-    { src: img("g-1"), w: 1000, h: 666, alt: "Andi dan Rina duduk di depan tembok oranye" },
-    { src: img("g-3"), w: 900, h: 1350, alt: "Tangan bercincin di balik kaca berembun" },
+    { src: img("g-1"), w: 1200, h: 800, alt: "Andi dan Rina duduk di depan tembok oranye" },
+    { src: img("g-3"), w: 1200, h: 1800, alt: "Tangan bercincin di balik kaca berembun" },
     { src: img("g-2"), w: 1400, h: 933, alt: "Andi dan Rina menyeberang jalan" },
-    { src: img("g-5"), w: 1000, h: 994, alt: "Andi dan Rina menatap cahaya sore" },
-    { src: img("g-7"), w: 900, h: 873, alt: "Sepatu pengantin dan buket bunga" },
-    { src: img("g-8"), w: 900, h: 878, alt: "Langkah kaki di aspal saat senja" },
+    { src: img("g-5"), w: 1200, h: 1192, alt: "Andi dan Rina menatap cahaya sore" },
+    { src: img("g-7"), w: 1200, h: 1165, alt: "Sepatu pengantin dan buket bunga" },
+    { src: img("g-8"), w: 1200, h: 1171, alt: "Langkah kaki di aspal saat senja" },
   ],
   gifts: [
     { bank: "Bank Contoh", number: "0000 1111 2222", holder: "Andi Pratama" },
     { bank: "Bank Contoh", number: "3333 4444 5555", holder: "Rina Maharani" },
   ],
   sampleWishes: [
-    { name: "Mbak Dewi", message: "Akhirnya! Semoga jadi keluarga yang sakinah, mawaddah, warahmah. Jangan lupa undang kami ke rumah baru." },
-    { name: "Raka", message: "Stay weird together. Selamat, kalian berdua." },
-    { name: "Tim Kantor Rina", message: "Selamat menempuh hidup baru. Kami siap jadi saksi drama cuti bersama." },
-    { name: "Om Hendra", message: "Semoga langgeng sampai kakek nenek. Doa kami menyertai." },
+    { id: "ar-sample-1", name: "Mbak Dewi", message: "Akhirnya! Semoga jadi keluarga yang sakinah, mawaddah, warahmah. Jangan lupa undang kami ke rumah baru." },
+    { id: "ar-sample-2", name: "Raka", message: "Stay weird together. Selamat, kalian berdua." },
+    { id: "ar-sample-3", name: "Tim Kantor Rina", message: "Selamat menempuh hidup baru. Kami siap jadi saksi drama cuti bersama." },
+    { id: "ar-sample-4", name: "Om Hendra", message: "Semoga langgeng sampai kakek nenek. Doa kami menyertai." },
   ],
 } as const;
 

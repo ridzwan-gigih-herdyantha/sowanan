@@ -2,7 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 
-export type Wish = { name: string; message: string };
+export type Wish = { id: string; name: string; message: string };
 
 export const wishesTag = (slug: string) => `wishes-${slug}`;
 
@@ -32,7 +32,7 @@ export async function getWishes(slug: string): Promise<Wish[]> {
   }
   const { data, error } = await supabaseAdmin()
     .from("wishes")
-    .select("name, message")
+    .select("id, name, message")
     .eq("invitation_id", id)
     .order("created_at", { ascending: false })
     .limit(30);
@@ -41,5 +41,5 @@ export async function getWishes(slug: string): Promise<Wish[]> {
     return [];
   }
   cacheLife("max");
-  return data;
+  return data.map((w) => ({ ...w, id: String(w.id) }));
 }

@@ -60,7 +60,7 @@ export function Story({ items }: { items: readonly StoryItem[] }) {
                   preload="none"
                 />
               ) : (
-                <Image src={item.image} alt="" fill sizes="(min-width: 560px) 512px, 100vw" className="object-cover" />
+                <Image src={item.image} alt="" fill quality={85} sizes="(min-width: 560px) 512px, 100vw" className="object-cover" />
               )}
             </div>
             <div className="px-6 pt-6 pb-8">

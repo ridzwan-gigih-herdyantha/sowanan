@@ -414,9 +414,7 @@ function Footer() {
 export function AndiRina() {
   return (
     <InvitationShell
-      couple={`${inv.groom.name} & ${inv.bride.name}`}
-      monogram={inv.monogram}
-      seal={inv.images.seal}
+      door={{ kind: "seal", couple: `${inv.groom.name} & ${inv.bride.name}`, monogram: inv.monogram, seal: inv.images.seal }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
       style={vars}

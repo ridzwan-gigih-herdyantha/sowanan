@@ -16,19 +16,23 @@ const wishSchema = z.object({
 });
 
 export async function submitWish(slug: string, input: { name: string; message: string; website?: string }): Promise<ActionResult<Wish>> {
-  if (input.website) return { ok: true, data: { name: input.name, message: input.message } };
+  if (input.website) return { ok: true, data: { id: crypto.randomUUID(), name: input.name, message: input.message } };
   const parsed = wishSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
-  if (demoMode()) return { ok: true, data: parsed.data };
+  if (demoMode()) return { ok: true, data: { id: crypto.randomUUID(), ...parsed.data } };
   const id = await getInvitationId(slug);
   if (!id) return { ok: false, error: NOT_READY };
 
-  const { error } = await supabaseAdmin().from("wishes").insert({ invitation_id: id, ...parsed.data });
+  const { data, error } = await supabaseAdmin()
+    .from("wishes")
+    .insert({ invitation_id: id, ...parsed.data })
+    .select("id")
+    .single();
   if (error) return { ok: false, error: NOT_READY };
 
   updateTag(wishesTag(slug));
-  return { ok: true, data: parsed.data };
+  return { ok: true, data: { id: String(data.id), ...parsed.data } };
 }
 
 const rsvpSchema = z.object({

@@ -8,7 +8,10 @@ import { useGuest } from "./shell";
 const PAGE = 12;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
-export function Wishes({ slug, initial }: { slug: string; initial: readonly Wish[] }) {
+type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" };
+
+export function Wishes({ slug, initial, variant = "notes" }: Props) {
+  const lined = variant === "lined";
   const { guest, setGuest } = useGuest();
   const [mine, setMine] = useState<Wish[]>([]);
   const [shown, setShown] = useState(PAGE);
@@ -18,7 +21,9 @@ export function Wishes({ slug, initial }: { slug: string; initial: readonly Wish
   const [pending, start] = useTransition();
 
   const nameValue = name ?? guest;
-  const all = [...mine, ...initial];
+  const known = new Set(initial.map((w) => w.id));
+  const unsynced = mine.filter((w) => !known.has(w.id));
+  const all = [...unsynced, ...initial];
 
   const send = (form: FormData) =>
     start(async () => {
@@ -62,19 +67,21 @@ export function Wishes({ slug, initial }: { slug: string; initial: readonly Wish
           disabled={pending}
           className="mt-6 rounded-sm border border-inv-accent px-6 py-3.5 text-[13px] tracking-[0.14em] text-inv-accent transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper disabled:opacity-50"
         >
-          {pending ? "MENEMPELKAN..." : "TEMPELKAN DI SINI"}
+          {pending ? (lined ? "MENGIRIM..." : "MENEMPELKAN...") : lined ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
         </button>
       </form>
 
       <div className="mt-12 lg:mt-0">
-        <ul className="columns-1 gap-4 sm:columns-2" aria-live="polite">
+        <ul className={lined ? "border-t border-inv-line" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
           {all.slice(0, shown).map((w, i) => (
             <li
-              key={`${w.name}-${i}-${w.message.slice(0, 12)}`}
-              className={`mb-4 break-inside-avoid bg-[#fbf7f0] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)] ${
-                i < mine.length ? "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]" : ""
-              }`}
-              style={{ rotate: `${tilt[i % tilt.length]}deg` }}
+              key={w.id}
+              className={`${
+                lined
+                  ? "border-b border-inv-line py-6"
+                  : "mb-4 break-inside-avoid bg-[#fbf7f0] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)]"
+              } ${i < unsynced.length ? (lined ? "animate-[inv-pop_.3s_ease-out]" : "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]") : ""}`}
+              style={lined ? undefined : { rotate: `${tilt[i % tilt.length]}deg` }}
             >
               <p className="font-display text-[19px] leading-snug italic">&ldquo;{w.message}&rdquo;</p>
               <p className="mt-3 text-[11px] tracking-[0.18em] text-inv-ink/60">{w.name.toUpperCase()}</p>

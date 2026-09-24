@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { AndiRina, andiRinaData, calendarEvent as andiRinaEvent } from "./andi-rina";
+import { BagasSekar, bagasSekarData, calendarEvent as bagasSekarEvent } from "./bagas-sekar";
 
 type Theme = {
   Component: ComponentType;
@@ -22,6 +23,21 @@ export const THEMES: Record<string, Theme> = {
         description: "Kabar bahagia dari kami. Buka undangannya di sini.",
         url: `/${andiRinaData.slug}`,
         images: [{ url: andiRinaData.images.og, width: 1200, height: 630, alt: "Andi dan Rina" }],
+      },
+    },
+  },
+  "bagas-sekar": {
+    Component: BagasSekar,
+    themeColor: "#E8E5E0",
+    calendar: bagasSekarEvent,
+    metadata: {
+      title: { absolute: `Bagas & Sekar | ${bagasSekarData.dateLong}` },
+      description: `Dengan penuh syukur, kami mengundangmu ke pernikahan Bagas & Sekar di ${bagasSekarData.city}.`,
+      openGraph: {
+        title: `Bagas & Sekar | ${bagasSekarData.dateLong}`,
+        description: "Kami mengundangmu untuk hadir dan memberi doa restu.",
+        url: `/${bagasSekarData.slug}`,
+        images: [{ url: bagasSekarData.images.og, width: 1200, height: 630, alt: "Bagas dan Sekar" }],
       },
     },
   },
