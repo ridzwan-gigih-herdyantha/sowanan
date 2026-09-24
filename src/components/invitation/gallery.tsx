@@ -4,14 +4,15 @@ import Image from "next/image";
 import { useState } from "react";
 import { Modal } from "./modal";
 
-type Photo = { src: string; w: number; h: number; alt: string };
+type Photo = { src: string; w: number; h: number; alt: string; caption?: string; no?: string };
 
 const tilt = [-2, 1.5, -1, 2.5, -2.5, 1];
 
-type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" };
+type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" };
 
 export function Gallery({ photos, stamp, variant = "collage" }: Props) {
   const grid = variant === "grid";
+  const specimen = variant === "specimen";
   const [active, setActive] = useState<number | null>(null);
   const photo = active === null ? null : photos[active];
 
@@ -21,19 +22,22 @@ export function Gallery({ photos, stamp, variant = "collage" }: Props) {
         {photos.map((p, i) => (
           <li
             key={p.src}
-            className={grid ? "mb-3 break-inside-avoid lg:mb-6" : "mb-5 break-inside-avoid lg:mb-8"}
-            style={grid ? undefined : { rotate: `${tilt[i % tilt.length]}deg` }}
+            className={grid ? "mb-3 break-inside-avoid lg:mb-6" : specimen ? "mb-6 break-inside-avoid lg:mb-8" : "mb-5 break-inside-avoid lg:mb-8"}
+            style={grid || specimen ? undefined : { rotate: `${tilt[i % tilt.length]}deg` }}
           >
             <button
               type="button"
               onClick={() => setActive(i)}
               className={
-                grid
-                  ? "group block w-full overflow-hidden text-left"
-                  : "block w-full bg-[#fbf7f0] p-2 pb-7 text-left shadow-[0_6px_18px_rgba(28,25,22,.18)] transition-transform duration-200 hover:-translate-y-1"
+                specimen
+                  ? "relative block w-full border border-inv-line bg-inv-wash p-2.5 text-left transition-transform duration-200 hover:-translate-y-1"
+                  : grid
+                    ? "group block w-full overflow-hidden text-left"
+                    : "block w-full bg-[#fbf7f0] p-2 pb-7 text-left shadow-[0_6px_18px_rgba(28,25,22,.18)] transition-transform duration-200 hover:-translate-y-1"
               }
               aria-label={`Buka foto: ${p.alt}`}
             >
+              {specimen && <span className="inv-tape -top-2.5 left-1/2 z-10 -translate-x-1/2 rotate-2" aria-hidden="true" />}
               <span className="relative block">
                 <Image
                   src={p.src}
@@ -49,6 +53,12 @@ export function Gallery({ photos, stamp, variant = "collage" }: Props) {
                   </span>
                 )}
               </span>
+              {specimen && (p.no || p.caption) && (
+                <span className="mt-2.5 flex items-baseline justify-between gap-2 border-t border-inv-line pt-2">
+                  <span className="font-display text-[14px] italic">{p.caption}</span>
+                  {p.no && <span className="shrink-0 text-[10px] font-medium tracking-[0.18em] text-inv-gold">No. {p.no}</span>}
+                </span>
+              )}
             </button>
           </li>
         ))}

@@ -225,3 +225,22 @@ html:has([data-inv-state="closed"]) {
 [data-inv-state="open"] .inv-door-ui {
   opacity: 0;
 }
+
+.inv-door-vellum {
+  transition:
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.5s ease-out,
+    visibility 0s linear 0.5s;
+}
+[data-inv-state="open"] .inv-door-vellum {
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+}
+.inv-tape {
+  position: absolute;
+  height: 22px;
+  width: 76px;
+  background: color-mix(in srgb, var(--inv-tape, #b08a3e) 45%, transparent);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}

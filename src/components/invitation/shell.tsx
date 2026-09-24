@@ -31,7 +31,8 @@ function storeGuest(name: string) {
 
 type Door =
   | { kind: "seal"; couple: string; monogram: string; seal: string }
-  | { kind: "walls"; groom: string; bride: string; date: string };
+  | { kind: "walls"; groom: string; bride: string; date: string }
+  | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string };
 
 type Props = {
   door: Door;
@@ -114,10 +115,73 @@ export function InvitationShell({ door, music, className, style, children }: Pro
     <GuestContext.Provider value={{ guest, setGuest }}>
       <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
         <noscript>
-          <style>{`.inv-door,.inv-door-walls{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+          <style>{`.inv-door,.inv-door-walls,.inv-door-vellum{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
         </noscript>
 
-        {door.kind === "seal" ? (
+        {door.kind === "vellum" && (
+          <div
+            className="inv-door-vellum fixed inset-0 z-50 flex flex-col justify-end px-6 pb-[8vh] backdrop-blur-md [background:color-mix(in_srgb,var(--inv-wash)_82%,transparent)] sm:px-10"
+            aria-hidden={open}
+          >
+            <p className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">LEMBAR KOLEKSI {door.number}</p>
+            <p className="mt-4 font-display text-[clamp(52px,15vw,112px)] leading-[0.95] text-inv-accent">
+              {door.groom}
+              <br />
+              <span className="italic">&amp;</span> {door.bride}
+            </p>
+            <div className="relative mt-8 w-full max-w-md -rotate-1 border border-inv-line bg-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.08)]">
+              <span className="inv-tape -top-2.5 left-10 -rotate-3" aria-hidden="true" />
+              <div className="flex items-center justify-between border-b border-inv-line px-5 py-2.5 text-[10px] font-medium tracking-[0.2em] text-inv-gold">
+                <span>HERBARIUM SOWANAN</span>
+                <span>{door.number}</span>
+              </div>
+              <div className="flex items-end gap-4 px-5 pt-4 pb-5">
+                <div className="relative h-20 w-16 shrink-0 rotate-3 border border-inv-line bg-inv-paper p-1">
+                  <Image src={door.specimen} alt="" width={64} height={80} className="size-full object-cover" />
+                </div>
+                <label className="min-w-0 flex-1">
+                  <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">DIKUMPULKAN UNTUK</span>
+                  {invited ? (
+                    <span className="mt-1 block truncate border-b border-dashed border-inv-line pb-1 font-display text-[28px] leading-tight text-inv-accent italic">
+                      {invited}
+                    </span>
+                  ) : (
+                    <>
+                      <input
+                        value={typed ?? ""}
+                        onChange={(e) => setTyped(e.target.value.slice(0, 40))}
+                        onKeyDown={(e) => e.key === "Enter" && openInvitation()}
+                        placeholder="tulis namamu"
+                        autoComplete="name"
+                        className="mt-1 block w-full border-0 border-b border-dashed border-inv-line bg-transparent pb-1 font-display text-[28px] leading-tight text-inv-accent italic outline-none placeholder:text-inv-ink/30 focus:border-inv-accent"
+                      />
+                      <span className="mt-1.5 block text-[11px] text-inv-ink/50">Boleh dikosongkan.</span>
+                    </>
+                  )}
+                </label>
+              </div>
+              <div className="grid grid-cols-2 border-t border-inv-line text-[13px]">
+                <div className="border-r border-inv-line px-5 py-2.5">
+                  <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">TANGGAL</span>
+                  {door.date}
+                </div>
+                <div className="px-5 py-2.5">
+                  <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">LOKASI</span>
+                  {door.place}
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={openInvitation}
+              className="mt-8 self-start rounded-sm border border-inv-accent bg-inv-accent px-7 py-4 text-[12px] font-medium tracking-[0.2em] text-inv-wash transition-colors duration-150 hover:bg-transparent hover:text-inv-accent"
+            >
+              BUKA LEMBARNYA
+            </button>
+          </div>
+        )}
+
+        {door.kind === "vellum" ? null : door.kind === "seal" ? (
           <div
             className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
             aria-hidden={open}

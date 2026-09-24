@@ -10,5 +10,5 @@ export type ThemeCard = {
 export const THEMES: ThemeCard[] = [
   { slug: "andi-rina", name: "[NAMA TEMA]", style: "[GAYA: klasik / minimalis / bunga]", image: null, bg: "bg-ivory" },
   { slug: "bagas-sekar", name: "[NAMA TEMA]", style: "[GAYA: klasik / minimalis / bunga]", image: null, bg: "bg-[#efe6df]" },
-  { slug: null, name: "[NAMA TEMA]", style: "[GAYA: klasik / minimalis / bunga]", image: null, bg: "bg-[#e9e2da]" },
+  { slug: "hendrawan-larasati", name: "[NAMA TEMA]", style: "[GAYA: klasik / minimalis / bunga]", image: null, bg: "bg-[#e9e2da]" },
 ];

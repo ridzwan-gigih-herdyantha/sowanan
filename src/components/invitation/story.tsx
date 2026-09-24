@@ -11,14 +11,48 @@ export type StoryItem = {
   short: string;
   long: string;
   video?: { src: string; poster: string };
+  no?: string;
+  place?: string;
 };
 
-export function Story({ items }: { items: readonly StoryItem[] }) {
+const sheetTilt = [-1.2, 0.8, -0.6, 1.1];
+
+export function Story({ items, variant = "arch" }: { items: readonly StoryItem[]; variant?: "arch" | "sheets" }) {
   const [active, setActive] = useState<number | null>(null);
   const item = active === null ? null : items[active];
 
   return (
     <>
+      {variant === "sheets" ? (
+        <ol className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-8 lg:space-y-0">
+          {items.map((s, i) => (
+            <li key={s.title} style={{ rotate: `${sheetTilt[i % sheetTilt.length]}deg` }}>
+              <button
+                type="button"
+                onClick={() => setActive(i)}
+                className="relative flex w-full gap-4 border border-inv-line bg-inv-wash p-3 pr-4 text-left shadow-[0_6px_16px_rgba(0,0,0,.07)] transition-transform duration-200 hover:-translate-y-1"
+              >
+                <span className="inv-tape -top-2.5 left-6 -rotate-3" aria-hidden="true" />
+                <span className="relative aspect-[4/5] w-[38%] shrink-0 overflow-hidden">
+                  <Image src={s.image} alt="" fill sizes="(min-width: 980px) 200px, 36vw" className="object-cover" />
+                </span>
+                <span className="flex flex-col py-1">
+                  {s.no && <span className="text-[10px] font-medium tracking-[0.2em] text-inv-gold">No. {s.no}</span>}
+                  <span className="mt-1 font-display text-[22px] leading-tight text-inv-accent">{s.title}</span>
+                  <span className="mt-1 text-[12px] text-inv-ink/65">
+                    {s.date}
+                    {s.place && `, ${s.place}`}
+                  </span>
+                  <span className="mt-2 text-[14px] leading-snug">{s.short}</span>
+                  <span className="mt-auto pt-3 text-[11px] font-medium tracking-[0.2em] text-inv-accent underline underline-offset-4">
+                    BUKA LEMBAR
+                  </span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      ) : (
       <ol className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-8 lg:overflow-visible lg:px-0">
         {items.map((s, i) => (
           <li key={s.title} className="w-[64vw] max-w-[260px] shrink-0 snap-start lg:w-auto lg:max-w-none">
@@ -43,6 +77,7 @@ export function Story({ items }: { items: readonly StoryItem[] }) {
           </li>
         ))}
       </ol>
+      )}
 
       <Modal open={item !== null} onClose={() => setActive(null)} label={item?.title ?? "Cerita"}>
         {item && (

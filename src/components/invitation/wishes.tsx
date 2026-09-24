@@ -8,10 +8,11 @@ import { useGuest } from "./shell";
 const PAGE = 12;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
-type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" };
+type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" };
 
 export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const lined = variant === "lined";
+  const curator = variant === "curator";
   const { guest, setGuest } = useGuest();
   const [mine, setMine] = useState<Wish[]>([]);
   const [shown, setShown] = useState(PAGE);
@@ -67,7 +68,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
           disabled={pending}
           className="mt-6 rounded-sm border border-inv-accent px-6 py-3.5 text-[13px] tracking-[0.14em] text-inv-accent transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper disabled:opacity-50"
         >
-          {pending ? (lined ? "MENGIRIM..." : "MENEMPELKAN...") : lined ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
+          {pending ? (lined || curator ? "MENGIRIM..." : "MENEMPELKAN...") : curator ? "SIMPAN CATATAN" : lined ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
         </button>
       </form>
 
@@ -79,12 +80,16 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
               className={`${
                 lined
                   ? "border-b border-inv-line py-6"
-                  : "mb-4 break-inside-avoid bg-[#fbf7f0] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)]"
+                  : curator
+                    ? "mb-4 break-inside-avoid border border-inv-line bg-inv-wash px-5 pt-5 pb-4"
+                    : "mb-4 break-inside-avoid bg-[#fbf7f0] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)]"
               } ${i < unsynced.length ? (lined ? "animate-[inv-pop_.3s_ease-out]" : "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]") : ""}`}
-              style={lined ? undefined : { rotate: `${tilt[i % tilt.length]}deg` }}
+              style={lined || curator ? undefined : { rotate: `${tilt[i % tilt.length]}deg` }}
             >
               <p className="font-display text-[19px] leading-snug italic">&ldquo;{w.message}&rdquo;</p>
-              <p className="mt-3 text-[11px] tracking-[0.18em] text-inv-ink/60">{w.name.toUpperCase()}</p>
+              <p className="mt-3 text-[11px] tracking-[0.18em] text-inv-ink/60">
+                {curator ? `DICATAT OLEH ${w.name.toUpperCase()}` : w.name.toUpperCase()}
+              </p>
             </li>
           ))}
         </ul>

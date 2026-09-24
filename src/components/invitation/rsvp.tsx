@@ -7,7 +7,7 @@ import { useGuest } from "./shell";
 type Step = "attend" | "count" | "name" | "done";
 
 const choice =
-  "rounded-sm border border-inv-line px-5 py-4 text-[14px] tracking-[0.14em] transition-colors duration-150 hover:border-inv-accent hover:bg-inv-accent hover:text-inv-paper";
+  "rounded-sm border border-inv-line px-3 py-4 text-[13px] tracking-[0.1em] transition-colors duration-150 hover:border-inv-accent hover:bg-inv-accent hover:text-inv-paper";
 
 export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
   const { guest, setGuest } = useGuest();

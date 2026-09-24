@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { AndiRina, andiRinaData, calendarEvent as andiRinaEvent } from "./andi-rina";
 import { BagasSekar, bagasSekarData, calendarEvent as bagasSekarEvent } from "./bagas-sekar";
+import { HendrawanLarasati, hendrawanLarasatiData, calendarEvent as hendrawanLarasatiEvent } from "./hendrawan-larasati";
 
 type Theme = {
   Component: ComponentType;
@@ -38,6 +39,21 @@ export const THEMES: Record<string, Theme> = {
         description: "Kami mengundangmu untuk hadir dan memberi doa restu.",
         url: `/${bagasSekarData.slug}`,
         images: [{ url: bagasSekarData.images.og, width: 1200, height: 630, alt: "Bagas dan Sekar" }],
+      },
+    },
+  },
+  "hendrawan-larasati": {
+    Component: HendrawanLarasati,
+    themeColor: "#F4EFE6",
+    calendar: hendrawanLarasatiEvent,
+    metadata: {
+      title: { absolute: `Hendrawan & Larasati | ${hendrawanLarasatiData.dateLong}` },
+      description: `Dengan penuh sukacita, kami mengundangmu ke pernikahan Hendrawan & Larasati di ${hendrawanLarasatiData.place}.`,
+      openGraph: {
+        title: `Hendrawan & Larasati | ${hendrawanLarasatiData.dateLong}`,
+        description: "Satu lembar baru dalam koleksi kami. Buka undangannya di sini.",
+        url: `/${hendrawanLarasatiData.slug}`,
+        images: [{ url: hendrawanLarasatiData.images.og, width: 1200, height: 630, alt: "Hendrawan dan Larasati" }],
       },
     },
   },
