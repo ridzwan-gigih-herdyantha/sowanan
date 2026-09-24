@@ -12,13 +12,17 @@ function Card({ theme, index, waHref }: { theme: ThemeCard; index: number; waHre
         )}
       >
         {theme.image ? (
-          <Image
-            src={theme.image}
-            alt={`Contoh undangan tema ${theme.name}`}
-            fill
-            sizes="(min-width: 760px) 340px, 100vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transform-none"
-          />
+          <div className="aspect-[390/844] h-[88%] rounded-[22px] bg-ink p-[5px] shadow-[0_14px_30px_rgba(31,26,23,.22)] transition-transform duration-300 group-hover:-translate-y-1 motion-reduce:transform-none">
+            <div className="relative size-full overflow-hidden rounded-[17px]">
+              <Image
+                src={theme.image}
+                alt={`Contoh undangan tema ${theme.name}`}
+                fill
+                sizes="(min-width: 760px) 170px, 50vw"
+                className="object-cover object-top"
+              />
+            </div>
+          </div>
         ) : (
           <span>[SCREENSHOT TEMA {index + 1}]</span>
         )}

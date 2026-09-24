@@ -1,4 +1,3 @@
-// TODO: isi nama tema, gaya, screenshot (/img/tema-N.webp, maks 200KB), dan slug contoh ke-3.
 export type ThemeCard = {
   slug: string | null;
   name: string;
@@ -8,7 +7,7 @@ export type ThemeCard = {
 };
 
 export const THEMES: ThemeCard[] = [
-  { slug: "andi-rina", name: "[NAMA TEMA]", style: "[GAYA: klasik / minimalis / bunga]", image: null, bg: "bg-ivory" },
-  { slug: "bagas-sekar", name: "[NAMA TEMA]", style: "[GAYA: klasik / minimalis / bunga]", image: null, bg: "bg-[#efe6df]" },
-  { slug: "hendrawan-larasati", name: "[NAMA TEMA]", style: "[GAYA: klasik / minimalis / bunga]", image: null, bg: "bg-[#e9e2da]" },
+  { slug: "andi-rina", name: "Senja Kota", style: "film / urban", image: "/img/tema-1.webp", bg: "bg-[#eadac4]" },
+  { slug: "bagas-sekar", name: "Ruang", style: "monokrom / minimalis", image: "/img/tema-2.webp", bg: "bg-[#d9d5ce]" },
+  { slug: "hendrawan-larasati", name: "Herbarium", style: "bunga / botani", image: "/img/tema-3.webp", bg: "bg-[#e8dce2]" },
 ];
