@@ -288,3 +288,29 @@ html:has([data-inv-state="closed"]) {
     }
   }
 }
+
+.inv-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 9999px;
+  border: 2px solid var(--inv-gold);
+  animation: inv-ring 2.4s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes inv-ring {
+  from {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .inv-pulse::after {
+    animation: none;
+    opacity: 0;
+  }
+}

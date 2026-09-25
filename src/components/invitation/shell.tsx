@@ -42,37 +42,21 @@ type Props = {
   children: ReactNode;
 };
 
-type GuestFieldProps = {
-  invited: string;
-  typed: string | null;
-  setTyped: (v: string) => void;
-  onEnter: () => void;
-  greeting: string;
-};
-
-function GuestField({ invited, typed, setTyped, onEnter, greeting }: GuestFieldProps) {
+function GuestField({ invited, greeting, className = "" }: { invited: string; greeting: string; className?: string }) {
+  if (!invited) return null;
   return (
-    <div className="flex h-24 flex-col items-center justify-center">
-      {invited ? (
-        <>
-          <p className="text-[13px] text-inv-ink/70">{greeting}</p>
-          <p className="mt-1 font-display text-3xl italic">{invited}</p>
-        </>
-      ) : (
-        <label className="flex w-64 flex-col gap-2 text-center text-[13px] text-inv-ink/70">
-          Boleh tahu namamu? (opsional)
-          <input
-            value={typed ?? ""}
-            onChange={(e) => setTyped(e.target.value.slice(0, 40))}
-            onKeyDown={(e) => e.key === "Enter" && onEnter()}
-            className="rounded-sm border border-inv-line bg-transparent px-3 py-2.5 text-center text-base text-inv-ink outline-none focus:border-inv-accent"
-            autoComplete="name"
-          />
-        </label>
-      )}
+    <div className={className}>
+      <p className="text-[13px] text-inv-ink/70">{greeting}</p>
+      <p className="mt-1 font-display text-3xl italic">{invited}</p>
     </div>
   );
 }
+
+const arrow = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+    <path d="M4 12h16M14 6l6 6-6 6" />
+  </svg>
+);
 
 export function InvitationShell({ door, music, className, style, children }: Props) {
   const invited = useSyncExternalStore(noop, readGuestParam, () => "");
@@ -109,8 +93,6 @@ export function InvitationShell({ door, music, className, style, children }: Pro
     } else play();
   };
 
-  const field = { invited, typed, setTyped, onEnter: openInvitation };
-
   return (
     <GuestContext.Provider value={{ guest, setGuest }}>
       <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
@@ -139,26 +121,12 @@ export function InvitationShell({ door, music, className, style, children }: Pro
                 <div className="relative h-20 w-16 shrink-0 rotate-3 border border-inv-line bg-inv-paper p-1">
                   <Image src={door.specimen} alt="" width={64} height={80} className="size-full object-cover" />
                 </div>
-                <label className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1">
                   <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">DIKUMPULKAN UNTUK</span>
-                  {invited ? (
-                    <span className="mt-1 block truncate border-b border-dashed border-inv-line pb-1 font-display text-[28px] leading-tight text-inv-accent italic">
-                      {invited}
-                    </span>
-                  ) : (
-                    <>
-                      <input
-                        value={typed ?? ""}
-                        onChange={(e) => setTyped(e.target.value.slice(0, 40))}
-                        onKeyDown={(e) => e.key === "Enter" && openInvitation()}
-                        placeholder="tulis namamu"
-                        autoComplete="name"
-                        className="mt-1 block w-full border-0 border-b border-dashed border-inv-line bg-transparent pb-1 font-display text-[28px] leading-tight text-inv-accent italic outline-none placeholder:text-inv-ink/30 focus:border-inv-accent"
-                      />
-                      <span className="mt-1.5 block text-[11px] text-inv-ink/50">Boleh dikosongkan.</span>
-                    </>
-                  )}
-                </label>
+                  <span className="mt-1 block truncate border-b border-dashed border-inv-line pb-1 font-display text-[28px] leading-tight text-inv-accent italic">
+                    {invited || "Tamu kami"}
+                  </span>
+                </div>
               </div>
               <div className="grid grid-cols-2 border-t border-inv-line text-[13px]">
                 <div className="border-r border-inv-line px-5 py-2.5">
@@ -174,9 +142,10 @@ export function InvitationShell({ door, music, className, style, children }: Pro
             <button
               type="button"
               onClick={openInvitation}
-              className="mt-8 self-start rounded-sm border border-inv-accent bg-inv-accent px-7 py-4 text-[12px] font-medium tracking-[0.2em] text-inv-wash transition-colors duration-150 hover:bg-transparent hover:text-inv-accent"
+              className="inv-cta mt-8 flex w-full max-w-md items-center justify-between rounded-sm bg-inv-accent px-7 py-5 text-[13px] font-medium tracking-[0.2em] text-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
             >
               BUKA LEMBARNYA
+              {arrow}
             </button>
           </div>
         )}
@@ -188,20 +157,25 @@ export function InvitationShell({ door, music, className, style, children }: Pro
           >
             <p className="text-[11px] tracking-[0.22em] text-inv-ink/70">PERNIKAHAN</p>
             <p className="mt-3 mb-10 font-display text-[44px] leading-none text-inv-accent">{door.couple}</p>
-            <GuestField {...field} greeting="Kepada Yth." />
+            <GuestField invited={invited} greeting="Kepada Yth." className="mb-2" />
             <button
               type="button"
               onClick={openInvitation}
-              className="inv-seal group relative mt-10 size-32 rounded-full"
+              className="inv-seal inv-pulse group relative mt-8 size-44 rounded-full"
               aria-label="Buka undangan"
             >
-              <Image src={door.seal} alt="" width={128} height={128} preload className="size-32" />
-              <span className="absolute inset-0 flex items-center justify-center font-display text-2xl text-[#f3d6ae] [text-shadow:0_1px_0_rgba(0,0,0,.35)]">
+              <Image src={door.seal} alt="" width={176} height={176} preload className="size-44 transition-transform duration-200 group-hover:scale-105" />
+              <span className="absolute inset-0 flex items-center justify-center font-display text-3xl text-[#f3d6ae] [text-shadow:0_1px_0_rgba(0,0,0,.35)]">
                 {door.monogram}
               </span>
             </button>
-            <button type="button" onClick={openInvitation} className="mt-4 text-[13px] text-inv-ink/80 underline-offset-4 hover:underline">
-              Ketuk segel untuk membuka undangan
+            <button
+              type="button"
+              onClick={openInvitation}
+              className="mt-8 inline-flex items-center gap-3 rounded-sm bg-inv-accent px-9 py-4 text-[13px] font-medium tracking-[0.2em] text-inv-paper shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+            >
+              BUKA UNDANGAN
+              {arrow}
             </button>
           </div>
         ) : (
@@ -216,13 +190,14 @@ export function InvitationShell({ door, music, className, style, children }: Pro
             </div>
             <div className="inv-door-ui inv-paper absolute inset-x-0 bottom-[8%] flex flex-col items-center border-y border-inv-line px-8 py-10 text-center">
               <p className="mb-6 text-[11px] font-medium tracking-[0.24em] text-inv-ink/70">KAMI MENGUNDANGMU</p>
-              <GuestField {...field} greeting="Untuk" />
+              <GuestField invited={invited} greeting="Untuk" className="mb-2" />
               <button
                 type="button"
                 onClick={openInvitation}
-                className="mt-8 rounded-sm border border-inv-ink bg-inv-paper px-8 py-4 text-[12px] font-medium tracking-[0.24em] text-inv-ink transition-colors duration-150 hover:bg-inv-ink hover:text-inv-paper"
+                className="inv-cta mt-6 inline-flex w-full max-w-xs items-center justify-between rounded-sm bg-inv-ink px-7 py-5 text-[13px] font-medium tracking-[0.24em] text-inv-paper shadow-[0_10px_28px_rgba(0,0,0,.2)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
               >
                 BUKA UNDANGAN
+                {arrow}
               </button>
               <p className="mt-8 font-display text-lg tracking-[0.12em]">{door.date}</p>
             </div>
