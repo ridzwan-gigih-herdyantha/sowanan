@@ -245,3 +245,21 @@ Yang baru hanya layout section, palet, font, dan pipeline aset hitam-putih. Perk
    Galeri memakai crop dari foto-foto di atas. Letakkan di `Assets/sowanan/bagas-sekar`, satu folder dengan `andi-rina`.
 
 3. **Satu lagu bebas royalti** dengan nuansa berbeda dari tema 1, misalnya piano atau ambient yang tenang.
+
+## Revisi layout v2 (25 September 2026)
+
+Tujuan: layout Bagas & Sekar harus jelas berbeda dari Andi & Rina (majalah film) dan Hendrawan & Larasati (herbarium). Palet monokrom, font, foto hitam-putih, dan pintu dinding tetap.
+
+Konsep kerangka: **katalog pameran**. Halaman dibaca seperti tur di galeri, setiap section adalah satu "Ruang" dengan label ruang, garis grid arsitektural tipis terlihat di latar, dan keterangan karya ala museum.
+
+| Section | Sebelum | Sesudah |
+|---|---|---|
+| Hero | Tiga kolom: nama, foto, tanggal | Foto potret tinggi di kiri, nama "Bagas & Sekar" ditulis vertikal raksasa di kolom kanan, strip data di bawah |
+| Kedua Mempelai | Section gelap, slider di tengah | Ruang 1: dinding pameran terang, slider foto dengan kartu keterangan museum per mempelai |
+| Cerita | Timeline vertikal | Ruang 2: daftar indeks katalog, tiap baris berisi tahun, judul, kalimat, dan thumbnail kecil |
+| Detail Acara | Tabel + foto venue | Ruang 3: papan jadwal dengan jam raksasa, lalu pelat venue |
+| Menuju Hari H | Tetap | Ruang 4, tetap gelap dengan angka bertumpuk |
+| Galeri | Grid rata | Ruang 5: gantungan pameran, satu karya besar dan sisanya kecil, tiap foto punya keterangan karya |
+| Konfirmasi, Tanda Kasih, Doa, Penutup | Tetap | Tetap, diberi label ruang |
+
+Garis grid: 4 kolom di mobile, 12 kolom di desktop, garis 1px dengan opacity rendah, hanya di section terang.

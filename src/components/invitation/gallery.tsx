@@ -8,7 +8,7 @@ type Photo = { src: string; w: number; h: number; alt: string; caption?: string;
 
 const tilt = [-2, 1.5, -1, 2.5, -2.5, 1];
 
-type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" | "contact" };
+type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" | "contact" | "bleed" };
 
 export function Gallery({ photos, stamp, variant = "collage" }: Props) {
   const grid = variant === "grid";
@@ -31,6 +31,37 @@ export function Gallery({ photos, stamp, variant = "collage" }: Props) {
       )}
     </Modal>
   );
+
+  if (variant === "bleed") {
+    return (
+      <>
+        <ul className="mx-auto grid max-w-[1000px] gap-3 lg:grid-cols-3 lg:gap-4">
+          {photos.map((p, i) => {
+            const wide = [0, 3, 4].includes(i % 6);
+            return (
+              <li key={p.src} className={wide ? "lg:col-span-2" : ""}>
+                <button
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className={`clip-inset relative block w-full overflow-hidden ${wide ? "aspect-[3/2]" : "aspect-[4/5] lg:aspect-[3/4]"}`}
+                  aria-label={`Buka foto: ${p.alt}`}
+                >
+                  <Image
+                    src={p.src}
+                    alt={p.alt}
+                    fill
+                    sizes={wide ? "(min-width: 980px) 660px, 100vw" : "(min-width: 980px) 330px, 100vw"}
+                    className="object-cover transition-transform duration-700 hover:scale-[1.03]"
+                  />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        {lightbox}
+      </>
+    );
+  }
 
   if (variant === "contact") {
     return (

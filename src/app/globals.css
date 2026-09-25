@@ -242,3 +242,49 @@ html:has([data-inv-state="closed"]) {
   background: color-mix(in srgb, var(--inv-tape, #b08a3e) 45%, transparent);
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
 }
+
+@keyframes clip-open {
+  to {
+    clip-path: inset(0 0 0 0 round 0);
+  }
+}
+@keyframes clip-circle-open {
+  to {
+    clip-path: circle(75% at 50% 50%);
+  }
+}
+.clip-arch,
+.clip-inset,
+.clip-circle,
+.clip-hero {
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .clip-arch {
+      clip-path: inset(0 7% 0 7% round 50vw 50vw 0 0);
+      animation-name: clip-open;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+    .clip-inset {
+      clip-path: inset(9% 9% 9% 9% round 12px);
+      animation-name: clip-open;
+      animation-timeline: view();
+      animation-range: entry 5% cover 40%;
+    }
+    .clip-circle {
+      clip-path: circle(34% at 50% 50%);
+      animation-name: clip-circle-open;
+      animation-timeline: view();
+      animation-range: entry 20% cover 55%;
+    }
+    .clip-hero {
+      clip-path: inset(0 6% 0 6% round 50vw 50vw 0 0);
+      animation-name: clip-open;
+      animation-timeline: scroll(root);
+      animation-range: 0 70vh;
+    }
+  }
+}
