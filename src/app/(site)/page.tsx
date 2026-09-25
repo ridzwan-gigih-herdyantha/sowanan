@@ -16,13 +16,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const price = formatRupiah(s.priceHemat);
   return {
     title: { absolute: `Sowanan | Undangan Pernikahan Digital Mulai ${price}` },
-    description: `Sowanan, jasa undangan pernikahan digital. Kirim data lewat WhatsApp, undangan jadi dalam ${s.sla}. Sudah termasuk RSVP, peta lokasi, buku ucapan, dan amplop digital.`,
+    description: `Undangan pernikahan digital mulai ${price}, jadi dalam ${s.sla}. Sudah termasuk RSVP, peta lokasi, buku ucapan, dan amplop digital.`,
     alternates: { canonical: "/" },
     openGraph: {
       title: "Sowanan | Undangan Pernikahan Digital",
       description: `Kabarnya sampai dulu, sebelum tamunya datang. Undangan pernikahan digital mulai ${price}.`,
       url: "/",
-      images: [{ url: "/img/og.jpg", width: 1200, height: 630 }],
+      images: [{ url: "/img/og.jpg", width: 1200, height: 630, alt: "Sowanan, undangan pernikahan digital" }],
     },
   };
 }
@@ -33,7 +33,7 @@ function jsonLd(s: Settings) {
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
       name: "Sowanan",
-      description: "Jasa undangan pernikahan digital.",
+      description: "Jasa undangan pernikahan digital. Pesan lewat WhatsApp, undangan jadi dalam hitungan hari.",
       url: SITE_URL,
       image: `${SITE_URL}/img/og.jpg`,
       telephone: `+${s.waNumber}`,
