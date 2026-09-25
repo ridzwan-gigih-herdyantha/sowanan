@@ -230,14 +230,14 @@ function EventDetails() {
     ...inv.events.map((e): [string, string] => [e.name.toUpperCase(), `${e.time}${"until" in e ? ` sampai ${e.until}` : ""} WIB`]),
     ["TEMPAT", inv.venue.name],
   ];
-  const notch = "absolute size-7 rounded-full bg-inv-paper";
   return (
     <section className="inv-paper torn-top relative -mt-3.5 py-20 lg:py-28">
       <Wrap className="max-w-[980px]">
         <Label className="text-inv-gold">HARI H</Label>
         <h2 className="mt-3 mb-10 font-display text-[clamp(34px,9vw,56px)] leading-[1.05] text-inv-accent">Simpan tiketmu.</h2>
-        <div className="relative flex flex-col bg-[#fbf7f0] shadow-[0_14px_40px_rgba(28,25,22,.14)] lg:flex-row">
-          <div className="relative aspect-[16/10] lg:aspect-auto lg:w-[36%]">
+        <div className="relative flex flex-col drop-shadow-[0_12px_22px_rgba(28,25,22,.14)] lg:flex-row">
+          <div className="ticket-main flex flex-1 flex-col bg-[#fbf7f0] lg:flex-row">
+          <div className="relative aspect-[16/10] lg:aspect-auto lg:w-[46%]">
             <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 360px, 100vw" className="object-cover" />
           </div>
           <div className="flex-1 p-6 sm:p-8">
@@ -257,9 +257,8 @@ function EventDetails() {
             </dl>
             <p className="mt-5 text-[13px] text-inv-ink/65">{inv.venue.address}</p>
           </div>
-          <div className="relative flex flex-col justify-between gap-5 border-t-2 border-dashed border-inv-line p-6 sm:px-8 lg:w-[22%] lg:border-t-0 lg:border-l-2">
-            <span className={`${notch} -top-3.5 -left-3.5`} aria-hidden="true" />
-            <span className={`${notch} -top-3.5 -right-3.5 lg:right-auto lg:-bottom-3.5 lg:-left-3.5 lg:top-auto`} aria-hidden="true" />
+          </div>
+          <div className="ticket-stub flex flex-col justify-between gap-5 border-t-2 border-dashed border-inv-line bg-[#fbf7f0] p-6 sm:px-8 lg:w-[22%] lg:border-t-0 lg:border-l-2">
             <div>
               <p className="font-display text-[44px] leading-none text-inv-accent">12.12</p>
               <p className="mt-2 text-[10px] tracking-[0.22em] text-inv-ink/60">SIMPAN SOBEKAN INI</p>

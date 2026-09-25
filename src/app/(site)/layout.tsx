@@ -6,5 +6,5 @@ export const viewport: Viewport = {
 };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
-  return <div className={siteFonts}>{children}</div>;
+  return <div className={`site ${siteFonts}`}>{children}</div>;
 }

@@ -46,6 +46,10 @@
   a {
     color: var(--color-wine);
   }
+  .site a {
+    text-decoration-line: underline;
+    text-underline-offset: 0.15em;
+  }
   a:focus-visible,
   button:focus-visible,
   input:focus-visible,
@@ -331,5 +335,41 @@ html:has([data-inv-state="closed"]) {
   .inv-swing:active {
     transition: none;
     transform: rotate(var(--tilt, 0deg));
+  }
+}
+
+.ticket-main,
+.ticket-stub {
+  --r: 14px;
+  mask-repeat: no-repeat;
+}
+.ticket-main {
+  mask-image:
+    radial-gradient(circle var(--r) at 0 100%, #0000 98%, #000),
+    radial-gradient(circle var(--r) at 100% 100%, #0000 98%, #000);
+  mask-size: 51% 100%;
+  mask-position: left, right;
+}
+.ticket-stub {
+  mask-image:
+    radial-gradient(circle var(--r) at 0 0, #0000 98%, #000),
+    radial-gradient(circle var(--r) at 100% 0, #0000 98%, #000);
+  mask-size: 51% 100%;
+  mask-position: left, right;
+}
+@media (min-width: 61.25rem) {
+  .ticket-main {
+    mask-image:
+      radial-gradient(circle var(--r) at 100% 0, #0000 98%, #000),
+      radial-gradient(circle var(--r) at 100% 100%, #0000 98%, #000);
+    mask-size: 100% 51%;
+    mask-position: top, bottom;
+  }
+  .ticket-stub {
+    mask-image:
+      radial-gradient(circle var(--r) at 0 0, #0000 98%, #000),
+      radial-gradient(circle var(--r) at 0 100%, #0000 98%, #000);
+    mask-size: 100% 51%;
+    mask-position: top, bottom;
   }
 }
