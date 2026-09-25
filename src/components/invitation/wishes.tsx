@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { submitWish } from "@/app/[slug]/actions";
 import type { Wish } from "@/lib/guestbook";
 import { useGuest } from "./shell";
 
-const PAGE = 12;
+const FIRST = 4;
+const STEP = 6;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
 type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" };
@@ -17,7 +18,8 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const tagTone = ["bg-inv-wash", "bg-[#E6D8E4]", "bg-[#DDE3D3]"];
   const { guest, setGuest } = useGuest();
   const [mine, setMine] = useState<Wish[]>([]);
-  const [shown, setShown] = useState(PAGE);
+  const [shown, setShown] = useState(FIRST);
+  const listTop = useRef<HTMLDivElement>(null);
   const [name, setName] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -75,6 +77,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
       </form>
 
       <div className="mt-12 lg:mt-0">
+        <div ref={listTop} className="scroll-mt-24" />
         <ul className={lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
           {all.slice(0, shown).map((w, i) =>
             tags ? (
@@ -114,14 +117,33 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
             ),
           )}
         </ul>
-        {all.length > shown && (
-          <button
-            type="button"
-            onClick={() => setShown((s) => s + PAGE)}
-            className="mt-4 text-[13px] tracking-[0.12em] text-inv-accent underline underline-offset-4"
-          >
-            MUAT LAGI
-          </button>
+        {all.length > FIRST && (
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <p className="text-[12px] tracking-[0.12em] text-inv-ink/60">
+              {Math.min(shown, all.length)} DARI {all.length} UCAPAN
+            </p>
+            {shown < all.length && (
+              <button
+                type="button"
+                onClick={() => setShown((s) => s + STEP)}
+                className="rounded-sm border border-inv-accent px-4 py-2.5 text-[12px] tracking-[0.12em] text-inv-accent transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper"
+              >
+                TAMPILKAN {Math.min(STEP, all.length - shown)} LAGI
+              </button>
+            )}
+            {shown > FIRST && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShown(FIRST);
+                  listTop.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="text-[12px] tracking-[0.12em] text-inv-accent underline underline-offset-4"
+              >
+                TAMPILKAN LEBIH SEDIKIT
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
