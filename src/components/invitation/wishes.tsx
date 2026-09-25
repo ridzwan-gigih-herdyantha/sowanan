@@ -8,11 +8,13 @@ import { useGuest } from "./shell";
 const PAGE = 12;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
-type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" };
+type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" };
 
 export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const lined = variant === "lined";
   const curator = variant === "curator";
+  const tags = variant === "tags";
+  const tagTone = ["bg-inv-wash", "bg-[#E6D8E4]", "bg-[#DDE3D3]"];
   const { guest, setGuest } = useGuest();
   const [mine, setMine] = useState<Wish[]>([]);
   const [shown, setShown] = useState(PAGE);
@@ -68,13 +70,31 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
           disabled={pending}
           className="mt-6 rounded-sm border border-inv-accent px-6 py-3.5 text-[13px] tracking-[0.14em] text-inv-accent transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper disabled:opacity-50"
         >
-          {pending ? (lined || curator ? "MENGIRIM..." : "MENEMPELKAN...") : curator ? "SIMPAN CATATAN" : lined ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
+          {pending ? (lined || curator || tags ? "MENGIRIM..." : "MENEMPELKAN...") : tags ? "GANTUNGKAN UCAPAN" : curator ? "SIMPAN CATATAN" : lined ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
         </button>
       </form>
 
       <div className="mt-12 lg:mt-0">
-        <ul className={lined ? "border-t border-inv-line" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
-          {all.slice(0, shown).map((w, i) => (
+        <ul className={lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
+          {all.slice(0, shown).map((w, i) =>
+            tags ? (
+              <li
+                key={w.id}
+                className={`inv-swing mb-5 break-inside-avoid origin-top ${i < unsynced.length ? "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]" : ""}`}
+                style={{ "--tilt": `${tilt[i % tilt.length]}deg` } as React.CSSProperties}
+                tabIndex={0}
+              >
+                <div
+                  className={`relative px-6 pt-10 pb-5 ${tagTone[i % tagTone.length]} [clip-path:polygon(10%_0,90%_0,100%_12%,100%_100%,0_100%,0_12%)]`}
+                >
+                  <span className="absolute top-3.5 left-1/2 size-3 -translate-x-1/2 rounded-full bg-inv-paper ring-1 ring-inv-line" aria-hidden="true" />
+                  <p className="font-display text-[19px] leading-snug">&ldquo;{w.message}&rdquo;</p>
+                  <p className="mt-4 border-t border-inv-ink/15 pt-2 text-[10px] font-medium tracking-[0.2em] text-inv-ink/60">
+                    DARI {w.name.toUpperCase()}
+                  </p>
+                </div>
+              </li>
+            ) : (
             <li
               key={w.id}
               className={`${
@@ -91,7 +111,8 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
                 {curator ? `DICATAT OLEH ${w.name.toUpperCase()}` : w.name.toUpperCase()}
               </p>
             </li>
-          ))}
+            ),
+          )}
         </ul>
         {all.length > shown && (
           <button

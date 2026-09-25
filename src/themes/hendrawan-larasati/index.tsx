@@ -1,7 +1,8 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { BigCountdown } from "@/components/invitation/big-countdown";
+import { FlipCard } from "@/components/invitation/flip-card";
+import { TagCountdown } from "@/components/invitation/tag-countdown";
 import { CopyButton } from "@/components/invitation/copy-button";
 import { Gallery } from "@/components/invitation/gallery";
 import { Greeting } from "@/components/invitation/greeting";
@@ -70,12 +71,12 @@ function SpecLabel({ rows, className = "" }: { rows: [string, ReactNode][]; clas
 
 function HeroPhoto() {
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name} dalam busana pengantin adat Bali`, fetchPriority: "high" as const };
-  const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 1800, height: 1200, sizes: "55vw" });
-  const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1200, height: 1602, sizes: "86vw" });
+  const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 1800, height: 1200, sizes: "min(1120px, 100vw)" });
+  const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1200, height: 1602, sizes: "96vw" });
   return (
-    <picture>
-      <source media="(min-width: 980px)" srcSet={wide} sizes="55vw" />
-      <img {...rest} srcSet={tall} sizes="86vw" alt={common.alt} className="size-full object-cover object-top" />
+    <picture className="absolute inset-0">
+      <source media="(min-width: 760px)" srcSet={wide} sizes="min(1120px, 100vw)" />
+      <img {...rest} srcSet={tall} sizes="96vw" alt={common.alt} className="size-full object-cover object-[50%_25%]" />
     </picture>
   );
 }
@@ -84,86 +85,95 @@ function Hero() {
   const spec = inv.specimens[0];
   return (
     <section className="inv-paper relative overflow-hidden pb-16 lg:pb-24">
-      <Wrap className="flex items-center justify-between border-b border-inv-line py-5">
+      <Wrap className="flex items-center justify-between py-5">
         <span className="font-display text-xl text-inv-accent">{inv.monogram}</span>
         <span className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">{inv.collection.toUpperCase()}</span>
       </Wrap>
 
-      <Wrap className="grid pt-10 lg:grid-cols-12 lg:grid-rows-[1fr_auto] lg:gap-x-12 lg:pt-16">
-        <div className="lg:col-span-5 lg:row-start-1 lg:self-end">
-          <Label className="text-inv-gold">
-            <span {...enter(0.5)} className="inv-enter inline-block">
-              UNDANGAN PERNIKAHAN
-            </span>
-          </Label>
-          <h1 className="mt-4 font-display text-[clamp(56px,16vw,120px)] leading-[0.95] text-inv-accent lg:text-[clamp(64px,6.4vw,88px)]">
-            <span {...enter(0.56)} className="inv-enter block">
-              {inv.groom.name}
-            </span>
-            <span {...enter(0.64)} className="inv-enter block">
-              <span className="italic">&amp;</span> {inv.bride.name}
-            </span>
-          </h1>
-          <div {...enter(0.72)}>
-            <p className="mt-4 font-display text-lg text-inv-gold italic">{inv.latinPair}</p>
-            <Greeting className="mt-4 text-[14px] text-inv-accent" />
+      <div className="px-5 pt-14 pb-14 text-center sm:px-8 lg:pt-20 lg:pb-20">
+        <p {...enter(0.5)} className="inv-enter text-[11px] font-medium tracking-[0.3em] text-inv-gold">
+          UNDANGAN PERNIKAHAN
+        </p>
+        <h1 className="mx-auto mt-6 font-display text-[clamp(60px,17vw,96px)] leading-[0.92] text-inv-accent md:text-[clamp(72px,9vw,136px)]">
+          <span {...enter(0.56)} className="inv-enter inline-block">
+            {inv.groom.name}
+          </span>{" "}
+          <span {...enter(0.64)} className="inv-enter inline-block">
+            <span className="italic">&amp;</span> {inv.bride.name}
+          </span>
+        </h1>
+        <div {...enter(0.72)} className="inv-enter">
+          <p className="mt-5 font-display text-xl text-inv-gold italic">{inv.latinPair}</p>
+          <div className="mx-auto mt-8 flex max-w-md items-center justify-center gap-4 text-[12px] font-medium tracking-[0.22em]">
+            <span className="h-px flex-1 bg-inv-line" aria-hidden="true" />
+            <span>{inv.dateShort}</span>
+            <span className="text-inv-gold">{inv.place.toUpperCase()}</span>
+            <span className="h-px flex-1 bg-inv-line" aria-hidden="true" />
           </div>
+          <Greeting className="mt-5 text-[14px] text-inv-accent" />
         </div>
+      </div>
 
-        <div className="relative mt-12 lg:col-span-7 lg:col-start-6 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:self-center">
-          <div className="absolute -top-7 -left-3 z-20 w-24 -rotate-6 border border-inv-line bg-inv-wash p-1.5 shadow-[0_4px_12px_rgba(0,0,0,.1)] sm:w-28 lg:-left-10">
-            <Tape className="-top-2.5 left-4 rotate-6" />
-            <Image src={spec.src} alt="" width={spec.w} height={spec.h} sizes="112px" className="h-auto w-full" />
-          </div>
-          <div className="relative border border-inv-line bg-inv-wash p-2.5 shadow-[0_10px_30px_rgba(0,0,0,.08)] sm:p-3">
-            <Tape className="-top-2.5 left-6 -rotate-6" />
-            <Tape className="right-6 -bottom-2.5 rotate-3" />
-            <div className="relative aspect-[3/4] overflow-hidden lg:aspect-[3/2]">
-              <HeroPhoto />
-            </div>
+      <div {...enter(0.8)} className="inv-enter relative mx-auto max-w-[1120px] px-3 sm:px-8">
+        <div className="absolute -top-8 right-6 z-20 w-24 rotate-6 border border-inv-line bg-inv-wash p-1.5 shadow-[0_4px_12px_rgba(0,0,0,.1)] sm:right-14 sm:w-32">
+          <Tape className="-top-2.5 left-4 rotate-6" />
+          <Image src={spec.src} alt="" width={spec.w} height={spec.h} sizes="128px" className="h-auto w-full" />
+        </div>
+        <div className="relative border border-inv-line bg-inv-wash p-2 shadow-[0_14px_40px_rgba(0,0,0,.1)] sm:p-3">
+          <Tape className="-top-2.5 left-10 -rotate-6" />
+          <Tape className="right-10 -bottom-2.5 rotate-3" />
+          <div className="relative aspect-[4/5] overflow-hidden md:aspect-[16/9]">
+            <HeroPhoto />
           </div>
         </div>
-
-        <div {...enter(0.8)} className="inv-enter mt-10 lg:col-span-5 lg:row-start-2 lg:mt-8">
-          <SpecLabel
-            rows={[
-              ["TANGGAL", inv.dateLong],
-              ["LOKASI", inv.place],
-              ["KOLEKSI", inv.collection],
-            ]}
-          />
-        </div>
-      </Wrap>
+      </div>
     </section>
   );
 }
 
 function Couple() {
-  const card = (p: typeof inv.groom | typeof inv.bride, tilt: string) => (
-    <article className={`relative border border-inv-line bg-inv-paper p-3 shadow-[0_8px_20px_rgba(0,0,0,.06)] ${tilt}`}>
-      <Tape className="-top-2.5 left-1/2 -translate-x-1/2 rotate-2" />
-      <div className="relative aspect-[4/5] overflow-hidden">
-        <Image src={p.photo} alt={p.full} fill sizes="(min-width: 980px) 400px, 90vw" className="object-cover object-top" />
-      </div>
-      <div className="px-2 pt-5 pb-3">
-        <p className="font-display text-[44px] leading-none text-inv-accent">{p.name}</p>
-        <p className="mt-2 text-[13px] text-inv-ink/70">{p.full}</p>
-        <p className="mt-4 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{p.role.toUpperCase()}</p>
-        <p className="mt-1 text-[14px]">{p.parents}</p>
-        <p className="mt-4 border-t border-inv-line pt-3 text-[13px]">
-          Spesimen favorit: {p.flower} <span className="font-display text-inv-gold italic">({p.latin})</span>
-        </p>
-      </div>
-    </article>
+  const card = (p: typeof inv.groom | typeof inv.bride, tilt: string, no: string) => (
+    <FlipCard
+      label={p.name}
+      className={tilt}
+      front={
+        <span className="relative block border border-inv-line bg-inv-paper p-3 shadow-[0_10px_24px_rgba(0,0,0,.08)]">
+          <Tape className="-top-2.5 left-1/2 -translate-x-1/2 rotate-2" />
+          <span className="relative block aspect-[4/5] overflow-hidden">
+            <Image src={p.photo} alt={p.full} fill sizes="(min-width: 980px) 440px, 92vw" className="object-cover object-top" />
+          </span>
+          <span className="flex items-end justify-between gap-3 px-1 pt-4 pb-1">
+            <span className="font-display text-[44px] leading-none text-inv-accent">{p.name}</span>
+            <span className="pb-1 text-[10px] font-medium tracking-[0.2em] text-inv-gold">BALIK KARTU ↻</span>
+          </span>
+        </span>
+      }
+      back={
+        <span className="flex h-full flex-col border border-inv-line bg-inv-wash p-6 shadow-[0_10px_24px_rgba(0,0,0,.08)]">
+          <span className="flex justify-between border-b border-inv-line pb-3 text-[10px] font-medium tracking-[0.2em] text-inv-gold">
+            <span>LABEL SPESIMEN</span>
+            <span>No. {no}</span>
+          </span>
+          <span className="mt-6 font-display text-[40px] leading-none text-inv-accent">{p.full}</span>
+          <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{p.role.toUpperCase()}</span>
+          <span className="mt-1 text-[15px]">{p.parents}</span>
+          <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">SPESIMEN FAVORIT</span>
+          <span className="mt-1 text-[15px] capitalize">{p.flower}</span>
+          <span className="font-display text-lg text-inv-gold italic">{p.latin}</span>
+          <span className="mt-auto pt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">KETUK UNTUK KEMBALI ↻</span>
+        </span>
+      }
+    />
   );
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
         <Label>KEDUA MEMPELAI</Label>
-        <Title className="mb-12 max-w-[20ch]">Dua spesimen yang akhirnya satu lembar.</Title>
-        <div className="grid gap-10 md:grid-cols-2 md:gap-8 lg:gap-14">
-          {card(inv.groom, "-rotate-1")}
-          {card(inv.bride, "rotate-1 md:mt-12")}
+        <Title className="max-w-[20ch]">Dua spesimen yang akhirnya satu lembar.</Title>
+        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">Ketuk kartu untuk membaca label di baliknya.</p>
+        <div className="grid gap-12 md:grid-cols-2 md:gap-8 lg:gap-14">
+          {card(inv.groom, "-rotate-1", "0412")}
+          {card(inv.bride, "rotate-1 md:mt-12", "0508")}
         </div>
         <p className="mx-auto mt-16 max-w-[32ch] text-center font-display text-[clamp(22px,5.5vw,30px)] leading-snug text-inv-accent italic">
           {inv.quote}
@@ -238,20 +248,20 @@ function EventDetails() {
 }
 
 function CountdownSection() {
-  const spec = inv.specimens[1];
   const btn =
     "rounded-sm border border-inv-gold-light px-5 py-3 text-[11px] font-medium tracking-[0.2em] text-inv-gold-light no-underline transition-colors duration-150 hover:bg-inv-gold-light hover:text-inv-night";
   return (
     <section className="relative overflow-hidden bg-inv-night py-24 text-inv-paper lg:py-32">
-      <div className="absolute top-4 -right-8 w-28 rotate-12 border border-white/15 bg-white/5 p-2 sm:top-10 sm:w-44 lg:right-16">
-        <Image src={spec.src} alt="" width={spec.w} height={spec.h} sizes="176px" className="h-auto w-full" />
-        <p className="mt-2 font-display text-[12px] text-inv-gold-light italic">{spec.latin}</p>
-      </div>
       <Wrap>
-        <Label className="text-inv-gold-light">MENUJU HARI H</Label>
-        <p className="mt-3 mb-10 max-w-[14ch] font-display text-[clamp(32px,8vw,52px)] leading-[1.05]">Lembar ini akan terisi dalam</p>
-        <BigCountdown target={inv.date} doneText="HARINYA TIBA." />
-        <div className="mt-12 flex flex-wrap gap-3">
+        <div className="text-center">
+          <Label className="text-inv-gold-light">MENUJU HARI H</Label>
+          <p className="mx-auto mt-3 max-w-[18ch] font-display text-[clamp(32px,8vw,52px)] leading-[1.05]">Tiga label ini menghitung mundur untuk kami.</p>
+          <p className="mt-3 text-[13px] text-inv-paper/60">Sentuh labelnya.</p>
+        </div>
+        <div className="mx-auto mt-14 max-w-[760px]">
+          <TagCountdown target={inv.date} doneText="HARINYA TIBA." />
+        </div>
+        <div className="mt-14 flex flex-wrap justify-center gap-3">
           <a href={`/${inv.slug}/kalender`} className={btn} download={`${inv.slug}.ics`}>
             SIMPAN KE KALENDER
           </a>
@@ -335,8 +345,9 @@ async function WishesSection() {
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
         <Label>BUKU TAMU</Label>
-        <Title className="mb-12">Tinggalkan catatan untuk kami.</Title>
-        <Wishes slug={inv.slug} initial={[...wishes, ...inv.sampleWishes]} variant="curator" />
+        <Title className="max-w-[18ch]">Gantungkan ucapanmu di sini.</Title>
+        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">Setiap ucapan jadi satu label dalam koleksi kami.</p>
+        <Wishes slug={inv.slug} initial={[...wishes, ...inv.sampleWishes]} variant="tags" />
       </Wrap>
     </section>
   );
