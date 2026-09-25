@@ -22,9 +22,6 @@
   --color-dusk-light: #dcd1c8;
   --color-mist: #c7b9ae;
 
-  --font-serif: var(--font-cormorant), Georgia, serif;
-  --font-sans: var(--font-jost), "Helvetica Neue", Arial, sans-serif;
-
   --breakpoint-sm: 35rem;
   --breakpoint-md: 47.5rem;
   --breakpoint-lg: 61.25rem;
@@ -37,7 +34,6 @@
   body {
     background: var(--color-ivory);
     color: var(--color-ink);
-    font-family: var(--font-sans);
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -84,6 +80,8 @@
 }
 
 @theme inline {
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-jost), "Helvetica Neue", Arial, sans-serif;
   --color-inv-paper: var(--inv-paper);
   --color-inv-wash: var(--inv-wash);
   --color-inv-night: var(--inv-night);

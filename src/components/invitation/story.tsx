@@ -17,13 +17,40 @@ export type StoryItem = {
 
 const sheetTilt = [-1.2, 0.8, -0.6, 1.1];
 
-export function Story({ items, variant = "arch" }: { items: readonly StoryItem[]; variant?: "arch" | "sheets" }) {
+export function Story({ items, variant = "arch" }: { items: readonly StoryItem[]; variant?: "arch" | "sheets" | "film" }) {
   const [active, setActive] = useState<number | null>(null);
   const item = active === null ? null : items[active];
 
   return (
     <>
-      {variant === "sheets" ? (
+      {variant === "film" ? (
+        <ol className="flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 [scrollbar-width:none] sm:scroll-px-8 sm:px-8 lg:grid lg:grid-cols-4 lg:overflow-visible">
+          {items.map((s, i) => (
+            <li key={s.title} className="w-[64vw] max-w-[280px] shrink-0 snap-start lg:w-auto lg:max-w-none">
+              <button type="button" onClick={() => setActive(i)} className="group block w-full text-left">
+                <span className="relative block aspect-[3/4] overflow-hidden bg-black">
+                  <Image
+                    src={s.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 980px) 260px, 64vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                </span>
+                <span className="mt-2 flex justify-between text-[10px] tracking-[0.18em] text-inv-gold-light">
+                  <span>{12 + i}A</span>
+                  <span>{s.date}</span>
+                </span>
+                <span className="mt-3 block font-display text-[24px] leading-tight text-inv-paper">{s.title}</span>
+                <span className="mt-1.5 block text-[14px] leading-relaxed text-inv-paper/75">{s.short}</span>
+                <span className="mt-3 inline-block border-b border-inv-gold-light pb-0.5 text-[11px] tracking-[0.18em] text-inv-gold-light">
+                  PUTAR ADEGAN
+                </span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      ) : variant === "sheets" ? (
         <ol className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-8 lg:space-y-0">
           {items.map((s, i) => (
             <li key={s.title} style={{ rotate: `${sheetTilt[i % sheetTilt.length]}deg` }}>

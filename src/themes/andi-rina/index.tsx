@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { BigCountdown } from "@/components/invitation/big-countdown";
 import { CopyButton } from "@/components/invitation/copy-button";
 import { Gallery } from "@/components/invitation/gallery";
+import { GuestName } from "@/components/invitation/guest-name";
 import { Greeting } from "@/components/invitation/greeting";
 import { Quiz } from "@/components/invitation/quiz";
 import { Rsvp } from "@/components/invitation/rsvp";
@@ -49,12 +50,12 @@ function Wrap({ children, className = "" }: { children: ReactNode; className?: s
 
 function HeroPhoto() {
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name} bergandengan di jalan saat senja`, fetchPriority: "high" as const };
-  const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 1800, height: 1200, sizes: "58vw" });
-  const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1200, height: 1602, sizes: "88vw" });
+  const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 1800, height: 1200, sizes: "100vw" });
+  const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1200, height: 1602, sizes: "100vw" });
   return (
     <picture>
-      <source media="(min-width: 980px)" srcSet={wide} sizes="58vw" />
-      <img {...rest} srcSet={tall} sizes="88vw" alt={common.alt} className="size-full object-cover object-top" />
+      <source media="(min-width: 760px)" srcSet={wide} sizes="100vw" />
+      <img {...rest} srcSet={tall} sizes="100vw" alt={common.alt} className="absolute inset-0 size-full object-cover md:object-[50%_22%]" />
     </picture>
   );
 }
@@ -80,52 +81,41 @@ function Badge() {
 
 function Hero() {
   return (
-    <section className="relative mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-12 lg:pb-24">
-      <div className="flex items-center justify-between pt-5 pb-8 lg:pt-8 lg:pb-12">
-        <span className="font-display text-2xl text-inv-accent">{inv.monogram}</span>
-        <span className="text-[11px] tracking-[0.22em] text-inv-ink/70">{inv.dateShort.replace(/ /g, "")}</span>
+    <section className="relative h-[100svh] min-h-[620px] overflow-hidden bg-inv-night text-inv-paper">
+      <HeroPhoto />
+      <div className="absolute inset-0 bg-gradient-to-t from-inv-night via-inv-night/35 to-inv-night/20" />
+      <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-5 sm:px-8 lg:px-12 lg:pt-8">
+        <span className="font-display text-2xl">{inv.monogram}</span>
+        <span className="text-[11px] tracking-[0.22em] text-inv-paper/80">{inv.dateShort.replace(/ /g, "")}</span>
+      </div>
+      <span className="absolute top-16 right-5 text-[12px] tracking-[0.12em] text-[#f0a64b] [text-shadow:0_0_6px_rgba(240,120,40,.7)] sm:right-8 lg:top-20 lg:right-12">
+        {inv.filmStamp}
+      </span>
+      <div className="absolute top-[34%] left-5 sm:left-8 lg:top-[22%] lg:right-12 lg:left-auto">
+        <Badge />
       </div>
 
-      <div className="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[1fr_auto] lg:gap-x-12">
-        <div className="lg:col-start-1 lg:row-start-1 lg:self-end">
-          <Label className="text-inv-ink/70">
-            <span {...enter(0.55)} className="inv-enter inline-block">PERNIKAHAN</span>
-          </Label>
-          <h1 className="mt-3 font-display text-[clamp(64px,20vw,150px)] leading-[0.92] font-normal text-inv-accent lg:text-[clamp(96px,10vw,150px)]">
-            <span {...enter(0.6)} className="inv-enter block">
-              {inv.groom.name}
-            </span>
-            <span {...enter(0.68)} className="inv-enter block pl-[11vw] lg:pl-16">
-              <span className="text-inv-gold italic">&amp;</span> {inv.bride.name}
-            </span>
-          </h1>
-          <div {...enter(0.76)}>
-            <p className="mt-5 max-w-[24ch] font-display text-xl text-inv-ink/80 italic">{inv.tagline}</p>
-            <Greeting className="mt-3 text-[14px] text-inv-accent" />
+      <div className="absolute inset-x-0 bottom-0 px-5 pb-12 sm:px-8 lg:px-12 lg:pb-14">
+        <Label className="text-inv-paper/80">
+          <span {...enter(0.55)} className="inv-enter inline-block">PERNIKAHAN</span>
+        </Label>
+        <h1 className="mt-2 font-display text-[clamp(84px,26vw,280px)] leading-[0.82] font-normal tracking-[-0.02em] lg:text-[clamp(120px,15vw,220px)]">
+          <span {...enter(0.6)} className="inv-enter block">
+            {inv.groom.name}
+          </span>
+          <span {...enter(0.68)} className="inv-enter block text-right lg:pl-[16vw] lg:text-left">
+            <span className="text-inv-gold-light italic">&amp;</span> {inv.bride.name}
+          </span>
+        </h1>
+        <div {...enter(0.76)} className="inv-enter mt-6 flex flex-col gap-3 border-t border-inv-paper/30 pt-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="font-display text-lg text-inv-paper/90 italic">{inv.tagline}</p>
+            <Greeting className="mt-1 text-[13px] text-inv-gold-light" />
           </div>
-        </div>
-
-        <div
-          {...enter(0.84)}
-          className="inv-enter relative mt-10 -mr-5 ml-7 sm:-mr-8 sm:ml-16 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:-mr-12 lg:ml-0"
-        >
-          <div className="torn-bottom relative aspect-[3/4] overflow-hidden bg-inv-wash lg:aspect-auto lg:h-full lg:min-h-[560px]">
-            <HeroPhoto />
-            <span className="absolute top-4 right-4 text-[12px] tracking-[0.12em] text-[#f0a64b] [text-shadow:0_0_6px_rgba(240,120,40,.7)]">
-              {inv.filmStamp}
-            </span>
-          </div>
-          <div className="absolute top-[38%] -left-10 lg:-left-12">
-            <Badge />
-          </div>
-        </div>
-
-        <div className="mt-8 lg:col-start-1 lg:row-start-2 lg:mt-10">
-          <div {...enter(0.9)} className="inv-enter border-l border-inv-line pl-4">
-            <p className="font-display text-2xl tracking-[0.08em]">{inv.dateShort}</p>
-            <p className="mt-1 text-[14px] text-inv-ink/70">{inv.city}</p>
-          </div>
-          <p className="mt-10 text-[11px] tracking-[0.22em] text-inv-ink/60">GULIR UNTUK MULAI ↓</p>
+          <p className="flex gap-4 text-[12px] tracking-[0.22em] text-inv-paper/80 sm:pr-16">
+            <span>{inv.dateShort}</span>
+            <span>SEMARANG</span>
+          </p>
         </div>
       </div>
     </section>
@@ -133,46 +123,64 @@ function Hero() {
 }
 
 function StorySection() {
+  const holes = {
+    backgroundImage: "linear-gradient(currentColor 0 0)",
+    backgroundSize: "12px 8px",
+    backgroundRepeat: "space no-repeat",
+    backgroundPosition: "center",
+  } as CSSProperties;
   return (
-    <section className="inv-wash torn-top relative -mt-3.5 py-20 lg:py-28">
-      <Wrap className="lg:grid lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-12">
-        <div>
-          <Label className="text-inv-gold">CERITA KAMI</Label>
-          <h2 className="mt-3 font-display text-[clamp(36px,9vw,56px)] leading-[1.05] text-inv-accent italic lg:text-[44px]">
-            Serangkaian kebetulan yang indah
-          </h2>
-          <p className="mt-5 mb-10 max-w-[40ch] text-[15px] leading-relaxed">
-            Dari pertemuan yang tak direncanakan, sampai langkah yang kini searah. Ketuk tiap momen untuk membaca ceritanya.
-          </p>
+    <section className="bg-[#070f11] py-16 text-inv-paper lg:py-24">
+      <Wrap>
+        <Label className="text-inv-gold-light">CERITA KAMI</Label>
+        <h2 className="mt-3 max-w-[16ch] font-display text-[clamp(34px,9vw,56px)] leading-[1.05] italic">Serangkaian kebetulan yang indah</h2>
+      </Wrap>
+      <div className="mt-10 bg-black py-3 lg:mx-auto lg:max-w-[1120px]">
+        <div className="mx-2 h-2 text-inv-paper/25" style={holes} aria-hidden="true" />
+        <div className="py-5">
+          <Story items={inv.story} variant="film" />
         </div>
-        <Story items={inv.story} />
+        <div className="mx-2 h-2 text-inv-paper/25" style={holes} aria-hidden="true" />
+      </div>
+      <Wrap>
+        <p className="mt-5 text-[12px] tracking-[0.16em] text-inv-paper/55">GESER DAN KETUK TIAP ADEGAN</p>
       </Wrap>
     </section>
   );
 }
 
 function Couple() {
-  const person = (p: { name: string; role: string; parents: string }) => (
-    <div>
-      <p className="font-display text-[clamp(56px,16vw,88px)] leading-none">{p.name}</p>
-      <p className="mt-2 text-[11px] tracking-[0.2em] text-inv-paper/70">{p.role.toUpperCase()}</p>
-      <p className="mt-1 text-[14px] text-inv-paper/90">{p.parents}</p>
+  const parents = (p: { role: string; parents: string }, align: string) => (
+    <div className={align}>
+      <p className="text-[11px] tracking-[0.2em] text-inv-gold">{p.role.toUpperCase()}</p>
+      <p className="mt-1 text-[15px]">{p.parents}</p>
     </div>
   );
   return (
-    <section className="torn-top relative -mt-3.5 bg-inv-night text-inv-paper lg:grid lg:grid-cols-2">
-      <div className="relative aspect-[2/3] lg:order-2 lg:aspect-auto lg:min-h-[760px]">
-        <Image src={inv.images.couple} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="(min-width: 980px) 50vw, 100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-inv-night/90 via-inv-night/25 to-transparent lg:hidden" />
-      </div>
-      <div className="absolute inset-x-0 top-0 px-5 pt-14 sm:px-8 lg:static lg:flex lg:flex-col lg:justify-center lg:px-16 lg:py-24">
-        <Label className="text-inv-gold-light">KEDUA MEMPELAI</Label>
-        <div className="mt-6 space-y-5">
-          {person(inv.groom)}
-          <p className="font-display text-4xl text-inv-gold-light italic">&amp;</p>
-          {person(inv.bride)}
+    <section className="inv-paper torn-top relative -mt-3.5 overflow-hidden py-20 lg:py-28">
+      <Wrap>
+        <Label className="text-inv-gold">KEDUA MEMPELAI</Label>
+        <p className="mt-4 font-display text-[clamp(88px,28vw,240px)] leading-[0.82] tracking-[-0.02em] text-inv-accent">{inv.groom.name}</p>
+        {parents(inv.groom, "mt-5 border-l border-inv-line pl-4")}
+      </Wrap>
+      <div className="relative mx-auto mt-10 max-w-[1280px] border-y-[10px] border-inv-night bg-inv-night lg:border-y-[16px]">
+        <div className="relative aspect-[16/10] lg:aspect-[2.39/1]">
+          <Image
+            src={inv.images.couple}
+            alt={`${inv.groom.name} dan ${inv.bride.name}`}
+            fill
+            sizes="(min-width: 1280px) 1280px, 100vw"
+            className="object-cover object-[60%_48%]"
+          />
         </div>
+        <span className="absolute right-5 -bottom-14 font-display text-[112px] leading-none text-inv-gold italic sm:right-8 lg:right-12" aria-hidden="true">
+          &amp;
+        </span>
       </div>
+      <Wrap className="mt-14 text-right">
+        <p className="font-display text-[clamp(88px,28vw,240px)] leading-[0.82] tracking-[-0.02em] text-inv-accent">{inv.bride.name}</p>
+        {parents(inv.bride, "mt-5 ml-auto w-fit border-r border-inv-line pr-4")}
+      </Wrap>
     </section>
   );
 }
@@ -184,7 +192,7 @@ function Collage() {
     "left-[16%] top-[190px] w-[56%] lg:left-[22%] lg:top-[230px] lg:w-[42%]",
   ];
   return (
-    <section className="inv-paper torn-top relative -mt-3.5 py-20 lg:py-28">
+    <section className="inv-wash torn-top relative -mt-3.5 py-20 lg:py-28">
       <Wrap className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <div>
           <p className="font-display text-[clamp(24px,6vw,34px)] leading-snug text-inv-accent italic">{inv.quote}</p>
@@ -217,48 +225,60 @@ function Collage() {
 }
 
 function EventDetails() {
+  const rows: [string, string][] = [
+    [inv.dayLabel.toUpperCase(), inv.dateShort.replace(/ /g, "")],
+    ...inv.events.map((e): [string, string] => [e.name.toUpperCase(), `${e.time}${"until" in e ? ` sampai ${e.until}` : ""} WIB`]),
+    ["TEMPAT", inv.venue.name],
+  ];
+  const notch = "absolute size-7 rounded-full bg-inv-paper";
   return (
-    <section className="inv-wash torn-top relative -mt-3.5 py-20 lg:py-28">
-      <Wrap className="lg:grid lg:grid-cols-[minmax(0,3fr)_minmax(0,5fr)_minmax(0,3fr)] lg:items-center lg:gap-12">
-        <div>
-          <Label className="text-inv-gold">HARI H</Label>
-          <p className="mt-6 text-[13px] tracking-[0.22em]">{inv.dayLabel.toUpperCase()}</p>
-          <p className="mt-1 font-display text-[clamp(40px,11vw,56px)] leading-none text-inv-accent lg:text-[40px]">{inv.dateShort}</p>
-          <ul className="mt-8 space-y-5 border-l border-inv-line pl-5">
-            {inv.events.map((e) => (
-              <li key={e.name}>
-                <p className="font-display text-2xl">
-                  {e.time}
-                  {"until" in e && <span className="text-inv-ink/60"> sampai {e.until}</span>} WIB
-                </p>
-                <p className="text-[14px] text-inv-ink/75">{e.name}</p>
-              </li>
-            ))}
-          </ul>
+    <section className="inv-paper torn-top relative -mt-3.5 py-20 lg:py-28">
+      <Wrap className="max-w-[980px]">
+        <Label className="text-inv-gold">HARI H</Label>
+        <h2 className="mt-3 mb-10 font-display text-[clamp(34px,9vw,56px)] leading-[1.05] text-inv-accent">Simpan tiketmu.</h2>
+        <div className="relative flex flex-col bg-[#fbf7f0] shadow-[0_14px_40px_rgba(28,25,22,.14)] lg:flex-row">
+          <div className="relative aspect-[16/10] lg:aspect-auto lg:w-[36%]">
+            <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 360px, 100vw" className="object-cover" />
+          </div>
+          <div className="flex-1 p-6 sm:p-8">
+            <div className="flex items-baseline justify-between text-[11px] tracking-[0.22em] text-inv-gold">
+              <span>TIKET MASUK</span>
+              <span>No. 1212</span>
+            </div>
+            <p className="mt-5 text-[11px] tracking-[0.22em] text-inv-ink/60">UNTUK</p>
+            <GuestName fallback="Tamu Undangan" className="block font-display text-[30px] leading-tight text-inv-accent italic" />
+            <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5">
+              {rows.map(([k, v]) => (
+                <div key={k}>
+                  <dt className="text-[10px] tracking-[0.22em] text-inv-ink/60">{k}</dt>
+                  <dd className="mt-1 font-display text-[19px] leading-snug">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-5 text-[13px] text-inv-ink/65">{inv.venue.address}</p>
+          </div>
+          <div className="relative flex flex-col justify-between gap-5 border-t-2 border-dashed border-inv-line p-6 sm:px-8 lg:w-[22%] lg:border-t-0 lg:border-l-2">
+            <span className={`${notch} -top-3.5 -left-3.5`} aria-hidden="true" />
+            <span className={`${notch} -top-3.5 -right-3.5 lg:right-auto lg:-bottom-3.5 lg:-left-3.5 lg:top-auto`} aria-hidden="true" />
+            <div>
+              <p className="font-display text-[44px] leading-none text-inv-accent">12.12</p>
+              <p className="mt-2 text-[10px] tracking-[0.22em] text-inv-ink/60">SIMPAN SOBEKAN INI</p>
+            </div>
+            <a
+              href={inv.venue.mapUrl}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center justify-center gap-2 rounded-sm border border-inv-accent px-4 py-3 text-[11px] tracking-[0.16em] text-inv-accent no-underline transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+              BUKA PETA
+            </a>
+          </div>
         </div>
-        <div className="relative mt-10 aspect-[5/4] overflow-hidden lg:mt-0 lg:aspect-[4/5]">
-          <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 480px, 100vw" className="object-cover" />
-        </div>
-        <div className="mt-8 lg:mt-0 lg:flex lg:flex-col lg:justify-center">
-          <p className="font-display text-[26px] leading-tight">{inv.venue.name}</p>
-          <p className="mt-2 text-[14px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>
-          <a
-            href={inv.venue.mapUrl}
-            target="_blank"
-            rel="noopener"
-            className="mt-5 inline-flex items-center gap-3 rounded-sm border border-inv-accent px-5 py-3 text-[12px] tracking-[0.16em] text-inv-accent no-underline transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-              <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
-              <circle cx="12" cy="10" r="2.5" />
-            </svg>
-            BUKA PETA
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-              <path d="M4 12h16M14 6l6 6-6 6" />
-            </svg>
-          </a>
-          <p className="mt-8 max-w-[38ch] font-display text-lg leading-snug italic">{inv.honor}</p>
-        </div>
+        <p className="mt-10 max-w-[48ch] font-display text-lg leading-snug italic">{inv.honor}</p>
       </Wrap>
     </section>
   );
@@ -266,21 +286,28 @@ function EventDetails() {
 
 function CountdownSection() {
   const btn =
-    "rounded-sm border border-inv-gold-light px-5 py-3 text-[12px] tracking-[0.16em] text-inv-gold-light no-underline transition-colors duration-150 hover:bg-inv-gold-light hover:text-inv-night";
+    "rounded-sm border border-inv-night px-5 py-3 text-[12px] tracking-[0.16em] text-inv-night no-underline transition-colors duration-150 hover:bg-inv-night hover:text-[#D39B59]";
   return (
-    <section className="torn-top relative -mt-3.5 bg-inv-night py-24 text-inv-paper lg:py-32">
-      <Wrap>
-        <Label className="text-inv-paper/70">SAMPAI KAMI BILANG</Label>
-        <p className="mt-2 mb-10 font-display text-[clamp(72px,24vw,180px)] leading-[0.85]">SAH.</p>
-        <BigCountdown target={inv.date} />
-        <div className="mt-12 flex flex-wrap gap-3">
-          <a href={`/${inv.slug}/kalender`} className={btn} download={`${inv.slug}.ics`}>
-            SIMPAN KE KALENDER
-          </a>
-          <a href={googleCalendarUrl(calendarEvent)} target="_blank" rel="noopener" className={btn}>
-            GOOGLE CALENDAR
-          </a>
+    <section
+      className="torn-top relative -mt-3.5 bg-[#D39B59] py-24 text-inv-night lg:py-32"
+      style={{ "--inv-gold-light": "#0B2327" } as CSSProperties}
+    >
+      <Wrap className="lg:flex lg:items-end lg:justify-between lg:gap-12">
+        <div>
+          <Label className="text-inv-night/80">SAMPAI KAMI BILANG</Label>
+          <p className="mt-2 font-display text-[clamp(72px,24vw,180px)] leading-[0.85]">SAH.</p>
         </div>
+        <div className="mt-10 lg:mt-0">
+          <BigCountdown target={inv.date} />
+        </div>
+      </Wrap>
+      <Wrap className="mt-12 flex flex-wrap gap-3">
+        <a href={`/${inv.slug}/kalender`} className={btn} download={`${inv.slug}.ics`}>
+          SIMPAN KE KALENDER
+        </a>
+        <a href={googleCalendarUrl(calendarEvent)} target="_blank" rel="noopener" className={btn}>
+          GOOGLE CALENDAR
+        </a>
       </Wrap>
     </section>
   );
@@ -288,13 +315,19 @@ function CountdownSection() {
 
 function GallerySection() {
   return (
-    <section className="inv-paper torn-top relative -mt-3.5 py-20 lg:py-28">
+    <section className="torn-top relative -mt-3.5 bg-[#070f11] py-20 text-inv-paper lg:py-28">
       <Wrap>
-        <Label className="text-inv-gold">GALERI</Label>
-        <h2 className="mt-3 mb-12 font-display text-[clamp(36px,9vw,56px)] leading-[1.05] text-inv-accent italic">
-          Momen yang ingin kami simpan
-        </h2>
-        <Gallery photos={inv.gallery} stamp={inv.filmStamp} />
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <Label className="text-inv-gold-light">LEMBAR KONTAK</Label>
+            <h2 className="mt-3 font-display text-[clamp(34px,9vw,56px)] leading-[1.05] italic">Momen yang ingin kami simpan</h2>
+          </div>
+          <p className="hidden text-[11px] tracking-[0.2em] text-inv-paper/50 sm:block">ROL 01</p>
+        </div>
+        <div className="mt-10">
+          <Gallery photos={inv.gallery} stamp={inv.filmStamp} variant="contact" />
+        </div>
+        <p className="mt-3 text-[11px] tracking-[0.18em] text-inv-paper/45">KETUK FRAME UNTUK MEMPERBESAR</p>
       </Wrap>
     </section>
   );
@@ -326,6 +359,13 @@ function RsvpSection() {
 }
 
 function Gifts() {
+  const envelope = "relative overflow-hidden bg-[#fbf7f0] px-6 pt-20 pb-6 shadow-[0_8px_22px_rgba(28,25,22,.12)]";
+  const flap = (
+    <>
+      <span className="absolute inset-x-0 top-0 h-16 bg-[#e3cdb0] [clip-path:polygon(0_0,100%_0,50%_100%)]" aria-hidden="true" />
+      <Image src={inv.images.seal} alt="" width={40} height={40} className="absolute top-9 left-1/2 size-10 -translate-x-1/2" />
+    </>
+  );
   return (
     <section className="inv-wash torn-top relative -mt-3.5 py-20 lg:py-28">
       <Wrap>
@@ -333,9 +373,10 @@ function Gifts() {
         <p className="mt-4 max-w-[36ch] font-display text-[clamp(24px,6vw,32px)] leading-snug text-inv-accent italic">
           Doa restu kalian sudah lebih dari cukup. Bagi yang ingin berbagi,
         </p>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {inv.gifts.map((g) => (
-            <div key={g.number} className="rounded-sm border border-inv-line bg-inv-paper p-6">
+            <div key={g.number} className={envelope}>
+              {flap}
               <p className="text-[11px] tracking-[0.22em] text-inv-ink/65">{g.bank.toUpperCase()}</p>
               <p className="mt-3 font-display text-[28px] tracking-[0.04em] tabular-nums">{g.number}</p>
               <p className="mt-1 text-[14px] text-inv-ink/75">a.n. {g.holder}</p>
@@ -344,11 +385,14 @@ function Gifts() {
               </div>
             </div>
           ))}
-          <div className="flex items-center gap-5 rounded-sm border border-inv-line bg-inv-paper p-6">
-            <Image src={inv.images.qris} alt="Kode QRIS contoh" width={112} height={112} className="size-28" />
-            <div>
-              <p className="text-[11px] tracking-[0.22em] text-inv-ink/65">QRIS</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-inv-ink/75">Pindai dari aplikasi bank atau e-wallet.</p>
+          <div className={envelope}>
+            {flap}
+            <div className="flex items-center gap-5">
+              <Image src={inv.images.qris} alt="Kode QRIS contoh" width={104} height={104} className="size-26" />
+              <div>
+                <p className="text-[11px] tracking-[0.22em] text-inv-ink/65">QRIS</p>
+                <p className="mt-2 text-[13px] leading-relaxed text-inv-ink/75">Pindai dari aplikasi bank atau e-wallet.</p>
+              </div>
             </div>
           </div>
         </div>

@@ -332,3 +332,25 @@ Plan detailnya menyusul setelah tema ini disetujui.
 - **Persetujuan plan ini**
 - **Segel lilin** transparan. Saya cari yang berlisensi bebas, kecuali Anda sudah punya
 - **Satu lagu bebas royalti**
+
+## Revisi layout v2 (25 September 2026)
+
+Tujuan: layout Andi & Rina harus jelas berbeda dari Bagas & Sekar dan Hendrawan & Larasati. Palet, font, foto, dan pintu segel tetap. Yang berubah adalah kerangka halamannya, supaya terasa seperti majalah film, bukan susunan "label, judul, isi" yang sama di tiap section.
+
+| Section | Sebelum | Sesudah |
+|---|---|---|
+| Hero | Nama kiri, foto kanan | Foto satu layar penuh, nama raksasa di atas foto bagian bawah |
+| Cerita | Kartu foto lengkung | Pita film gelap dengan lubang sprocket, frame bernomor 12A sampai 15A, digeser horizontal |
+| Kedua Mempelai | Foto gelap setengah layar | Spread majalah: "Andi" raksasa rata kiri, foto sinemaskop dengan letterbox, "Rina" raksasa rata kanan |
+| Kutipan & Kolase | Tetap | Tetap |
+| Hari H | Tiga kolom | Tiket bioskop berlubang sobekan, "UNTUK: nama tamu", tanggal, jam, tempat, sobekan berisi tombol peta |
+| Menuju Hari H | Latar gelap | Blok amber penuh dengan angka teal gelap |
+| Galeri | Kolase polaroid | Lembar kontak film: grid rapat di latar hitam, tiap frame bernomor |
+| Kamu | Tetap | Tetap |
+| Konfirmasi | Tetap | Tetap |
+| Tanda Kasih | Kartu | Amplop dengan tutup segitiga |
+| Tinggalkan Pesan | Tetap | Tetap |
+
+Urutan section: Hero, Cerita, Kedua Mempelai, Kutipan & Kolase, Hari H, Menuju Hari H, Galeri, Kamu, Konfirmasi, Tanda Kasih, Tinggalkan Pesan, Penutup.
+
+Motion tetap satu momen orkestrasi (segel dibuka, lalu nama masuk). Pita film dan lembar kontak digeser atau diketuk oleh tamu, tanpa animasi otomatis.
