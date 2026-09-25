@@ -24,16 +24,16 @@ export function Story({ items, variant = "arch" }: { items: readonly StoryItem[]
   return (
     <>
       {variant === "film" ? (
-        <ol className="flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 [scrollbar-width:none] sm:scroll-px-8 sm:px-8 lg:grid lg:grid-cols-4 lg:overflow-visible">
+        <ol className="flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 [scrollbar-width:none] sm:scroll-px-8 sm:px-8">
           {items.map((s, i) => (
-            <li key={s.title} className="w-[64vw] max-w-[280px] shrink-0 snap-start lg:w-auto lg:max-w-none">
+            <li key={s.title} className="w-[78vw] max-w-[440px] shrink-0 snap-start lg:w-[30vw]">
               <button type="button" onClick={() => setActive(i)} className="group block w-full text-left">
                 <span className="relative block aspect-[3/4] overflow-hidden bg-black">
                   <Image
                     src={s.image}
                     alt=""
                     fill
-                    sizes="(min-width: 980px) 260px, 64vw"
+                    sizes="(min-width: 980px) 30vw, 78vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
                 </span>

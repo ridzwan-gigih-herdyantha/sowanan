@@ -8,7 +8,7 @@ type Photo = { src: string; w: number; h: number; alt: string; caption?: string;
 
 const tilt = [-2, 1.5, -1, 2.5, -2.5, 1];
 
-type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" | "contact" | "bleed" };
+type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" | "bleed" };
 
 export function Gallery({ photos, stamp, variant = "collage" }: Props) {
   const grid = variant === "grid";
@@ -57,35 +57,6 @@ export function Gallery({ photos, stamp, variant = "collage" }: Props) {
               </li>
             );
           })}
-        </ul>
-        {lightbox}
-      </>
-    );
-  }
-
-  if (variant === "contact") {
-    return (
-      <>
-        <ul className="grid grid-cols-2 gap-1.5 bg-black p-1.5 lg:grid-cols-3">
-          {photos.map((p, i) => (
-            <li key={p.src}>
-              <button type="button" onClick={() => setActive(i)} className="group relative block aspect-[4/5] w-full overflow-hidden" aria-label={`Buka foto: ${p.alt}`}>
-                <Image
-                  src={p.src}
-                  alt={p.alt}
-                  fill
-                  sizes="(min-width: 980px) 360px, 50vw"
-                  className="object-cover transition-opacity duration-200 group-hover:opacity-85"
-                />
-                <span className="absolute top-1.5 left-2 text-[10px] tracking-[0.12em] text-[#f0a64b]">{20 + i}A</span>
-                {stamp && (
-                  <span className="absolute right-2 bottom-1.5 text-[10px] tracking-[0.1em] text-[#f0a64b] [text-shadow:0_0_4px_rgba(240,120,40,.6)]">
-                    {stamp}
-                  </span>
-                )}
-              </button>
-            </li>
-          ))}
         </ul>
         {lightbox}
       </>

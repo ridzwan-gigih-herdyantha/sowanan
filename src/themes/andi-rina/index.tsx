@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { BigCountdown } from "@/components/invitation/big-countdown";
 import { CopyButton } from "@/components/invitation/copy-button";
-import { Gallery } from "@/components/invitation/gallery";
+import { ContactSheet } from "@/components/invitation/contact-sheet";
 import { GuestName } from "@/components/invitation/guest-name";
 import { Greeting } from "@/components/invitation/greeting";
 import { Quiz } from "@/components/invitation/quiz";
@@ -91,7 +91,7 @@ function Hero() {
       <span className="absolute top-16 right-5 text-[12px] tracking-[0.12em] text-[#f0a64b] [text-shadow:0_0_6px_rgba(240,120,40,.7)] sm:right-8 lg:top-20 lg:right-12">
         {inv.filmStamp}
       </span>
-      <div className="absolute top-[34%] left-5 sm:left-8 lg:top-[22%] lg:right-12 lg:left-auto">
+      <div className="absolute top-24 right-5 scale-75 sm:right-8 lg:top-28 lg:right-12 lg:scale-100">
         <Badge />
       </div>
 
@@ -324,10 +324,9 @@ function GallerySection() {
           </div>
           <p className="hidden text-[11px] tracking-[0.2em] text-inv-paper/50 sm:block">ROL 01</p>
         </div>
-        <div className="mt-10">
-          <Gallery photos={inv.gallery} stamp={inv.filmStamp} variant="contact" />
+        <div className="-mx-5 mt-10 sm:mx-0">
+          <ContactSheet photos={inv.gallery} stamp={inv.filmStamp} />
         </div>
-        <p className="mt-3 text-[11px] tracking-[0.18em] text-inv-paper/45">KETUK FRAME UNTUK MEMPERBESAR</p>
       </Wrap>
     </section>
   );
