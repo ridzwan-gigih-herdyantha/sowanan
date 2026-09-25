@@ -193,7 +193,7 @@ function CountdownSection() {
   return (
     <section className="bg-inv-night py-24 text-inv-ink lg:py-32" style={dark}>
       <Wrap>
-        <Label></Label>
+        <Label>MENUJU HARI H</Label>
         <div className="mt-10">
           <BigCountdown target={inv.date} stacked doneText="HARI INI." />
         </div>
@@ -237,7 +237,7 @@ function RsvpSection() {
         </div>
         <div className="px-5 py-16 sm:px-8 lg:flex lg:items-center lg:px-16">
           <div className="w-full max-w-[520px]">
-            <Label className=""></Label>
+            <Label className="mb-8">KONFIRMASI KEHADIRAN</Label>
             <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
           </div>
         </div>
@@ -251,7 +251,7 @@ function Gifts() {
     <section className="inv-paper py-20 lg:py-28">
       <Wrap className="lg:grid lg:grid-cols-12 lg:gap-x-8">
         <div className="lg:col-span-4">
-          <Label></Label>
+          <Label>TANDA KASIH</Label>
           <Title className="max-w-[16ch]">Doa restu kalian sudah lebih dari cukup.</Title>
           <p className="mt-5 max-w-[36ch] text-[15px] leading-relaxed text-inv-gold">
             Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut.
@@ -289,7 +289,7 @@ async function WishesSection() {
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
-        <Label></Label>
+        <Label>DOA &amp; UCAPAN</Label>
         <Title className="mb-12">Titipkan doa untuk kami.</Title>
         <Wishes slug={inv.slug} initial={[...wishes, ...inv.sampleWishes]} variant="lined" />
       </Wrap>
