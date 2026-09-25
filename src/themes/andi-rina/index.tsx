@@ -123,28 +123,28 @@ function Hero() {
 }
 
 function StorySection() {
-  const holes = {
-    backgroundImage: "linear-gradient(currentColor 0 0)",
-    backgroundSize: "12px 8px",
-    backgroundRepeat: "space no-repeat",
-    backgroundPosition: "center",
-  } as CSSProperties;
   return (
-    <section className="bg-[#070f11] py-16 text-inv-paper lg:py-24">
-      <Wrap>
-        <Label className="text-inv-gold-light">CERITA KAMI</Label>
-        <h2 className="mt-3 max-w-[16ch] font-display text-[clamp(34px,9vw,56px)] leading-[1.05] italic">Serangkaian kebetulan yang indah</h2>
-      </Wrap>
-      <div className="mt-10 bg-black py-3 lg:mx-auto lg:max-w-[1120px]">
-        <div className="mx-2 h-2 text-inv-paper/25" style={holes} aria-hidden="true" />
-        <div className="py-5">
-          <Story items={inv.story} variant="film" />
-        </div>
-        <div className="mx-2 h-2 text-inv-paper/25" style={holes} aria-hidden="true" />
+    <section className="film-pin bg-[#070f11] text-inv-paper">
+      <div className="film-stage py-16">
+        <Story
+          items={inv.story}
+          variant="film"
+          lead={
+            <div className="flex h-full flex-col justify-end p-5 sm:p-6">
+              <Label className="text-inv-gold-light">CERITA KAMI</Label>
+              <h2 className="mt-3 font-display text-[clamp(34px,8vw,52px)] leading-[1.05] italic">Serangkaian kebetulan yang indah</h2>
+              <p className="film-hint-scroll mt-6 text-[11px] tracking-[0.18em] text-inv-paper/60">SCROLL UNTUK MEMUTAR FILM &darr;</p>
+              <p className="film-hint-swipe mt-6 text-[11px] tracking-[0.18em] text-inv-paper/60">GESER UNTUK MEMUTAR FILM &rarr;</p>
+            </div>
+          }
+          tail={
+            <div className="flex h-full flex-col justify-center p-5 text-center sm:p-6">
+              <p className="font-display text-[clamp(30px,7vw,44px)] leading-tight text-balance italic">Bersambung di hari H.</p>
+              <p className="mt-4 text-[11px] tracking-[0.18em] text-inv-gold-light">{inv.dateShort}</p>
+            </div>
+          }
+        />
       </div>
-      <Wrap>
-        <p className="mt-5 text-[12px] tracking-[0.16em] text-inv-paper/55">GESER DAN KETUK TIAP ADEGAN</p>
-      </Wrap>
     </section>
   );
 }
