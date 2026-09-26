@@ -4,7 +4,7 @@ const BASE: Purpose[] = ["hero", "herowide", "og", "venue", "story", "video", "p
 
 export const THEME_MEDIA: Record<string, Purpose[]> = {
   "andi-rina": [...BASE, "couple", "polaroid", "closing"],
-  "bagas-sekar": [...BASE, "photo", "rsvp"],
+  "bagas-sekar": [...BASE, "couple", "rsvp"],
   "hendrawan-larasati": [...BASE, "groom", "bride", "specimen"],
 };
 

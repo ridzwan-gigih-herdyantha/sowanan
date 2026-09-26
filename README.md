@@ -31,9 +31,13 @@ Seed memvalidasi data dengan skema yang sama, lalu upsert per slug. Ucapan conto
 
 ### Menambah undangan
 
+Lewat admin: `/admin/undangan`, isi link dan tema, lalu lengkapi di editor. Draf tersimpan otomatis. Tombol Simpan versi final hanya jalan kalau isian wajib lengkap (aturannya di `src/lib/invitation/spec.ts`), dan switch Tayang membuka undangan ke publik. Daftar tamu ada di tab Tamu (tempel daftar atau import .xlsx/.csv).
+
+Lewat terminal, membuat draf kosong:
+
 ```bash
-pnpm create-invitation <slug> <tema> [--publish]
-# contoh: pnpm create-invitation budi-ani andi-rina --publish
+pnpm create-invitation <slug> <tema>
+# contoh: pnpm create-invitation budi-ani andi-rina
 ```
 
 Slug divalidasi dulu (`src/lib/reserved-slugs.ts`): 3 sampai 60 karakter, huruf kecil, angka, dan tanda hubung, tidak boleh memakai slug sistem (tema, harga, order, ketentuan, masuk, kelola, blog, reseller, admin, api, demo, panduan, kontak), dan belum dipakai undangan lain. Database juga menolak slug terlarang lewat constraint `invitations_slug_not_reserved`. Slug permanen setelah link disebar.

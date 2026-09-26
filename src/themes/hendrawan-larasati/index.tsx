@@ -74,7 +74,7 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
 }
 
 function Hero({ inv }: { inv: InvitationView }) {
-  const spec = inv.specimens[0];
+  const spec = inv.specimens[0] as InvitationView["specimens"][number] | undefined;
   return (
     <section className="inv-paper relative overflow-hidden pb-16 lg:pb-24">
       <Wrap className="flex items-center justify-between py-5">
@@ -107,10 +107,12 @@ function Hero({ inv }: { inv: InvitationView }) {
       </div>
 
       <div {...enter(0.8)} className="inv-enter relative mx-auto max-w-[1120px] px-3 sm:px-8">
-        <div className="absolute -top-8 right-6 z-20 w-24 rotate-6 border border-inv-line bg-inv-wash p-1.5 shadow-[0_4px_12px_rgba(0,0,0,.1)] sm:right-14 sm:w-32">
-          <Tape className="-top-2.5 left-4 rotate-6" />
-          <Image src={spec.src} alt="" width={spec.w} height={spec.h} sizes="128px" className="h-auto w-full" />
-        </div>
+        {spec && (
+          <div className="absolute -top-8 right-6 z-20 w-24 rotate-6 border border-inv-line bg-inv-wash p-1.5 shadow-[0_4px_12px_rgba(0,0,0,.1)] sm:right-14 sm:w-32">
+            <Tape className="-top-2.5 left-4 rotate-6" />
+            <Image src={spec.src} alt="" width={spec.w} height={spec.h} sizes="128px" className="h-auto w-full" />
+          </div>
+        )}
         <div className="relative border border-inv-line bg-inv-wash p-2 shadow-[0_14px_40px_rgba(0,0,0,.1)] sm:p-3">
           <Tape className="-top-2.5 left-10 -rotate-6" />
           <Tape className="right-10 -bottom-2.5 rotate-3" />
@@ -396,7 +398,7 @@ export function HendrawanLarasati({ inv }: { inv: InvitationView }) {
         number: inv.collection.replace("No. ", "NO. "),
         date: inv.dateShort.replace(/ /g, ""),
         place: inv.place,
-        specimen: inv.specimens[1].src,
+        specimen: (inv.specimens[1] ?? inv.specimens[0])?.src ?? inv.images.hero,
       }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}

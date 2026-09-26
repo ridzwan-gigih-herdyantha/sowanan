@@ -57,7 +57,7 @@ export function toView(slug: string, d: InvitationData) {
       heroWide: u(d.media.heroWide),
       og: u(d.media.og),
       venue: u(d.media.venue || d.media.hero),
-      couple: u(d.media.couple || d.media.heroWide),
+      couple: u(d.media.couple || s.couple.photos[0]?.src || d.media.heroWide),
       closing: u(d.media.closing || d.media.hero),
       detail: u(d.media.detail || d.media.hero),
       rsvp: u(d.media.rsvp || d.media.heroWide),

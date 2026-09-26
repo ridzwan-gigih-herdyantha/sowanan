@@ -96,7 +96,6 @@ function Hero({ inv }: { inv: InvitationView }) {
 }
 
 function Couple({ inv }: { inv: InvitationView }) {
-  const photo = inv.couplePhotos[0];
   const person = (p: { full: string; role: string; parents: string }, align = "") => (
     <div className={align}>
       <p className="font-display text-[clamp(30px,8vw,52px)] leading-[1.05]">{p.full}</p>
@@ -110,7 +109,7 @@ function Couple({ inv }: { inv: InvitationView }) {
         <Label>KEDUA MEMPELAI</Label>
       </Wrap>
       <div className="clip-circle relative mt-8 aspect-[4/5] w-full md:aspect-[16/10]">
-        <Image src={photo.src} alt={photo.alt} fill sizes="100vw" className="object-cover object-[50%_40%]" />
+        <Image src={inv.images.couple} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="100vw" className="object-cover object-[50%_40%]" />
       </div>
       <Wrap className="mt-10 grid gap-8 sm:grid-cols-2 sm:gap-10">
         {person(inv.groom)}

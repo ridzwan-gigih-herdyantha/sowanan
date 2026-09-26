@@ -6,6 +6,7 @@ import type { InvitationData } from "@/lib/invitation/schema";
 import { checkInvitation, fieldPatterns, forTheme, GROUPS, patternOf, setIn, type Issue } from "@/lib/invitation/spec";
 import type { BridgeMessage } from "@/app/admin/pratinjau/[slug]/bridge";
 import { publishDraft, saveDraft, setPublished } from "../actions";
+import { InvitationTabs } from "../tabs";
 import { FieldInput, FormProvider } from "./fields";
 
 type Props = { slug: string; theme: string; label: string; published: boolean; draft: InvitationData; live: InvitationData };
@@ -163,10 +164,10 @@ export function Editor({ slug, theme, label, published: initialPublished, draft,
 
   return (
     <FormProvider value={{ slug, theme, data, update, errors, focus, names }}>
-      <div className="sticky top-0 z-30 -mx-5 border-b border-line bg-ivory/95 px-5 py-3 backdrop-blur">
+      <div className="-mx-5 border-b border-line bg-ivory/95 px-5 py-3 backdrop-blur lg:sticky lg:top-0 lg:z-30">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <div className="min-w-0 flex-1">
-            <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute hover:text-wine">
+          <div className="min-w-0 flex-1 basis-full lg:basis-0">
+            <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine">
               Semua undangan
             </Link>
             <h1 className="truncate font-serif text-2xl leading-tight">{label}</h1>
@@ -176,6 +177,7 @@ export function Editor({ slug, theme, label, published: initialPublished, draft,
               {dirty ? <span className="text-wine">Ada perubahan belum {published ? "ditayangkan" : "disimpan final"}</span> : "Versi final sudah terbaru"}
             </p>
           </div>
+          <InvitationTabs slug={slug} current="edit" />
           <div className="flex items-center gap-4">
             <label className="inline-flex cursor-pointer items-center gap-2 text-[14px]">
               <input type="checkbox" checked={published} disabled={busy} onChange={(e) => togglePublished(e.target.checked)} className="peer sr-only" />
@@ -191,7 +193,7 @@ export function Editor({ slug, theme, label, published: initialPublished, draft,
               type="button"
               onClick={publish}
               disabled={busy}
-              className="rounded-sm bg-wine px-5 py-2.5 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-60"
+              className="hidden rounded-sm bg-wine px-5 py-2.5 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-60 lg:block"
             >
               {busy ? "Memproses..." : published ? "Tayangkan perubahan" : "Simpan versi final"}
             </button>
@@ -289,19 +291,20 @@ export function Editor({ slug, theme, label, published: initialPublished, draft,
       </div>
 
       {!mobilePreview && (
-        <button
-          type="button"
-          onClick={() => setMobilePreview(true)}
-          className="fixed right-4 bottom-4 z-40 rounded-sm bg-ink px-5 py-3 text-[14px] text-white shadow-[0_10px_30px_rgba(0,0,0,.2)] lg:hidden"
-        >
-          Lihat preview
-        </button>
+        <div className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-line bg-ivory/95 px-4 py-3 backdrop-blur lg:hidden">
+          <button type="button" onClick={() => setMobilePreview(true)} className="flex-1 rounded-sm border border-ink px-4 py-3 text-[14px]">
+            Lihat preview
+          </button>
+          <button type="button" onClick={publish} disabled={busy} className="flex-1 rounded-sm bg-wine px-4 py-3 text-[14px] text-white disabled:opacity-60">
+            {busy ? "Memproses..." : published ? "Tayangkan" : "Simpan final"}
+          </button>
+        </div>
       )}
 
       {toast && (
         <div
           role="status"
-          className={`fixed inset-x-4 bottom-20 z-50 mx-auto max-w-md rounded-sm px-5 py-4 text-[15px] shadow-[0_10px_30px_rgba(0,0,0,.15)] animate-[inv-pop_.25s_ease-out] lg:bottom-6 ${
+          className={`fixed inset-x-4 bottom-24 z-50 mx-auto max-w-md rounded-sm px-5 py-4 text-[15px] shadow-[0_10px_30px_rgba(0,0,0,.15)] animate-[inv-pop_.25s_ease-out] lg:bottom-6 ${
             toast.tone === "ok" ? "bg-ink text-white" : "bg-wine text-white"
           }`}
         >

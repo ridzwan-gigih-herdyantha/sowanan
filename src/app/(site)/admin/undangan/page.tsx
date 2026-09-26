@@ -34,7 +34,7 @@ async function List() {
         {rows.map((r) => (
           <li key={r.slug} className="flex flex-wrap items-center gap-x-5 gap-y-1 py-4">
             <div className="min-w-0 flex-1">
-              <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="font-serif text-xl hover:text-wine">
+              <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="font-serif text-xl text-ink no-underline hover:text-wine">
                 {invitationLabel(r.slug, r.theme)}
               </Link>
               <p className="text-[13px] text-ink-mute">
@@ -44,6 +44,9 @@ async function List() {
             <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${r.published ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>{r.published ? "Tayang" : "Draf"}</span>
             <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="text-[14px] text-wine underline underline-offset-4">
               Edit
+            </Link>
+            <Link href={`/admin/undangan/${r.slug}/tamu`} prefetch={false} className="text-[14px] text-wine underline underline-offset-4">
+              Tamu
             </Link>
           </li>
         ))}

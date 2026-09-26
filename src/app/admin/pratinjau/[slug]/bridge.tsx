@@ -27,6 +27,7 @@ function imagePath(img: HTMLImageElement, media: Record<string, string>): string
 export function PreviewBridge({ texts, media, sample }: Props) {
   const router = useRouter();
   const editing = useRef<HTMLElement | null>(null);
+  const nodes = useRef(new WeakMap<HTMLElement, Text>());
   const pending = useRef(false);
   const state = useRef({ texts, media, sample });
 
@@ -54,17 +55,20 @@ export function PreviewBridge({ texts, media, sample }: Props) {
       document.querySelectorAll<HTMLElement>("[data-edit]").forEach((el) => {
         if (el === editing.current) return;
         const path = el.dataset.edit!;
-        if (texts[path]?.trim() !== el.textContent?.trim()) {
+        if (texts[path]?.trim() !== (nodes.current.get(el)?.data ?? el.textContent)?.trim()) {
           el.removeAttribute("data-edit");
           el.removeAttribute("data-sample");
         }
       });
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
         const el = n.parentElement;
-        if (!el || el.dataset.edit || el.childElementCount || el.closest("a,button,label,script,style,[data-no-edit]")) continue;
-        const path = byValue.get(el.textContent?.trim() ?? "");
+        if (!el || el.dataset.edit || el.closest("a,button,label,script,style,[data-no-edit]")) continue;
+        const path = byValue.get(n.data.trim());
         if (!path) continue;
+        const others = [...el.childNodes].some((c) => c !== n && c.nodeType === Node.TEXT_NODE && c.textContent?.trim());
+        if (others) continue;
+        nodes.current.set(el, n);
         el.dataset.edit = path;
         if (samples.has(path)) el.dataset.sample = "";
         else delete el.dataset.sample;
@@ -89,6 +93,10 @@ export function PreviewBridge({ texts, media, sample }: Props) {
       const el = editing.current;
       if (!el) return;
       el.removeAttribute("contenteditable");
+      el.querySelectorAll("[data-lock]").forEach((c) => {
+        c.removeAttribute("contenteditable");
+        c.removeAttribute("data-lock");
+      });
       editing.current = null;
       post({ type: "sowanan:commit" });
       if (pending.current) {
@@ -108,6 +116,10 @@ export function PreviewBridge({ texts, media, sample }: Props) {
         stop();
         editing.current = el;
         el.setAttribute("contenteditable", "plaintext-only");
+        [...el.children].forEach((c) => {
+          c.setAttribute("contenteditable", "false");
+          c.setAttribute("data-lock", "");
+        });
         el.focus();
         return;
       }
@@ -118,7 +130,10 @@ export function PreviewBridge({ texts, media, sample }: Props) {
     };
     const onInput = (e: Event) => {
       const el = e.target as HTMLElement;
-      if (el === editing.current) post({ type: "sowanan:edit", path: el.dataset.edit!, value: el.textContent ?? "" });
+      if (el !== editing.current) return;
+      const node = nodes.current.get(el);
+      const value = node && node.isConnected && node.parentElement === el ? node.data : [...el.childNodes].filter((c) => c.nodeType === Node.TEXT_NODE).map((c) => c.textContent).join("");
+      post({ type: "sowanan:edit", path: el.dataset.edit!, value });
     };
     const onKey = (e: KeyboardEvent) => {
       if (!editing.current) return;

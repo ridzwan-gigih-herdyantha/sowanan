@@ -17,7 +17,7 @@ export function AdminNav({ email, current }: { email: string; current: string })
             href={l.href}
             prefetch={false}
             aria-current={l.href === current ? "page" : undefined}
-            className={l.href === current ? "font-medium text-wine" : "text-ink-soft hover:text-wine"}
+            className={`no-underline ${l.href === current ? "font-medium text-wine" : "text-ink-soft hover:text-wine"}`}
           >
             {l.label}
           </Link>

@@ -12,6 +12,12 @@ export function fillPreview(draft: InvitationData, sample: InvitationData | null
   function walk(d: unknown, s: unknown, path: string): unknown {
     if (Array.isArray(d)) {
       const ref = Array.isArray(s) ? s : [];
+      const f = fields.get(patternOf(path.slice(0, -1)));
+      if (!d.length && ref.length && f?.kind === "list" && f.min) {
+        const copy = structuredClone(ref);
+        collect(copy, path);
+        return copy;
+      }
       return d.map((item, i) => walk(item, ref[i] ?? ref[0], `${path}${i}.`));
     }
     if (isObj(d)) {
@@ -26,6 +32,12 @@ export function fillPreview(draft: InvitationData, sample: InvitationData | null
       return s;
     }
     return d;
+  }
+
+  function collect(v: unknown, path: string) {
+    if (Array.isArray(v)) v.forEach((x, i) => collect(x, `${path}${i}.`));
+    else if (isObj(v)) for (const [k, x] of Object.entries(v)) collect(x, `${path}${k}.`);
+    else if (typeof v === "string" && v) filled.push(path.slice(0, -1));
   }
 
   const data = walk(draft, sample, "") as InvitationData;

@@ -59,25 +59,12 @@
       "music": "bagas-sekar/music_1.mp3?v=mui04hdd",
       "venue": "bagas-sekar/venue_1.webp?v=mui04ik2",
       "detail": "bagas-sekar/detail_1.webp?v=mui04ivf",
-      "rsvp": "bagas-sekar/rsvp_1.webp?v=mui04jn2"
+      "rsvp": "bagas-sekar/rsvp_1.webp?v=mui04jn2",
+      "couple": "bagas-sekar/photo_1.webp?v=mui04ti8"
     },
     "sections": {
       "couple": {
-        "enabled": true,
-        "photos": [
-          {
-            "src": "bagas-sekar/photo_1.webp?v=mui04ti8",
-            "alt": "Sekar tersenyum memegang buket, Bagas di sampingnya"
-          },
-          {
-            "src": "bagas-sekar/photo_2.webp?v=mui04uab",
-            "alt": "Bagas dan Sekar berdiri berdampingan di depan rumah"
-          },
-          {
-            "src": "bagas-sekar/photo_3.webp?v=mui04v3t",
-            "alt": "Bagas dan Sekar duduk berdua di taman"
-          }
-        ]
+        "enabled": true
       },
       "story": {
         "enabled": true,

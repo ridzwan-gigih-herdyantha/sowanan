@@ -71,7 +71,7 @@ export const GROUPS: Group[] = [
         label: "Spesimen bunga",
         item: "Spesimen",
         themes: [H],
-        min: 1,
+        min: 2,
         max: 6,
         blank: { src: "", w: 0, h: 0, latin: "", local: "", no: "" },
         fields: [media("src", "Foto", "specimen", { dims: true }), text("latin", "Nama latin", 80), text("local", "Nama lokal", 60), text("no", "Nomor", 10)],
@@ -88,17 +88,7 @@ export const GROUPS: Group[] = [
       { kind: "heading", path: "couple", label: "Tambahan" },
       area("copy.quote", "Kutipan", 300, { themes: [H], ...optional }),
       area("copy.heroQuote", "Kutipan", 300, { themes: [B], ...optional }),
-      media("media.couple", "Foto berdua", "couple", { themes: [A], ...optional, hint: "Kosong berarti memakai foto hero lebar." }),
-      {
-        kind: "list",
-        path: "sections.couple.photos",
-        label: "Foto slider",
-        item: "Foto",
-        themes: [B],
-        max: 8,
-        blank: { src: "", alt: "" },
-        fields: [media("src", "Foto", "photo"), text("alt", "Keterangan foto", 160)],
-      },
+      media("media.couple", "Foto berdua", "couple", { themes: [A, B], ...optional, hint: "Kosong berarti memakai foto hero lebar." }),
     ],
   },
   {
@@ -319,7 +309,7 @@ export function fieldPatterns(): Map<string, Field> {
   const walk = (fields: Field[], prefix: string) => {
     for (const f of fields) {
       if (f.kind === "list") walk(f.fields, `${prefix}${f.path}.*.`);
-      else if (f.kind !== "heading") out.set(prefix + f.path, f);
+      if (f.kind !== "heading") out.set(prefix + f.path, f);
     }
   };
   for (const g of GROUPS) walk(g.fields, "");
