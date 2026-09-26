@@ -1,12 +1,11 @@
 import { Countdown } from "@/components/countdown";
 import { Container, btn } from "@/components/ui";
-import { DEMO_INVITATIONS, formatEventDate } from "@/lib/invitations";
 
-type Props = { price: string; sla: string; hours: string; waHref: string };
+export type HeroDemo = { groom: string; bride: string; date: string; dateLong: string };
 
-const demo = DEMO_INVITATIONS["andi-rina"];
+type Props = { price: string; sla: string; hours: string; waHref: string; demo: HeroDemo };
 
-export function Hero({ price, sla, hours, waHref }: Props) {
+export function Hero({ price, sla, hours, waHref, demo }: Props) {
   return (
     <section>
       <Container className="flex flex-col items-stretch gap-11 pt-11 pb-10 sm:pt-16 sm:pb-14 md:flex-row md:items-center lg:gap-[72px] lg:pt-[84px] lg:pb-[76px]">
@@ -49,7 +48,7 @@ export function Hero({ price, sla, hours, waHref }: Props) {
               {demo.bride}
             </p>
             <div className="h-px w-12 bg-wine-soft" />
-            <p className="text-[13px] tracking-[1px] text-ink-soft">{formatEventDate(demo.date)}</p>
+            <p className="text-[13px] tracking-[1px] text-ink-soft">{demo.dateLong}</p>
             <Countdown
               target={demo.date}
               className="flex gap-2"

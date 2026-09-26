@@ -11,8 +11,8 @@ import { InvitationShell } from "@/components/invitation/shell";
 import { Story } from "@/components/invitation/story";
 import { Wishes } from "@/components/invitation/wishes";
 import { googleCalendarUrl } from "@/lib/calendar";
+import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { getWishes } from "@/lib/guestbook";
-import { invitation as inv } from "./data";
 import { themeFonts } from "./fonts";
 
 const vars = {
@@ -27,16 +27,8 @@ const vars = {
   "--inv-tape": "#B08A3E",
   "--inv-display": "var(--font-hl-display), Georgia, serif",
   "--inv-body": "var(--font-hl-body), 'Helvetica Neue', Arial, sans-serif",
-  "--inv-grain": `url(${inv.images.grain})`,
+  "--inv-grain": "url(/img/hendrawan-larasati/grain.webp)",
 } as CSSProperties;
-
-export const calendarEvent = {
-  title: `Pernikahan ${inv.groom.name} & ${inv.bride.name}`,
-  start: inv.date,
-  end: inv.end,
-  location: `${inv.venue.name}, ${inv.venue.address}`,
-  details: `Undangan: https://sowanan.com/${inv.slug}`,
-};
 
 const enter = (delay: number) => ({ className: "inv-enter", style: { "--enter-delay": `${delay}s` } as CSSProperties });
 
@@ -69,8 +61,8 @@ function SpecLabel({ rows, className = "" }: { rows: [string, ReactNode][]; clas
   );
 }
 
-function HeroPhoto() {
-  const common = { alt: `${inv.groom.name} dan ${inv.bride.name} dalam busana pengantin adat Bali`, fetchPriority: "high" as const };
+function HeroPhoto({ inv }: { inv: InvitationView }) {
+  const common = { alt: `${inv.groom.name} dan ${inv.bride.name} dalam busana pengantin`, fetchPriority: "high" as const };
   const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 1800, height: 1200, sizes: "min(1120px, 100vw)" });
   const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1200, height: 1602, sizes: "96vw" });
   return (
@@ -81,7 +73,7 @@ function HeroPhoto() {
   );
 }
 
-function Hero() {
+function Hero({ inv }: { inv: InvitationView }) {
   const spec = inv.specimens[0];
   return (
     <section className="inv-paper relative overflow-hidden pb-16 lg:pb-24">
@@ -123,7 +115,7 @@ function Hero() {
           <Tape className="-top-2.5 left-10 -rotate-6" />
           <Tape className="right-10 -bottom-2.5 rotate-3" />
           <div className="relative aspect-[4/5] overflow-hidden md:aspect-[16/9]">
-            <HeroPhoto />
+            <HeroPhoto inv={inv} />
           </div>
         </div>
       </div>
@@ -131,7 +123,7 @@ function Hero() {
   );
 }
 
-function Couple() {
+function Couple({ inv }: { inv: InvitationView }) {
   const card = (p: typeof inv.groom | typeof inv.bride, tilt: string, no: string) => (
     <FlipCard
       label={p.name}
@@ -172,8 +164,8 @@ function Couple() {
         <Title className="max-w-[20ch]">Dua spesimen yang akhirnya satu lembar.</Title>
         <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">Ketuk kartu untuk membaca label di baliknya.</p>
         <div className="grid gap-12 md:grid-cols-2 md:gap-8 lg:gap-14">
-          {card(inv.groom, "-rotate-1", "0412")}
-          {card(inv.bride, "rotate-1 md:mt-12", "0508")}
+          {card(inv.groom, "-rotate-1", `${inv.code}-A`)}
+          {card(inv.bride, "rotate-1 md:mt-12", `${inv.code}-B`)}
         </div>
         <p className="mx-auto mt-16 max-w-[32ch] text-center font-display text-[clamp(22px,5.5vw,30px)] leading-snug text-inv-accent italic">
           {inv.quote}
@@ -183,7 +175,7 @@ function Couple() {
   );
 }
 
-function StorySection() {
+function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
@@ -195,7 +187,7 @@ function StorySection() {
   );
 }
 
-function EventDetails() {
+function EventDetails({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap className="lg:grid lg:grid-cols-12 lg:gap-x-12">
@@ -247,7 +239,7 @@ function EventDetails() {
   );
 }
 
-function CountdownSection() {
+function CountdownSection({ inv }: { inv: InvitationView }) {
   const btn =
     "rounded-sm border border-inv-gold-light px-5 py-3 text-[11px] font-medium tracking-[0.2em] text-inv-gold-light no-underline transition-colors duration-150 hover:bg-inv-gold-light hover:text-inv-night";
   return (
@@ -265,7 +257,7 @@ function CountdownSection() {
           <a href={`/${inv.slug}/kalender`} className={btn} download={`${inv.slug}.ics`}>
             SIMPAN KE KALENDER
           </a>
-          <a href={googleCalendarUrl(calendarEvent)} target="_blank" rel="noopener" className={btn}>
+          <a href={googleCalendarUrl(calendarEventOf(inv))} target="_blank" rel="noopener" className={btn}>
             GOOGLE CALENDAR
           </a>
         </div>
@@ -274,7 +266,7 @@ function CountdownSection() {
   );
 }
 
-function GallerySection() {
+function GallerySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
@@ -286,7 +278,7 @@ function GallerySection() {
   );
 }
 
-function RsvpSection() {
+function RsvpSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap className="max-w-[680px]">
@@ -300,7 +292,7 @@ function RsvpSection() {
   );
 }
 
-function Gifts() {
+function Gifts({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
@@ -325,21 +317,23 @@ function Gifts() {
               </div>
             </div>
           ))}
+          {inv.images.qris && (
           <div className="flex items-center gap-5 border border-inv-line bg-inv-wash p-4">
-            <Image src={inv.images.qris} alt="Kode QRIS contoh" width={112} height={112} className="size-28" />
+            <Image src={inv.images.qris} alt="Kode QRIS" width={112} height={112} className="size-28" />
             <div>
               <p className="text-[10px] font-medium tracking-[0.2em] text-inv-gold">QRIS</p>
               <p className="mt-2 text-[13px] leading-relaxed">Pindai dari aplikasi bank atau e-wallet.</p>
             </div>
           </div>
+          )}
         </div>
-        <p className="mt-4 text-[12px] text-inv-ink/60">Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.</p>
+        {inv.giftNote && <p className="mt-4 text-[12px] text-inv-ink/60">{inv.giftNote}</p>}
       </Wrap>
     </section>
   );
 }
 
-async function WishesSection() {
+async function WishesSection({ inv }: { inv: InvitationView }) {
   const wishes = await getWishes(inv.slug);
   return (
     <section className="inv-wash py-20 lg:py-28">
@@ -347,13 +341,13 @@ async function WishesSection() {
         <Label>BUKU TAMU</Label>
         <Title className="max-w-[18ch]">Gantungkan ucapanmu di sini.</Title>
         <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">Setiap ucapan jadi satu label dalam koleksi kami.</p>
-        <Wishes slug={inv.slug} initial={[...wishes, ...inv.sampleWishes]} variant="tags" />
+        <Wishes slug={inv.slug} initial={wishes} variant="tags" />
       </Wrap>
     </section>
   );
 }
 
-function Closing() {
+function Closing({ inv }: { inv: InvitationView }) {
   return (
     <section className="bg-inv-night py-24 text-center text-inv-paper lg:py-32">
       <Wrap className="flex flex-col items-center">
@@ -370,7 +364,7 @@ function Closing() {
   );
 }
 
-function Footer() {
+function Footer({ inv }: { inv: InvitationView }) {
   return (
     <footer className="inv-paper py-10">
       <Wrap className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -380,14 +374,19 @@ function Footer() {
           <Link href="/" className="text-inv-accent underline underline-offset-4">
             Sowanan
           </Link>
-          <span className="mx-2">/</span>Foto oleh Ricky S di Pexels
+          {inv.credit && (
+            <>
+              <span className="mx-2">/</span>
+              {inv.credit}
+            </>
+          )}
         </p>
       </Wrap>
     </footer>
   );
 }
 
-export function HendrawanLarasati() {
+export function HendrawanLarasati({ inv }: { inv: InvitationView }) {
   return (
     <InvitationShell
       door={{
@@ -404,20 +403,19 @@ export function HendrawanLarasati() {
       style={vars}
     >
       <main>
-        <Hero />
-        <Couple />
-        <StorySection />
-        <EventDetails />
-        <CountdownSection />
-        <GallerySection />
-        <RsvpSection />
-        <Gifts />
-        <WishesSection />
-        <Closing />
+        <Hero inv={inv} />
+        {inv.on.couple && <Couple inv={inv} />}
+        {inv.on.story && <StorySection inv={inv} />}
+        {inv.on.event && <EventDetails inv={inv} />}
+        {inv.on.countdown && <CountdownSection inv={inv} />}
+        {inv.on.gallery && <GallerySection inv={inv} />}
+        {inv.on.rsvp && <RsvpSection inv={inv} />}
+        {inv.on.gifts && <Gifts inv={inv} />}
+        {inv.on.wishes && <WishesSection inv={inv} />}
+        {inv.on.closing && <Closing inv={inv} />}
       </main>
-      <Footer />
+      <Footer inv={inv} />
     </InvitationShell>
   );
 }
 
-export { inv as hendrawanLarasatiData };

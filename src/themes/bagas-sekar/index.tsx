@@ -10,8 +10,8 @@ import { InvitationShell } from "@/components/invitation/shell";
 import { Timeline } from "@/components/invitation/timeline";
 import { Wishes } from "@/components/invitation/wishes";
 import { googleCalendarUrl } from "@/lib/calendar";
+import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { getWishes } from "@/lib/guestbook";
-import { invitation as inv } from "./data";
 import { themeFonts } from "./fonts";
 
 const vars = {
@@ -25,7 +25,7 @@ const vars = {
   "--inv-line": "#9D978F",
   "--inv-display": "var(--font-bs-display), Georgia, serif",
   "--inv-body": "var(--font-bs-body), 'Helvetica Neue', Arial, sans-serif",
-  "--inv-grain": `url(${inv.images.grain})`,
+  "--inv-grain": "url(/img/bagas-sekar/grain.webp)",
 } as CSSProperties;
 
 const dark = {
@@ -35,14 +35,6 @@ const dark = {
   "--inv-gold": "#BDB8B0",
   "--inv-line": "#5E5A55",
 } as CSSProperties;
-
-export const calendarEvent = {
-  title: `Pernikahan ${inv.groom.name} & ${inv.bride.name}`,
-  start: inv.date,
-  end: inv.end,
-  location: `${inv.venue.name}, ${inv.venue.address}`,
-  details: `Undangan: https://sowanan.com/${inv.slug}`,
-};
 
 const enter = (delay: number) => ({ className: "inv-enter", style: { "--enter-delay": `${delay}s` } as CSSProperties });
 
@@ -58,7 +50,7 @@ function Label({ children, className = "" }: { children: ReactNode; className?: 
   return <p className={`text-[11px] font-medium tracking-[0.24em] text-inv-gold ${className}`}>{children}</p>;
 }
 
-function HeroPhoto() {
+function HeroPhoto({ inv }: { inv: InvitationView }) {
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name} berdiri berdampingan membawa buket`, fetchPriority: "high" as const };
   const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 2400, height: 1600, sizes: "100vw" });
   const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1600, height: 2135, sizes: "100vw" });
@@ -70,7 +62,7 @@ function HeroPhoto() {
   );
 }
 
-function Hero() {
+function Hero({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper relative">
       <Wrap className="flex items-center justify-between py-5">
@@ -87,7 +79,7 @@ function Hero() {
       </Wrap>
       <div {...enter(0.62)} className="inv-enter">
         <div className="clip-hero relative aspect-[4/5] w-full overflow-hidden bg-inv-wash md:aspect-[16/9]">
-          <HeroPhoto />
+          <HeroPhoto inv={inv} />
         </div>
       </div>
       <Wrap className="flex flex-col gap-3 py-8 sm:flex-row sm:items-baseline sm:justify-between">
@@ -96,14 +88,14 @@ function Hero() {
           <Greeting className="mt-1 text-[14px] text-inv-gold" />
         </div>
         <p className="text-[12px] font-medium tracking-[0.24em]">
-          {inv.dayLabel.toUpperCase()}, {inv.dateShort} &middot; YOGYAKARTA
+          {inv.dayLabel.toUpperCase()}, {inv.dateShort} &middot; {inv.cityShort.toUpperCase()}
         </p>
       </Wrap>
     </section>
   );
 }
 
-function Couple() {
+function Couple({ inv }: { inv: InvitationView }) {
   const photo = inv.couplePhotos[0];
   const person = (p: { full: string; role: string; parents: string }, align = "") => (
     <div className={align}>
@@ -131,7 +123,7 @@ function Couple() {
   );
 }
 
-function StorySection() {
+function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper relative pt-20 lg:pt-28">
       <Wrap className="mb-10 lg:mb-14">
@@ -144,7 +136,7 @@ function StorySection() {
   );
 }
 
-function Details() {
+function Details({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash relative pt-20 lg:pt-28">
       <Wrap>
@@ -187,7 +179,7 @@ function Details() {
   );
 }
 
-function CountdownSection() {
+function CountdownSection({ inv }: { inv: InvitationView }) {
   const btn =
     "rounded-sm border border-inv-line px-5 py-3 text-[11px] font-medium tracking-[0.24em] text-inv-ink no-underline transition-colors duration-150 hover:border-inv-ink";
   return (
@@ -201,7 +193,7 @@ function CountdownSection() {
           <a href={`/${inv.slug}/kalender`} className={btn} download={`${inv.slug}.ics`}>
             SIMPAN KE KALENDER
           </a>
-          <a href={googleCalendarUrl(calendarEvent)} target="_blank" rel="noopener" className={btn}>
+          <a href={googleCalendarUrl(calendarEventOf(inv))} target="_blank" rel="noopener" className={btn}>
             GOOGLE CALENDAR
           </a>
         </div>
@@ -210,7 +202,7 @@ function CountdownSection() {
   );
 }
 
-function GallerySection() {
+function GallerySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper relative py-20 lg:py-28">
       <Wrap className="mb-10">
@@ -224,7 +216,7 @@ function GallerySection() {
   );
 }
 
-function RsvpSection() {
+function RsvpSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="bg-inv-night text-inv-ink" style={dark}>
       <div className="lg:grid lg:grid-cols-2">
@@ -246,7 +238,7 @@ function RsvpSection() {
   );
 }
 
-function Gifts() {
+function Gifts({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap className="lg:grid lg:grid-cols-12 lg:gap-x-8">
@@ -269,35 +261,37 @@ function Gifts() {
                 <CopyButton value={g.number} label={`nomor rekening ${g.holder}`} />
               </div>
             ))}
+            {inv.images.qris && (
             <div className="flex items-center gap-6 border-b border-inv-line py-6">
-              <Image src={inv.images.qris} alt="Kode QRIS contoh" width={112} height={112} className="size-28" />
+              <Image src={inv.images.qris} alt="Kode QRIS" width={112} height={112} className="size-28" />
               <div>
                 <p className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">QRIS</p>
                 <p className="mt-2 text-[14px]">Pindai dari aplikasi bank atau e-wallet.</p>
               </div>
             </div>
+            )}
           </div>
-          <p className="mt-4 text-[12px] text-inv-gold">Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.</p>
+          {inv.giftNote && <p className="mt-4 text-[12px] text-inv-gold">{inv.giftNote}</p>}
         </div>
       </Wrap>
     </section>
   );
 }
 
-async function WishesSection() {
+async function WishesSection({ inv }: { inv: InvitationView }) {
   const wishes = await getWishes(inv.slug);
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
         <Label>DOA &amp; UCAPAN</Label>
         <Title className="mb-12">Titipkan doa untuk kami.</Title>
-        <Wishes slug={inv.slug} initial={[...wishes, ...inv.sampleWishes]} variant="lined" />
+        <Wishes slug={inv.slug} initial={wishes} variant="lined" />
       </Wrap>
     </section>
   );
 }
 
-function Closing() {
+function Closing({ inv }: { inv: InvitationView }) {
   return (
     <section className="bg-inv-night py-24 text-inv-ink lg:py-32" style={dark}>
       <Wrap>
@@ -315,7 +309,7 @@ function Closing() {
   );
 }
 
-function Footer() {
+function Footer({ inv }: { inv: InvitationView }) {
   return (
     <footer className="inv-paper py-10">
       <Wrap className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -325,14 +319,19 @@ function Footer() {
           <Link href="/" className="text-inv-ink underline underline-offset-4">
             Sowanan
           </Link>
-          <span className="mx-2">/</span>Foto oleh Kalamata Creative di Pexels
+          {inv.credit && (
+            <>
+              <span className="mx-2">/</span>
+              {inv.credit}
+            </>
+          )}
         </p>
       </Wrap>
     </footer>
   );
 }
 
-export function BagasSekar() {
+export function BagasSekar({ inv }: { inv: InvitationView }) {
   return (
     <InvitationShell
       door={{ kind: "walls", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateShort }}
@@ -341,20 +340,19 @@ export function BagasSekar() {
       style={vars}
     >
       <main>
-        <Hero />
-        <Couple />
-        <StorySection />
-        <Details />
-        <CountdownSection />
-        <GallerySection />
-        <RsvpSection />
-        <Gifts />
-        <WishesSection />
-        <Closing />
+        <Hero inv={inv} />
+        {inv.on.couple && <Couple inv={inv} />}
+        {inv.on.story && <StorySection inv={inv} />}
+        {inv.on.event && <Details inv={inv} />}
+        {inv.on.countdown && <CountdownSection inv={inv} />}
+        {inv.on.gallery && <GallerySection inv={inv} />}
+        {inv.on.rsvp && <RsvpSection inv={inv} />}
+        {inv.on.gifts && <Gifts inv={inv} />}
+        {inv.on.wishes && <WishesSection inv={inv} />}
+        {inv.on.closing && <Closing inv={inv} />}
       </main>
-      <Footer />
+      <Footer inv={inv} />
     </InvitationShell>
   );
 }
 
-export { inv as bagasSekarData };

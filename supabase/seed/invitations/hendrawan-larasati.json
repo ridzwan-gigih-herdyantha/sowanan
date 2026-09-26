@@ -1,0 +1,237 @@
+{
+  "slug": "hendrawan-larasati",
+  "theme": "hendrawan-larasati",
+  "published": true,
+  "data": {
+    "monogram": "H & L",
+    "couple": {
+      "groom": {
+        "name": "Hendrawan",
+        "full": "Hendrawan Putra",
+        "role": "Putra dari",
+        "parents": "Bapak Made Suardana & Ibu Ketut Sriani",
+        "photo": "/img/hendrawan-larasati/groom.jpg",
+        "flower": "cempaka",
+        "latin": "Magnolia champaca"
+      },
+      "bride": {
+        "name": "Larasati",
+        "full": "Larasati Dewi",
+        "role": "Putri dari",
+        "parents": "Bapak Wayan Artawan & Ibu Nyoman Suarni",
+        "photo": "/img/hendrawan-larasati/bride.jpg",
+        "flower": "anggrek bulan",
+        "latin": "Phalaenopsis amabilis"
+      }
+    },
+    "event": {
+      "start": "2027-05-08T09:00:00+08:00",
+      "end": "2027-05-08T15:00:00+08:00",
+      "timezone": "WITA",
+      "city": "Ubud, Bali",
+      "venue": {
+        "name": "Taman Sari Kembang",
+        "address": "Jl. Raya Ubud No. 18, Gianyar, Bali",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Ubud+Bali"
+      },
+      "schedule": [
+        {
+          "time": "09.00",
+          "name": "Upacara Pernikahan"
+        },
+        {
+          "time": "12.00",
+          "name": "Resepsi",
+          "until": "15.00"
+        }
+      ],
+      "rsvpDeadline": "24 April 2027"
+    },
+    "copy": {
+      "quote": "Seperti bunga yang disimpan di antara halaman buku, kami ingin menyimpan hari ini selamanya.",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "latinPair": "Magnolia & Phalaenopsis",
+      "collection": "No. 0508",
+      "credit": "Foto oleh Ricky S di Pexels"
+    },
+    "share": {
+      "description": "Dengan penuh sukacita, kami mengundangmu ke pernikahan Hendrawan & Larasati di Ubud, Bali.",
+      "ogDescription": "Satu lembar baru dalam koleksi kami. Buka undangannya di sini."
+    },
+    "media": {
+      "hero": "/img/hendrawan-larasati/hero.jpg",
+      "heroWide": "/img/hendrawan-larasati/hero-wide.jpg",
+      "og": "/img/hendrawan-larasati/og.jpg",
+      "music": "/img/hendrawan-larasati/music.mp3",
+      "venue": "/img/hendrawan-larasati/venue.jpg"
+    },
+    "sections": {
+      "couple": {
+        "enabled": true
+      },
+      "story": {
+        "enabled": true,
+        "items": [
+          {
+            "title": "Pertama Bertemu",
+            "date": "14.02.2020",
+            "image": "/img/hendrawan-larasati/story-1.jpg",
+            "short": "Dua orang di gerbang yang sama, menunggu hujan reda.",
+            "long": "Kami berteduh di gerbang bata yang sama saat hujan sore turun tanpa aba-aba. Larasati membawa payung, Hendrawan tidak. Sejak itu, kami selalu pulang ke arah yang sama.",
+            "no": "014",
+            "place": "Denpasar"
+          },
+          {
+            "title": "Tumbuh Bersama",
+            "date": "03.06.2022",
+            "image": "/img/hendrawan-larasati/story-2.jpg",
+            "short": "Belajar merawat satu sama lain, pelan dan sabar.",
+            "long": "Seperti merawat tanaman di halaman rumah, kami belajar bahwa yang tumbuh baik adalah yang dirawat setiap hari, bukan hanya saat sedang mekar.",
+            "no": "027",
+            "place": "Ubud"
+          },
+          {
+            "title": "Lamaran",
+            "date": "21.12.2025",
+            "image": "/img/hendrawan-larasati/story-3.jpg",
+            "short": "Di balik pintu kayu berukir, satu pertanyaan dan satu jawaban.",
+            "long": "Di depan kedua keluarga, di balik pintu kayu berukir rumah nenek, Hendrawan bertanya. Larasati menjawab dengan anggukan, lalu dengan tawa.",
+            "no": "031",
+            "place": "Gianyar"
+          },
+          {
+            "title": "Hari Pernikahan",
+            "date": "08.05.2027",
+            "image": "/img/hendrawan-larasati/story-4.jpg",
+            "short": "Lembar terbaru dalam koleksi kami, dan kalian ada di dalamnya.",
+            "long": "Payung tedung sudah terpasang, bunga sudah dirangkai. Hari ini kami simpan sebagai lembar paling berharga, bersama doa dari kalian semua.",
+            "no": "0508",
+            "place": "Ubud"
+          }
+        ]
+      },
+      "specimens": {
+        "enabled": true,
+        "items": [
+          {
+            "src": "/img/hendrawan-larasati/spec-1.jpg",
+            "w": 600,
+            "h": 589,
+            "latin": "Rosa chinensis",
+            "local": "mawar",
+            "no": "042"
+          },
+          {
+            "src": "/img/hendrawan-larasati/spec-2.jpg",
+            "w": 600,
+            "h": 600,
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek bulan",
+            "no": "057"
+          },
+          {
+            "src": "/img/hendrawan-larasati/spec-3.jpg",
+            "w": 600,
+            "h": 675,
+            "latin": "Rosa & Phalaenopsis",
+            "local": "buket pengantin",
+            "no": "063"
+          },
+          {
+            "src": "/img/hendrawan-larasati/spec-4.jpg",
+            "w": 600,
+            "h": 436,
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek putih",
+            "no": "071"
+          }
+        ]
+      },
+      "event": {
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "gallery": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "/img/hendrawan-larasati/g-1.jpg",
+            "w": 1200,
+            "h": 1530,
+            "alt": "Hendrawan dan Larasati berdiri di depan pintu ukir",
+            "caption": "di depan pintu ukir",
+            "no": "102"
+          },
+          {
+            "src": "/img/hendrawan-larasati/g-4.jpg",
+            "w": 1200,
+            "h": 1012,
+            "alt": "Hendrawan dan Larasati tersenyum di depan pintu kayu",
+            "caption": "senyum pagi",
+            "no": "108"
+          },
+          {
+            "src": "/img/hendrawan-larasati/g-3.jpg",
+            "w": 1200,
+            "h": 1080,
+            "alt": "Hendrawan dan Larasati duduk di gerbang pura dengan payung tedung",
+            "caption": "payung tedung",
+            "no": "115"
+          },
+          {
+            "src": "/img/hendrawan-larasati/g-6.jpg",
+            "w": 1200,
+            "h": 900,
+            "alt": "Hendrawan dan Larasati saling menatap di taman",
+            "caption": "taman belakang",
+            "no": "121"
+          },
+          {
+            "src": "/img/hendrawan-larasati/g-5.jpg",
+            "w": 1200,
+            "h": 1620,
+            "alt": "Hendrawan dan Larasati berpelukan di balik pintu kayu",
+            "caption": "di balik pintu",
+            "no": "129"
+          },
+          {
+            "src": "/img/hendrawan-larasati/g-2.jpg",
+            "w": 1400,
+            "h": 933,
+            "alt": "Hendrawan dan Larasati di gerbang bata",
+            "caption": "gerbang bata",
+            "no": "134"
+          }
+        ]
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "gifts": {
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "number": "0000 5555 0808",
+            "holder": "Hendrawan Putra"
+          },
+          {
+            "bank": "Bank Contoh",
+            "number": "2222 7777 0808",
+            "holder": "Larasati Dewi"
+          }
+        ],
+        "qris": "/img/hendrawan-larasati/qris.png",
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer."
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      }
+    }
+  }
+}

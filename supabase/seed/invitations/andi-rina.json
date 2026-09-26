@@ -1,0 +1,202 @@
+{
+  "slug": "andi-rina",
+  "theme": "andi-rina",
+  "published": true,
+  "data": {
+    "monogram": "A&R",
+    "couple": {
+      "groom": {
+        "name": "Andi",
+        "full": "Andi Pratama",
+        "role": "Putra dari",
+        "parents": "Bapak Hadi Susanto & Ibu Wulan Sari"
+      },
+      "bride": {
+        "name": "Rina",
+        "full": "Rina Maharani",
+        "role": "Putri dari",
+        "parents": "Bapak Joko Santoso & Ibu Endah Lestari"
+      }
+    },
+    "event": {
+      "start": "2026-12-12T08:00:00+07:00",
+      "end": "2026-12-12T14:00:00+07:00",
+      "timezone": "WIB",
+      "city": "Semarang, Indonesia",
+      "venue": {
+        "name": "Pendopo Kembang Sore",
+        "address": "Jl. Kembang Sore No. 12, Kota Lama, Semarang",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Kota+Lama+Semarang"
+      },
+      "schedule": [
+        {
+          "time": "08.00",
+          "name": "Akad Nikah"
+        },
+        {
+          "time": "11.00",
+          "name": "Resepsi",
+          "until": "14.00"
+        }
+      ],
+      "rsvpDeadline": "1 Desember 2026"
+    },
+    "copy": {
+      "tagline": "Dua hati, satu perjalanan panjang.",
+      "quote": "Bukan tentang siapa yang paling sempurna, tapi tentang dua orang yang selalu memilih untuk terus berjalan bersama.",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "credit": "Foto oleh mornwish di Pexels"
+    },
+    "share": {
+      "description": "Dengan penuh sukacita, kami mengundangmu ke pernikahan Andi & Rina di Semarang, Indonesia.",
+      "ogDescription": "Kabar bahagia dari kami. Buka undangannya di sini."
+    },
+    "media": {
+      "hero": "/img/andi-rina/hero.jpg",
+      "heroWide": "/img/andi-rina/hero-wide.jpg",
+      "og": "/img/andi-rina/og.jpg",
+      "music": "/img/andi-rina/music.mp3",
+      "venue": "/img/andi-rina/venue.jpg",
+      "couple": "/img/andi-rina/couple.jpg",
+      "closing": "/img/andi-rina/closing.jpg"
+    },
+    "sections": {
+      "couple": {
+        "enabled": true
+      },
+      "story": {
+        "enabled": true,
+        "items": [
+          {
+            "title": "Pertama Bertemu",
+            "date": "12.03.2021",
+            "image": "/img/andi-rina/story-1.jpg",
+            "short": "Dua arah, satu penyeberangan, dan satu senyum yang kebetulan.",
+            "long": "Sore itu kami menyeberang jalan yang sama dari arah berlawanan. Andi menjatuhkan buku, Rina memungutnya. Obrolan singkat di trotoar ternyata berlanjut sampai lampu jalan menyala."
+          },
+          {
+            "title": "Tumbuh Bersama",
+            "date": "20.08.2022",
+            "image": "/img/andi-rina/story-2.jpg",
+            "short": "Dari teman duduk di pinggir jalan, jadi tempat pulang.",
+            "long": "Kami mulai menghabiskan sore di tempat yang sama, duduk di depan tembok oranye dekat kantor Rina. Tidak banyak rencana, hanya banyak cerita. Pelan-pelan, pulang berarti bertemu satu sama lain."
+          },
+          {
+            "title": "Lamaran",
+            "date": "14.07.2025",
+            "image": "/img/andi-rina/story-3.jpg",
+            "short": "Satu pertanyaan, dua cincin, dan jawaban yang sudah lama kami tahu.",
+            "long": "Di depan kedua keluarga, Andi akhirnya bertanya. Rina menjawab sebelum pertanyaannya selesai. Cincinnya sempat jatuh, tapi semua orang pura-pura tidak melihat.",
+            "video": {
+              "src": "/img/andi-rina/rings.mp4",
+              "poster": "/img/andi-rina/rings-poster.jpg"
+            }
+          },
+          {
+            "title": "Hari Pernikahan",
+            "date": "12.12.2026",
+            "image": "/img/andi-rina/story-4.jpg",
+            "short": "Bukan akhir cerita, tapi awal perjalanan yang lebih panjang.",
+            "long": "Sepatu sudah disiapkan, bunga sudah dipilih. Yang kurang hanya kehadiran kalian, orang-orang yang membuat cerita ini jadi mungkin."
+          }
+        ]
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": [
+          {
+            "src": "/img/andi-rina/polaroid-1.jpg",
+            "caption": "sore pertama",
+            "rotate": -4
+          },
+          {
+            "src": "/img/andi-rina/polaroid-2.jpg",
+            "caption": "setelah hujan",
+            "rotate": 3
+          },
+          {
+            "src": "/img/andi-rina/polaroid-3.jpg",
+            "caption": "jalan pulang",
+            "rotate": -2
+          }
+        ]
+      },
+      "event": {
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "gallery": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "/img/andi-rina/g-1.jpg",
+            "w": 1200,
+            "h": 800,
+            "alt": "Andi dan Rina duduk di depan tembok oranye"
+          },
+          {
+            "src": "/img/andi-rina/g-3.jpg",
+            "w": 1200,
+            "h": 1800,
+            "alt": "Tangan bercincin di balik kaca berembun"
+          },
+          {
+            "src": "/img/andi-rina/g-2.jpg",
+            "w": 1400,
+            "h": 933,
+            "alt": "Andi dan Rina menyeberang jalan"
+          },
+          {
+            "src": "/img/andi-rina/g-5.jpg",
+            "w": 1200,
+            "h": 1192,
+            "alt": "Andi dan Rina menatap cahaya sore"
+          },
+          {
+            "src": "/img/andi-rina/g-7.jpg",
+            "w": 1200,
+            "h": 1165,
+            "alt": "Sepatu pengantin dan buket bunga"
+          },
+          {
+            "src": "/img/andi-rina/g-8.jpg",
+            "w": 1200,
+            "h": 1171,
+            "alt": "Langkah kaki di aspal saat senja"
+          }
+        ]
+      },
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "gifts": {
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "number": "0000 1111 2222",
+            "holder": "Andi Pratama"
+          },
+          {
+            "bank": "Bank Contoh",
+            "number": "3333 4444 5555",
+            "holder": "Rina Maharani"
+          }
+        ],
+        "qris": "/img/andi-rina/qris.png",
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer."
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      }
+    }
+  }
+}

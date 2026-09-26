@@ -14,9 +14,20 @@ Tanpa env Supabase, homepage tetap jalan dengan `DEFAULT_SETTINGS` di `src/lib/s
 
 ### Supabase
 
-1. Buat project (region Singapore), jalankan `supabase/schema.sql` di SQL Editor.
+1. Buat project (region Singapore), jalankan file di `supabase/migrations/` berurutan (`0001`, `0002`, ...) di SQL Editor.
 2. Authentication → matikan "Allow new users to sign up".
 3. Isi `ADMIN_EMAIL` dan `ADMIN_PASSWORD` di `.env`, lalu `pnpm create-admin`.
+
+### Data undangan
+
+Isi undangan (mempelai, acara, cerita, galeri, rekening, section aktif) disimpan di kolom `invitations.data` dengan skema `src/lib/invitation/schema.ts`. Tiga undangan contoh ada di `supabase/seed/invitations/*.json`.
+
+```bash
+pnpm seed-invitations            # semua
+pnpm seed-invitations andi-rina  # satu undangan
+```
+
+Seed memvalidasi data dengan skema yang sama, lalu upsert per slug. Ucapan contoh di `supabase/seed/wishes.json` hanya ditambahkan kalau belum ada. Tanpa env Supabase, halaman undangan membaca file seed langsung.
 
 ### Menambah undangan
 
@@ -38,8 +49,10 @@ Slug divalidasi dulu (`src/lib/reserved-slugs.ts`): 3 sampai 60 karakter, huruf 
 | `src/lib/settings.ts` | Pengaturan + cache (`cacheTag("settings")`, invalidate dengan `updateTag`) |
 | `src/lib/reserved-slugs.ts` | Slug terlarang + validasi |
 | `src/components/meta-pixel.tsx` | Meta Pixel + event Lead/Contact untuk semua link `wa.me` |
-| `supabase/schema.sql` | Tabel settings, invitations, rsvps, wishes, login_attempts |
+| `supabase/migrations/` | Skema database, dijalankan berurutan |
+| `supabase/seed/` | Data undangan contoh dan ucapan contoh |
+| `src/lib/invitation/` | Skema data undangan, loader (cache per slug), dan view untuk tema |
 
 ## Scripts
 
-`pnpm dev` · `pnpm build` · `pnpm typecheck` · `pnpm lint` · `pnpm create-admin` · `pnpm create-invitation`
+`pnpm dev` · `pnpm build` · `pnpm typecheck` · `pnpm lint` · `pnpm create-admin` · `pnpm create-invitation` · `pnpm seed-invitations`

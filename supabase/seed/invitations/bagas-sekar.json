@@ -1,0 +1,200 @@
+{
+  "slug": "bagas-sekar",
+  "theme": "bagas-sekar",
+  "published": true,
+  "data": {
+    "monogram": "B / S",
+    "couple": {
+      "groom": {
+        "name": "Bagas",
+        "full": "Bagas Wicaksono",
+        "role": "Putra dari",
+        "parents": "Bapak Arif Wicaksono & Ibu Ratna Dewi"
+      },
+      "bride": {
+        "name": "Sekar",
+        "full": "Sekar Ayuningtyas",
+        "role": "Putri dari",
+        "parents": "Bapak Budi Hartono & Ibu Sri Wahyuni"
+      }
+    },
+    "event": {
+      "start": "2027-02-14T09:00:00+07:00",
+      "end": "2027-02-14T14:00:00+07:00",
+      "timezone": "WIB",
+      "city": "Yogyakarta, Indonesia",
+      "venue": {
+        "name": "Galeri Lantai Tiga",
+        "address": "Jl. Prawirotaman No. 7, Yogyakarta",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Prawirotaman+Yogyakarta"
+      },
+      "schedule": [
+        {
+          "time": "09.00",
+          "name": "Akad Nikah"
+        },
+        {
+          "time": "11.00",
+          "name": "Resepsi",
+          "until": "14.00"
+        }
+      ],
+      "rsvpDeadline": "1 Februari 2027"
+    },
+    "copy": {
+      "tagline": "Dua hati, satu arah.",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "heroQuote": "Kami tidak mencari yang sempurna. Kami memilih untuk terus tumbuh, bersama.",
+      "rsvpQuote": "Kehadiranmu adalah hadiah terindah bagi kami.",
+      "credit": "Foto oleh Kalamata Creative di Pexels"
+    },
+    "share": {
+      "description": "Dengan penuh syukur, kami mengundangmu ke pernikahan Bagas & Sekar di Yogyakarta, Indonesia.",
+      "ogDescription": "Kami mengundangmu untuk hadir dan memberi doa restu."
+    },
+    "media": {
+      "hero": "/img/bagas-sekar/hero.jpg",
+      "heroWide": "/img/bagas-sekar/hero-wide.jpg",
+      "og": "/img/bagas-sekar/og.jpg",
+      "music": "/img/bagas-sekar/music.mp3",
+      "venue": "/img/bagas-sekar/venue.jpg",
+      "detail": "/img/bagas-sekar/detail.jpg",
+      "rsvp": "/img/bagas-sekar/rsvp.jpg"
+    },
+    "sections": {
+      "couple": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "/img/bagas-sekar/couple-1.jpg",
+            "alt": "Sekar tersenyum memegang buket, Bagas di sampingnya"
+          },
+          {
+            "src": "/img/bagas-sekar/couple-2.jpg",
+            "alt": "Bagas dan Sekar berdiri berdampingan di depan rumah"
+          },
+          {
+            "src": "/img/bagas-sekar/couple-3.jpg",
+            "alt": "Bagas dan Sekar duduk berdua di taman"
+          }
+        ]
+      },
+      "story": {
+        "enabled": true,
+        "items": [
+          {
+            "title": "Pertama Bertemu",
+            "date": "05.06.2019",
+            "image": "/img/bagas-sekar/story-1.jpg",
+            "short": "Dua ayunan, satu taman, dan percakapan yang tidak ingin kami akhiri.",
+            "long": "Kami duduk di dua ayunan yang bersebelahan, menunggu hujan reda di taman kampus. Obrolan tentang buku berubah jadi obrolan tentang mimpi. Hujan reda, tapi tidak ada yang beranjak."
+          },
+          {
+            "title": "Tumbuh Bersama",
+            "date": "18.09.2021",
+            "image": "/img/bagas-sekar/story-2.jpg",
+            "short": "Belajar saling menunggu, saling mendorong, dan saling pulang.",
+            "long": "Dua tahun jarak jauh mengajari kami hal yang sederhana: yang penting bukan seberapa sering bertemu, tapi seberapa yakin untuk kembali."
+          },
+          {
+            "title": "Lamaran",
+            "date": "20.10.2025",
+            "image": "/img/bagas-sekar/story-4.jpg",
+            "short": "Satu cincin, dua keluarga, dan janji yang diucapkan dengan tenang.",
+            "long": "Di ruang tamu yang sederhana, dua keluarga duduk bersama. Bagas memasangkan cincin dengan tangan yang sedikit gemetar. Semua orang tersenyum, termasuk kami.",
+            "video": {
+              "src": "/img/bagas-sekar/rings.mp4",
+              "poster": "/img/bagas-sekar/rings-poster.jpg"
+            }
+          },
+          {
+            "title": "Hari Pernikahan",
+            "date": "14.02.2027",
+            "image": "/img/bagas-sekar/couple-2.jpg",
+            "short": "Ruang yang kami bangun, kini terbuka untuk kalian.",
+            "long": "Kami ingin hari ini sederhana dan jujur, dikelilingi orang-orang yang menemani perjalanan kami sejauh ini. Terima kasih sudah menjadi bagian darinya."
+          }
+        ]
+      },
+      "event": {
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "gallery": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "/img/bagas-sekar/g-2.jpg",
+            "w": 2200,
+            "h": 1467,
+            "alt": "Sekar menyentuh wajah Bagas dengan buket di tangan",
+            "caption": "Buket dan sentuhan, 2026"
+          },
+          {
+            "src": "/img/bagas-sekar/g-1.jpg",
+            "w": 1800,
+            "h": 2295,
+            "alt": "Sekar mencubit pipi Bagas sambil tertawa",
+            "caption": "Tawa di taman, 2026"
+          },
+          {
+            "src": "/img/bagas-sekar/g-5.jpg",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Bagas dan Sekar duduk di tangga",
+            "caption": "Tangga roster, 2026"
+          },
+          {
+            "src": "/img/bagas-sekar/g-3.jpg",
+            "w": 1800,
+            "h": 1462,
+            "alt": "Bagas dan Sekar di bawah pepohonan",
+            "caption": "Di bawah pepohonan, 2026"
+          },
+          {
+            "src": "/img/bagas-sekar/g-4.jpg",
+            "w": 1800,
+            "h": 1457,
+            "alt": "Bagas dan Sekar di dua ayunan",
+            "caption": "Dua ayunan, 2019 dan 2026"
+          },
+          {
+            "src": "/img/bagas-sekar/g-6.jpg",
+            "w": 1800,
+            "h": 1519,
+            "alt": "Sekar tertawa menatap Bagas",
+            "caption": "Tatapan pertama, 2026"
+          }
+        ]
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "gifts": {
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "number": "0000 2222 4444",
+            "holder": "Bagas Wicaksono"
+          },
+          {
+            "bank": "Bank Contoh",
+            "number": "1111 3333 5555",
+            "holder": "Sekar Ayuningtyas"
+          }
+        ],
+        "qris": "/img/bagas-sekar/qris.png",
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer."
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      }
+    }
+  }
+}

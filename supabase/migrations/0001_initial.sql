@@ -53,6 +53,3 @@ alter table public.rsvps enable row level security;
 alter table public.wishes enable row level security;
 alter table public.login_attempts enable row level security;
 
-insert into public.invitations (slug, theme, published)
-values ('andi-rina', 'andi-rina', true), ('bagas-sekar', 'bagas-sekar', true), ('hendrawan-larasati', 'hendrawan-larasati', true)
-on conflict (slug) do nothing;
