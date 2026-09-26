@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { rsvpSheet } from "@/lib/export/rsvp-sheet";
 import { deleteResponse } from "./actions";
 
 type Rsvp = { id: number; name: string; attending: boolean; guests: number; created_at: string };
@@ -12,14 +13,9 @@ const field = "block w-full rounded-sm border border-line bg-white px-3 py-2.5 t
 const timeFmt = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" });
 const key = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
 
-function download(name: string, rows: string[][]) {
-  const esc = (s: string) => `"${s.replace(/"/g, '""')}"`;
-  const blob = new Blob(["﻿" + rows.map((r) => r.map(esc).join(",")).join("\n")], { type: "text/csv;charset=utf-8" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-  a.click();
-  URL.revokeObjectURL(a.href);
+async function saveXlsx(name: string, data: import("write-excel-file/browser").SheetData, options: import("write-excel-file/browser").SheetOptions<Blob>) {
+  const { default: writeXlsxFile } = await import("write-excel-file/browser");
+  await writeXlsxFile(data, options).toFile(name);
 }
 
 function Stat({ label, value, note }: { label: string; value: number | string; note?: string }) {
@@ -69,14 +65,18 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
     else setWishes((l) => l.filter((w) => w.id !== id));
   }
 
-  function exportCsv() {
+  async function exportXlsx() {
     if (tab === "rsvp") {
-      download(`rsvp-${slug}.csv`, [
-        ["Nama", "Kehadiran", "Jumlah orang", "Waktu", "Ada di daftar tamu"],
-        ...rsvps.map((r) => [r.name, r.attending ? "Hadir" : "Tidak hadir", String(r.guests), timeFmt.format(new Date(r.created_at)), invited.has(key(r.name)) ? "ya" : ""]),
-      ]);
+      const rows = unique.map((r) => ({ name: r.name, attending: r.attending, guests: r.guests, time: timeFmt.format(new Date(r.created_at)), invited: invited.has(key(r.name)) }));
+      const { data, options } = rsvpSheet(rows);
+      await saveXlsx(`rsvp-${slug}.xlsx`, data, options);
     } else {
-      download(`ucapan-${slug}.csv`, [["Nama", "Ucapan", "Waktu"], ...wishes.map((w) => [w.name, w.message, timeFmt.format(new Date(w.created_at))])]);
+      const head = (value: string) => ({ value, fontWeight: "bold" as const, backgroundColor: "#F2F2F2" });
+      await saveXlsx(
+        `ucapan-${slug}.xlsx`,
+        [[head("Nama"), head("Ucapan"), head("Waktu")], ...wishes.map((w) => [w.name, { value: w.message, wrap: true, alignVertical: "top" as const }, timeFmt.format(new Date(w.created_at))])],
+        { sheet: "Ucapan", columns: [{ width: 24 }, { width: 70 }, { width: 20 }], stickyRowsCount: 1 },
+      );
     }
   }
 
@@ -149,8 +149,8 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
           </div>
         )}
         {list.length > 0 && (
-          <button type="button" onClick={exportCsv} className="text-[14px] text-wine underline underline-offset-4">
-            Unduh CSV
+          <button type="button" onClick={exportXlsx} className="text-[14px] text-wine underline underline-offset-4">
+            Unduh Excel
           </button>
         )}
       </div>
