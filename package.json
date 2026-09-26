@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "create-admin": "node --no-warnings --env-file=.env scripts/create-admin.ts",
     "create-invitation": "node --no-warnings --env-file=.env scripts/create-invitation.ts",
-    "seed-invitations": "node --no-warnings --env-file=.env scripts/seed-invitations.ts"
+    "seed-invitations": "node --no-warnings --env-file=.env scripts/seed-invitations.ts",
+    "migrate-demo-media": "node --no-warnings --env-file=.env scripts/migrate-demo-media.ts"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.16",
@@ -21,6 +22,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "server-only": "^0.0.1",
+    "sharp": "^0.35.4",
     "zod": "^4.6.5"
   },
   "devDependencies": {

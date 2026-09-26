@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { getSettings } from "@/lib/settings";
 import { hasSupabase } from "@/lib/supabase/admin";
@@ -25,11 +26,16 @@ async function AdminGate() {
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4 text-[14px] text-ink-mute">
         <span>Masuk sebagai {data.user.email}</span>
-        <form action={logout}>
-          <button type="submit" className="text-wine underline underline-offset-4">
-            Keluar
-          </button>
-        </form>
+        <div className="flex items-center gap-5">
+          <Link href="/admin/media" prefetch={false} className="text-wine underline underline-offset-4">
+            Media
+          </Link>
+          <form action={logout}>
+            <button type="submit" className="text-wine underline underline-offset-4">
+              Keluar
+            </button>
+          </form>
+        </div>
       </div>
       <SettingsForm initial={settings} />
     </>

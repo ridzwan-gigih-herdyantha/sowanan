@@ -53,28 +53,28 @@
       "ogDescription": "Kami mengundangmu untuk hadir dan memberi doa restu."
     },
     "media": {
-      "hero": "/img/bagas-sekar/hero.jpg",
-      "heroWide": "/img/bagas-sekar/hero-wide.jpg",
-      "og": "/img/bagas-sekar/og.jpg",
-      "music": "/img/bagas-sekar/music.mp3",
-      "venue": "/img/bagas-sekar/venue.jpg",
-      "detail": "/img/bagas-sekar/detail.jpg",
-      "rsvp": "/img/bagas-sekar/rsvp.jpg"
+      "hero": "bagas-sekar/hero_1.webp?v=mui04fe9",
+      "heroWide": "bagas-sekar/herowide_1.webp?v=mui04gbr",
+      "og": "bagas-sekar/og_1.jpg?v=mui04gkp",
+      "music": "bagas-sekar/music_1.mp3?v=mui04hdd",
+      "venue": "bagas-sekar/venue_1.webp?v=mui04ik2",
+      "detail": "bagas-sekar/detail_1.webp?v=mui04ivf",
+      "rsvp": "bagas-sekar/rsvp_1.webp?v=mui04jn2"
     },
     "sections": {
       "couple": {
         "enabled": true,
         "photos": [
           {
-            "src": "/img/bagas-sekar/couple-1.jpg",
+            "src": "bagas-sekar/photo_1.webp?v=mui04ti8",
             "alt": "Sekar tersenyum memegang buket, Bagas di sampingnya"
           },
           {
-            "src": "/img/bagas-sekar/couple-2.jpg",
+            "src": "bagas-sekar/photo_2.webp?v=mui04uab",
             "alt": "Bagas dan Sekar berdiri berdampingan di depan rumah"
           },
           {
-            "src": "/img/bagas-sekar/couple-3.jpg",
+            "src": "bagas-sekar/photo_3.webp?v=mui04v3t",
             "alt": "Bagas dan Sekar duduk berdua di taman"
           }
         ]
@@ -85,32 +85,32 @@
           {
             "title": "Pertama Bertemu",
             "date": "05.06.2019",
-            "image": "/img/bagas-sekar/story-1.jpg",
+            "image": "bagas-sekar/story_1.webp?v=mui04kc8",
             "short": "Dua ayunan, satu taman, dan percakapan yang tidak ingin kami akhiri.",
             "long": "Kami duduk di dua ayunan yang bersebelahan, menunggu hujan reda di taman kampus. Obrolan tentang buku berubah jadi obrolan tentang mimpi. Hujan reda, tapi tidak ada yang beranjak."
           },
           {
             "title": "Tumbuh Bersama",
             "date": "18.09.2021",
-            "image": "/img/bagas-sekar/story-2.jpg",
+            "image": "bagas-sekar/story_2.webp?v=mui04kzh",
             "short": "Belajar saling menunggu, saling mendorong, dan saling pulang.",
             "long": "Dua tahun jarak jauh mengajari kami hal yang sederhana: yang penting bukan seberapa sering bertemu, tapi seberapa yakin untuk kembali."
           },
           {
             "title": "Lamaran",
             "date": "20.10.2025",
-            "image": "/img/bagas-sekar/story-4.jpg",
+            "image": "bagas-sekar/story_3.webp?v=mui04ltg",
             "short": "Satu cincin, dua keluarga, dan janji yang diucapkan dengan tenang.",
             "long": "Di ruang tamu yang sederhana, dua keluarga duduk bersama. Bagas memasangkan cincin dengan tangan yang sedikit gemetar. Semua orang tersenyum, termasuk kami.",
             "video": {
-              "src": "/img/bagas-sekar/rings.mp4",
-              "poster": "/img/bagas-sekar/rings-poster.jpg"
+              "src": "bagas-sekar/video_1.mp4?v=mui04m1c",
+              "poster": "bagas-sekar/poster_1.webp?v=mui04m8e"
             }
           },
           {
             "title": "Hari Pernikahan",
             "date": "14.02.2027",
-            "image": "/img/bagas-sekar/couple-2.jpg",
+            "image": "bagas-sekar/story_4.webp?v=mui04n1t",
             "short": "Ruang yang kami bangun, kini terbuka untuk kalian.",
             "long": "Kami ingin hari ini sederhana dan jujur, dikelilingi orang-orang yang menemani perjalanan kami sejauh ini. Terima kasih sudah menjadi bagian darinya."
           }
@@ -126,42 +126,42 @@
         "enabled": true,
         "photos": [
           {
-            "src": "/img/bagas-sekar/g-2.jpg",
-            "w": 2200,
-            "h": 1467,
+            "src": "bagas-sekar/gallery_1.webp?v=mui04nrw",
+            "w": 1800,
+            "h": 1200,
             "alt": "Sekar menyentuh wajah Bagas dengan buket di tangan",
             "caption": "Buket dan sentuhan, 2026"
           },
           {
-            "src": "/img/bagas-sekar/g-1.jpg",
+            "src": "bagas-sekar/gallery_2.webp?v=mui04ovz",
             "w": 1800,
             "h": 2295,
             "alt": "Sekar mencubit pipi Bagas sambil tertawa",
             "caption": "Tawa di taman, 2026"
           },
           {
-            "src": "/img/bagas-sekar/g-5.jpg",
+            "src": "bagas-sekar/gallery_3.webp?v=mui04q6j",
             "w": 1800,
             "h": 2700,
             "alt": "Bagas dan Sekar duduk di tangga",
             "caption": "Tangga roster, 2026"
           },
           {
-            "src": "/img/bagas-sekar/g-3.jpg",
+            "src": "bagas-sekar/gallery_4.webp?v=mui04qu5",
             "w": 1800,
             "h": 1462,
             "alt": "Bagas dan Sekar di bawah pepohonan",
             "caption": "Di bawah pepohonan, 2026"
           },
           {
-            "src": "/img/bagas-sekar/g-4.jpg",
+            "src": "bagas-sekar/gallery_5.webp?v=mui04rrl",
             "w": 1800,
             "h": 1457,
             "alt": "Bagas dan Sekar di dua ayunan",
             "caption": "Dua ayunan, 2019 dan 2026"
           },
           {
-            "src": "/img/bagas-sekar/g-6.jpg",
+            "src": "bagas-sekar/gallery_6.webp?v=mui04sgc",
             "w": 1800,
             "h": 1519,
             "alt": "Sekar tertawa menatap Bagas",
@@ -186,7 +186,7 @@
             "holder": "Sekar Ayuningtyas"
           }
         ],
-        "qris": "/img/bagas-sekar/qris.png",
+        "qris": "bagas-sekar/qris_1.webp?v=mui04va5",
         "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer."
       },
       "wishes": {

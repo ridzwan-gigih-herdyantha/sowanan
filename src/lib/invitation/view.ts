@@ -1,3 +1,4 @@
+import { mediaUrl as u } from "@/lib/storage/media";
 import type { InvitationData, SectionKey } from "./schema";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
@@ -25,8 +26,8 @@ export function toView(slug: string, d: InvitationData) {
   return {
     slug,
     monogram: d.monogram,
-    groom: { ...d.couple.groom, photo: d.couple.groom.photo ?? d.media.hero },
-    bride: { ...d.couple.bride, photo: d.couple.bride.photo ?? d.media.hero },
+    groom: { ...d.couple.groom, photo: u(d.couple.groom.photo ?? d.media.hero) },
+    bride: { ...d.couple.bride, photo: u(d.couple.bride.photo ?? d.media.hero) },
     date: d.event.start,
     end: d.event.end,
     tz: d.event.timezone,
@@ -52,22 +53,24 @@ export function toView(slug: string, d: InvitationData) {
     collection: d.copy.collection ?? "",
     share: d.share,
     images: {
-      ...d.media,
-      venue: d.media.venue ?? d.media.hero,
-      couple: d.media.couple ?? d.media.heroWide,
-      closing: d.media.closing ?? d.media.hero,
-      detail: d.media.detail ?? d.media.hero,
-      rsvp: d.media.rsvp ?? d.media.heroWide,
-      qris: s.gifts.qris ?? "",
+      hero: u(d.media.hero),
+      heroWide: u(d.media.heroWide),
+      og: u(d.media.og),
+      venue: u(d.media.venue ?? d.media.hero),
+      couple: u(d.media.couple ?? d.media.heroWide),
+      closing: u(d.media.closing ?? d.media.hero),
+      detail: u(d.media.detail ?? d.media.hero),
+      rsvp: u(d.media.rsvp ?? d.media.heroWide),
+      qris: u(s.gifts.qris ?? ""),
     },
     giftNote: s.gifts.note ?? "",
-    music: d.media.music,
-    story: s.story.items,
-    gallery: s.gallery.photos,
+    music: u(d.media.music),
+    story: s.story.items.map((i) => ({ ...i, image: u(i.image), video: i.video && { src: u(i.video.src), poster: u(i.video.poster) } })),
+    gallery: s.gallery.photos.map((p) => ({ ...p, src: u(p.src) })),
     gifts: s.gifts.accounts,
-    couplePhotos: s.couple.photos ?? [],
-    polaroids: s.collage?.polaroids ?? [],
-    specimens: s.specimens?.items ?? [],
+    couplePhotos: (s.couple.photos ?? []).map((p) => ({ ...p, src: u(p.src) })),
+    polaroids: (s.collage?.polaroids ?? []).map((p) => ({ ...p, src: u(p.src) })),
+    specimens: (s.specimens?.items ?? []).map((p) => ({ ...p, src: u(p.src) })),
     on: enabled,
   };
 }

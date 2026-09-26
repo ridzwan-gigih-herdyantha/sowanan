@@ -52,13 +52,13 @@
       "ogDescription": "Kabar bahagia dari kami. Buka undangannya di sini."
     },
     "media": {
-      "hero": "/img/andi-rina/hero.jpg",
-      "heroWide": "/img/andi-rina/hero-wide.jpg",
-      "og": "/img/andi-rina/og.jpg",
-      "music": "/img/andi-rina/music.mp3",
-      "venue": "/img/andi-rina/venue.jpg",
-      "couple": "/img/andi-rina/couple.jpg",
-      "closing": "/img/andi-rina/closing.jpg"
+      "hero": "andi-rina/hero_1.webp?v=mui041vh",
+      "heroWide": "andi-rina/herowide_1.webp?v=mui042i8",
+      "og": "andi-rina/og_1.jpg?v=mui042tv",
+      "music": "andi-rina/music_1.mp3?v=mui043e0",
+      "venue": "andi-rina/venue_1.webp?v=mui0442c",
+      "couple": "andi-rina/couple_1.webp?v=mui044xy",
+      "closing": "andi-rina/closing_1.webp?v=mui045a8"
     },
     "sections": {
       "couple": {
@@ -70,32 +70,32 @@
           {
             "title": "Pertama Bertemu",
             "date": "12.03.2021",
-            "image": "/img/andi-rina/story-1.jpg",
+            "image": "andi-rina/story_1.webp?v=mui04683",
             "short": "Dua arah, satu penyeberangan, dan satu senyum yang kebetulan.",
             "long": "Sore itu kami menyeberang jalan yang sama dari arah berlawanan. Andi menjatuhkan buku, Rina memungutnya. Obrolan singkat di trotoar ternyata berlanjut sampai lampu jalan menyala."
           },
           {
             "title": "Tumbuh Bersama",
             "date": "20.08.2022",
-            "image": "/img/andi-rina/story-2.jpg",
+            "image": "andi-rina/story_2.webp?v=mui046vk",
             "short": "Dari teman duduk di pinggir jalan, jadi tempat pulang.",
             "long": "Kami mulai menghabiskan sore di tempat yang sama, duduk di depan tembok oranye dekat kantor Rina. Tidak banyak rencana, hanya banyak cerita. Pelan-pelan, pulang berarti bertemu satu sama lain."
           },
           {
             "title": "Lamaran",
             "date": "14.07.2025",
-            "image": "/img/andi-rina/story-3.jpg",
+            "image": "andi-rina/story_3.webp?v=mui047xv",
             "short": "Satu pertanyaan, dua cincin, dan jawaban yang sudah lama kami tahu.",
             "long": "Di depan kedua keluarga, Andi akhirnya bertanya. Rina menjawab sebelum pertanyaannya selesai. Cincinnya sempat jatuh, tapi semua orang pura-pura tidak melihat.",
             "video": {
-              "src": "/img/andi-rina/rings.mp4",
-              "poster": "/img/andi-rina/rings-poster.jpg"
+              "src": "andi-rina/video_1.mp4?v=mui048i2",
+              "poster": "andi-rina/poster_1.webp?v=mui048s9"
             }
           },
           {
             "title": "Hari Pernikahan",
             "date": "12.12.2026",
-            "image": "/img/andi-rina/story-4.jpg",
+            "image": "andi-rina/story_4.webp?v=mui049fr",
             "short": "Bukan akhir cerita, tapi awal perjalanan yang lebih panjang.",
             "long": "Sepatu sudah disiapkan, bunga sudah dipilih. Yang kurang hanya kehadiran kalian, orang-orang yang membuat cerita ini jadi mungkin."
           }
@@ -105,17 +105,17 @@
         "enabled": true,
         "polaroids": [
           {
-            "src": "/img/andi-rina/polaroid-1.jpg",
+            "src": "andi-rina/polaroid_1.webp?v=mui04d62",
             "caption": "sore pertama",
             "rotate": -4
           },
           {
-            "src": "/img/andi-rina/polaroid-2.jpg",
+            "src": "andi-rina/polaroid_2.webp?v=mui04dkp",
             "caption": "setelah hujan",
             "rotate": 3
           },
           {
-            "src": "/img/andi-rina/polaroid-3.jpg",
+            "src": "andi-rina/polaroid_3.webp?v=mui04dw9",
             "caption": "jalan pulang",
             "rotate": -2
           }
@@ -131,37 +131,37 @@
         "enabled": true,
         "photos": [
           {
-            "src": "/img/andi-rina/g-1.jpg",
+            "src": "andi-rina/gallery_1.webp?v=mui04a3g",
             "w": 1200,
             "h": 800,
             "alt": "Andi dan Rina duduk di depan tembok oranye"
           },
           {
-            "src": "/img/andi-rina/g-3.jpg",
+            "src": "andi-rina/gallery_2.webp?v=mui04as9",
             "w": 1200,
             "h": 1800,
             "alt": "Tangan bercincin di balik kaca berembun"
           },
           {
-            "src": "/img/andi-rina/g-2.jpg",
+            "src": "andi-rina/gallery_3.webp?v=mui04b9v",
             "w": 1400,
             "h": 933,
             "alt": "Andi dan Rina menyeberang jalan"
           },
           {
-            "src": "/img/andi-rina/g-5.jpg",
+            "src": "andi-rina/gallery_4.webp?v=mui04bpq",
             "w": 1200,
             "h": 1192,
             "alt": "Andi dan Rina menatap cahaya sore"
           },
           {
-            "src": "/img/andi-rina/g-7.jpg",
+            "src": "andi-rina/gallery_5.webp?v=mui04cc2",
             "w": 1200,
             "h": 1165,
             "alt": "Sepatu pengantin dan buket bunga"
           },
           {
-            "src": "/img/andi-rina/g-8.jpg",
+            "src": "andi-rina/gallery_6.webp?v=mui04cur",
             "w": 1200,
             "h": 1171,
             "alt": "Langkah kaki di aspal saat senja"
@@ -188,7 +188,7 @@
             "holder": "Rina Maharani"
           }
         ],
-        "qris": "/img/andi-rina/qris.png",
+        "qris": "andi-rina/qris_1.webp?v=mui04e7c",
         "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer."
       },
       "wishes": {

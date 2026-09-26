@@ -10,7 +10,7 @@
         "full": "Hendrawan Putra",
         "role": "Putra dari",
         "parents": "Bapak Made Suardana & Ibu Ketut Sriani",
-        "photo": "/img/hendrawan-larasati/groom.jpg",
+        "photo": "hendrawan-larasati/groom_1.webp?v=mui04yns",
         "flower": "cempaka",
         "latin": "Magnolia champaca"
       },
@@ -19,7 +19,7 @@
         "full": "Larasati Dewi",
         "role": "Putri dari",
         "parents": "Bapak Wayan Artawan & Ibu Nyoman Suarni",
-        "photo": "/img/hendrawan-larasati/bride.jpg",
+        "photo": "hendrawan-larasati/bride_1.webp?v=mui04z2k",
         "flower": "anggrek bulan",
         "latin": "Phalaenopsis amabilis"
       }
@@ -59,11 +59,11 @@
       "ogDescription": "Satu lembar baru dalam koleksi kami. Buka undangannya di sini."
     },
     "media": {
-      "hero": "/img/hendrawan-larasati/hero.jpg",
-      "heroWide": "/img/hendrawan-larasati/hero-wide.jpg",
-      "og": "/img/hendrawan-larasati/og.jpg",
-      "music": "/img/hendrawan-larasati/music.mp3",
-      "venue": "/img/hendrawan-larasati/venue.jpg"
+      "hero": "hendrawan-larasati/hero_1.webp?v=mui04w0u",
+      "heroWide": "hendrawan-larasati/herowide_1.webp?v=mui04wpv",
+      "og": "hendrawan-larasati/og_1.jpg?v=mui04x0n",
+      "music": "hendrawan-larasati/music_1.mp3?v=mui04xmy",
+      "venue": "hendrawan-larasati/venue_1.webp?v=mui04y9s"
     },
     "sections": {
       "couple": {
@@ -75,7 +75,7 @@
           {
             "title": "Pertama Bertemu",
             "date": "14.02.2020",
-            "image": "/img/hendrawan-larasati/story-1.jpg",
+            "image": "hendrawan-larasati/story_1.webp?v=mui04zop",
             "short": "Dua orang di gerbang yang sama, menunggu hujan reda.",
             "long": "Kami berteduh di gerbang bata yang sama saat hujan sore turun tanpa aba-aba. Larasati membawa payung, Hendrawan tidak. Sejak itu, kami selalu pulang ke arah yang sama.",
             "no": "014",
@@ -84,7 +84,7 @@
           {
             "title": "Tumbuh Bersama",
             "date": "03.06.2022",
-            "image": "/img/hendrawan-larasati/story-2.jpg",
+            "image": "hendrawan-larasati/story_2.webp?v=mui05099",
             "short": "Belajar merawat satu sama lain, pelan dan sabar.",
             "long": "Seperti merawat tanaman di halaman rumah, kami belajar bahwa yang tumbuh baik adalah yang dirawat setiap hari, bukan hanya saat sedang mekar.",
             "no": "027",
@@ -93,7 +93,7 @@
           {
             "title": "Lamaran",
             "date": "21.12.2025",
-            "image": "/img/hendrawan-larasati/story-3.jpg",
+            "image": "hendrawan-larasati/story_3.webp?v=mui050vi",
             "short": "Di balik pintu kayu berukir, satu pertanyaan dan satu jawaban.",
             "long": "Di depan kedua keluarga, di balik pintu kayu berukir rumah nenek, Hendrawan bertanya. Larasati menjawab dengan anggukan, lalu dengan tawa.",
             "no": "031",
@@ -102,7 +102,7 @@
           {
             "title": "Hari Pernikahan",
             "date": "08.05.2027",
-            "image": "/img/hendrawan-larasati/story-4.jpg",
+            "image": "hendrawan-larasati/story_4.webp?v=mui051la",
             "short": "Lembar terbaru dalam koleksi kami, dan kalian ada di dalamnya.",
             "long": "Payung tedung sudah terpasang, bunga sudah dirangkai. Hari ini kami simpan sebagai lembar paling berharga, bersama doa dari kalian semua.",
             "no": "0508",
@@ -114,7 +114,7 @@
         "enabled": true,
         "items": [
           {
-            "src": "/img/hendrawan-larasati/spec-1.jpg",
+            "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
             "w": 600,
             "h": 589,
             "latin": "Rosa chinensis",
@@ -122,7 +122,7 @@
             "no": "042"
           },
           {
-            "src": "/img/hendrawan-larasati/spec-2.jpg",
+            "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
             "w": 600,
             "h": 600,
             "latin": "Phalaenopsis amabilis",
@@ -130,7 +130,7 @@
             "no": "057"
           },
           {
-            "src": "/img/hendrawan-larasati/spec-3.jpg",
+            "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
             "w": 600,
             "h": 675,
             "latin": "Rosa & Phalaenopsis",
@@ -138,7 +138,7 @@
             "no": "063"
           },
           {
-            "src": "/img/hendrawan-larasati/spec-4.jpg",
+            "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
             "w": 600,
             "h": 436,
             "latin": "Phalaenopsis amabilis",
@@ -157,7 +157,7 @@
         "enabled": true,
         "photos": [
           {
-            "src": "/img/hendrawan-larasati/g-1.jpg",
+            "src": "hendrawan-larasati/gallery_1.webp?v=mui0528q",
             "w": 1200,
             "h": 1530,
             "alt": "Hendrawan dan Larasati berdiri di depan pintu ukir",
@@ -165,7 +165,7 @@
             "no": "102"
           },
           {
-            "src": "/img/hendrawan-larasati/g-4.jpg",
+            "src": "hendrawan-larasati/gallery_2.webp?v=mui052vh",
             "w": 1200,
             "h": 1012,
             "alt": "Hendrawan dan Larasati tersenyum di depan pintu kayu",
@@ -173,7 +173,7 @@
             "no": "108"
           },
           {
-            "src": "/img/hendrawan-larasati/g-3.jpg",
+            "src": "hendrawan-larasati/gallery_3.webp?v=mui053dv",
             "w": 1200,
             "h": 1080,
             "alt": "Hendrawan dan Larasati duduk di gerbang pura dengan payung tedung",
@@ -181,7 +181,7 @@
             "no": "115"
           },
           {
-            "src": "/img/hendrawan-larasati/g-6.jpg",
+            "src": "hendrawan-larasati/gallery_4.webp?v=mui053v9",
             "w": 1200,
             "h": 900,
             "alt": "Hendrawan dan Larasati saling menatap di taman",
@@ -189,7 +189,7 @@
             "no": "121"
           },
           {
-            "src": "/img/hendrawan-larasati/g-5.jpg",
+            "src": "hendrawan-larasati/gallery_5.webp?v=mui054io",
             "w": 1200,
             "h": 1620,
             "alt": "Hendrawan dan Larasati berpelukan di balik pintu kayu",
@@ -197,7 +197,7 @@
             "no": "129"
           },
           {
-            "src": "/img/hendrawan-larasati/g-2.jpg",
+            "src": "hendrawan-larasati/gallery_6.webp?v=mui054zi",
             "w": 1400,
             "h": 933,
             "alt": "Hendrawan dan Larasati di gerbang bata",
@@ -223,7 +223,7 @@
             "holder": "Larasati Dewi"
           }
         ],
-        "qris": "/img/hendrawan-larasati/qris.png",
+        "qris": "hendrawan-larasati/qris_1.webp?v=mui0561e",
         "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer."
       },
       "wishes": {
