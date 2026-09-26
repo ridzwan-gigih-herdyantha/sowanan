@@ -1,18 +1,14 @@
 "use client";
 
-import { createClient } from "@supabase/supabase-js";
 import { useCallback, useMemo, useState } from "react";
-import { createUploadTicket, deleteMedia, finalizeUpload, listMedia, type MediaFile } from "./actions";
+import { deleteMedia, listMedia, type MediaFile } from "./actions";
+import { ACCEPT, formatBytes as kb, useUploader } from "./use-uploader";
 
 type PurposeOption = { key: string; label: string; kind: "image" | "video" | "audio" };
 type Job = { id: string; name: string; status: "upload" | "proses" | "selesai" | "gagal"; message?: string };
 
-const ACCEPT = { image: "image/jpeg,image/png,image/webp,image/heic,image/heif,image/avif", video: "video/mp4,video/webm", audio: "audio/mpeg,audio/mp4,audio/ogg" };
-
-const kb = (n: number) => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)}MB` : `${Math.round(n / 1024)}KB`);
-
-export function MediaManager(props: { slugs: string[]; initialFiles: MediaFile[]; purposes: PurposeOption[]; allowed: Record<string, string[]>; labels: Record<string, string>; bucket: string; supabaseUrl: string; anonKey: string }) {
-  const { slugs, bucket } = props;
+export function MediaManager(props: { slugs: string[]; initialFiles: MediaFile[]; purposes: PurposeOption[]; allowed: Record<string, string[]>; labels: Record<string, string>}) {
+  const { slugs } = props;
   const [slug, setSlug] = useState(slugs[0] ?? "");
   const purposes = useMemo(() => props.purposes.filter((p) => props.allowed[slug]?.includes(p.key)), [props.purposes, props.allowed, slug]);
   const [picked, setPurpose] = useState("");
@@ -23,10 +19,7 @@ export function MediaManager(props: { slugs: string[]; initialFiles: MediaFile[]
   const [jobs, setJobs] = useState<Job[]>([]);
   const [copied, setCopied] = useState("");
 
-  const storage = useMemo(
-    () => createClient(new URL(props.supabaseUrl).origin, props.anonKey, { auth: { persistSession: false } }).storage.from(bucket),
-    [props.supabaseUrl, props.anonKey, bucket],
-  );
+  const uploadFile = useUploader(slug);
   const current = purposes.find((p) => p.key === purpose);
 
   const refresh = useCallback(async (s: string) => {
@@ -48,19 +41,7 @@ export function MediaManager(props: { slugs: string[]; initialFiles: MediaFile[]
     setJobs((js) => [...batch.map((b) => b.job), ...js].slice(0, 20));
 
     for (const { file, job } of batch) {
-      const type = file.type || "application/octet-stream";
-      const ticket = await createUploadTicket({ slug, purpose, type, size: file.size });
-      if (!ticket.ok) {
-        patch(job.id, { status: "gagal", message: ticket.error });
-        continue;
-      }
-      const { error: upErr } = await storage.uploadToSignedUrl(ticket.data.path, ticket.data.token, file, { contentType: type });
-      if (upErr) {
-        patch(job.id, { status: "gagal", message: "Upload terputus. Coba lagi." });
-        continue;
-      }
-      patch(job.id, { status: "proses" });
-      const done = await finalizeUpload({ slug, purpose, tmpPath: ticket.data.path, type });
+      const done = await uploadFile(file, purpose, (stage) => patch(job.id, { status: stage }));
       if (done.ok) patch(job.id, { status: "selesai", message: `${done.data.name} ${kb(done.data.bytes)}` });
       else patch(job.id, { status: "gagal", message: done.error });
     }

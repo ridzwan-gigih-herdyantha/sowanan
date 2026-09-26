@@ -4,6 +4,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { invitationDataSchema } from "../src/lib/invitation/schema.ts";
+import { checkInvitation } from "../src/lib/invitation/spec.ts";
 import { validateSlug } from "../src/lib/reserved-slugs.ts";
 
 const dir = new URL("../supabase/seed/", import.meta.url);
@@ -27,15 +28,16 @@ for (const file of files) {
 
   const slug = validateSlug(seed.slug);
   const data = invitationDataSchema.safeParse(seed.data);
-  if (!slug.ok || !data.success) {
+  const issues = data.success ? checkInvitation(data.data, seed.theme).map((i) => `${i.path} ${i.message}`) : data.error.issues.map((i) => `${i.path.join(".")} ${i.message}`);
+  if (!slug.ok || issues.length) {
     failed = true;
-    console.error(`x ${seed.slug}: ${slug.ok ? data.error?.issues.map((i) => `${i.path.join(".")} ${i.message}`).join("; ") : slug.reason}`);
+    console.error(`x ${seed.slug}: ${slug.ok ? issues.join("; ") : slug.reason}`);
     continue;
   }
 
   const { data: row, error } = await sb
     .from("invitations")
-    .upsert({ slug: seed.slug, theme: seed.theme, published: seed.published, data: data.data }, { onConflict: "slug" })
+    .upsert({ slug: seed.slug, theme: seed.theme, published: seed.published, data: data.data, draft: null }, { onConflict: "slug" })
     .select("id")
     .single();
   if (error) {

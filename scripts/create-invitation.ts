@@ -1,7 +1,8 @@
-// pnpm create-invitation <slug> <tema> [--publish]
-// Contoh: pnpm create-invitation budi-ani andi-rina --publish
+// pnpm create-invitation <slug> <tema>
+// Contoh: pnpm create-invitation budi-ani andi-rina
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
+import { emptyInvitationData } from "../src/lib/invitation/schema.ts";
 import { validateSlug } from "../src/lib/reserved-slugs.ts";
 
 const [slug = "", theme = "", flag] = process.argv.slice(2);
@@ -30,10 +31,14 @@ if (taken) {
   process.exit(1);
 }
 
-const { error } = await sb.from("invitations").insert({ slug, theme, published: flag === "--publish" });
+if (flag === "--publish") {
+  console.error("Undangan baru masih kosong. Isi lewat /admin/undangan lalu terbitkan dari sana.");
+  process.exit(1);
+}
+const { error } = await sb.from("invitations").insert({ slug, theme, published: false, data: emptyInvitationData() });
 if (error) {
   console.error("Gagal menyimpan:", error.message);
   process.exit(1);
 }
-console.log(`Undangan dibuat: sowanan.com/${slug} (tema ${theme}${flag === "--publish" ? ", terbit" : ", draf"})`);
+console.log(`Undangan dibuat: sowanan.com/${slug} (tema ${theme}, draf). Isi di /admin/undangan/${slug}`);
 console.log("Ingat: slug permanen setelah link disebar ke tamu.");
