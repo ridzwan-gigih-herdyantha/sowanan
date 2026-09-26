@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { getSettings, waLink } from "@/lib/settings";
+import { formatRevisions, getSettings, waLink } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Ketentuan Layanan",
@@ -68,7 +68,8 @@ export default async function KetentuanPage() {
         <Section id="revisi" title="Kebijakan revisi">
           <ul>
             <li>
-              Jumlah revisi mengikuti paket: Hemat {s.revisionsHemat} kali, Lengkap {s.revisionsLengkap} kali, Desain Sendiri {s.revisionsDesain} kali.
+              Jumlah revisi mengikuti paket: Hemat {formatRevisions(s.revisionsHemat, " kali")}, Lengkap {formatRevisions(s.revisionsLengkap, " kali")}, Desain Sendiri{" "}
+              {formatRevisions(s.revisionsDesain, " kali")}.
             </li>
             <li>Satu revisi adalah satu kumpulan perubahan yang dikirim sekaligus, bukan satu perubahan per pesan.</li>
             <li>Ganti tema masih bisa selama draf belum disetujui. Setelah disetujui, ganti tema dihitung sebagai pesanan baru.</li>

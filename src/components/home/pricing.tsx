@@ -1,5 +1,5 @@
 import { Container, SectionSub, SectionTitle, btn, cx, reveal, sectionPad } from "@/components/ui";
-import { formatRupiah, type Settings } from "@/lib/settings";
+import { formatRevisions, formatRupiah, type Settings } from "@/lib/settings";
 
 type Plan = { tier: string; flag?: string; price: number; forWho: string; items: string[]; highlight?: boolean };
 
@@ -15,7 +15,7 @@ function plans(s: Settings): Plan[] {
         `Galeri sampai ${s.maxPhotosHemat} foto`,
         `Jadi dalam ${s.sla}`,
         `Aktif ${s.activePeriod}`,
-        `Revisi ${s.revisionsHemat}×`,
+        `Revisi ${formatRevisions(s.revisionsHemat, "×")}`,
       ],
     },
     {
@@ -31,7 +31,7 @@ function plans(s: Settings): Plan[] {
         "Musik latar pilihan sendiri",
         "Cerita perjalanan kalian",
         `Aktif ${s.activePeriod}`,
-        `Revisi ${s.revisionsLengkap}×`,
+        `Revisi ${formatRevisions(s.revisionsLengkap, "×")}`,
       ],
     },
     {
@@ -44,7 +44,7 @@ function plans(s: Settings): Plan[] {
         "Daftar tamu bisa diunduh ke Excel",
         "Absensi tamu dengan QR di lokasi",
         `Aktif ${s.activePeriod}`,
-        `Revisi ${s.revisionsDesain}×`,
+        `Revisi ${formatRevisions(s.revisionsDesain, "×")}`,
       ],
     },
   ];

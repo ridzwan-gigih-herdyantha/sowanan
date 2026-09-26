@@ -7,13 +7,13 @@ import { Pricing } from "@/components/home/pricing";
 import { SiteHeader } from "@/components/home/site-header";
 import { Steps } from "@/components/home/steps";
 import { Themes } from "@/components/home/themes";
-import { formatRupiah, getSettings, waLink, type Settings } from "@/lib/settings";
+import { formatRupiah, getSettings, highestPrice, lowestPrice, waLink, type Settings } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
 import { RevealOnScroll } from "@/components/reveal-on-scroll";
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
-  const price = formatRupiah(s.priceHemat);
+  const price = formatRupiah(lowestPrice(s));
   return {
     title: { absolute: `Sowanan | Undangan Pernikahan Digital Mulai ${price}` },
     description: `Undangan pernikahan digital mulai ${price}, jadi dalam ${s.sla}. Sudah termasuk RSVP, peta lokasi, buku ucapan, dan amplop digital.`,
@@ -40,7 +40,7 @@ function jsonLd(s: Settings) {
       areaServed: "ID",
       address: { "@type": "PostalAddress", addressLocality: "Semarang", addressCountry: "ID" },
       sameAs: [`https://instagram.com/${s.instagram}`],
-      priceRange: `${formatRupiah(s.priceHemat)} - ${formatRupiah(s.priceDesain)}`,
+      priceRange: `${formatRupiah(lowestPrice(s))} - ${formatRupiah(highestPrice(s))}`,
     },
     {
       "@context": "https://schema.org",
@@ -66,7 +66,7 @@ export default async function Home() {
       />
       <SiteHeader waHref={wa} />
       <main>
-        <Hero price={formatRupiah(s.priceHemat)} sla={s.sla} hours={s.operatingHours} waHref={wa} />
+        <Hero price={formatRupiah(lowestPrice(s))} sla={s.sla} hours={s.operatingHours} waHref={wa} />
         <Themes waHref={wa} />
         <Features />
         <Pricing settings={s} waHref={wa} />
