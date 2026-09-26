@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, type ReactNode } from "react";
+import { useActionState, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { Settings } from "@/lib/settings";
 import { saveSettings, type FormState } from "./actions";
 
@@ -22,7 +22,7 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
-    title: "Harga paket",
+    title: "Harga",
     fields: [
       { name: "priceHemat", label: "Hemat", type: "price", prefix: "Rp" },
       { name: "priceLengkap", label: "Lengkap", type: "price", prefix: "Rp" },
@@ -30,7 +30,7 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
-    title: "Jumlah revisi",
+    title: "Revisi",
     fields: [
       { name: "revisionsHemat", label: "Hemat", type: "revision", suffix: "kali" },
       { name: "revisionsLengkap", label: "Lengkap", type: "revision", suffix: "kali" },
@@ -119,6 +119,25 @@ export function SettingsForm({ initial }: { initial: Settings }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveSettings, { ok: false, message: "" });
   const [dismissed, setDismissed] = useState<FormState | null>(null);
   const toast = state.message && dismissed !== state ? state : null;
+  const [tab, setTab] = useState(0);
+  const [seen, setSeen] = useState(state);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const hasError = (gi: number) => groups[gi].fields.some((f) => state.errors?.[f.name]);
+
+  if (seen !== state) {
+    setSeen(state);
+    const first = groups.findIndex((_, gi) => hasError(gi));
+    if (first >= 0) setTab(first);
+  }
+
+  const onTabKey = (e: KeyboardEvent<HTMLButtonElement>) => {
+    const dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!dir) return;
+    e.preventDefault();
+    const next = (tab + dir + groups.length) % groups.length;
+    setTab(next);
+    tabRefs.current[next]?.focus();
+  };
 
   useEffect(() => {
     if (!state.message) return;
@@ -127,10 +146,36 @@ export function SettingsForm({ initial }: { initial: Settings }) {
   }, [state]);
 
   return (
-    <form action={action} noValidate className="space-y-10">
-      {groups.map((g) => (
-        <fieldset key={g.title}>
-          <legend className="mb-4 font-serif text-2xl font-medium">{g.title}</legend>
+    <form action={action} noValidate>
+      <div role="tablist" aria-label="Kelompok pengaturan" className="-mx-5 mb-8 flex overflow-x-auto border-b border-line px-5 [scrollbar-width:none]">
+        {groups.map((g, gi) => (
+          <button
+            key={g.title}
+            ref={(el) => {
+              tabRefs.current[gi] = el;
+            }}
+            type="button"
+            role="tab"
+            id={`tab-${gi}`}
+            aria-selected={tab === gi}
+            aria-controls={`panel-${gi}`}
+            tabIndex={tab === gi ? 0 : -1}
+            onClick={() => setTab(gi)}
+            onKeyDown={onTabKey}
+            className={`relative shrink-0 px-4 py-3 text-[15px] whitespace-nowrap transition-colors duration-150 focus-visible:outline-2 focus-visible:-outline-offset-2 ${
+              tab === gi ? "font-medium text-wine" : "text-ink-mute hover:text-ink"
+            }`}
+          >
+            {g.title}
+            {hasError(gi) && <span className="ml-1.5 inline-block size-2 rounded-full bg-wine align-middle" aria-label="ada isian bermasalah" />}
+            {tab === gi && <span className="absolute inset-x-3 -bottom-px h-0.5 bg-wine" aria-hidden="true" />}
+          </button>
+        ))}
+      </div>
+
+      {groups.map((g, gi) => (
+        <fieldset key={g.title} id={`panel-${gi}`} role="tabpanel" aria-labelledby={`tab-${gi}`} hidden={tab !== gi} className="min-h-[340px]">
+          <legend className="sr-only">{g.title}</legend>
           <div className="grid gap-5 sm:grid-cols-2">
             {g.fields.map((f) => {
               const err = state.errors?.[f.name];
@@ -184,7 +229,7 @@ export function SettingsForm({ initial }: { initial: Settings }) {
         </fieldset>
       ))}
 
-      <div className="sticky bottom-0 -mx-5 border-t border-line bg-ivory/95 px-5 py-4 backdrop-blur">
+      <div className="sticky bottom-0 -mx-5 mt-10 border-t border-line bg-ivory/95 px-5 py-4 backdrop-blur">
         <button
           type="submit"
           disabled={pending}
