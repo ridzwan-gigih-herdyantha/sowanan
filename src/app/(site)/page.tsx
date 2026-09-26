@@ -7,9 +7,9 @@ import { Pricing } from "@/components/home/pricing";
 import { SiteHeader } from "@/components/home/site-header";
 import { Steps } from "@/components/home/steps";
 import { Themes } from "@/components/home/themes";
-import { RevealOnScroll } from "@/components/reveal-on-scroll";
 import { formatRupiah, getSettings, waLink, type Settings } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
+import { RevealOnScroll } from "@/components/reveal-on-scroll";
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();

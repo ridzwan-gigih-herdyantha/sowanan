@@ -36,7 +36,7 @@ export function SiteFooter({ waHref, instagram }: { waHref: string; instagram: s
           <div className="mt-1.5">Dibuat oleh Nine Dragon Labs</div>
         </div>
         <div>
-          <Link href="/ketentuan" className={link}>
+          <Link prefetch={false} href="/ketentuan" className={link}>
             Ketentuan
           </Link>
           <a href={waHref} className={link}>

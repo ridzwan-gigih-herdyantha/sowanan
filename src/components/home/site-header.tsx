@@ -12,7 +12,7 @@ export function SiteHeader({ waHref }: { waHref: string }) {
   return (
     <header className="border-b border-line">
       <Container className="flex items-center justify-between gap-4 py-[22px]">
-        <Link href="/" className="font-serif text-[26px] leading-tight tracking-[.5px] text-ink no-underline">
+        <Link prefetch={false} href="/" className="font-serif text-[26px] leading-tight tracking-[.5px] text-ink no-underline">
           Sowanan
           <span className="-mt-1 block font-sans text-[10px] tracking-[1.5px] text-ink-mute sm:text-[11px] sm:tracking-[2px]">
             UNDANGAN PERNIKAHAN DIGITAL

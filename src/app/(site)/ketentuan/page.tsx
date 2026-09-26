@@ -31,7 +31,7 @@ export default async function KetentuanPage() {
 
   return (
     <main className="mx-auto max-w-[72ch] px-5 py-16 sm:py-24">
-      <Link href="/" className="text-sm text-ink-mute no-underline hover:text-wine">
+      <Link prefetch={false} href="/" className="text-sm text-ink-mute no-underline hover:text-wine">
         Sowanan
       </Link>
       <h1 className="mt-6 font-serif text-[clamp(40px,8vw,56px)] leading-[1.05] font-medium">Ketentuan Layanan</h1>

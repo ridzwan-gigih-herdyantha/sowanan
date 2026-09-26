@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { createContext, useContext, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 
 const GUEST_KEY = "sowanan:guest";
 
@@ -64,6 +64,14 @@ export function InvitationShell({ door, music, className, style, children }: Pro
   const [open, setOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.overflow = open ? "" : "hidden";
+    return () => {
+      root.style.overflow = "";
+    };
+  }, [open]);
 
   const guest = invited || typed || "";
   const setGuest = (name: string) => {

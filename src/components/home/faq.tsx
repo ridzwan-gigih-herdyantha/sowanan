@@ -21,7 +21,7 @@ export function faqItems(s: Settings): { q: string; a: ReactNode; text: string }
       text: `${aktif} Ketentuan lengkapnya ada di halaman ketentuan.`,
       a: (
         <>
-          {aktif} Ketentuan lengkapnya ada di <Link href="/ketentuan">halaman ketentuan</Link>.
+          {aktif} Ketentuan lengkapnya ada di <Link prefetch={false} href="/ketentuan">halaman ketentuan</Link>.
         </>
       ),
     },

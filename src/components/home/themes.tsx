@@ -18,6 +18,7 @@ function Card({ theme, index, waHref }: { theme: ThemeCard; index: number; waHre
                 src={theme.image}
                 alt={`Contoh undangan tema ${theme.name}`}
                 fill
+                loading="eager"
                 sizes="(min-width: 760px) 170px, 50vw"
                 className="object-cover object-top"
               />

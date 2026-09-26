@@ -122,9 +122,6 @@
     linear-gradient(#000 0 0) bottom / 100% calc(100% - 13px) no-repeat;
 }
 
-html:has([data-inv-state="closed"]) {
-  overflow: hidden;
-}
 .inv-door {
   transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) 0.18s, visibility 0s linear 0.63s;
 }
