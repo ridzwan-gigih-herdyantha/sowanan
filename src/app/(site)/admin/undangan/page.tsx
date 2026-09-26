@@ -48,6 +48,9 @@ async function List() {
             <Link href={`/admin/undangan/${r.slug}/tamu`} prefetch={false} className="text-[14px] text-wine underline underline-offset-4">
               Tamu
             </Link>
+            <Link href={`/admin/undangan/${r.slug}/respon`} prefetch={false} className="text-[14px] text-wine underline underline-offset-4">
+              RSVP
+            </Link>
           </li>
         ))}
       </ul>
