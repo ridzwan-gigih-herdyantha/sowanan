@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState, type ReactNode } from "react";
 import type { Settings } from "@/lib/settings";
 import { saveSettings, type FormState } from "./actions";
 
-type Field = { name: keyof Settings; label: string; hint?: string; type?: "number" | "text" | "price" | "revision"; prefix?: string; suffix?: string };
+type Field = { name: keyof Settings; label: string; hint?: string; type?: "number" | "text" | "price" | "revision" | "textarea"; prefix?: string; suffix?: string };
 
 const groups: { title: string; fields: Field[] }[] = [
   {
@@ -13,6 +13,12 @@ const groups: { title: string; fields: Field[] }[] = [
       { name: "waNumber", label: "Nomor WhatsApp", hint: "Format 628xxx, tanpa spasi atau tanda +" },
       { name: "instagram", label: "Username Instagram", prefix: "@" },
       { name: "operatingHours", label: "Jam operasional", hint: 'Contoh: "08.00 sampai 20.00"' },
+      {
+        name: "waMessage",
+        label: "Template chat WhatsApp",
+        type: "textarea",
+        hint: "Teks ini otomatis terisi di kolom chat saat pengunjung menekan tombol WhatsApp. Kosongkan kalau tidak perlu.",
+      },
     ],
   },
   {
@@ -130,9 +136,18 @@ export function SettingsForm({ initial }: { initial: Settings }) {
               const err = state.errors?.[f.name];
               const Wrap = f.type === "revision" ? "div" : "label";
               return (
-                <Wrap key={f.name} className="block text-[14px] font-medium">
+                <Wrap key={f.name} className={`block text-[14px] font-medium ${f.type === "textarea" ? "sm:col-span-2" : ""}`}>
                   {f.label}
-                  {f.type === "revision" ? (
+                  {f.type === "textarea" ? (
+                    <textarea
+                      name={f.name}
+                      defaultValue={String(initial[f.name] ?? "")}
+                      rows={3}
+                      maxLength={500}
+                      aria-invalid={Boolean(err)}
+                      className={`mt-2 block w-full resize-y rounded-sm border bg-white px-3 py-3 text-base font-normal outline-none focus:border-wine ${err ? "border-wine" : "border-line"}`}
+                    />
+                  ) : f.type === "revision" ? (
                     <RevisionInput
                       name={f.name}
                       label={`Revisi ${f.label}`}

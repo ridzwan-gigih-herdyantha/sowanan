@@ -33,6 +33,7 @@ export const settingsSchema = z.object({
     .transform((v) => v.replace(/^@/, ""))
     .pipe(z.string().regex(/^[A-Za-z0-9._]{1,30}$/, "Username Instagram hanya huruf, angka, titik, dan garis bawah.")),
   operatingHours: text("Jam operasional"),
+  waMessage: z.string().trim().max(500, "Template chat maksimal 500 karakter."),
 });
 
 export const REVISION_FIELDS = ["revisionsHemat", "revisionsLengkap", "revisionsDesain"] as const;
@@ -78,6 +79,7 @@ export const DEFAULT_SETTINGS: Settings = {
   dpPercent: 50,
   instagram: "sowanan.id",
   operatingHours: "08.00 sampai 20.00",
+  waMessage: "Halo Sowanan, saya mau tanya soal undangan pernikahan digital.",
 };
 
 export async function getSettings(): Promise<Settings> {

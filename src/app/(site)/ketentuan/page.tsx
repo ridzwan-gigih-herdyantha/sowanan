@@ -108,7 +108,7 @@ export default async function KetentuanPage() {
       </div>
 
       <p className="mt-16 border-t border-line pt-8 text-ink-soft">
-        Ada yang belum jelas? <a href={waLink(s.waNumber)}>Tanya kami lewat WhatsApp</a>.
+        Ada yang belum jelas? <a href={waLink(s.waNumber, s.waMessage)}>Tanya kami lewat WhatsApp</a>.
       </p>
     </main>
   );

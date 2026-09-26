@@ -56,7 +56,7 @@ function jsonLd(s: Settings) {
 
 export default async function Home() {
   const s = await getSettings();
-  const wa = waLink(s.waNumber);
+  const wa = waLink(s.waNumber, s.waMessage);
 
   return (
     <>
