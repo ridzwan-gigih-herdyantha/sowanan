@@ -7,6 +7,7 @@ import { CopyButton } from "@/components/invitation/copy-button";
 import { Gallery } from "@/components/invitation/gallery";
 import { Greeting } from "@/components/invitation/greeting";
 import { Rsvp } from "@/components/invitation/rsvp";
+import { ScrollWind } from "@/components/invitation/scroll-wind";
 import { InvitationShell } from "@/components/invitation/shell";
 import { Story } from "@/components/invitation/story";
 import { Wishes } from "@/components/invitation/wishes";
@@ -417,6 +418,7 @@ export function HendrawanLarasati({ inv }: { inv: InvitationView }) {
         {inv.on.closing && <Closing inv={inv} />}
       </main>
       <Footer inv={inv} />
+      <ScrollWind />
     </InvitationShell>
   );
 }

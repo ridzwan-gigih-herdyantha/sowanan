@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { submitWish } from "@/app/[slug]/actions";
 import type { Wish } from "@/lib/guestbook";
 import { useGuest } from "./shell";
+import { sway } from "./sway";
 
 const FIRST = 4;
 const STEP = 6;
@@ -84,7 +85,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
               <li
                 key={w.id}
                 className={`inv-swing mb-5 break-inside-avoid origin-top ${i < unsynced.length ? "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]" : ""}`}
-                style={{ "--tilt": `${tilt[i % tilt.length]}deg` } as React.CSSProperties}
+                style={{ "--tilt": `${tilt[i % tilt.length]}deg`, ...sway(i) } as React.CSSProperties}
                 tabIndex={0}
               >
                 <div

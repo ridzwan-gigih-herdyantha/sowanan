@@ -1,6 +1,7 @@
 "use client";
 
 import { pad, useTimeLeft } from "@/components/countdown";
+import { sway } from "./sway";
 
 const tags = [
   { key: "days", label: "HARI", tone: "bg-inv-wash", tilt: -4, drop: "h-10" },
@@ -19,12 +20,12 @@ export function TagCountdown({ target, doneText }: { target: string; doneText: s
     <div className="relative" role="timer" aria-label={t ? `${t.days} hari ${t.hours} jam ${t.minutes} menit lagi` : "Menghitung waktu"}>
       <span className="absolute inset-x-0 top-0 h-px bg-inv-gold-light/60" aria-hidden="true" />
       <ul className="grid grid-cols-3 gap-3 sm:gap-8">
-        {tags.map((tag) => (
+        {tags.map((tag, i) => (
           <li key={tag.key} className="flex flex-col items-center">
             <span className={`w-px bg-inv-gold-light/60 ${tag.drop}`} aria-hidden="true" />
             <span
               className="inv-swing relative block w-full max-w-[200px] origin-top"
-              style={{ "--tilt": `${tag.tilt}deg` } as React.CSSProperties}
+              style={{ "--tilt": `${tag.tilt}deg`, ...sway(i) } as React.CSSProperties}
               tabIndex={0}
             >
               <span

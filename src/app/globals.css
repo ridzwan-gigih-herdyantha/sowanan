@@ -320,10 +320,32 @@
   transform: rotate(var(--tilt, 0deg));
   transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+.inv-swing > * {
+  transform-origin: top center;
+  animation: inv-breeze var(--sway-dur, 4.6s) ease-in-out var(--sway-delay, 0s) infinite;
+}
 .inv-swing:hover,
 .inv-swing:focus-visible,
 .inv-swing:active {
   transform: rotate(calc(var(--tilt, 0deg) * -1.6));
+}
+@keyframes inv-breeze {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  22% {
+    rotate: 3.8deg;
+  }
+  48% {
+    rotate: -1deg;
+  }
+  72% {
+    rotate: 1.1deg;
+  }
+  86% {
+    rotate: -1.0deg;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .inv-swing,
@@ -332,6 +354,9 @@
   .inv-swing:active {
     transition: none;
     transform: rotate(var(--tilt, 0deg));
+  }
+  .inv-swing > * {
+    animation: none;
   }
 }
 
