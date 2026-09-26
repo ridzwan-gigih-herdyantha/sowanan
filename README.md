@@ -16,7 +16,16 @@ Tanpa env Supabase, homepage tetap jalan dengan `DEFAULT_SETTINGS` di `src/lib/s
 
 1. Buat project (region Singapore), jalankan `supabase/schema.sql` di SQL Editor.
 2. Authentication → matikan "Allow new users to sign up".
-3. Isi `ADMIN_EMAIL` dan `ADMIN_PASSWORD` di `.env.local`, lalu `pnpm create-admin`.
+3. Isi `ADMIN_EMAIL` dan `ADMIN_PASSWORD` di `.env`, lalu `pnpm create-admin`.
+
+### Menambah undangan
+
+```bash
+pnpm create-invitation <slug> <tema> [--publish]
+# contoh: pnpm create-invitation budi-ani andi-rina --publish
+```
+
+Slug divalidasi dulu (`src/lib/reserved-slugs.ts`): 3 sampai 60 karakter, huruf kecil, angka, dan tanda hubung, tidak boleh memakai slug sistem (tema, harga, order, ketentuan, masuk, kelola, blog, reseller, admin, api, demo, panduan, kontak), dan belum dipakai undangan lain. Database juga menolak slug terlarang lewat constraint `invitations_slug_not_reserved`. Slug permanen setelah link disebar.
 
 ## Struktur
 
@@ -33,4 +42,4 @@ Tanpa env Supabase, homepage tetap jalan dengan `DEFAULT_SETTINGS` di `src/lib/s
 
 ## Scripts
 
-`pnpm dev` · `pnpm build` · `pnpm typecheck` · `pnpm lint` · `pnpm create-admin`
+`pnpm dev` · `pnpm build` · `pnpm typecheck` · `pnpm lint` · `pnpm create-admin` · `pnpm create-invitation`

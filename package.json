@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "create-admin": "node --env-file=.env scripts/create-admin.ts"
+    "create-admin": "node --no-warnings --env-file=.env scripts/create-admin.ts",
+    "create-invitation": "node --no-warnings --env-file=.env scripts/create-invitation.ts"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.16",
