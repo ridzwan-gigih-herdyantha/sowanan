@@ -33,6 +33,13 @@ export const settingsSchema = z.object({
   photosLengkap: count("Foto Lengkap", 1, 500).nullable(),
   photosIstimewa: count("Foto Istimewa", 1, 500).nullable(),
   dpPercent: count("Persentase DP", 0, 100),
+  addonPhotos: rupiah("Harga tambah 10 foto"),
+  addonStyle: rupiah("Harga ganti font atau palet"),
+  addonMusic: rupiah("Harga musik pilihan sendiri"),
+  addonExport: rupiah("Harga ekspor daftar tamu"),
+  addonExpress: rupiah("Harga pengerjaan kilat"),
+  addonDomain: rupiah("Harga domain sendiri"),
+  addonExtend: rupiah("Harga perpanjangan masa aktif"),
   instagram: z
     .string()
     .trim()
@@ -58,6 +65,13 @@ export const NUMBER_FIELDS = [
   "photosLengkap",
   "photosIstimewa",
   "dpPercent",
+  "addonPhotos",
+  "addonStyle",
+  "addonMusic",
+  "addonExport",
+  "addonExpress",
+  "addonDomain",
+  "addonExtend",
 ] as const;
 
 export function parseSettingsForm(form: FormData) {
@@ -91,6 +105,13 @@ export const DEFAULT_SETTINGS: Settings = {
   photosLengkap: 15,
   photosIstimewa: null,
   dpPercent: 50,
+  addonPhotos: 25000,
+  addonStyle: 35000,
+  addonMusic: 25000,
+  addonExport: 50000,
+  addonExpress: 99000,
+  addonDomain: 150000,
+  addonExtend: 50000,
   instagram: "sowanan.id",
   operatingHours: "08.00 sampai 20.00",
   waMessage: "Halo Sowanan, saya mau tanya soal undangan pernikahan digital.",

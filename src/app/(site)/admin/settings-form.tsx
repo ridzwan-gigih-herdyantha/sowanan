@@ -46,6 +46,18 @@ const groups: { title: string; cols?: 3; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Add-on",
+    fields: [
+      { name: "addonPhotos", label: "Tambah 10 foto galeri", type: "price", prefix: "Rp", hint: "Untuk paket Dasar dan Lengkap" },
+      { name: "addonStyle", label: "Ganti font atau palet warna", type: "price", prefix: "Rp", hint: "Untuk paket Dasar" },
+      { name: "addonMusic", label: "Musik pilihan sendiri", type: "price", prefix: "Rp", hint: "Untuk paket Dasar" },
+      { name: "addonExport", label: "Ekspor daftar tamu ke Excel", type: "price", prefix: "Rp", hint: "Untuk paket Lengkap" },
+      { name: "addonExpress", label: "Pengerjaan kilat 24 jam", type: "price", prefix: "Rp", hint: "Untuk paket Dasar dan Lengkap" },
+      { name: "addonDomain", label: "Domain sendiri (.com)", type: "price", prefix: "Rp", hint: "Untuk semua paket" },
+      { name: "addonExtend", label: "Perpanjangan masa aktif 1 tahun", type: "price", prefix: "Rp", hint: "Untuk semua paket" },
+    ],
+  },
+  {
     title: "Pembayaran",
     fields: [{ name: "dpPercent", label: "Persentase DP", type: "number", suffix: "%" }],
   },
