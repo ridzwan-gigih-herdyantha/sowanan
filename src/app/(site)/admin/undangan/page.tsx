@@ -7,6 +7,7 @@ import { invitationLabel, THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../login-form";
 import { AdminNav } from "../nav";
 import { CreateForm } from "./create-form";
+import { PaymentToggle } from "./payment-toggle";
 
 export const metadata: Metadata = {
   title: "Undangan",
@@ -22,7 +23,13 @@ async function List() {
   const admin = await currentAdmin();
   if (!admin) return <LoginForm />;
 
-  const { data } = await supabaseAdmin().from("invitations").select("slug, theme, published, updated_at").order("updated_at", { ascending: false });
+  const sb = supabaseAdmin();
+  const cols = "slug, theme, published, updated_at";
+  const withStatus = await sb.from("invitations").select(`${cols}, payment_status`).order("updated_at", { ascending: false });
+  // Sebelum migrasi 0005, kolom payment_status belum ada.
+  const { data } = withStatus.error
+    ? await sb.from("invitations").select(cols).order("updated_at", { ascending: false })
+    : withStatus;
   const rows = data ?? [];
   const themes = Object.entries(THEME_NAMES).map(([key, name]) => ({ key, name }));
 
@@ -41,6 +48,7 @@ async function List() {
                 sowanan.com/{r.slug} · diubah {dateFmt.format(new Date(r.updated_at))}
               </p>
             </div>
+            <PaymentToggle slug={r.slug} paid={(r as { payment_status?: string }).payment_status !== "belum_lunas"} />
             <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${r.published ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>{r.published ? "Tayang" : "Draf"}</span>
             <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="text-[14px] text-wine underline underline-offset-4">
               Edit

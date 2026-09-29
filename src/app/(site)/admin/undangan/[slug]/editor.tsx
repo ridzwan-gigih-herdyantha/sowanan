@@ -9,7 +9,7 @@ import { publishDraft, saveDraft, setPublished } from "../actions";
 import { InvitationTabs } from "../tabs";
 import { FieldInput, FormProvider } from "./fields";
 
-type Props = { slug: string; theme: string; label: string; published: boolean; draft: InvitationData; live: InvitationData };
+type Props = { slug: string; theme: string; label: string; published: boolean; paid: boolean; draft: InvitationData; live: InvitationData };
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
 const groupOf = (() => {
@@ -44,7 +44,7 @@ function Switch({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
   );
 }
 
-export function Editor({ slug, theme, label, published: initialPublished, draft, live }: Props) {
+export function Editor({ slug, theme, label, published: initialPublished, paid, draft, live }: Props) {
   const [data, setData] = useState(draft);
   const [saved, setSaved] = useState(() => JSON.stringify(live));
   const [published, setPub] = useState(initialPublished);
@@ -170,7 +170,14 @@ export function Editor({ slug, theme, label, published: initialPublished, draft,
             <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine">
               Semua undangan
             </Link>
-            <h1 className="truncate font-serif text-2xl leading-tight">{label}</h1>
+            <h1 className="flex min-w-0 items-center gap-2 font-serif text-2xl leading-tight">
+              <span className="truncate">{label}</span>
+              {!paid && (
+                <span title="Watermark BELUM AKTIF tampil di undangan. Ubah status di daftar undangan." className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 font-sans text-[11px] text-amber-900 ring-1 ring-amber-300">
+                  Belum lunas
+                </span>
+              )}
+            </h1>
             <p className="text-[12px] text-ink-mute">
               {draftState === "saving" ? "Menyimpan draf..." : draftState === "error" ? <span className="text-wine">Draf gagal tersimpan. Cek koneksi.</span> : "Draf tersimpan otomatis"}
               <span className="mx-1.5">·</span>

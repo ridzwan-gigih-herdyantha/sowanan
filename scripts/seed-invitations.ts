@@ -37,7 +37,7 @@ for (const file of files) {
 
   const { data: row, error } = await sb
     .from("invitations")
-    .upsert({ slug: seed.slug, theme: seed.theme, published: seed.published, data: data.data, draft: null }, { onConflict: "slug" })
+    .upsert({ slug: seed.slug, theme: seed.theme, published: seed.published, payment_status: "lunas", data: data.data, draft: null }, { onConflict: "slug" })
     .select("id")
     .single();
   if (error) {

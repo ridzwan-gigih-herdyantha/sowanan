@@ -20,12 +20,12 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   if (!(await currentAdmin())) return <LoginForm />;
 
   const { slug } = await params;
-  const { data: row } = await supabaseAdmin().from("invitations").select("slug, theme, published, data, draft").eq("slug", slug).maybeSingle();
+  const { data: row } = await supabaseAdmin().from("invitations").select("*").eq("slug", slug).maybeSingle();
   if (!row || !THEME_NAMES[row.theme]) notFound();
 
   const live = invitationDataSchema.parse(row.data ?? {});
   const draft = row.draft ? invitationDataSchema.parse(row.draft) : live;
-  return <Editor slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} draft={draft} live={live} />;
+  return <Editor slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} draft={draft} live={live} />;
 }
 
 export default function EditInvitationPage({ params }: PageProps<"/admin/undangan/[slug]">) {

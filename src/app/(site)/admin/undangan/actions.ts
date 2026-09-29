@@ -89,3 +89,14 @@ export async function setPublished(slug: string, published: boolean): Promise<Re
   refresh(slug);
   return { ok: true, at: new Date().toISOString() };
 }
+
+export async function setPaymentStatus(slug: string, paid: boolean): Promise<Result> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  const { error } = await supabaseAdmin()
+    .from("invitations")
+    .update({ payment_status: paid ? "lunas" : "belum_lunas" })
+    .eq("slug", slug);
+  if (error) return { ok: false, error: "Gagal mengubah status pembayaran. Pastikan migrasi 0005 sudah dijalankan." };
+  refresh(slug);
+  return { ok: true, at: new Date().toISOString() };
+}
