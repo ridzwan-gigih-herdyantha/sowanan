@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import { Container, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
 
-const features: { title: string; text: string; icon: ReactNode }[] = [
+const LENGKAP = "Paket Lengkap ke atas";
+
+const features: { title: string; text: string; icon: ReactNode; plan?: string }[] = [
   {
     title: "Konfirmasi kehadiran",
     text: "Tamu klik hadir atau tidak, dan kalian bisa lihat daftarnya kapan saja.",
@@ -30,6 +32,7 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
   {
     title: "Galeri foto",
     text: "Foto prewedding ditata rapi dan tetap ringan waktu dibuka.",
+    plan: LENGKAP,
     icon: (
       <>
         <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -56,6 +59,7 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
   {
     title: "Musik latar",
     text: "Pilih lagunya sendiri, dan tamu tetap bisa mematikannya.",
+    plan: LENGKAP,
     icon: (
       <>
         <path d="M9 18V6l10-2v12" />
@@ -66,11 +70,22 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
   },
   {
     title: "Sebar tanpa batas",
-    text: "Satu link untuk semua tamu, dan nama tamu bisa muncul di undangannya.",
+    text: "Satu link untuk semua tamu, tanpa batas jumlah tamu.",
     icon: (
       <>
         <path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7" />
         <path d="M12 3v13M8 7l4-4 4 4" />
+      </>
+    ),
+  },
+  {
+    title: "Nama tamu di undangan",
+    text: "Setiap tamu disapa dengan namanya sendiri begitu undangan dibuka.",
+    plan: LENGKAP,
+    icon: (
+      <>
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21a8 8 0 0116 0" />
       </>
     ),
   },
@@ -90,8 +105,8 @@ export function Features() {
   return (
     <section id="fitur">
       <Container className={sectionPad}>
-        <SectionTitle {...reveal()}>Semua paket sudah termasuk</SectionTitle>
-        <SectionSub {...reveal()}>Tidak ada fitur yang dikunci lalu ditawarkan sebagai tambahan.</SectionSub>
+        <SectionTitle {...reveal()}>Fitur yang tersedia</SectionTitle>
+        <SectionSub {...reveal()}>Sebagian besar fitur ada di semua paket. Yang berlabel hanya tersedia di paket tertentu.</SectionSub>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-9 lg:grid-cols-3">
           {features.map((f, i) => (
             <div key={f.title} className="group flex gap-4" {...reveal(i)}>
@@ -110,6 +125,9 @@ export function Features() {
               </svg>
               <div>
                 <h3 className="mb-1.5 text-lg font-medium">{f.title}</h3>
+                {f.plan && (
+                  <span className="mb-2 inline-block rounded-sm bg-blush px-2 py-0.5 text-[12px] tracking-[0.5px] text-wine">{f.plan}</span>
+                )}
                 <p className="text-[15px] leading-[1.6] text-ink-body">{f.text}</p>
               </div>
             </div>

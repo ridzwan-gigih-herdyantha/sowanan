@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { formatRevisions, getSettings, waLink } from "@/lib/settings";
+import { getSettings, perPlan, waLink } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Ketentuan Layanan",
@@ -54,7 +54,7 @@ export default async function KetentuanPage() {
         <Section id="layanan" title="Syarat layanan">
           <ul>
             <li>Sowanan membuatkan undangan pernikahan digital berdasarkan tema dan data yang kalian kirim lewat WhatsApp.</li>
-            <li>Undangan dikerjakan dalam {s.sla} setelah data dan foto lengkap kami terima.</li>
+            <li>Waktu pengerjaan mengikuti paket: {perPlan(s, "sla", "hari kerja")}, dihitung setelah data dan foto lengkap kami terima.</li>
             <li>
               Kalian bertanggung jawab atas kebenaran data (nama, tanggal, lokasi) dan memastikan foto serta lagu yang dikirim boleh dipakai.
             </li>
@@ -67,19 +67,15 @@ export default async function KetentuanPage() {
 
         <Section id="revisi" title="Kebijakan revisi">
           <ul>
-            <li>
-              Jumlah revisi mengikuti paket: Hemat {formatRevisions(s.revisionsHemat, " kali")}, Lengkap {formatRevisions(s.revisionsLengkap, " kali")}, Desain Sendiri{" "}
-              {formatRevisions(s.revisionsDesain, " kali")}.
-            </li>
-            <li>Satu revisi adalah satu kumpulan perubahan yang dikirim sekaligus, bukan satu perubahan per pesan.</li>
+            <li>Revisi bebas di semua paket sampai undangan disebar ke tamu.</li>
             <li>Ganti tema masih bisa selama draf belum disetujui. Setelah disetujui, ganti tema dihitung sebagai pesanan baru.</li>
-            <li>Perbaikan kesalahan dari pihak kami tidak mengurangi jatah revisi.</li>
+            <li>Kesalahan dari pihak kami tetap kami perbaiki, termasuk setelah undangan disebar.</li>
           </ul>
         </Section>
 
         <Section id="masa-aktif" title="Masa aktif dan arsip">
           <ul>
-            <li>Undangan aktif selama {s.activePeriod} sejak undangan jadi.</li>
+            <li>Masa aktif mengikuti paket: {perPlan(s, "active", "bulan")}, dihitung sejak undangan jadi.</li>
             <li>
               Setelah masa aktif berakhir, undangan tersimpan sebagai arsip selama layanan beroperasi. Arsip tetap bisa dibuka, tetapi RSVP dan
               buku ucapan ditutup.

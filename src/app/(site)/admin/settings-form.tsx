@@ -4,9 +4,9 @@ import { useActionState, useEffect, useRef, useState, type KeyboardEvent, type R
 import type { Settings } from "@/lib/settings";
 import { saveSettings, type FormState } from "./actions";
 
-type Field = { name: keyof Settings; label: string; hint?: string; type?: "number" | "text" | "price" | "revision" | "textarea"; prefix?: string; suffix?: string };
+type Field = { name: keyof Settings; label: string; hint?: string; type?: "number" | "text" | "price" | "unlimited" | "textarea"; prefix?: string; suffix?: string };
 
-const groups: { title: string; fields: Field[] }[] = [
+const groups: { title: string; cols?: 3; fields: Field[] }[] = [
   {
     title: "Kontak",
     fields: [
@@ -23,28 +23,31 @@ const groups: { title: string; fields: Field[] }[] = [
   },
   {
     title: "Harga",
+    cols: 3,
     fields: [
-      { name: "priceHemat", label: "Hemat", type: "price", prefix: "Rp" },
+      { name: "priceDasar", label: "Dasar", type: "price", prefix: "Rp" },
       { name: "priceLengkap", label: "Lengkap", type: "price", prefix: "Rp" },
-      { name: "priceDesain", label: "Desain Sendiri", type: "price", prefix: "Rp" },
+      { name: "priceIstimewa", label: "Istimewa", type: "price", prefix: "Rp" },
     ],
   },
   {
-    title: "Revisi",
+    title: "Paket",
+    cols: 3,
     fields: [
-      { name: "revisionsHemat", label: "Hemat", type: "revision", suffix: "kali" },
-      { name: "revisionsLengkap", label: "Lengkap", type: "revision", suffix: "kali" },
-      { name: "revisionsDesain", label: "Desain Sendiri", type: "revision", suffix: "kali" },
+      { name: "activeDasar", label: "Masa aktif Dasar", type: "number", suffix: "bulan" },
+      { name: "activeLengkap", label: "Masa aktif Lengkap", type: "number", suffix: "bulan" },
+      { name: "activeIstimewa", label: "Masa aktif Istimewa", type: "number", suffix: "bulan" },
+      { name: "slaDasar", label: "Pengerjaan Dasar", type: "number", suffix: "hari kerja" },
+      { name: "slaLengkap", label: "Pengerjaan Lengkap", type: "number", suffix: "hari kerja" },
+      { name: "slaIstimewa", label: "Pengerjaan Istimewa", type: "number", suffix: "hari kerja" },
+      { name: "photosDasar", label: "Foto galeri Dasar", type: "unlimited", suffix: "foto" },
+      { name: "photosLengkap", label: "Foto galeri Lengkap", type: "unlimited", suffix: "foto" },
+      { name: "photosIstimewa", label: "Foto galeri Istimewa", type: "unlimited", suffix: "foto" },
     ],
   },
   {
-    title: "Layanan",
-    fields: [
-      { name: "sla", label: "SLA pengerjaan", hint: 'Contoh: "2 sampai 3 hari kerja"' },
-      { name: "activePeriod", label: "Masa aktif link", hint: 'Contoh: "12 bulan"' },
-      { name: "maxPhotosHemat", label: "Maksimal foto paket Hemat", type: "number", suffix: "foto" },
-      { name: "dpPercent", label: "Persentase DP", type: "number", suffix: "%" },
-    ],
+    title: "Pembayaran",
+    fields: [{ name: "dpPercent", label: "Persentase DP", type: "number", suffix: "%" }],
   },
 ];
 
@@ -71,9 +74,9 @@ function PriceInput({ name, initial, invalid }: { name: string; initial: number;
   );
 }
 
-type RevisionProps = { name: string; label: string; initial: number | null; invalid: boolean; suffix?: string };
+type UnlimitedProps = { name: string; label: string; initial: number | null; invalid: boolean; suffix?: string };
 
-function RevisionInput({ name, label, initial, invalid, suffix }: RevisionProps) {
+function UnlimitedInput({ name, label, initial, invalid, suffix }: UnlimitedProps) {
   const [unlimited, setUnlimited] = useState(initial === null);
   return (
     <>
@@ -86,7 +89,7 @@ function RevisionInput({ name, label, initial, invalid, suffix }: RevisionProps)
           <>
             <input
               name={name}
-              defaultValue={initial === null ? "3" : String(initial)}
+              defaultValue={initial === null ? "" : String(initial)}
               aria-label={label}
               inputMode="numeric"
               aria-invalid={invalid}
@@ -176,10 +179,10 @@ export function SettingsForm({ initial }: { initial: Settings }) {
       {groups.map((g, gi) => (
         <fieldset key={g.title} id={`panel-${gi}`} role="tabpanel" aria-labelledby={`tab-${gi}`} hidden={tab !== gi} className="min-h-[340px]">
           <legend className="sr-only">{g.title}</legend>
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className={`grid gap-5 ${g.cols === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
             {g.fields.map((f) => {
               const err = state.errors?.[f.name];
-              const Wrap = f.type === "revision" ? "div" : "label";
+              const Wrap = f.type === "unlimited" ? "div" : "label";
               return (
                 <Wrap key={f.name} className={`block text-[14px] font-medium ${f.type === "textarea" ? "sm:col-span-2" : ""}`}>
                   {f.label}
@@ -192,10 +195,10 @@ export function SettingsForm({ initial }: { initial: Settings }) {
                       aria-invalid={Boolean(err)}
                       className={`mt-2 block w-full resize-y rounded-sm border bg-white px-3 py-3 text-base font-normal outline-none focus:border-wine ${err ? "border-wine" : "border-line"}`}
                     />
-                  ) : f.type === "revision" ? (
-                    <RevisionInput
+                  ) : f.type === "unlimited" ? (
+                    <UnlimitedInput
                       name={f.name}
-                      label={`Revisi ${f.label}`}
+                      label={f.label}
                       initial={initial[f.name] as number | null}
                       invalid={Boolean(err)}
                       suffix={f.suffix}

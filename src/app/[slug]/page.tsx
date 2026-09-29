@@ -12,7 +12,7 @@ export async function generateStaticParams() {
 async function load(slug: string) {
   const inv = await getInvitation(slug);
   if (!inv || !inv.published || !THEMES[inv.theme]) return null;
-  return { theme: THEMES[inv.theme], view: toView(inv.slug, inv.data) };
+  return { theme: THEMES[inv.theme], view: toView(inv.slug, inv.data, inv.theme) };
 }
 
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {

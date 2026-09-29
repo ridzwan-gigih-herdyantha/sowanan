@@ -1,21 +1,28 @@
 import { Container, SectionSub, SectionTitle, btn, cx, reveal, sectionPad } from "@/components/ui";
-import { formatRevisions, formatRupiah, type Settings } from "@/lib/settings";
+import { formatPhotos, formatRupiah, type Settings } from "@/lib/settings";
 
-type Plan = { tier: string; flag?: string; price: number; forWho: string; items: string[]; highlight?: boolean };
+type Plan = { tier: string; flag?: string; price: number; forWho: string; lead?: string; items: string[]; highlight?: boolean };
+
+const REVISI = "Revisi bebas sampai undangan disebar";
+const galeri = (n: number | null) => (n === null ? "Galeri foto tanpa batas" : `Galeri ${formatPhotos(n)}`);
 
 function plans(s: Settings): Plan[] {
   return [
     {
-      tier: "HEMAT",
-      price: s.priceHemat,
-      forWho: "buat yang acaranya sudah dekat",
+      tier: "DASAR",
+      price: s.priceDasar,
+      forWho: "yang penting undangan cepat tersebar",
       items: [
-        "Tema pilihan, warna disesuaikan",
-        "Semua fitur di atas",
-        `Galeri sampai ${s.maxPhotosHemat} foto`,
-        `Jadi dalam ${s.sla}`,
-        `Aktif ${s.activePeriod}`,
-        `Revisi ${formatRevisions(s.revisionsHemat, "×")}`,
+        "Pilihan 2 tema",
+        galeri(s.photosDasar),
+        "Musik latar bawaan tema",
+        "RSVP dan buku ucapan",
+        "Peta lokasi dan hitung mundur",
+        "Amplop digital",
+        "Sebar tanpa batas jumlah tamu",
+        `Jadi dalam ${s.slaDasar} hari kerja`,
+        `Aktif ${s.activeDasar} bulan`,
+        REVISI,
       ],
     },
     {
@@ -24,27 +31,30 @@ function plans(s: Settings): Plan[] {
       highlight: true,
       price: s.priceLengkap,
       forWho: "pilihan sebagian besar pasangan",
+      lead: "Semua isi paket Dasar, ditambah:",
       items: [
-        "Semua isi paket Hemat",
-        "Galeri foto tanpa batas",
-        "Nama tamu muncul di undangan",
+        "Semua tema, warna disesuaikan",
+        galeri(s.photosLengkap),
         "Musik latar pilihan sendiri",
+        "Nama tamu muncul di undangan",
         "Cerita perjalanan kalian",
-        `Aktif ${s.activePeriod}`,
-        `Revisi ${formatRevisions(s.revisionsLengkap, "×")}`,
+        `Jadi dalam ${s.slaLengkap} hari kerja`,
+        `Aktif ${s.activeLengkap} bulan`,
+        REVISI,
       ],
     },
     {
-      tier: "DESAIN SENDIRI",
-      price: s.priceDesain,
-      forWho: "dibuat dari nol, bukan dari tema",
+      tier: "ISTIMEWA",
+      price: s.priceIstimewa,
+      forWho: "paling cepat jadi, siap untuk hari H",
+      lead: "Semua isi paket Lengkap, ditambah:",
       items: [
-        "Semua isi paket Lengkap",
-        "Tampilan dirancang khusus",
+        galeri(s.photosIstimewa),
         "Daftar tamu bisa diunduh ke Excel",
-        "Absensi tamu dengan QR di lokasi",
-        `Aktif ${s.activePeriod}`,
-        `Revisi ${formatRevisions(s.revisionsDesain, "×")}`,
+        "QR absensi tamu di lokasi",
+        `Jadi dalam ${s.slaIstimewa} hari kerja`,
+        `Aktif ${s.activeIstimewa} bulan`,
+        REVISI,
       ],
     },
   ];
@@ -79,6 +89,7 @@ export function Pricing({ settings, waHref }: { settings: Settings; waHref: stri
                 </div>
                 <p className="mb-1.5 font-serif text-[42px] text-paper">{formatRupiah(p.price)}</p>
                 <p className="mb-[26px] text-sm text-dusk">{p.forWho}</p>
+                {p.lead && <p className="mb-3 text-sm text-mist">{p.lead}</p>}
                 <ul className="mb-8 flex flex-col gap-3 text-[15px] text-dusk-light">
                   {p.items.map((item) => (
                     <li key={item}>{item}</li>

@@ -29,7 +29,7 @@ async function Preview({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <>
-      <Component inv={toView(slug, data)} />
+      <Component inv={toView(slug, data, row.theme)} />
       <PreviewBridge texts={texts} media={media} sample={filled} />
     </>
   );

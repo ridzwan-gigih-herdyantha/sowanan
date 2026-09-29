@@ -15,17 +15,23 @@ const count = (label: string, min = 0, max = 1000) =>
     .max(max, `${label} maksimal ${max}.`);
 const text = (label: string) => z.string().trim().min(1, `${label} wajib diisi.`).max(80, `${label} maksimal 80 karakter.`);
 
+export const PLANS = ["Dasar", "Lengkap", "Istimewa"] as const;
+export type Plan = (typeof PLANS)[number];
+
 export const settingsSchema = z.object({
   waNumber: z.string().trim().regex(/^628\d{7,12}$/, "Nomor WhatsApp harus format 628xxx, 10 sampai 15 digit."),
-  priceHemat: rupiah("Harga Hemat"),
+  priceDasar: rupiah("Harga Dasar"),
   priceLengkap: rupiah("Harga Lengkap"),
-  priceDesain: rupiah("Harga Desain Sendiri"),
-  sla: text("SLA pengerjaan"),
-  activePeriod: text("Masa aktif link"),
-  revisionsHemat: count("Revisi Hemat", 0, 20).nullable(),
-  revisionsLengkap: count("Revisi Lengkap", 0, 20).nullable(),
-  revisionsDesain: count("Revisi Desain Sendiri", 0, 20).nullable(),
-  maxPhotosHemat: count("Maksimal foto Hemat", 1, 200),
+  priceIstimewa: rupiah("Harga Istimewa"),
+  activeDasar: count("Masa aktif Dasar", 1, 60),
+  activeLengkap: count("Masa aktif Lengkap", 1, 60),
+  activeIstimewa: count("Masa aktif Istimewa", 1, 60),
+  slaDasar: count("Pengerjaan Dasar", 1, 30),
+  slaLengkap: count("Pengerjaan Lengkap", 1, 30),
+  slaIstimewa: count("Pengerjaan Istimewa", 1, 30),
+  photosDasar: count("Foto Dasar", 1, 500).nullable(),
+  photosLengkap: count("Foto Lengkap", 1, 500).nullable(),
+  photosIstimewa: count("Foto Istimewa", 1, 500).nullable(),
   dpPercent: count("Persentase DP", 0, 100),
   instagram: z
     .string()
@@ -36,16 +42,21 @@ export const settingsSchema = z.object({
   waMessage: z.string().trim().max(500, "Template chat maksimal 500 karakter."),
 });
 
-export const REVISION_FIELDS = ["revisionsHemat", "revisionsLengkap", "revisionsDesain"] as const;
+export const UNLIMITED_FIELDS = ["photosDasar", "photosLengkap", "photosIstimewa"] as const;
 
 export const NUMBER_FIELDS = [
-  "priceHemat",
+  "priceDasar",
   "priceLengkap",
-  "priceDesain",
-  "revisionsHemat",
-  "revisionsLengkap",
-  "revisionsDesain",
-  "maxPhotosHemat",
+  "priceIstimewa",
+  "activeDasar",
+  "activeLengkap",
+  "activeIstimewa",
+  "slaDasar",
+  "slaLengkap",
+  "slaIstimewa",
+  "photosDasar",
+  "photosLengkap",
+  "photosIstimewa",
   "dpPercent",
 ] as const;
 
@@ -53,7 +64,7 @@ export function parseSettingsForm(form: FormData) {
   const raw: Record<string, unknown> = {};
   for (const key of Object.keys(settingsSchema.shape)) {
     const v = String(form.get(key) ?? "").trim();
-    if ((REVISION_FIELDS as readonly string[]).includes(key) && form.get(`${key}Unlimited`) === "on") {
+    if ((UNLIMITED_FIELDS as readonly string[]).includes(key) && form.get(`${key}Unlimited`) === "on") {
       raw[key] = null;
       continue;
     }
@@ -67,15 +78,18 @@ export type Settings = z.infer<typeof settingsSchema>;
 // TODO: ganti dengan nilai asli dari tim Sowanan sebelum launch.
 export const DEFAULT_SETTINGS: Settings = {
   waNumber: "6281234567890",
-  priceHemat: 99000,
-  priceLengkap: 199000,
-  priceDesain: 499000,
-  sla: "2 sampai 3 hari kerja",
-  activePeriod: "12 bulan",
-  revisionsHemat: 2,
-  revisionsLengkap: 3,
-  revisionsDesain: 5,
-  maxPhotosHemat: 10,
+  priceDasar: 49000,
+  priceLengkap: 149000,
+  priceIstimewa: 299000,
+  activeDasar: 3,
+  activeLengkap: 12,
+  activeIstimewa: 12,
+  slaDasar: 3,
+  slaLengkap: 2,
+  slaIstimewa: 1,
+  photosDasar: 3,
+  photosLengkap: 15,
+  photosIstimewa: null,
   dpPercent: 50,
   instagram: "sowanan.id",
   operatingHours: "08.00 sampai 20.00",
@@ -96,16 +110,32 @@ export async function getSettings(): Promise<Settings> {
   return { ...DEFAULT_SETTINGS, ...(parsed.success ? parsed.data : {}) };
 }
 
+export const planValue = (s: Settings, field: "price" | "active" | "sla" | "photos", plan: Plan) => s[`${field}${plan}`];
+
 export function lowestPrice(s: Settings): number {
-  return Math.min(s.priceHemat, s.priceLengkap, s.priceDesain);
+  return Math.min(...PLANS.map((p) => s[`price${p}`]));
 }
 
 export function highestPrice(s: Settings): number {
-  return Math.max(s.priceHemat, s.priceLengkap, s.priceDesain);
+  return Math.max(...PLANS.map((p) => s[`price${p}`]));
 }
 
-export function formatRevisions(n: number | null, unit: string): string {
-  return n === null ? "tanpa batas" : `${n}${unit}`;
+// Contoh: "1 sampai 3 hari kerja"
+export function slaRange(s: Settings): string {
+  const days = PLANS.map((p) => s[`sla${p}`]);
+  const [min, max] = [Math.min(...days), Math.max(...days)];
+  return min === max ? `${min} hari kerja` : `${min} sampai ${max} hari kerja`;
+}
+
+// Paket dengan nilai sama digabung. Contoh: "Dasar 3 bulan, Lengkap dan Istimewa 12 bulan"
+export function perPlan(s: Settings, field: "active" | "sla", unit: string): string {
+  const groups = new Map<number, string[]>();
+  for (const p of PLANS) groups.set(s[`${field}${p}`], [...(groups.get(s[`${field}${p}`]) ?? []), p]);
+  return [...groups].map(([n, plans]) => `${plans.join(" dan ")} ${n} ${unit}`).join(", ");
+}
+
+export function formatPhotos(n: number | null): string {
+  return n === null ? "tanpa batas" : `${n} foto`;
 }
 
 export function formatRupiah(value: number): string {

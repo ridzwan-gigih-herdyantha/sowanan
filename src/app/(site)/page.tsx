@@ -7,7 +7,7 @@ import { Pricing } from "@/components/home/pricing";
 import { SiteHeader } from "@/components/home/site-header";
 import { Steps } from "@/components/home/steps";
 import { Themes } from "@/components/home/themes";
-import { formatRupiah, getSettings, highestPrice, lowestPrice, waLink, type Settings } from "@/lib/settings";
+import { formatRupiah, getSettings, highestPrice, lowestPrice, slaRange, type Settings, waLink } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
 import { getInvitation } from "@/lib/invitation/load";
 import { toView } from "@/lib/invitation/view";
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const price = formatRupiah(lowestPrice(s));
   return {
     title: { absolute: `Sowanan | Undangan Pernikahan Digital Mulai ${price}` },
-    description: `Undangan pernikahan digital mulai ${price}, jadi dalam ${s.sla}. Sudah termasuk RSVP, peta lokasi, buku ucapan, dan amplop digital.`,
+    description: `Undangan pernikahan digital mulai ${price}, jadi dalam ${slaRange(s)}. Sudah termasuk RSVP, peta lokasi, buku ucapan, dan amplop digital.`,
     alternates: { canonical: "/" },
     openGraph: {
       title: "Sowanan | Undangan Pernikahan Digital",
@@ -74,11 +74,11 @@ export default async function Home() {
       />
       <SiteHeader waHref={wa} />
       <main>
-        <Hero price={formatRupiah(lowestPrice(s))} sla={s.sla} hours={s.operatingHours} waHref={wa} demo={demo} />
+        <Hero price={formatRupiah(lowestPrice(s))} sla={slaRange(s)} hours={s.operatingHours} waHref={wa} demo={demo} />
         <Themes waHref={wa} />
         <Features />
         <Pricing settings={s} waHref={wa} />
-        <Steps sla={s.sla} />
+        <Steps sla={slaRange(s)} />
         <Faq settings={s} />
         <ClosingCta hours={s.operatingHours} waHref={wa} />
       </main>

@@ -14,6 +14,13 @@ export const THEME_NAMES: Record<string, string> = {
   "hendrawan-larasati": "Herbarium",
 };
 
+// Lagu bawaan tema, dipakai kalau undangan tidak mengunggah musik sendiri.
+export const THEME_MUSIC: Record<string, string> = {
+  "andi-rina": "andi-rina/music_1.mp3?v=mui043e0",
+  "bagas-sekar": "bagas-sekar/music_1.mp3?v=mui04hdd",
+  "hendrawan-larasati": "hendrawan-larasati/music_1.mp3?v=mui04xmy",
+};
+
 export function invitationLabel(slug: string, theme: string): string {
   const name = THEME_NAMES[theme] ?? theme;
   return slug === theme ? `Contoh tema ${name}` : `${slug} (tema ${name})`;

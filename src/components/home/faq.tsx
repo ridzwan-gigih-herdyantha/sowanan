@@ -1,14 +1,15 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Container, SectionTitle, reveal, sectionPad } from "@/components/ui";
-import type { Settings } from "@/lib/settings";
+import { perPlan, slaRange, type Settings } from "@/lib/settings";
 
 export function faqItems(s: Settings): { q: string; a: ReactNode; text: string }[] {
-  const aktif = `${s.activePeriod} sejak undangan jadi, lalu tersimpan sebagai arsip selama layanan beroperasi.`;
+  const aktif = `Mengikuti paket: ${perPlan(s, "active", "bulan")}, dihitung sejak undangan jadi. Setelah itu tersimpan sebagai arsip selama layanan beroperasi.`;
+  const sla = slaRange(s);
   return [
     {
       q: "Berapa lama jadinya?",
-      text: `${s.sla.charAt(0).toUpperCase()}${s.sla.slice(1)} setelah data dan foto lengkap. Kalau antrean sedang penuh, kami kabari di awal, bukan setelah lewat.`,
+      text: `${sla.charAt(0).toUpperCase()}${sla.slice(1)} tergantung paket, dihitung setelah data dan foto lengkap. Kalau antrean sedang penuh, kami kabari di awal, bukan setelah lewat.`,
       a: null,
     },
     {

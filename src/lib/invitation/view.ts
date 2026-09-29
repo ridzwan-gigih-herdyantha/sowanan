@@ -1,4 +1,5 @@
 import { mediaUrl as u } from "@/lib/storage/media";
+import { THEME_MUSIC } from "@/themes/media";
 import type { InvitationData, SectionKey } from "./schema";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
@@ -18,7 +19,7 @@ function parts(iso: string, tz: keyof typeof ZONES) {
   return { weekday: get("weekday"), day: get("day"), month: get("month"), year: get("year"), dd: num[0], mm: num[1], yyyy: num[2] };
 }
 
-export function toView(slug: string, d: InvitationData) {
+export function toView(slug: string, d: InvitationData, theme = "") {
   const p = parts(d.event.start, d.event.timezone);
   const s = d.sections;
   const enabled = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, Boolean(v.enabled)])) as Record<SectionKey, boolean>;
@@ -64,7 +65,7 @@ export function toView(slug: string, d: InvitationData) {
       qris: u(s.gifts.qris),
     },
     giftNote: s.gifts.note,
-    music: u(d.media.music),
+    music: u(d.media.music || THEME_MUSIC[theme] || ""),
     story: s.story.items.map((i) => ({ ...i, image: u(i.image), video: i.video?.src ? { src: u(i.video.src), poster: u(i.video.poster || i.image) } : undefined })),
     gallery: s.gallery.photos.map((p) => ({ ...p, src: u(p.src) })),
     gifts: s.gifts.accounts,

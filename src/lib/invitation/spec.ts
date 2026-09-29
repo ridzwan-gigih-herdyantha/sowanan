@@ -64,7 +64,7 @@ export const GROUPS: Group[] = [
       text("copy.collection", "Nomor koleksi", 20, { themes: [H], ...optional, placeholder: "No. 0508" }),
       media("media.hero", "Foto hero (potret)", "hero"),
       media("media.heroWide", "Foto hero lebar", "herowide", { hint: "Tampil di layar lebar." }),
-      media("media.music", "Musik latar", "music"),
+      media("media.music", "Musik latar", "music", { ...optional, hint: "Kosong berarti memakai lagu bawaan tema." }),
       {
         kind: "list",
         path: "sections.specimens.items",
