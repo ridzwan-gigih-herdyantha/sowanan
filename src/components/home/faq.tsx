@@ -1,15 +1,14 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Container, SectionTitle, reveal, sectionPad } from "@/components/ui";
-import { perPlan, slaRange, type Settings } from "@/lib/settings";
+import { perPlan, type Settings } from "@/lib/settings";
 
 export function faqItems(s: Settings): { q: string; a: ReactNode; text: string }[] {
-  const aktif = `Mengikuti paket: ${perPlan(s, "active", "bulan")}, dihitung sejak undangan jadi. Setelah itu tersimpan sebagai arsip selama layanan beroperasi.`;
-  const sla = slaRange(s);
+  const aktif = `Paket ${perPlan(s, "active", "bulan")}, dihitung sejak tautan undangan kami serahkan. Setelah itu undangan menjadi arsip yang tetap bisa dibuka selama layanan beroperasi.`;
   return [
     {
       q: "Berapa lama jadinya?",
-      text: `${sla.charAt(0).toUpperCase()}${sla.slice(1)} tergantung paket, dihitung setelah data dan foto lengkap. Kalau antrean sedang penuh, kami kabari di awal, bukan setelah lewat.`,
+      text: `Tergantung paket: ${perPlan(s, "sla", "hari kerja")}. Hitungan dimulai sejak kami mengabari bahwa data dan foto sudah lengkap, bukan sejak pemesanan. Kalau antrean sedang penuh, kami kabari di awal, bukan setelah lewat.`,
       a: null,
     },
     {
@@ -27,6 +26,11 @@ export function faqItems(s: Settings): { q: string; a: ReactNode; text: string }
       ),
     },
     {
+      q: "Bisa revisi berapa kali?",
+      text: "Bebas revisi sampai undangan disebar, atau 14 hari sejak draf pertama dikirim, mana yang lebih dulu. Kirim semua perubahan sekaligus dalam satu daftar supaya lebih cepat dikerjakan.",
+      a: null,
+    },
+    {
       q: "Bisa untuk berapa tamu?",
       text: "Tidak dibatasi. Satu link bisa disebar ke berapa pun tamu tanpa biaya tambahan.",
       a: null,
@@ -38,7 +42,7 @@ export function faqItems(s: Settings): { q: string; a: ReactNode; text: string }
     },
     {
       q: "Cara bayarnya?",
-      text: `DP ${s.dpPercent}% di awal, sisanya setelah draf disetujui. Transfer atau QRIS.`,
+      text: `DP ${s.dpPercent}% di awal, sisanya setelah draf disetujui. Transfer atau QRIS. Undangan yang belum lunas menampilkan tanda BELUM AKTIF dan belum bisa disebar.`,
       a: null,
     },
   ].map((item) => ({ ...item, a: item.a ?? item.text }));
