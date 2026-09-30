@@ -60,6 +60,18 @@ function plans(s: Settings): Plan[] {
   ];
 }
 
+function addons(s: Settings) {
+  return [
+    { name: "Tambah 10 foto galeri", for: "Dasar dan Lengkap", price: s.addonPhotos },
+    { name: "Ganti font atau palet warna", for: "Dasar", price: s.addonStyle },
+    { name: "Musik pilihan sendiri", for: "Dasar", price: s.addonMusic },
+    { name: "Ekspor daftar tamu ke Excel", for: "Lengkap", price: s.addonExport },
+    { name: "Pengerjaan kilat 24 jam", for: "Dasar dan Lengkap", price: s.addonExpress },
+    { name: "Alamat domain sendiri (.com)", for: "Semua paket, termasuk domain 1 tahun", price: s.addonDomain },
+    { name: "Perpanjangan masa aktif 1 tahun", for: "Semua paket", price: s.addonExtend },
+  ];
+}
+
 export function Pricing({ settings, waHref }: { settings: Settings; waHref: string }) {
   return (
     <section id="paket" className="bg-ink text-paper">
@@ -110,6 +122,22 @@ export function Pricing({ settings, waHref }: { settings: Settings; waHref: stri
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-14 md:mt-16" {...reveal()}>
+          <h3 className="font-serif text-[28px] text-paper">Tambahan di luar paket</h3>
+          <p className="mt-1.5 text-sm text-dusk">Bisa ditambahkan saat memesan. Sebutkan saja lewat WhatsApp.</p>
+          <ul className="mt-6 grid grid-cols-1 border-t border-night-line md:grid-cols-2 md:gap-x-10">
+            {addons(settings).map((a) => (
+              <li key={a.name} className="flex items-baseline justify-between gap-4 border-b border-night-line py-3.5">
+                <span className="min-w-0">
+                  <span className="block text-[15px] text-dusk-light">{a.name}</span>
+                  <span className="block text-[13px] text-dusk">{a.for}</span>
+                </span>
+                <span className="shrink-0 font-serif text-xl text-paper">{formatRupiah(a.price)}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </Container>
     </section>
