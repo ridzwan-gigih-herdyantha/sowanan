@@ -69,6 +69,10 @@ const groups: { title: string; cols?: 3; fields: Field[] }[] = [
       { name: "qrisImage", label: "Gambar QRIS", type: "qris" },
     ],
   },
+  {
+    title: "Ketentuan",
+    fields: [{ name: "termsDate", label: "Tanggal berlaku", hint: 'Tampil di atas halaman /ketentuan. Contoh: "1 Oktober 2026"' }],
+  },
 ];
 
 function Affix({ children }: { children: ReactNode }) {

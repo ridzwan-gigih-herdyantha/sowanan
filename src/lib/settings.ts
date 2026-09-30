@@ -45,6 +45,7 @@ export const settingsSchema = z.object({
   payAccountNumber: z.string().trim().regex(/^[0-9][0-9 -]{4,29}$/, "Nomor rekening hanya angka, 5 sampai 30 digit."),
   qrisNmid: z.string().trim().max(40, "NMID QRIS maksimal 40 karakter."),
   qrisImage: z.string().trim().max(300),
+  termsDate: text("Tanggal berlaku ketentuan"),
   instagram: z
     .string()
     .trim()
@@ -122,6 +123,7 @@ export const DEFAULT_SETTINGS: Settings = {
   payAccountNumber: "0000000000",
   qrisNmid: "",
   qrisImage: "",
+  termsDate: "30 September 2026",
   instagram: "sowanan.id",
   operatingHours: "08.00 sampai 20.00",
   waMessage: "Halo Sowanan, saya mau tanya soal undangan pernikahan digital.",
