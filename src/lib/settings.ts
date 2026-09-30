@@ -40,6 +40,11 @@ export const settingsSchema = z.object({
   addonExpress: rupiah("Harga pengerjaan kilat"),
   addonDomain: rupiah("Harga domain sendiri"),
   addonExtend: rupiah("Harga perpanjangan masa aktif"),
+  payBank: text("Nama bank"),
+  payAccountName: text("Nama rekening"),
+  payAccountNumber: z.string().trim().regex(/^[0-9][0-9 -]{4,29}$/, "Nomor rekening hanya angka, 5 sampai 30 digit."),
+  qrisNmid: z.string().trim().max(40, "NMID QRIS maksimal 40 karakter."),
+  qrisImage: z.string().trim().max(300),
   instagram: z
     .string()
     .trim()
@@ -112,6 +117,11 @@ export const DEFAULT_SETTINGS: Settings = {
   addonExpress: 99000,
   addonDomain: 150000,
   addonExtend: 50000,
+  payBank: "BCA",
+  payAccountName: "Sowanan",
+  payAccountNumber: "0000000000",
+  qrisNmid: "",
+  qrisImage: "",
   instagram: "sowanan.id",
   operatingHours: "08.00 sampai 20.00",
   waMessage: "Halo Sowanan, saya mau tanya soal undangan pernikahan digital.",

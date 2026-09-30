@@ -3,8 +3,9 @@
 import { useActionState, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { Settings } from "@/lib/settings";
 import { saveSettings, type FormState } from "./actions";
+import { QrisInput } from "./qris-input";
 
-type Field = { name: keyof Settings; label: string; hint?: string; type?: "number" | "text" | "price" | "unlimited" | "textarea"; prefix?: string; suffix?: string };
+type Field = { name: keyof Settings; label: string; hint?: string; type?: "number" | "text" | "price" | "unlimited" | "textarea" | "qris"; prefix?: string; suffix?: string };
 
 const groups: { title: string; cols?: 3; fields: Field[] }[] = [
   {
@@ -59,7 +60,14 @@ const groups: { title: string; cols?: 3; fields: Field[] }[] = [
   },
   {
     title: "Pembayaran",
-    fields: [{ name: "dpPercent", label: "Persentase DP", type: "number", suffix: "%" }],
+    fields: [
+      { name: "payBank", label: "Bank", hint: 'Contoh: "BCA"' },
+      { name: "payAccountName", label: "Nama rekening", hint: "Nama pemilik rekening sesuai buku tabungan" },
+      { name: "payAccountNumber", label: "Nomor rekening", type: "number" },
+      { name: "dpPercent", label: "Persentase DP", type: "number", suffix: "%" },
+      { name: "qrisNmid", label: "Nomor QRIS (NMID)", hint: "Tertera di bawah kode QRIS. Kosongkan kalau tidak ada." },
+      { name: "qrisImage", label: "Gambar QRIS", type: "qris" },
+    ],
   },
 ];
 
@@ -194,9 +202,9 @@ export function SettingsForm({ initial }: { initial: Settings }) {
           <div className={`grid gap-5 ${g.cols === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
             {g.fields.map((f) => {
               const err = state.errors?.[f.name];
-              const Wrap = f.type === "unlimited" ? "div" : "label";
+              const Wrap = f.type === "unlimited" || f.type === "qris" ? "div" : "label";
               return (
-                <Wrap key={f.name} className={`block text-[14px] font-medium ${f.type === "textarea" ? "sm:col-span-2" : ""}`}>
+                <Wrap key={f.name} className={`block text-[14px] font-medium ${f.type === "textarea" || f.type === "qris" ? "sm:col-span-2" : ""}`}>
                   {f.label}
                   {f.type === "textarea" ? (
                     <textarea
@@ -207,6 +215,8 @@ export function SettingsForm({ initial }: { initial: Settings }) {
                       aria-invalid={Boolean(err)}
                       className={`mt-2 block w-full resize-y rounded-sm border bg-white px-3 py-3 text-base font-normal outline-none focus:border-wine ${err ? "border-wine" : "border-line"}`}
                     />
+                  ) : f.type === "qris" ? (
+                    <QrisInput initial={String(initial.qrisImage ?? "")} />
                   ) : f.type === "unlimited" ? (
                     <UnlimitedInput
                       name={f.name}

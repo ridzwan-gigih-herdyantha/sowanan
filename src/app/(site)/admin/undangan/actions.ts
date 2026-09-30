@@ -100,3 +100,13 @@ export async function setPaymentStatus(slug: string, paid: boolean): Promise<Res
   refresh(slug);
   return { ok: true, at: new Date().toISOString() };
 }
+
+const PACKAGES = ["dasar", "lengkap", "istimewa"] as const;
+
+export async function setPackage(slug: string, pkg: string): Promise<Result> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  const value = (PACKAGES as readonly string[]).includes(pkg) ? pkg : null;
+  const { error } = await supabaseAdmin().from("invitations").update({ package: value }).eq("slug", slug);
+  if (error) return { ok: false, error: "Gagal menyimpan paket. Pastikan migrasi 0006 sudah dijalankan." };
+  return { ok: true, at: new Date().toISOString() };
+}
