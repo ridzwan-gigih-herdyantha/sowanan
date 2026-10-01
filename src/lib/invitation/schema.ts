@@ -7,7 +7,7 @@ const list = <T extends z.ZodType>(item: T) => z.array(item).default([]);
 const section = <T extends z.ZodRawShape>(shape: T) => z.object({ enabled: z.boolean().default(true), ...shape }).prefault({} as never);
 
 const person = z
-  .object({ name: str(), full: str(), role: str(), parents: str(), photo: str(), flower: str(), latin: str() })
+  .object({ name: str(), full: str(), role: str(), parents: str(), photo: str(), flower: str(), latin: str(), aksara: str() })
   .prefault({});
 
 const storyItem = z.object({
@@ -64,6 +64,8 @@ export const invitationDataSchema = z.object({
       latinPair: str(),
       collection: str(),
       credit: str(),
+      sesanti: str(),
+      sesantiArti: str(),
     })
     .prefault({}),
   share: z.object({ description: str(), ogDescription: str() }).prefault({}),

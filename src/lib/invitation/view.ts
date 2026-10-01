@@ -52,6 +52,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     rsvpQuote: d.copy.rsvpQuote,
     latinPair: d.copy.latinPair,
     collection: d.copy.collection,
+    sesanti: d.copy.sesanti,
+    sesantiArti: d.copy.sesantiArti,
     share: d.share,
     images: {
       hero: u(d.media.hero),

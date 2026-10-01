@@ -91,7 +91,7 @@ export function Story({ items, variant = "arch", lead, tail }: StoryProps) {
           ))}
         </ol>
       ) : (
-      <ol className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-8 lg:overflow-visible lg:px-0">
+      <ol className="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-8 lg:overflow-visible lg:px-0">
         {items.map((s, i) => (
           <li key={s.title} className="w-[64vw] max-w-[260px] shrink-0 snap-start lg:w-auto lg:max-w-none">
             <button type="button" onClick={() => setActive(i)} className="group block w-full text-left">

@@ -1,0 +1,214 @@
+{
+  "slug": "danang-kinanthi",
+  "theme": "danang-kinanthi",
+  "published": true,
+  "data": {
+    "monogram": "D & K",
+    "couple": {
+      "groom": {
+        "name": "Danang",
+        "full": "Danang Wicaksono",
+        "role": "Putra kedua dari",
+        "parents": "Bapak Suryo Hadiningrat & Ibu Sri Rahayu",
+        "photo": "danang-kinanthi/groom_1.webp?v=muntfn0v",
+        "aksara": "ꦢꦤꦁ"
+      },
+      "bride": {
+        "name": "Kinanthi",
+        "full": "Kinanthi Puspitasari",
+        "role": "Putri pertama dari",
+        "parents": "Bapak Bambang Widodo & Ibu Endang Lestari",
+        "photo": "danang-kinanthi/bride_1.webp?v=muntfo2t",
+        "aksara": "ꦏꦶꦤꦤ꧀ꦛꦶ"
+      }
+    },
+    "event": {
+      "start": "2027-08-14T08:00:00+07:00",
+      "end": "2027-08-14T14:00:00+07:00",
+      "timezone": "WIB",
+      "city": "Kotagede, Yogyakarta",
+      "venue": {
+        "name": "Pendapa Ndalem Kusumo",
+        "address": "Jl. Mondorakan No. 21, Kotagede, Yogyakarta",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Kotagede+Yogyakarta"
+      },
+      "schedule": [
+        {
+          "time": "08.00",
+          "name": "Ijab Qabul",
+          "until": "09.00"
+        },
+        {
+          "time": "09.30",
+          "name": "Upacara Panggih",
+          "until": "10.30"
+        },
+        {
+          "time": "11.00",
+          "name": "Pahargyan",
+          "until": "14.00"
+        }
+      ],
+      "rsvpDeadline": "31 Juli 2027"
+    },
+    "copy": {
+      "honor": "Kanthi pangestunipun Gusti Ingkang Maha Kuwaos, kami mengharap rawuh Bapak/Ibu/Saudara/i untuk memberikan doa restu.",
+      "credit": "Foto oleh Diky Permata di Pexels",
+      "sesanti": "Witing tresna jalaran saka kulina",
+      "sesantiArti": "Cinta tumbuh karena terbiasa bersama"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat dan ridha Allah, kami mengundangmu ke pernikahan Danang & Kinanthi di Kotagede, Yogyakarta.",
+      "ogDescription": "Sugeng rawuh. Pagelaran kecil kami dimulai di sini."
+    },
+    "media": {
+      "hero": "danang-kinanthi/hero_1.webp?v=muntfisc",
+      "heroWide": "danang-kinanthi/herowide_1.webp?v=muntfk9w",
+      "og": "danang-kinanthi/og_1.jpg?v=muntfksw",
+      "music": "",
+      "venue": "danang-kinanthi/venue_1.webp?v=muntfme4"
+    },
+    "sections": {
+      "couple": {
+        "enabled": true
+      },
+      "story": {
+        "enabled": true,
+        "items": [
+          {
+            "title": "Tepung",
+            "date": "03.2019",
+            "image": "danang-kinanthi/story_1.webp?v=muntfqw5",
+            "short": "Kenal di sanggar karawitan kampus, sama-sama salah menabuh saron.",
+            "long": "Kami pertama bertemu di latihan karawitan kampus. Danang terlambat masuk gending, Kinanthi tertawa paling keras. Sejak sore itu kami selalu pulang lewat jalan yang sama."
+          },
+          {
+            "title": "Tresna",
+            "date": "11.2021",
+            "image": "danang-kinanthi/story_2.webp?v=muntfs2c",
+            "short": "Witing tresna jalaran saka kulina. Pelan, tapi tidak pernah berhenti.",
+            "long": "Tidak ada yang tiba-tiba. Dari menemani latihan, mengantar pulang, sampai saling menunggu kabar. Cinta tumbuh karena terbiasa bersama."
+          },
+          {
+            "title": "Lamaran",
+            "date": "02.2026",
+            "image": "danang-kinanthi/story_3.webp?v=muntfwbh",
+            "short": "Dua keluarga duduk bersama, dan satu jawaban yang ditunggu.",
+            "long": "Keluarga Danang sowan ke rumah Kinanthi di Kotagede. Setelah wedang jahe dan obrolan panjang, pinangan diterima dengan senyum dan doa."
+          },
+          {
+            "title": "Panggih",
+            "date": "08.2027",
+            "image": "danang-kinanthi/story_4.webp?v=muntfxjv",
+            "short": "Lakon baru kami dimulai, dan kalian ada di dalamnya.",
+            "long": "Hari ini kami dipertemukan dalam upacara panggih, disaksikan keluarga dan sahabat. Terima kasih sudah menjadi bagian dari lakon kami."
+          }
+        ]
+      },
+      "event": {
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "gallery": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "danang-kinanthi/gallery_1.webp?v=muntfyxp",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Danang dan Kinanthi di pelaminan",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "danang-kinanthi/gallery_2.webp?v=muntg0j2",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Bergandengan tangan",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "danang-kinanthi/gallery_3.webp?v=muntg1zm",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Pelaminan penuh bunga",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "danang-kinanthi/gallery_4.webp?v=muntg397",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Genggaman tangan",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "danang-kinanthi/gallery_5.webp?v=muntg4w3",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Duduk berdampingan",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "danang-kinanthi/gallery_6.webp?v=muntg6su",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Kalung pengantin",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "danang-kinanthi/gallery_7.webp?v=muntg8ef",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Sepasang cincin",
+            "caption": "",
+            "no": ""
+          }
+        ]
+      },
+      "quiz": {
+        "enabled": false
+      },
+      "collage": {
+        "enabled": false,
+        "polaroids": []
+      },
+      "specimens": {
+        "enabled": false,
+        "items": []
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "gifts": {
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "BCA",
+            "number": "1234567890",
+            "holder": "Danang Wicaksono"
+          },
+          {
+            "bank": "Mandiri",
+            "number": "0987654321",
+            "holder": "Kinanthi Puspitasari"
+          }
+        ],
+        "qris": "",
+        "note": "Nomor rekening di atas adalah contoh."
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ import type { InvitationData, SectionKey } from "./schema";
 const A = "andi-rina";
 const B = "bagas-sekar";
 const H = "hendrawan-larasati";
+const J = "danang-kinanthi";
 
 type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean };
 export type Field =
@@ -38,12 +39,13 @@ const optional = { required: false };
 
 const person = (key: "groom" | "bride", title: string): Field[] => [
   { kind: "heading", path: `couple.${key}`, label: title },
-  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H] }),
+  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J] }),
   text(`couple.${key}.role`, "Keterangan", 40, { placeholder: key === "groom" ? "Putra dari" : "Putri dari" }),
   area(`couple.${key}.parents`, "Nama orang tua", 160, { placeholder: "Bapak ... & Ibu ..." }),
-  media(`couple.${key}.photo`, "Foto", key, { themes: [H], ...optional, hint: "Kosong berarti memakai foto hero." }),
+  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J], ...optional, hint: "Kosong berarti memakai foto hero." }),
   text(`couple.${key}.flower`, "Bunga", 60, { themes: [H], ...optional }),
   text(`couple.${key}.latin`, "Nama latin bunga", 80, { themes: [H], ...optional }),
+  text(`couple.${key}.aksara`, "Nama dalam aksara Jawa", 80, { themes: [J], ...optional, hint: "Diketik manual dan dicek klien. Tidak diterjemahkan otomatis." }),
 ];
 
 export const GROUPS: Group[] = [
@@ -220,7 +222,11 @@ export const GROUPS: Group[] = [
     key: "closing",
     title: "Penutup",
     section: "closing",
-    fields: [media("media.closing", "Foto penutup", "closing", { themes: [A], ...optional, hint: "Kosong berarti memakai foto hero." })],
+    fields: [
+      media("media.closing", "Foto penutup", "closing", { themes: [A], ...optional, hint: "Kosong berarti memakai foto hero." }),
+      text("copy.sesanti", "Sesanti (pepatah Jawa)", 120, { themes: [J], ...optional, placeholder: "Witing tresna jalaran saka kulina" }),
+      text("copy.sesantiArti", "Arti sesanti", 160, { themes: [J], ...optional, placeholder: "Cinta tumbuh karena terbiasa bersama" }),
+    ],
   },
   {
     key: "share",

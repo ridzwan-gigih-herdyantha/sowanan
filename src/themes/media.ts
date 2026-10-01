@@ -6,12 +6,14 @@ export const THEME_MEDIA: Record<string, Purpose[]> = {
   "andi-rina": [...BASE, "couple", "polaroid", "closing"],
   "bagas-sekar": [...BASE, "couple", "rsvp"],
   "hendrawan-larasati": [...BASE, "groom", "bride", "specimen"],
+  "danang-kinanthi": [...BASE, "groom", "bride"],
 };
 
 export const THEME_NAMES: Record<string, string> = {
   "andi-rina": "Senja Kota",
   "bagas-sekar": "Ruang",
   "hendrawan-larasati": "Herbarium",
+  "danang-kinanthi": "Pakeliran",
 };
 
 // Lagu bawaan tema, dipakai kalau undangan tidak mengunggah musik sendiri.

@@ -11,7 +11,8 @@
     "create-admin": "node --no-warnings --env-file=.env scripts/create-admin.ts",
     "create-invitation": "node --no-warnings --env-file=.env scripts/create-invitation.ts",
     "seed-invitations": "node --no-warnings --env-file=.env scripts/seed-invitations.ts",
-    "migrate-demo-media": "node --no-warnings --env-file=.env scripts/migrate-demo-media.ts"
+    "migrate-demo-media": "node --no-warnings --env-file=.env scripts/migrate-demo-media.ts",
+    "pakeliran-assets": "node --no-warnings scripts/pakeliran-assets.ts"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.16",

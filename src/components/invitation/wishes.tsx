@@ -10,12 +10,14 @@ const FIRST = 4;
 const STEP = 6;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
-type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" };
+type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" };
 
 export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const lined = variant === "lined";
   const curator = variant === "curator";
   const tags = variant === "tags";
+  const lontar = variant === "lontar";
+  const serat = variant === "serat";
   const tagTone = ["bg-inv-wash", "bg-[#E6D8E4]", "bg-[#DDE3D3]"];
   const { guest, setGuest } = useGuest();
   const [mine, setMine] = useState<Wish[]>([]);
@@ -79,7 +81,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
 
       <div className="mt-12 lg:mt-0">
         <div ref={listTop} className="scroll-mt-24" />
-        <ul className={lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
+        <ul className={serat ? "columns-1 gap-4 sm:columns-2" : lontar ? "inv-lontar-list relative flex flex-col gap-3" : lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
           {all.slice(0, shown).map((w, i) =>
             tags ? (
               <li
@@ -102,14 +104,19 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
             <li
               key={w.id}
               className={`${
-                lined
+                serat
+                  ? "inv-serat relative mb-4 break-inside-avoid rounded-sm px-5 pt-7 pb-4"
+                  : lontar
+                  ? "inv-lontar relative py-4 pr-8 pl-16"
+                  : lined
                   ? "border-b border-inv-line py-6"
                   : curator
                     ? "mb-4 break-inside-avoid border border-inv-line bg-inv-wash px-5 pt-5 pb-4"
                     : "mb-4 break-inside-avoid bg-[#fbf7f0] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)]"
               } ${i < unsynced.length ? (lined ? "animate-[inv-pop_.3s_ease-out]" : "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]") : ""}`}
-              style={lined || curator ? undefined : { rotate: `${tilt[i % tilt.length]}deg` }}
+              style={lined || curator || serat ? undefined : { rotate: `${(lontar ? 0.4 : 1) * tilt[i % tilt.length]}deg` }}
             >
+              {lontar && <span className="inv-lontar-hole" aria-hidden="true" />}
               <p className="font-display text-[19px] leading-snug italic">&ldquo;{w.message}&rdquo;</p>
               <p className="mt-3 text-[11px] tracking-[0.18em] text-inv-ink/60">
                 {curator ? `DICATAT OLEH ${w.name.toUpperCase()}` : w.name.toUpperCase()}

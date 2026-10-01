@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { KelirDoor, type KelirProps } from "./kelir-door";
 
 const GUEST_KEY = "sowanan:guest";
 
@@ -32,7 +33,8 @@ function storeGuest(name: string) {
 type Door =
   | { kind: "seal"; couple: string; monogram: string; seal: string }
   | { kind: "walls"; groom: string; bride: string; date: string }
-  | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string };
+  | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string }
+  | ({ kind: "kelir" } & Omit<KelirProps, "invited" | "onOpen">);
 
 type Props = {
   door: Door;
@@ -105,7 +107,7 @@ export function InvitationShell({ door, music, className, style, children }: Pro
     <GuestContext.Provider value={{ guest, setGuest }}>
       <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
         <noscript>
-          <style>{`.inv-door,.inv-door-walls,.inv-door-vellum{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+          <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
         </noscript>
 
         {door.kind === "vellum" && (
@@ -158,7 +160,19 @@ export function InvitationShell({ door, music, className, style, children }: Pro
           </div>
         )}
 
-        {door.kind === "vellum" ? null : door.kind === "seal" ? (
+        {door.kind === "kelir" && (
+          <KelirDoor
+            groom={door.groom}
+            bride={door.bride}
+            groomAksara={door.groomAksara}
+            brideAksara={door.brideAksara}
+            date={door.date}
+            invited={invited}
+            onOpen={openInvitation}
+          />
+        )}
+
+        {door.kind === "vellum" || door.kind === "kelir" ? null : door.kind === "seal" ? (
           <div
             className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
             aria-hidden={open}
@@ -214,7 +228,7 @@ export function InvitationShell({ door, music, className, style, children }: Pro
 
         <div inert={!open}>{children}</div>
 
-        {open && (
+        {open && music && (
           <button
             type="button"
             onClick={toggleMusic}
@@ -236,7 +250,7 @@ export function InvitationShell({ door, music, className, style, children }: Pro
             )}
           </button>
         )}
-        <audio ref={audio} src={music} preload="none" loop />
+        {music && <audio ref={audio} src={music} preload="none" loop />}
       </div>
     </GuestContext.Provider>
   );
