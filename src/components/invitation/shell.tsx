@@ -4,7 +4,6 @@ import Image from "next/image";
 import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
-import { pancuran } from "./sakinah/ambience";
 import { PintuDoor, type PintuProps } from "./sakinah/door";
 
 const GUEST_KEY = "sowanan:guest";
@@ -44,7 +43,7 @@ type Props = {
   door: Door;
   music: string;
   // Musik bawaan yang dimainkan langsung di browser bila undangan tidak punya berkas musik.
-  synth?: "gending" | "pancuran";
+  synth?: "gending";
   className: string;
   style: CSSProperties;
   children: ReactNode;
@@ -81,13 +80,7 @@ export function InvitationShell({ door, music, synth, className, style, children
     };
   }, [open]);
 
-  useEffect(
-    () => () => {
-      gending.pause();
-      pancuran.pause();
-    },
-    [],
-  );
+  useEffect(() => () => gending.pause(), []);
 
   const guest = invited || typed || "";
   const setGuest = (name: string) => {
@@ -95,7 +88,7 @@ export function InvitationShell({ door, music, synth, className, style, children
     storeGuest(name);
   };
 
-  const player = !music && synth ? (synth === "gending" ? gending : pancuran) : null;
+  const player = !music && synth === "gending" ? gending : null;
   const useSynth = player !== null;
   const hasMusic = Boolean(music) || useSynth;
 

@@ -433,7 +433,6 @@ export function FadhilNayla({ inv }: { inv: InvitationView }) {
     <InvitationShell
       door={{ kind: "pintu", groom: inv.groom.name, bride: inv.bride.name, date: tanggal(inv), hijri: hijri(inv.date, inv.tz) }}
       music={inv.music}
-      synth="pancuran"
       className={`${themeFonts} sk-root min-h-dvh overflow-x-clip bg-inv-paper font-body text-[17px] text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
