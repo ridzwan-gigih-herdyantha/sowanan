@@ -19,7 +19,7 @@ function Card({ theme, index, waHref }: { theme: ThemeCard; index: number; waHre
                 alt={`Contoh undangan tema ${theme.name}`}
                 fill
                 loading="eager"
-                sizes="(min-width: 760px) 170px, 50vw"
+                sizes="(min-width: 640px) 170px, 50vw"
                 className="object-cover object-top"
               />
             </div>
@@ -42,7 +42,7 @@ export function Themes({ waHref }: { waHref: string }) {
         <SectionSub {...reveal()}>
           Pilih satu, lalu warnanya kami sesuaikan dengan tema acara kalian. Klik untuk membuka contoh aslinya.
         </SectionSub>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-7">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-7 lg:grid-cols-4">
           {THEMES.map((t, i) => (
             <Card key={i} theme={t} index={i} waHref={waHref} />
           ))}
