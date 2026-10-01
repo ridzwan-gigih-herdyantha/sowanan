@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useAnimate, useReducedMotion } from "motion/react";
 import Image from "next/image";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { pad, useTimeLeft } from "@/components/countdown";
 import { angkaArab } from "@/lib/hijri";
 import { CopyButton } from "../copy-button";
@@ -267,20 +267,40 @@ export function Riwaq({ items }: { items: Scene[] }) {
 
 type Photo = { src: string; w: number; h: number; alt: string };
 
-// Pola petak kolase per tujuh foto. Ponsel 2 kolom, desktop 4 kolom, baris selalu terisi penuh.
-const TILE = [
-  "col-span-2 row-span-3",
-  "col-span-2 row-span-2",
-  "col-span-1 row-span-2",
-  "col-span-1 row-span-2",
-  "col-span-2 row-span-2",
-  "col-span-1 row-span-2 lg:col-span-2",
-  "col-span-1 row-span-2 lg:col-span-2",
-];
+type Slot = { kind: "photo"; i: number } | { kind: "note" };
 
-// Galeri kolase: foto persegi tanpa bingkai dalam susunan grid, satu ubin bertulisan sebagai jeda.
-// Ringan: tanpa animasi terus-menerus, tampilan penuh hanya dimuat saat foto diketuk.
-export function Kolase({ photos, note }: { photos: Photo[]; note: ReactNode }) {
+// Bagi foto ke kolom: setiap foto masuk ke kolom yang paling pendek, dihitung dari tinggi relatif fotonya.
+// Ubin tulisan ditaruh di kolom tengah (atau kolom kedua di ponsel) sebagai jeda.
+function arrange(photos: Photo[], cols: number): Slot[][] {
+  const out: Slot[][] = Array.from({ length: cols }, () => []);
+  const height = Array(cols).fill(0);
+  const ratio = (p: Photo) => (p.w && p.h ? p.h / p.w : 1.3);
+  const noteCol = 1;
+  out[noteCol].push({ kind: "note" });
+  height[noteCol] += 0.9;
+  // Puncak lengkung diisi foto potret supaya lengkungnya tidak memotong foto lebar.
+  const order = photos.map((p, i) => ({ p, i }));
+  const tall = order.filter((x) => ratio(x.p) > 1);
+  const rest = order.filter((x) => !tall.slice(0, cols - 1).includes(x));
+  tall.slice(0, cols - 1).forEach((x, k) => {
+    const c = k < noteCol ? k : k + 1;
+    out[c].push({ kind: "photo", i: x.i });
+    height[c] += ratio(x.p);
+  });
+  for (const x of rest) {
+    const c = height.indexOf(Math.min(...height));
+    out[c].push({ kind: "photo", i: x.i });
+    height[c] += ratio(x.p);
+  }
+  return out;
+}
+
+// Geser tiap kolom saat digulir, berlawanan arah supaya terasa berlapis.
+const DRIFT = ["36px", "-28px", "44px"];
+
+// Galeri fasad: kolase kolom dengan proporsi asli foto. Foto teratas tiap kolom berpuncak lengkung sehingga
+// tepi atasnya membentuk deretan kubah. Kolom bergeser pelan saat digulir lewat CSS, tanpa JavaScript berjalan.
+export function Fasad({ photos, note }: { photos: Photo[]; note: ReactNode }) {
   const [open, setOpen] = useState<number | null>(null);
   const reduce = useReducedMotion();
   const n = photos.length;
@@ -304,12 +324,37 @@ export function Kolase({ photos, note }: { photos: Photo[]; note: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open === null]);
 
-  const tile = (p: Photo, i: number) => (
-    <li key={p.src} data-reveal="" className={TILE[i % TILE.length]}>
-      <button type="button" onClick={() => setOpen(i)} aria-label={`Buka foto ${i + 1}: ${p.alt}`} className="group relative block size-full overflow-hidden rounded-sm bg-sk-pasir">
-        <Image src={p.src} alt={p.alt} fill sizes={i % TILE.length < 2 ? "(min-width: 1024px) 520px, 92vw" : "(min-width: 1024px) 260px, 46vw"} className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
-      </button>
-    </li>
+  const grid = (cols: number, className: string) => (
+    <div className={`gap-3 sm:gap-4 ${className}`} style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+      {arrange(photos, cols).map((col, c) => (
+        <div key={c} className={`sk-drift flex flex-col gap-3 sm:gap-4 ${c % 2 ? "pt-14 lg:pt-20" : ""}`} style={{ "--d": DRIFT[c % DRIFT.length] } as CSSProperties}>
+          {col.map((s, k) =>
+            s.kind === "note" ? (
+              <div key="note" className={`flex flex-col items-center justify-center bg-inv-night px-4 py-8 text-center text-inv-wash ${k === 0 ? "rounded-t-full rounded-b-sm pt-16" : "rounded-sm"}`}>
+                {note}
+              </div>
+            ) : (
+              <button
+                key={photos[s.i].src}
+                type="button"
+                onClick={() => setOpen(s.i)}
+                aria-label={`Buka foto ${s.i + 1}: ${photos[s.i].alt}`}
+                className={`group relative block overflow-hidden bg-sk-pasir ${k === 0 ? "rounded-t-full rounded-b-sm" : "rounded-sm"} ${k === col.length - 1 ? "flex-1" : ""}`}
+              >
+                <Image
+                  src={photos[s.i].src}
+                  alt={photos[s.i].alt}
+                  width={photos[s.i].w || 1200}
+                  height={photos[s.i].h || 1600}
+                  sizes={cols === 3 ? "(min-width: 1024px) 340px, 31vw" : "48vw"}
+                  className={`block w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] ${k === col.length - 1 ? "h-full" : "h-auto"}`}
+                />
+              </button>
+            ),
+          )}
+        </div>
+      ))}
+    </div>
   );
   const chevron = (d: "l" | "r") => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -320,13 +365,8 @@ export function Kolase({ photos, note }: { photos: Photo[]; note: ReactNode }) {
 
   return (
     <>
-      <ul className="grid auto-rows-[112px] grid-cols-2 gap-2 sm:auto-rows-[150px] sm:gap-3 lg:auto-rows-[150px] lg:grid-cols-4">
-        {photos.slice(0, 2).map(tile)}
-        <li data-reveal="" className="col-span-2 row-span-1 flex items-center justify-center gap-4 rounded-sm bg-inv-night px-5 text-center text-inv-wash">
-          {note}
-        </li>
-        {photos.slice(2).map((x, k) => tile(x, k + 2))}
-      </ul>
+      {grid(2, "grid lg:hidden")}
+      {grid(3, "hidden lg:grid")}
 
       <AnimatePresence>
         {p && open !== null && (

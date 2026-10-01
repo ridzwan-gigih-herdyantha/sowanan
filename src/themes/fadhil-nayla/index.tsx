@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { Greeting } from "@/components/invitation/greeting";
 import { Rsvp } from "@/components/invitation/rsvp";
-import { GiftCard, HangingLantern, Kolase, Riwaq, SakinahHero, StarCountdown } from "@/components/invitation/sakinah/interactive";
+import { Fasad, GiftCard, HangingLantern, Riwaq, SakinahHero, StarCountdown } from "@/components/invitation/sakinah/interactive";
 import { Arch, Bunga, Hias, Pattern, Pita, Star, type Tile } from "@/components/invitation/sakinah/ornaments";
 import { AR_RUM_21, BISMILLAH } from "@/components/invitation/sakinah/text";
 import { InvitationShell } from "@/components/invitation/shell";
@@ -268,18 +268,15 @@ function GallerySection({ inv }: { inv: InvitationView }) {
     <Section tone="gading" tex={["khatam", 0.05]}>
       <Wrap>
         <Heading arab="لَحَظَاتُنَا">Lembar kenangan</Heading>
-        <Kolase
+        <Fasad
           photos={inv.gallery.map((p) => ({ src: p.src, w: p.w, h: p.h, alt: p.alt }))}
           note={
             <>
-              <Star className="size-5 shrink-0 text-sk-emas" />
-              <span>
-                <span lang="ar" dir="rtl" className="block font-arab text-[clamp(20px,5.4vw,26px)] leading-snug text-inv-gold-light">
-                  اَلْحَمْدُ لِلّٰهِ
-                </span>
-                <span className="mt-0.5 block text-[clamp(12px,3.2vw,14px)] text-inv-wash/80">Setiap lembar adalah syukur kami.</span>
-              </span>
-              <Star className="size-5 shrink-0 text-sk-emas" />
+              <Hias name="mahkota" className="w-24 text-sk-emas lg:w-32" />
+              <p lang="ar" dir="rtl" className="mt-3 font-arab text-[clamp(22px,6vw,32px)] leading-snug text-inv-gold-light">
+                اَلْحَمْدُ لِلّٰهِ
+              </p>
+              <p className="mt-1 max-w-[18ch] text-[clamp(12px,3.2vw,15px)] leading-snug text-inv-wash/80">Setiap lembar adalah syukur kami.</p>
             </>
           }
         />

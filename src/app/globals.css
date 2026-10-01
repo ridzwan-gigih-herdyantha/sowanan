@@ -820,3 +820,22 @@ html:has(.sk-root) {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--sk-emas) 30%, transparent 44%, transparent 56%, var(--sk-emas) 70%, transparent);
 }
+
+/* Kolom galeri Sakinah bergeser pelan mengikuti gulir. Hanya transform, dikerjakan peramban tanpa JavaScript. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sk-drift {
+      animation: sk-drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+}
+@keyframes sk-drift {
+  from {
+    transform: translateY(var(--d, 0px));
+  }
+  to {
+    transform: translateY(calc(var(--d, 0px) * -1));
+  }
+}
