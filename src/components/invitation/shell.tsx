@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { KelirDoor, type KelirProps } from "./kelir-door";
+import { gending } from "./pakeliran/gamelan";
 
 const GUEST_KEY = "sowanan:guest";
 
@@ -39,6 +40,8 @@ type Door =
 type Props = {
   door: Door;
   music: string;
+  // Musik bawaan yang dimainkan langsung di browser bila undangan tidak punya berkas musik.
+  synth?: "gending";
   className: string;
   style: CSSProperties;
   children: ReactNode;
@@ -60,7 +63,7 @@ const arrow = (
   </svg>
 );
 
-export function InvitationShell({ door, music, className, style, children }: Props) {
+export function InvitationShell({ door, music, synth, className, style, children }: Props) {
   const invited = useSyncExternalStore(noop, readGuestParam, () => "");
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -75,13 +78,23 @@ export function InvitationShell({ door, music, className, style, children }: Pro
     };
   }, [open]);
 
+  useEffect(() => () => gending.pause(), []);
+
   const guest = invited || typed || "";
   const setGuest = (name: string) => {
     setTyped(name);
     storeGuest(name);
   };
 
+  const useSynth = !music && synth === "gending";
+  const hasMusic = Boolean(music) || useSynth;
+
   const play = () => {
+    if (useSynth) {
+      gending.play();
+      setPlaying(true);
+      return;
+    }
     audio.current
       ?.play()
       .then(() => setPlaying(true))
@@ -98,7 +111,8 @@ export function InvitationShell({ door, music, className, style, children }: Pro
 
   const toggleMusic = () => {
     if (playing) {
-      audio.current?.pause();
+      if (useSynth) gending.pause();
+      else audio.current?.pause();
       setPlaying(false);
     } else play();
   };
@@ -228,7 +242,7 @@ export function InvitationShell({ door, music, className, style, children }: Pro
 
         <div inert={!open}>{children}</div>
 
-        {open && music && (
+        {open && hasMusic && (
           <button
             type="button"
             onClick={toggleMusic}

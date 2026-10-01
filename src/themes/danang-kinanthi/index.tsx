@@ -242,7 +242,7 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
         <div {...reveal(1)}>
           <SaronCountdown target={inv.date} />
         </div>
-        <p className="mt-6 text-center text-[14px] text-inv-wash/80">Ketuk bilah saron untuk menabuhnya.</p>
+        <p className="mt-6 text-center text-[14px] text-inv-wash/80">Ketuk bilah saron untuk menabuhnya.{!inv.music && " Gending latar undangan ini juga dimainkan oleh saron yang sama."}</p>
       </Wrap>
     </Section>
   );
@@ -397,6 +397,7 @@ export function DanangKinanthi({ inv }: { inv: InvitationView }) {
         date: tanggal(inv),
       }}
       music={inv.music}
+      synth="gending"
       className={`${themeFonts} pk-root min-h-dvh overflow-x-clip bg-inv-paper font-body text-[17px] text-inv-ink`}
       style={{ ...vars, ...inv.palette }}
     >

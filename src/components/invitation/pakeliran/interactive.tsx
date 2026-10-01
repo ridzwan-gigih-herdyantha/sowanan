@@ -8,36 +8,10 @@ import { angkaJawa } from "@/lib/javanese";
 import { CopyButton } from "../copy-button";
 import { Modal } from "../modal";
 import { Lung, Motif, type MotifName } from "../pakeliran-ornaments";
+import { NOTE_EVENT, SARON, SARON_DEGREES, strike } from "./gamelan";
 import { ENTER_EVENT, Puppet, type PuppetName } from "./puppet";
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
-
-// Nada gamelan sederhana dari WebAudio: fundamental plus dua parsial logam.
-let audio: AudioContext | null = null;
-export function gong(freq: number, length = 2.2) {
-  try {
-    audio ??= new AudioContext();
-    const t = audio.currentTime;
-    const out = audio.createGain();
-    out.gain.setValueAtTime(0.0001, t);
-    out.gain.exponentialRampToValueAtTime(0.3, t + 0.008);
-    out.gain.exponentialRampToValueAtTime(0.0001, t + length);
-    out.connect(audio.destination);
-    for (const [mul, level] of [
-      [1, 1],
-      [2.76, 0.3],
-      [5.4, 0.1],
-    ]) {
-      const o = audio.createOscillator();
-      const g = audio.createGain();
-      o.frequency.value = freq * mul;
-      g.gain.value = level;
-      o.connect(g).connect(out);
-      o.start(t);
-      o.stop(t + length + 0.1);
-    }
-  } catch {}
-}
 
 const LG = "(min-width: 1024px)";
 const subscribeLg = (cb: () => void) => {
@@ -153,7 +127,7 @@ export function PuppetFlip({ puppet, label, back }: { puppet: PuppetName; label:
       aria-label={flipped ? `Tutup kartu ${label}` : `Balik kartu ${label}`}
       onClick={() => {
         setFlipped((f) => !f);
-        gong(flipped ? 330 : 392, 1.2);
+        strike(SARON[flipped ? 2 : 4], { gain: 0.28 });
       }}
       className="block w-full max-w-[340px] text-left [perspective:1400px]"
     >
@@ -231,64 +205,79 @@ export function BabakList({ items }: { items: Scene[] }) {
   );
 }
 
-// Hitung mundur sebagai saron: bilah perunggu di atas rancakan kayu berukir. Setiap bilah bisa ditabuh.
-const SLENDRO = [262, 294, 330, 392, 440];
+// Hitung mundur sebagai saron tujuh bilah dalam laras slendro (6 rendah sampai 1 tinggi), makin ke kanan makin pendek
+// dan makin tinggi nadanya. Setiap bilah bisa ditabuh, dan ikut bergerak saat gending latar memainkan nadanya.
+const BAR_H = ["h-full", "h-[96%]", "h-[92%]", "h-[88%]", "h-[84%]", "h-[80%]", "h-[76%]"];
+const VALUE_BARS = { 2: ["days", "Dinten"], 3: ["hours", "Jam"], 4: ["minutes", "Menit"] } as const;
 
 export function SaronCountdown({ target }: { target: string }) {
   const t = useTimeLeft(target);
   const reduce = useReducedMotion();
   const [scope, animateBar] = useAnimate();
 
+  useEffect(() => {
+    if (reduce) return;
+    const onNote = (e: Event) => {
+      const el = scope.current?.querySelector(`[data-bar="${(e as CustomEvent<number>).detail}"]`);
+      if (el) animateBar(el, { y: [0, 4, 0], filter: ["brightness(1)", "brightness(1.18)", "brightness(1)"] }, { duration: 0.5, ease: "easeOut" });
+    };
+    window.addEventListener(NOTE_EVENT, onNote);
+    return () => window.removeEventListener(NOTE_EVENT, onNote);
+  }, [animateBar, reduce, scope]);
+
   if (t?.done) return <p className="text-center font-display text-[clamp(30px,8vw,52px)] text-inv-gold-light">Sampun rawuh dinten ingkang dipun-entosi.</p>;
 
-  const bars = [
-    { key: "a", label: "", value: "", note: SLENDRO[0], size: "h-[56%]" },
-    { key: "days", label: "Dinten", value: t ? pad(t.days) : "00", note: SLENDRO[1], size: "h-full" },
-    { key: "hours", label: "Jam", value: t ? pad(t.hours) : "00", note: SLENDRO[2], size: "h-[92%]" },
-    { key: "minutes", label: "Menit", value: t ? pad(t.minutes) : "00", note: SLENDRO[3], size: "h-[84%]" },
-    { key: "b", label: "", value: "", note: SLENDRO[4], size: "h-[52%]" },
-  ];
+  const value = (i: number) => {
+    const v = VALUE_BARS[i as keyof typeof VALUE_BARS];
+    return v ? { label: v[1], value: t ? pad(t[v[0]]) : "00" } : null;
+  };
 
   const hit = (i: number) => {
-    gong(bars[i].note);
+    strike(SARON[i], { gain: 0.32 });
     if (!reduce) animateBar(`[data-bar="${i}"]`, { y: [0, 7, -2, 0] }, { duration: 0.45, ease: "easeOut" });
   };
 
   return (
-    <div ref={scope} role="timer" aria-label={t ? `${t.days} hari ${t.hours} jam ${t.minutes} menit lagi` : "Menghitung waktu"} className="mx-auto max-w-[720px]">
-      <div className="relative px-[5%] pt-6 pb-10">
-        <div className="pk-rancak absolute inset-x-0 top-[18%] bottom-0 [clip-path:polygon(4%_0,96%_0,100%_100%,0_100%)]" aria-hidden="true" />
-        <div className="relative flex h-[clamp(190px,52vw,300px)] items-center justify-center gap-[2.2%]">
-          {bars.map((b, i) => (
-            <button
-              key={b.key}
-              type="button"
-              data-bar={i}
-              onClick={() => hit(i)}
-              aria-label={b.label ? `Tabuh bilah ${b.label}, ${b.value}` : "Tabuh bilah saron"}
-              className={`pk-bilah relative flex ${b.size} ${b.label ? "flex-[1.35]" : "flex-[0.7]"} flex-col items-center justify-center rounded-[6px]`}
-            >
-              <span className="absolute top-[9%] left-1/2 size-2.5 -translate-x-1/2 rounded-full bg-[#3B2414]/70 shadow-[inset_0_1px_1px_rgba(0,0,0,.5)]" aria-hidden="true" />
-              <span className="absolute bottom-[9%] left-1/2 size-2.5 -translate-x-1/2 rounded-full bg-[#3B2414]/70 shadow-[inset_0_1px_1px_rgba(0,0,0,.5)]" aria-hidden="true" />
-              {b.label ? (
-                <>
-                  <span className="font-display text-[clamp(34px,10vw,64px)] leading-none text-[#3B2414] tabular-nums [text-shadow:0_1px_0_rgba(255,236,180,.6)]">{b.value}</span>
-                  <span lang="jv" aria-hidden="true" className="mt-1 font-jawa text-[clamp(13px,3.6vw,18px)] text-[#5A3A18]">
-                    {angkaJawa(b.value)}
+    <div ref={scope} role="timer" aria-label={t ? `${t.days} hari ${t.hours} jam ${t.minutes} menit lagi` : "Menghitung waktu"} className="mx-auto max-w-[760px]">
+      <div className="relative px-[4%] pt-6 pb-10">
+        <div className="pk-rancak absolute inset-x-0 top-[18%] bottom-0 [clip-path:polygon(3%_0,97%_0,100%_100%,0_100%)]" aria-hidden="true" />
+        <div className="relative flex h-[clamp(200px,56vw,310px)] items-center justify-center gap-[1.6%]">
+          {SARON.map((_, i) => {
+            const v = value(i);
+            const deg = SARON_DEGREES[i];
+            return (
+              <button
+                key={i}
+                type="button"
+                data-bar={i}
+                onClick={() => hit(i)}
+                aria-label={v ? `Tabuh bilah ${v.label}, ${v.value}` : `Tabuh bilah nada ${deg}${i === 0 ? " rendah" : i === 6 ? " tinggi" : ""}`}
+                className={`pk-bilah relative flex ${BAR_H[i]} ${v ? "flex-[1.3]" : "flex-[0.62]"} flex-col items-center justify-center rounded-[6px]`}
+              >
+                <span className="absolute top-[8%] left-1/2 size-2 -translate-x-1/2 rounded-full bg-[#3B2414]/70 shadow-[inset_0_1px_1px_rgba(0,0,0,.5)] sm:size-2.5" aria-hidden="true" />
+                <span className="absolute bottom-[8%] left-1/2 size-2 -translate-x-1/2 rounded-full bg-[#3B2414]/70 shadow-[inset_0_1px_1px_rgba(0,0,0,.5)] sm:size-2.5" aria-hidden="true" />
+                {v ? (
+                  <>
+                    <span className="font-display text-[clamp(25px,7.4vw,58px)] leading-none text-[#3B2414] tabular-nums [text-shadow:0_1px_0_rgba(255,236,180,.6)]">{v.value}</span>
+                    <span lang="jv" aria-hidden="true" className="mt-1 font-jawa text-[clamp(12px,3.2vw,17px)] text-[#5A3A18]">
+                      {angkaJawa(v.value)}
+                    </span>
+                  </>
+                ) : (
+                  <span aria-hidden="true" className="relative font-display text-[clamp(13px,3.6vw,20px)] text-[#5A3A18]">
+                    {i === 6 && <span className="absolute -top-1.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-current" />}
+                    {deg}
+                    {i === 0 && <span className="absolute -bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-current" />}
                   </span>
-                </>
-              ) : (
-                <span lang="jv" aria-hidden="true" className="font-jawa text-[16px] text-[#5A3A18]">
-                  {angkaJawa(i === 0 ? 1 : 5)}
-                </span>
-              )}
-            </button>
-          ))}
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-[0.7fr_1.35fr_1.35fr_1.35fr_0.7fr] gap-[2.2%] px-[5%] text-center text-[14px] text-inv-paper/85">
-        {bars.map((b) => (
-          <span key={b.key}>{b.label}</span>
+      <div className="mt-4 grid grid-cols-[0.62fr_0.62fr_1.3fr_1.3fr_1.3fr_0.62fr_0.62fr] gap-[1.6%] px-[4%] text-center text-[14px] text-inv-paper/85">
+        {SARON.map((_, i) => (
+          <span key={i}>{value(i)?.label}</span>
         ))}
       </div>
     </div>
