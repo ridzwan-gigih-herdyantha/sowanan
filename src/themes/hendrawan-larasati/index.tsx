@@ -395,7 +395,7 @@ export function HendrawanLarasati({ inv }: { inv: InvitationView }) {
       }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
-      style={{ ...vars, ...inv.palette }}
+      style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
       <main>
         <Hero inv={inv} />

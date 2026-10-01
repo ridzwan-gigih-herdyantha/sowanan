@@ -1,5 +1,6 @@
 import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
+import { resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
 import type { InvitationData, SectionKey } from "./schema";
 
@@ -78,6 +79,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     specimens: s.specimens.items.map((p) => ({ ...p, src: u(p.src) })),
     on: enabled,
     palette,
+    fonts: resolveFonts(theme, d.style),
     pageColor: palette["--inv-paper"] ?? "",
   };
 }

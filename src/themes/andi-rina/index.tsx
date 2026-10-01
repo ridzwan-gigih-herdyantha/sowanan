@@ -213,7 +213,7 @@ function Collage({ inv }: { inv: InvitationView }) {
 function EventDetails({ inv }: { inv: InvitationView }) {
   const rows: [string, string][] = [
     [inv.dayLabel.toUpperCase(), inv.dateShort.replace(/ /g, "")],
-    ...inv.events.map((e): [string, string] => [e.name.toUpperCase(), `${e.time}${"until" in e ? ` sampai ${e.until}` : ""} WIB`]),
+    ...inv.events.map((e): [string, string] => [e.name.toUpperCase(), `${e.time}${e.until ? ` sampai ${e.until}` : ""} ${inv.tz}`]),
     ["TEMPAT", inv.venue.name],
   ];
   return (
@@ -447,7 +447,7 @@ export function AndiRina({ inv }: { inv: InvitationView }) {
       door={{ kind: "seal", couple: `${inv.groom.name} & ${inv.bride.name}`, monogram: inv.monogram, seal: "/img/andi-rina/seal.webp" }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
-      style={{ ...vars, ...inv.palette }}
+      style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
       <main>
         <Hero inv={inv} />

@@ -18,3 +18,6 @@ const schibsted = Schibsted_Grotesk({
 });
 
 export const themeFonts = `${newsreader.variable} ${schibsted.variable}`;
+
+// Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
+export const defaultFonts = { display: newsreader, body: schibsted };

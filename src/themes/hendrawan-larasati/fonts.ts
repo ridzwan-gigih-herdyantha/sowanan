@@ -18,3 +18,6 @@ const hanken = Hanken_Grotesk({
 });
 
 export const themeFonts = `${ibarra.variable} ${hanken.variable}`;
+
+// Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
+export const defaultFonts = { display: ibarra, body: hanken };

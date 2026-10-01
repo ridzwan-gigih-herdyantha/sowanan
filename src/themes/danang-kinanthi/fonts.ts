@@ -26,3 +26,6 @@ const javanese = Noto_Sans_Javanese({
 });
 
 export const themeFonts = `${marcellus.variable} ${alegreya.variable} ${javanese.variable}`;
+
+// Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
+export const defaultFonts = { display: marcellus, body: alegreya };

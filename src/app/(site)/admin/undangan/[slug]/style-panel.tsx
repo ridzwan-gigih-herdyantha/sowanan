@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { contrast, CUSTOM, isHex, MIN_CONTRAST, type Vars } from "@/themes/palette";
+import { FONT_PRESETS, fontStack } from "@/themes/fonts";
 import { PALETTES, resolvePalette } from "@/themes/palettes";
 import { Spinner } from "./spinner";
 
@@ -30,7 +31,7 @@ function Swatch({ vars, keys }: { vars: Vars; keys: string[] }) {
   );
 }
 
-// Panel gaya: pilih palet jadi tema, atau buat palet kustom dari tiga warna dasar dengan cek kontras.
+// Panel gaya: pilih palet jadi tema, buat palet kustom dari tiga warna dasar dengan cek kontras, dan pilih pasangan font.
 export function StylePanel({ theme, style, pkg, applying, onChange }: Props) {
   const p = PALETTES[theme];
   const [open, setOpen] = useState(false);
@@ -40,11 +41,13 @@ export function StylePanel({ theme, style, pkg, applying, onChange }: Props) {
   const custom = current === CUSTOM;
   const active = resolvePalette(theme, style);
   const base = custom && BASE_FIELDS.every((f) => isHex(style.custom[f.key])) ? style.custom : p.base(active);
-  const changed = current !== p.presets[0].id;
+  const fonts = FONT_PRESETS[theme] ?? [];
+  const font = fonts.find((f) => f.id === style.font) ?? fonts[0];
+  const changed = current !== p.presets[0].id || Boolean(style.font);
 
   const pick = (id: string) => onChange({ ...style, palette: id === p.presets[0].id ? "" : id });
-  const startCustom = () => onChange({ palette: CUSTOM, custom: { ...p.base(active) } });
-  const setBase = (key: (typeof BASE_FIELDS)[number]["key"], value: string) => onChange({ palette: CUSTOM, custom: { ...base, [key]: value.toUpperCase() } });
+  const startCustom = () => onChange({ ...style, palette: CUSTOM, custom: { ...p.base(active) } });
+  const setBase = (key: (typeof BASE_FIELDS)[number]["key"], value: string) => onChange({ ...style, palette: CUSTOM, custom: { ...base, [key]: value.toUpperCase() } });
 
   return (
     <section id="g-gaya" className="rounded-sm border border-line bg-white">
@@ -52,7 +55,7 @@ export function StylePanel({ theme, style, pkg, applying, onChange }: Props) {
         <span className="font-serif text-xl">Gaya</span>
         <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-mute">
           {applying && <Spinner className="size-3.5 text-wine" />}
-          {applying ? "Menerapkan..." : custom ? "Palet kustom" : p.presets.find((x) => x.id === current)?.name}
+          {applying ? "Menerapkan..." : `${custom ? "Palet kustom" : p.presets.find((x) => x.id === current)?.name}${font ? ` · ${font.name}` : ""}`}
         </span>
         <span className="ml-auto w-24">
           <Swatch vars={active} keys={p.swatch} />
@@ -66,7 +69,7 @@ export function StylePanel({ theme, style, pkg, applying, onChange }: Props) {
         <div className="border-t border-line p-4">
           {pkg === "dasar" && changed && (
             <p className="mb-4 rounded-sm bg-amber-50 px-3 py-2 text-[13px] text-amber-900 ring-1 ring-amber-200">
-              Paket Dasar. Ganti palet termasuk add-on &ldquo;Ganti font atau palet warna&rdquo;, pastikan sudah dibayar.
+              Paket Dasar. Ganti palet atau font termasuk add-on &ldquo;Ganti font atau palet warna&rdquo;, pastikan sudah dibayar.
             </p>
           )}
 
@@ -157,9 +160,43 @@ export function StylePanel({ theme, style, pkg, applying, onChange }: Props) {
             </>
           )}
 
+          {fonts.length > 0 && (
+            <>
+              <p className="mt-6 text-[13px] text-ink-mute">Pasangan font (judul dan isi)</p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {fonts.map((f, i) => {
+                  const on = f.id === (font?.id ?? "");
+                  const busy = applying === `font:${f.id || "bawaan"}`;
+                  return (
+                    <button
+                      key={f.id || "bawaan"}
+                      type="button"
+                      onClick={() => onChange({ ...style, font: f.id })}
+                      aria-pressed={on}
+                      aria-busy={busy || undefined}
+                      className={`relative rounded-sm border px-3 py-2.5 text-left transition-colors duration-150 ${on ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
+                    >
+                      <span className="block truncate text-[26px] leading-tight" style={{ fontFamily: fontStack(f.display, "display") }}>
+                        Dua hati, <i>satu cerita</i>
+                      </span>
+                      <span className="mt-0.5 block text-[14px] text-ink-soft" style={{ fontFamily: fontStack(f.body, "body") }}>
+                        Teks isi undangan, tanggal, dan alamat acara.
+                      </span>
+                      <span className="mt-1.5 flex items-center gap-2 text-[12px] text-ink-mute">
+                        {busy && <Spinner className="size-3.5 text-wine" />}
+                        {f.name}
+                        {i === 0 && " (bawaan)"}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
           {changed && (
-            <button type="button" onClick={() => onChange({ palette: "", custom: { paper: "", accent: "", ink: "" } })} className="mt-4 text-[13px] text-wine underline underline-offset-4">
-              Kembali ke palet bawaan
+            <button type="button" onClick={() => onChange({ palette: "", font: "", custom: { paper: "", accent: "", ink: "" } })} className="mt-4 text-[13px] text-wine underline underline-offset-4">
+              Kembali ke gaya bawaan
             </button>
           )}
         </div>

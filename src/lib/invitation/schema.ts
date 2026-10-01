@@ -72,6 +72,7 @@ export const invitationDataSchema = z.object({
   style: z
     .object({
       palette: str(),
+      font: str(),
       custom: z.object({ paper: str(), accent: str(), ink: str() }).prefault({}),
     })
     .prefault({}),

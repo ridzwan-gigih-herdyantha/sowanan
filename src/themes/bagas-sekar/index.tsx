@@ -331,7 +331,7 @@ export function BagasSekar({ inv }: { inv: InvitationView }) {
       door={{ kind: "walls", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateShort }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
-      style={{ ...vars, ...inv.palette }}
+      style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
       <main>
         <Hero inv={inv} />

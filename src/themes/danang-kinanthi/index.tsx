@@ -399,7 +399,7 @@ export function DanangKinanthi({ inv }: { inv: InvitationView }) {
       music={inv.music}
       synth="gending"
       className={`${themeFonts} pk-root min-h-dvh overflow-x-clip bg-inv-paper font-body text-[17px] text-inv-ink`}
-      style={{ ...vars, ...inv.palette }}
+      style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
       {/* Latar dan scrollbar halaman ikut palet. html berada di luar tema, jadi tidak bisa membaca CSS variable-nya. */}
       <style>{`html:has(.pk-root){background:${inv.palette["--inv-paper"]};scrollbar-color:${inv.palette["--pk-ukir"]} ${inv.palette["--inv-paper"]}}`}</style>
