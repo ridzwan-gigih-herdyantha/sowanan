@@ -16,15 +16,9 @@ import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { getWishes } from "@/lib/guestbook";
 import { themeFonts } from "./fonts";
 
+// Warna datang dari palet (palette.ts), di sini hanya font, tekstur, dan alias.
 const vars = {
-  "--inv-paper": "#F6EEE3",
-  "--inv-wash": "#EAD9C2",
-  "--inv-night": "#0B2327",
-  "--inv-accent": "#1F4449",
-  "--inv-gold": "#B07A3A",
-  "--inv-gold-light": "#D39B59",
-  "--inv-ink": "#1C1916",
-  "--inv-line": "#A08F74",
+  "--ar-sun": "var(--inv-gold-light)",
   "--inv-display": "var(--font-ar-display), Georgia, serif",
   "--inv-body": "var(--font-ar-body), 'Helvetica Neue', Arial, sans-serif",
   "--inv-grain": "url(/img/andi-rina/grain.webp)",
@@ -116,7 +110,7 @@ function Hero({ inv }: { inv: InvitationView }) {
 
 function StorySection({ inv }: { inv: InvitationView }) {
   return (
-    <section className="film-pin bg-[#070f11] text-inv-paper">
+    <section className="film-pin bg-ar-deep text-inv-paper">
       <div className="film-stage py-16">
         <Story
           items={inv.story}
@@ -197,7 +191,7 @@ function Collage({ inv }: { inv: InvitationView }) {
           {inv.polaroids.map((p, i) => (
             <figure
               key={p.src}
-              className={`absolute bg-[#fbf7f0] p-2 pb-8 shadow-[0_8px_22px_rgba(28,25,22,.2)] ${spots[i]}`}
+              className={`absolute bg-inv-card p-2 pb-8 shadow-[0_8px_22px_rgba(28,25,22,.2)] ${spots[i]}`}
               style={{ rotate: `${p.rotate}deg` }}
             >
               <div className="relative aspect-square">
@@ -228,7 +222,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
         <Label className="text-inv-gold">HARI H</Label>
         <h2 className="mt-3 mb-10 font-display text-[clamp(34px,9vw,56px)] leading-[1.05] text-inv-accent">Simpan tiketmu.</h2>
         <div className="relative flex flex-col drop-shadow-[0_12px_22px_rgba(28,25,22,.14)] lg:flex-row">
-          <div className="ticket-main flex flex-1 flex-col bg-[#fbf7f0] lg:flex-row">
+          <div className="ticket-main flex flex-1 flex-col bg-inv-card lg:flex-row">
           <div className="relative aspect-[16/10] lg:aspect-auto lg:w-[46%]">
             <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 360px, 100vw" className="object-cover" />
           </div>
@@ -250,7 +244,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
             <p className="mt-5 text-[13px] text-inv-ink/65">{inv.venue.address}</p>
           </div>
           </div>
-          <div className="ticket-stub flex flex-col justify-between gap-5 border-t-2 border-dashed border-inv-line bg-[#fbf7f0] p-6 sm:px-8 lg:w-[22%] lg:border-t-0 lg:border-l-2">
+          <div className="ticket-stub flex flex-col justify-between gap-5 border-t-2 border-dashed border-inv-line bg-inv-card p-6 sm:px-8 lg:w-[22%] lg:border-t-0 lg:border-l-2">
             <div>
               <p className="font-display text-[44px] leading-none text-inv-accent">{inv.dayMonth}</p>
               <p className="mt-2 text-[10px] tracking-[0.22em] text-inv-ink/60">SIMPAN SOBEKAN INI</p>
@@ -277,11 +271,11 @@ function EventDetails({ inv }: { inv: InvitationView }) {
 
 function CountdownSection({ inv }: { inv: InvitationView }) {
   const btn =
-    "rounded-sm border border-inv-night px-5 py-3 text-[12px] tracking-[0.16em] text-inv-night no-underline transition-colors duration-150 hover:bg-inv-night hover:text-[#D39B59]";
+    "rounded-sm border border-inv-night px-5 py-3 text-[12px] tracking-[0.16em] text-inv-night no-underline transition-colors duration-150 hover:bg-inv-night hover:text-ar-sun";
   return (
     <section
-      className="torn-top relative -mt-3.5 bg-[#D39B59] py-24 text-inv-night lg:py-32"
-      style={{ "--inv-gold-light": "#0B2327" } as CSSProperties}
+      className="torn-top relative -mt-3.5 bg-ar-sun py-24 text-inv-night lg:py-32"
+      style={{ "--inv-gold-light": "var(--inv-night)" } as CSSProperties}
     >
       <Wrap className="lg:flex lg:items-end lg:justify-between lg:gap-12">
         <div>
@@ -306,7 +300,7 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
 
 function GallerySection({ inv }: { inv: InvitationView }) {
   return (
-    <section className="torn-top relative -mt-3.5 bg-[#070f11] py-20 text-inv-paper lg:py-28">
+    <section className="torn-top relative -mt-3.5 bg-ar-deep py-20 text-inv-paper lg:py-28">
       <Wrap>
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -349,10 +343,10 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
 }
 
 function Gifts({ inv }: { inv: InvitationView }) {
-  const envelope = "relative overflow-hidden bg-[#fbf7f0] px-6 pt-20 pb-6 shadow-[0_8px_22px_rgba(28,25,22,.12)]";
+  const envelope = "relative overflow-hidden bg-inv-card px-6 pt-20 pb-6 shadow-[0_8px_22px_rgba(28,25,22,.12)]";
   const flap = (
     <>
-      <span className="absolute inset-x-0 top-0 h-16 bg-[#e3cdb0] [clip-path:polygon(0_0,100%_0,50%_100%)]" aria-hidden="true" />
+      <span className="absolute inset-x-0 top-0 h-16 bg-ar-flap [clip-path:polygon(0_0,100%_0,50%_100%)]" aria-hidden="true" />
       <Image src={"/img/andi-rina/seal.webp"} alt="" width={40} height={40} className="absolute top-9 left-1/2 size-10 -translate-x-1/2" />
     </>
   );
@@ -414,7 +408,7 @@ function Closing({ inv }: { inv: InvitationView }) {
     <section className="torn-top relative -mt-3.5 bg-inv-night py-24 text-center text-inv-paper lg:py-32">
       <Wrap className="flex flex-col items-center">
         <p className="max-w-[16ch] font-display text-[clamp(36px,10vw,64px)] leading-[1.05]">Terima kasih atas doa dan kehadirannya.</p>
-        <div className="relative mt-12 aspect-[1/1.05] w-40 rotate-[-3deg] bg-[#fbf7f0] p-2 pb-7">
+        <div className="relative mt-12 aspect-[1/1.05] w-40 rotate-[-3deg] bg-inv-card p-2 pb-7">
           <Image src={inv.images.closing} alt="" width={144} height={151} sizes="160px" className="h-full w-full object-cover" />
         </div>
         <p className="mt-10 font-display text-2xl tracking-[0.12em]">
@@ -453,7 +447,7 @@ export function AndiRina({ inv }: { inv: InvitationView }) {
       door={{ kind: "seal", couple: `${inv.groom.name} & ${inv.bride.name}`, monogram: inv.monogram, seal: "/img/andi-rina/seal.webp" }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
-      style={vars}
+      style={{ ...vars, ...inv.palette }}
     >
       <main>
         <Hero inv={inv} />

@@ -16,16 +16,8 @@ import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { getWishes } from "@/lib/guestbook";
 import { themeFonts } from "./fonts";
 
+// Warna datang dari palet (palette.ts), di sini hanya font dan tekstur.
 const vars = {
-  "--inv-paper": "#F4EFE6",
-  "--inv-wash": "#FAF7F1",
-  "--inv-night": "#2A1422",
-  "--inv-accent": "#5E1F3D",
-  "--inv-gold": "#2F4A36",
-  "--inv-gold-light": "#D4B06A",
-  "--inv-ink": "#1F1B1D",
-  "--inv-line": "#BDB1A4",
-  "--inv-tape": "#B08A3E",
   "--inv-display": "var(--font-hl-display), Georgia, serif",
   "--inv-body": "var(--font-hl-body), 'Helvetica Neue', Arial, sans-serif",
   "--inv-grain": "url(/img/hendrawan-larasati/grain.webp)",
@@ -403,7 +395,7 @@ export function HendrawanLarasati({ inv }: { inv: InvitationView }) {
       }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
-      style={vars}
+      style={{ ...vars, ...inv.palette }}
     >
       <main>
         <Hero inv={inv} />

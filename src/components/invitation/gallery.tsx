@@ -80,7 +80,7 @@ export function Gallery({ photos, stamp, variant = "collage" }: Props) {
                   ? "relative block w-full border border-inv-line bg-inv-wash p-2.5 text-left transition-transform duration-200 hover:-translate-y-1"
                   : grid
                     ? "group block w-full overflow-hidden text-left"
-                    : "block w-full bg-[#fbf7f0] p-2 pb-7 text-left shadow-[0_6px_18px_rgba(28,25,22,.18)] transition-transform duration-200 hover:-translate-y-1"
+                    : "block w-full bg-[var(--inv-card,#fbf7f0)] p-2 pb-7 text-left shadow-[0_6px_18px_rgba(28,25,22,.18)] transition-transform duration-200 hover:-translate-y-1"
               }
               aria-label={`Buka foto: ${p.alt}`}
             >

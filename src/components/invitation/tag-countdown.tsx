@@ -5,8 +5,8 @@ import { sway } from "./sway";
 
 const tags = [
   { key: "days", label: "HARI", tone: "bg-inv-wash", tilt: -4, drop: "h-10" },
-  { key: "hours", label: "JAM", tone: "bg-[#C6A9C4]", tilt: 3, drop: "h-20" },
-  { key: "minutes", label: "MENIT", tone: "bg-[#B8C4A8]", tilt: -2, drop: "h-14" },
+  { key: "hours", label: "JAM", tone: "bg-[var(--inv-tag-a,#C6A9C4)]", tilt: 3, drop: "h-20" },
+  { key: "minutes", label: "MENIT", tone: "bg-[var(--inv-tag-b,#B8C4A8)]", tilt: -2, drop: "h-14" },
 ] as const;
 
 export function TagCountdown({ target, doneText }: { target: string; doneText: string }) {

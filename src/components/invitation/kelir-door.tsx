@@ -16,7 +16,7 @@ export type KelirProps = {
 };
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
-const KAWUNG = texture("kawung", "#8A6142", 0.1);
+const KAWUNG = texture("kawung", "var(--pk-tex)", 0.1);
 
 // Pintu pembuka: nama mempelai besar di atas, panggung kecil di bawahnya dengan gunungan tertancap di gedebog.
 // Tamu menggeser gunungan atau menekan tombol, gunungan dikebut ke samping, bayangan wayang masuk lalu berubah prada,
@@ -87,7 +87,7 @@ export function KelirDoor({ groom, bride, groomAksara, brideAksara, date, invite
       <div aria-hidden="true" className="pk-flare pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-[radial-gradient(45%_60%_at_50%_75%,rgba(232,207,150,.75),transparent_72%)] opacity-0" />
 
       <div className="relative flex min-h-0 flex-1 flex-col">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-3 bottom-2 border border-[#B8995E]/70 outline outline-1 outline-offset-4 outline-[#B8995E]/35 lg:inset-5 lg:bottom-3" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-3 bottom-2 border border-pk-emas/70 outline outline-1 outline-offset-4 outline-pk-emas/35 lg:inset-5 lg:bottom-3" />
         <Sudut corner="tl" className="m-1 w-14 lg:m-3 lg:w-24" />
         <Sudut corner="tr" className="m-1 w-14 lg:m-3 lg:w-24" />
 

@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps<"/[slug]">): Promis
 
 export async function generateViewport({ params }: PageProps<"/[slug]">): Promise<Viewport> {
   const found = await load((await params).slug);
-  return { themeColor: found?.theme.themeColor ?? "#FAF7F2" };
+  return { themeColor: found?.view.pageColor || found?.theme.themeColor || "#FAF7F2" };
 }
 
 export default async function InvitationPage({ params }: PageProps<"/[slug]">) {

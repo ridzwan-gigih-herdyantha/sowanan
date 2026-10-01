@@ -94,6 +94,16 @@
   --color-inv-gold-light: var(--inv-gold-light);
   --color-inv-ink: var(--inv-ink);
   --color-inv-line: var(--inv-line);
+  --color-inv-card: var(--inv-card);
+  --color-ar-deep: var(--ar-deep);
+  --color-ar-flap: var(--ar-flap);
+  --color-ar-sun: var(--ar-sun);
+  --color-bs-paper: var(--bs-paper);
+  --color-pk-pasir: var(--pk-pasir);
+  --color-pk-lumut: var(--pk-lumut);
+  --color-pk-emas: var(--pk-emas);
+  --color-pk-ukir: var(--pk-ukir);
+  --color-pk-tex: var(--pk-tex);
   --font-display: var(--inv-display);
   --font-body: var(--inv-body);
   --font-jawa: var(--inv-jawa);
@@ -621,13 +631,13 @@ html:has(.pk-root) {
 .pk-tirai {
   background:
     repeating-linear-gradient(90deg, rgba(255, 244, 220, 0.16) 0 6px, rgba(40, 24, 12, 0.22) 6px 18px, transparent 18px 26px),
-    #5e4838 url("/img/danang-kinanthi/parang.webp") center / 180px;
+    var(--inv-night) url("/img/danang-kinanthi/parang.webp") center / 180px;
 }
 .pk-tumpal {
   height: 14px;
   background:
-    linear-gradient(135deg, #b8995e 25%, transparent 25%) -7px 0 / 14px 14px,
-    linear-gradient(225deg, #b8995e 25%, transparent 25%) -7px 0 / 14px 14px;
+    linear-gradient(135deg, var(--pk-emas) 25%, transparent 25%) -7px 0 / 14px 14px,
+    linear-gradient(225deg, var(--pk-emas) 25%, transparent 25%) -7px 0 / 14px 14px;
 }
 
 /* Lurik: tenun garis. Dua pola warna supaya pembatas tidak seragam. */
@@ -635,15 +645,15 @@ html:has(.pk-root) {
   height: 18px;
   background: repeating-linear-gradient(
     90deg,
-    #5e4838 0 3px,
-    #e8dcc6 3px 5px,
-    #8a9478 5px 9px,
-    #e8dcc6 9px 10px,
-    #b8995e 10px 12px,
-    #5e4838 12px 14px,
-    #f4ede0 14px 18px,
-    #59654f 18px 20px,
-    #f4ede0 20px 24px
+    var(--inv-night) 0 3px,
+    var(--pk-pasir) 3px 5px,
+    color-mix(in srgb, var(--pk-lumut) 65%, var(--inv-paper)) 5px 9px,
+    var(--pk-pasir) 9px 10px,
+    var(--pk-emas) 10px 12px,
+    var(--inv-night) 12px 14px,
+    var(--inv-paper) 14px 18px,
+    var(--pk-lumut) 18px 20px,
+    var(--inv-paper) 20px 24px
   );
   box-shadow:
     inset 0 1px 0 rgba(0, 0, 0, 0.12),
@@ -653,12 +663,12 @@ html:has(.pk-root) {
   height: 12px;
   background: repeating-linear-gradient(
     90deg,
-    #3e2e22 0 1px,
-    #c9b48c 1px 3px,
-    #3e2e22 3px 4px,
-    #e8dcc6 4px 10px,
-    #7c573a 10px 13px,
-    #e8dcc6 13px 19px
+    var(--inv-ink) 0 1px,
+    color-mix(in srgb, var(--pk-emas) 70%, var(--inv-paper)) 1px 3px,
+    var(--inv-ink) 3px 4px,
+    var(--pk-pasir) 4px 10px,
+    var(--inv-accent) 10px 13px,
+    var(--pk-pasir) 13px 19px
   );
 }
 
@@ -668,13 +678,13 @@ html:has(.pk-root) {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.22)),
     repeating-linear-gradient(90deg, rgba(255, 244, 220, 0.18) 0 4px, transparent 4px 12px, rgba(30, 18, 8, 0.28) 12px 22px, transparent 22px 28px),
-    #5e4838 url("/img/danang-kinanthi/parang.webp") center / 160px;
-  border-block: 3px solid #b8995e;
+    var(--inv-night) url("/img/danang-kinanthi/parang.webp") center / 160px;
+  border-block: 3px solid var(--pk-emas);
 }
 
 /* Lurik tegak untuk garis waktu lakon. */
 .pk-lurik-v {
-  background: linear-gradient(90deg, #b8995e 0 1px, transparent 1px 2px, #e8dcc6 2px 4px, transparent 4px 5px, #b8995e 5px 6px);
+  background: linear-gradient(90deg, var(--pk-emas) 0 1px, transparent 1px 2px, var(--pk-pasir) 2px 4px, transparent 4px 5px, var(--pk-emas) 5px 6px);
 }
 
 /* Gedebog: batang pisang tempat wayang ditancapkan. */
@@ -710,9 +720,9 @@ html:has(.pk-root) {
 .pk-seret {
   height: 10px;
   background:
-    radial-gradient(circle, #8a6142 1.2px, transparent 1.6px) 0 50% / 8px 10px repeat-x,
-    linear-gradient(#8a6142, #8a6142) top / 100% 1px no-repeat,
-    linear-gradient(#8a6142, #8a6142) bottom / 100% 1px no-repeat;
+    radial-gradient(circle, var(--pk-tex) 1.2px, transparent 1.6px) 0 50% / 8px 10px repeat-x,
+    linear-gradient(var(--pk-tex), var(--pk-tex)) top / 100% 1px no-repeat,
+    linear-gradient(var(--pk-tex), var(--pk-tex)) bottom / 100% 1px no-repeat;
   opacity: 0.7;
 }
 
@@ -729,7 +739,7 @@ html:has(.pk-root) {
 
 /* Kolom isian dan pilihan diberi latar padat dan garis tegas supaya terlihat walau kosong. */
 .pk-root :is(input, textarea, button).border-inv-line {
-  border-color: #a88a62;
+  border-color: var(--pk-ukir);
   background-color: var(--inv-wash);
 }
 .pk-root :is(input, textarea):focus {
@@ -741,9 +751,9 @@ html:has(.pk-root) {
 }
 
 .inv-serat {
-  color: #3e2e22;
-  background: #faf6ee;
-  border: 1px solid #d8c8aa;
+  color: var(--inv-ink);
+  background: var(--inv-wash);
+  border: 1px solid var(--inv-line);
   box-shadow: 0 10px 24px rgba(94, 72, 56, 0.1);
 }
 .inv-serat::before {
@@ -751,7 +761,7 @@ html:has(.pk-root) {
   position: absolute;
   inset: 0 0 auto;
   height: 8px;
-  background: repeating-linear-gradient(90deg, #5e4838 0 3px, #e8dcc6 3px 5px, #8a9478 5px 9px, #e8dcc6 9px 10px, #b8995e 10px 12px);
+  background: repeating-linear-gradient(90deg, var(--inv-night) 0 3px, var(--pk-pasir) 3px 5px, color-mix(in srgb, var(--pk-lumut) 65%, var(--inv-paper)) 5px 9px, var(--pk-pasir) 9px 10px, var(--pk-emas) 10px 12px);
 }
 .inv-serat::after {
   content: "\201C";
@@ -761,5 +771,5 @@ html:has(.pk-root) {
   font-family: var(--inv-display);
   font-size: 64px;
   line-height: 1;
-  color: rgba(168, 136, 80, 0.4);
+  color: color-mix(in srgb, var(--pk-ukir) 45%, transparent);
 }

@@ -106,8 +106,8 @@ export function HeroStage({ photo, groom, bride, names, below }: { photo: ReactN
           transition={reduce ? { duration: 0 } : { duration: 1.1, ease: EASE }}
           className="relative mt-[calc(min(100vw-28px,560px)*0.25)] w-[calc(100vw-28px)] max-w-[560px] shrink-0 lg:mt-[calc(min(40vw,600px)*0.21)] lg:w-[min(40vw,600px)] lg:max-w-none"
         >
-          <Lung name="mahkota" className="absolute bottom-[calc(100%-10px)] left-1/2 z-10 w-[62%] -translate-x-1/2 text-[#A88A62] lg:w-[54%]" />
-          <div className="relative h-[min(78svh,700px)] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-paper),0_0_0_6px_#B8995E,0_26px_46px_rgba(62,46,34,.22)] lg:h-[max(520px,calc(100svh-250px))]">
+          <Lung name="mahkota" className="absolute bottom-[calc(100%-10px)] left-1/2 z-10 w-[62%] -translate-x-1/2 text-pk-ukir lg:w-[54%]" />
+          <div className="relative h-[min(78svh,700px)] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-paper),0_0_0_6px_var(--pk-emas),0_26px_46px_rgba(62,46,34,.22)] lg:h-[max(520px,calc(100svh-250px))]">
             <motion.div
               initial={reduce ? false : { scale: 1.12 }}
               animate={on ? { scale: 1 } : undefined}
@@ -116,15 +116,15 @@ export function HeroStage({ photo, groom, bride, names, below }: { photo: ReactN
             >
               {photo}
             </motion.div>
-            <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-[#3E2E22]/90 via-[#3E2E22]/45 to-transparent lg:h-1/4 lg:from-[#3E2E22]/35" />
+            <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-inv-ink/90 via-inv-ink/45 to-transparent lg:h-1/4 lg:from-inv-ink/35" />
             <motion.div {...show(1.2)} className="absolute inset-x-0 bottom-0 px-4 pb-7 text-center lg:hidden">
               {names}
             </motion.div>
             <motion.div initial={false} animate={{ x: on ? "-101%" : "0%" }} transition={reduce ? { duration: 0 } : { duration: 1.3, ease: [0.65, 0, 0.35, 1], delay: 0.45 }} className="pk-tirai absolute inset-y-0 left-0 w-1/2" aria-hidden="true" />
             <motion.div initial={false} animate={{ x: on ? "101%" : "0%" }} transition={reduce ? { duration: 0 } : { duration: 1.3, ease: [0.65, 0, 0.35, 1], delay: 0.45 }} className="pk-tirai absolute inset-y-0 right-0 w-1/2" aria-hidden="true" />
           </div>
-          <Lung name="sudut" corner="bl" className="-bottom-4 -left-4 w-[26%] text-[#A88A62]" />
-          <Lung name="sudut" corner="br" className="-right-4 -bottom-4 w-[26%] text-[#A88A62]" />
+          <Lung name="sudut" corner="bl" className="-bottom-4 -left-4 w-[26%] text-pk-ukir" />
+          <Lung name="sudut" corner="br" className="-right-4 -bottom-4 w-[26%] text-pk-ukir" />
         </motion.div>
         {column(bride, "kamaratih", "r")}
       </div>
@@ -145,7 +145,7 @@ export function PuppetFlip({ puppet, label, back }: { puppet: PuppetName; label:
   const [flipped, setFlipped] = useState(false);
   const reduce = useReducedMotion();
   const face =
-    "absolute inset-0 overflow-hidden rounded-t-[999px] [backface-visibility:hidden] shadow-[0_0_0_4px_var(--inv-wash),0_0_0_5px_#B8995E,0_18px_30px_rgba(62,46,34,.18)]";
+    "absolute inset-0 overflow-hidden rounded-t-[999px] [backface-visibility:hidden] shadow-[0_0_0_4px_var(--inv-wash),0_0_0_5px_var(--pk-emas),0_18px_30px_rgba(62,46,34,.18)]";
   return (
     <button
       type="button"
@@ -162,7 +162,7 @@ export function PuppetFlip({ puppet, label, back }: { puppet: PuppetName; label:
         transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 60, damping: 13 }}
         className="relative aspect-[3/4.6] [transform-style:preserve-3d]"
       >
-        <div className={`${face} bg-[radial-gradient(80%_60%_at_50%_35%,#FAF6EE,#EADFC8_70%,#DCCBAA)]`}>
+        <div className={`${face} bg-[radial-gradient(80%_60%_at_50%_35%,var(--inv-wash),var(--pk-pasir)_70%,color-mix(in_srgb,var(--pk-pasir)_88%,var(--inv-ink)))]`}>
           <div className="absolute inset-x-0 bottom-[16%] flex h-[68%] justify-center">
             <Puppet name={puppet} className="drop-shadow-[0_12px_16px_rgba(62,46,34,.3)]" />
           </div>
@@ -194,13 +194,13 @@ export function BabakList({ items }: { items: Scene[] }) {
         const isOpen = open === i;
         return (
           <li key={s.title} className="relative grid gap-5 pb-14 pl-12 last:pb-0 lg:grid-cols-2 lg:gap-24 lg:pl-0">
-            <span className="absolute top-1 left-0 z-10 flex size-9 items-center justify-center rounded-full bg-inv-night text-inv-gold-light ring-2 ring-[#B8995E] lg:top-1/2 lg:left-1/2 lg:-mt-[18px] lg:-ml-[18px]">
+            <span className="absolute top-1 left-0 z-10 flex size-9 items-center justify-center rounded-full bg-inv-night text-inv-gold-light ring-2 ring-pk-emas lg:top-1/2 lg:left-1/2 lg:-mt-[18px] lg:-ml-[18px]">
               <Motif name={BABAK_MOTIF[i % BABAK_MOTIF.length]} className="size-5" />
             </span>
             <figure data-reveal="" className={`pk-babak relative ${flip ? "lg:order-2" : ""}`}>
-              <div className="relative aspect-[4/5] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-night),0_0_0_6px_#B8995E,0_24px_40px_rgba(0,0,0,.28)]">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-night),0_0_0_6px_var(--pk-emas),0_24px_40px_rgba(0,0,0,.28)]">
                 <Image src={s.image} alt={s.title} fill sizes="(min-width: 1024px) 460px, 80vw" className="object-cover" />
-                <span aria-hidden="true" className="pk-babak-tone absolute inset-0 bg-[#7C573A] mix-blend-color" />
+                <span aria-hidden="true" className="pk-babak-tone absolute inset-0 bg-inv-accent mix-blend-color" />
               </div>
             </figure>
             <div data-reveal="" className={`self-center ${flip ? "lg:order-1 lg:text-right" : ""}`}>
@@ -373,7 +373,7 @@ export function Simpingan({ photos }: { photos: Photo[] }) {
               style={{ zIndex: 10 - a, transformOrigin: "50% 100%" }}
               className="absolute inset-x-0 bottom-[52px] mx-auto w-[min(62vw,300px)] lg:w-[350px]"
             >
-              <span className="relative block aspect-[3/4.1] overflow-hidden rounded-t-[999px] bg-inv-wash shadow-[0_0_0_4px_var(--inv-wash),0_0_0_5px_#B8995E,0_22px_36px_rgba(62,46,34,.3)]">
+              <span className="relative block aspect-[3/4.1] overflow-hidden rounded-t-[999px] bg-inv-wash shadow-[0_0_0_4px_var(--inv-wash),0_0_0_5px_var(--pk-emas),0_22px_36px_rgba(62,46,34,.3)]">
                 <Image src={p.src} alt={p.alt} fill sizes="(min-width: 1024px) 350px, 62vw" className="object-cover" draggable={false} />
                 <motion.span animate={{ opacity: Math.min(a, 2) * 0.3 }} transition={spring} className="absolute inset-0 bg-inv-ink" />
               </span>

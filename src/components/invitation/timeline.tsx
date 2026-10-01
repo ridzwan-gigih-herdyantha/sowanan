@@ -38,17 +38,13 @@ export function Timeline({ items, variant = "line" }: { items: readonly StoryIte
                     <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent lg:hidden" aria-hidden="true" />
                   </span>
                   <span
-                    className={`absolute inset-x-0 bottom-0 flex flex-col px-5 pb-10 text-white sm:px-8 lg:relative lg:order-1 lg:h-full lg:justify-center lg:px-14 lg:pb-0 ${
-                      dark ? "lg:text-[#E8E5E0]" : "lg:text-inv-ink"
-                    }`}
+                    className={`absolute inset-x-0 bottom-0 flex flex-col px-5 pb-10 text-white sm:px-8 lg:relative lg:order-1 lg:h-full lg:justify-center lg:px-14 lg:pb-0 ${dark ? "lg:text-inv-paper" : "lg:text-inv-ink"}`}
                   >
                     <span className="text-[11px] font-medium tracking-[0.24em] opacity-80">
                       {String(i + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
                     </span>
                     <span
-                      className={`mt-2 font-display text-[clamp(96px,30vw,200px)] leading-[0.85] tracking-[-0.03em] text-transparent italic [--stroke:#fff] ${
-                        dark ? "lg:[--stroke:#E8E5E0]" : "lg:[--stroke:#121212]"
-                      }`}
+                      className={`mt-2 font-display text-[clamp(96px,30vw,200px)] leading-[0.85] tracking-[-0.03em] text-transparent italic [--stroke:#fff] ${dark ? "lg:[--stroke:var(--inv-paper)]" : "lg:[--stroke:var(--inv-ink)]"}`}
                       style={{ WebkitTextStroke: "1.5px var(--stroke)" }}
                     >
                       {s.date.slice(-4)}

@@ -16,17 +16,8 @@ import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { pasaran } from "@/lib/javanese";
 import { themeFonts } from "./fonts";
 
-// Palet soga gading: krem gading, pasir, coklat soga, dan hijau lumut. Tenang dan kontrasnya rendah,
-// kecuali teks dan tombol yang tetap tegas.
+// Warna datang dari palet (palette.ts), di sini hanya font.
 const vars = {
-  "--inv-paper": "#F4EDE0",
-  "--inv-wash": "#FAF6EE",
-  "--inv-night": "#5E4838",
-  "--inv-accent": "#7C573A",
-  "--inv-gold": "#7C573A",
-  "--inv-gold-light": "#E8D7A8",
-  "--inv-ink": "#3E2E22",
-  "--inv-line": "#D8C8AA",
   "--inv-grain": "none",
   "--inv-display": "var(--font-pk-display), Georgia, serif",
   "--inv-body": "var(--font-pk-body), 'Helvetica Neue', Arial, sans-serif",
@@ -34,10 +25,10 @@ const vars = {
 } as CSSProperties;
 
 const TONES = {
-  gading: { bg: "#F4EDE0", ink: "#8A6142", dark: false },
-  pasir: { bg: "#EADFC8", ink: "#8A6142", dark: false },
-  soga: { bg: "#5E4838", ink: "#E8D7A8", dark: true },
-  lumut: { bg: "#59654F", ink: "#E8D7A8", dark: true },
+  gading: { bg: "var(--inv-paper)", ink: "var(--pk-tex)", dark: false },
+  pasir: { bg: "var(--pk-pasir)", ink: "var(--pk-tex)", dark: false },
+  soga: { bg: "var(--inv-night)", ink: "var(--inv-gold-light)", dark: true },
+  lumut: { bg: "var(--pk-lumut)", ink: "var(--inv-gold-light)", dark: true },
 } as const;
 
 type Tone = keyof typeof TONES;
@@ -46,7 +37,7 @@ type Corners = "atas" | "bawah" | "semua";
 
 function Section({ tone, tex, corners, className = "", children }: { tone: Tone; tex?: [TextureName, number]; corners?: Corners; className?: string; children: ReactNode }) {
   const t = TONES[tone];
-  const lung = `w-24 sm:w-32 lg:w-44 ${t.dark ? "text-[#E8D7A8]/45" : "text-[#A88A62]/70"}`;
+  const lung = `w-24 sm:w-32 lg:w-44 ${t.dark ? "text-inv-gold-light/45" : "text-pk-ukir/70"}`;
   return (
     <section className={`relative overflow-hidden py-14 lg:py-20 ${t.dark ? "text-inv-wash" : "text-inv-ink"} ${className}`} style={{ backgroundColor: t.bg }}>
       {tex && <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={texture(tex[0], t.ink, tex[1])} />}
@@ -81,7 +72,7 @@ function Heading({ motif, jawa, children, light = false, center = false }: { mot
         </p>
       </div>
       <h2 className={`mt-2 font-display text-[clamp(34px,8.6vw,56px)] leading-[1.05] ${light ? "text-inv-wash" : "text-inv-ink"}`}>{children}</h2>
-      <Lung name="tepi" className={`mt-3 w-52 lg:w-64 ${light ? "text-[#E8D7A8]/70" : "text-[#A88A62]"}`} />
+      <Lung name="tepi" className={`mt-3 w-52 lg:w-64 ${light ? "text-inv-gold-light/70" : "text-pk-ukir"}`} />
     </div>
   );
 }
@@ -100,9 +91,9 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
 function Hero({ inv }: { inv: InvitationView }) {
   return (
     <section className="relative overflow-hidden pt-6 pb-10 text-center text-inv-ink lg:pt-5 lg:pb-12" style={{ backgroundColor: TONES.gading.bg }}>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={texture("kawung", "#8A6142", 0.1)} />
-      <Lung name="sudut" corner="tl" className="m-2 w-24 text-[#A88A62]/70 sm:w-32 lg:m-4 lg:w-48" />
-      <Lung name="sudut" corner="tr" className="m-2 w-24 text-[#A88A62]/70 sm:w-32 lg:m-4 lg:w-48" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={texture("kawung", "var(--pk-tex)", 0.1)} />
+      <Lung name="sudut" corner="tl" className="m-2 w-24 text-pk-ukir/70 sm:w-32 lg:m-4 lg:w-48" />
+      <Lung name="sudut" corner="tr" className="m-2 w-24 text-pk-ukir/70 sm:w-32 lg:m-4 lg:w-48" />
       <h1 className="sr-only">
         {inv.groom.name} dan {inv.bride.name}
       </h1>
@@ -203,7 +194,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
             {tanggal(inv)}
           </p>
           <Seret className="mt-3 w-40" />
-          <ol className="relative mt-7 border-l border-[#B8995E] pl-8">
+          <ol className="relative mt-7 border-l border-pk-emas pl-8">
             {inv.events.map((e, i) => (
               <li key={e.name} {...reveal(i + 3)} className="relative pb-6 last:pb-0">
                 <span className="absolute top-1.5 -left-[44px] flex size-6 items-center justify-center bg-inv-paper text-inv-accent">
@@ -219,7 +210,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
           </ol>
         </div>
         <div {...reveal(2)} className="mt-12 lg:mt-4">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-paper),0_0_0_6px_#B8995E,0_20px_36px_rgba(62,46,34,.18)]">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-paper),0_0_0_6px_var(--pk-emas),0_20px_36px_rgba(62,46,34,.18)]">
             <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 420px, 90vw" className="object-cover" />
           </div>
           <p className="mt-5 font-display text-[26px] text-inv-ink">{inv.venue.name}</p>
@@ -283,7 +274,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
           Konfirmasi kehadiran
         </Heading>
         <div {...reveal(1)} className="relative mt-24 rounded-sm bg-inv-paper px-6 pt-10 pb-12 text-inv-ink sm:px-10">
-          <Lung name="mahkota" className="absolute bottom-[calc(100%-8px)] left-1/2 w-56 -translate-x-1/2 text-[#E8D7A8]" />
+          <Lung name="mahkota" className="absolute bottom-[calc(100%-8px)] left-1/2 w-56 -translate-x-1/2 text-inv-gold-light" />
           <Lurik variant="b" className="absolute inset-x-0 top-0" />
           <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
         </div>
@@ -358,7 +349,7 @@ function Closing({ inv }: { inv: InvitationView }) {
             Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
           </p>
           {inv.sesanti && (
-            <figure {...reveal(4)} className="mt-8 lg:border-l-2 lg:border-[#B8995E] lg:pl-5">
+            <figure {...reveal(4)} className="mt-8 lg:border-l-2 lg:border-pk-emas lg:pl-5">
               <blockquote className="font-display text-[clamp(22px,6vw,30px)] text-inv-gold-light">{inv.sesanti}</blockquote>
               {inv.sesantiArti && <figcaption className="mt-1 text-[15px] text-inv-wash/75">{inv.sesantiArti}</figcaption>}
             </figure>
@@ -407,8 +398,10 @@ export function DanangKinanthi({ inv }: { inv: InvitationView }) {
       }}
       music={inv.music}
       className={`${themeFonts} pk-root min-h-dvh overflow-x-clip bg-inv-paper font-body text-[17px] text-inv-ink`}
-      style={vars}
+      style={{ ...vars, ...inv.palette }}
     >
+      {/* Latar dan scrollbar halaman ikut palet. html berada di luar tema, jadi tidak bisa membaca CSS variable-nya. */}
+      <style>{`html:has(.pk-root){background:${inv.palette["--inv-paper"]};scrollbar-color:${inv.palette["--pk-ukir"]} ${inv.palette["--inv-paper"]}}`}</style>
       <main>
         <Hero inv={inv} />
         <Wiru />

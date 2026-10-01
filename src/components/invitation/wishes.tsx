@@ -18,7 +18,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const tags = variant === "tags";
   const lontar = variant === "lontar";
   const serat = variant === "serat";
-  const tagTone = ["bg-inv-wash", "bg-[#E6D8E4]", "bg-[#DDE3D3]"];
+  const tagTone = ["bg-inv-wash", "bg-[var(--inv-note-a,#E6D8E4)]", "bg-[var(--inv-note-b,#DDE3D3)]"];
   const { guest, setGuest } = useGuest();
   const [mine, setMine] = useState<Wish[]>([]);
   const [shown, setShown] = useState(FIRST);
@@ -112,7 +112,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
                   ? "border-b border-inv-line py-6"
                   : curator
                     ? "mb-4 break-inside-avoid border border-inv-line bg-inv-wash px-5 pt-5 pb-4"
-                    : "mb-4 break-inside-avoid bg-[#fbf7f0] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)]"
+                    : "mb-4 break-inside-avoid bg-[var(--inv-card,#fbf7f0)] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)]"
               } ${i < unsynced.length ? (lined ? "animate-[inv-pop_.3s_ease-out]" : "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]") : ""}`}
               style={lined || curator || serat ? undefined : { rotate: `${(lontar ? 0.4 : 1) * tilt[i % tilt.length]}deg` }}
             >

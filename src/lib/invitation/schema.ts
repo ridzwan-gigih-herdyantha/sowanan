@@ -69,6 +69,12 @@ export const invitationDataSchema = z.object({
     })
     .prefault({}),
   share: z.object({ description: str(), ogDescription: str() }).prefault({}),
+  style: z
+    .object({
+      palette: str(),
+      custom: z.object({ paper: str(), accent: str(), ink: str() }).prefault({}),
+    })
+    .prefault({}),
   media: z
     .object({ hero: str(), heroWide: str(), og: str(), music: str(), venue: str(), couple: str(), closing: str(), detail: str(), rsvp: str() })
     .prefault({}),

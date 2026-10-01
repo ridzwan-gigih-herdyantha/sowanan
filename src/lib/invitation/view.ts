@@ -1,5 +1,6 @@
 import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
+import { resolvePalette } from "@/themes/palettes";
 import type { InvitationData, SectionKey } from "./schema";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
@@ -22,6 +23,7 @@ function parts(iso: string, tz: keyof typeof ZONES) {
 export function toView(slug: string, d: InvitationData, theme = "") {
   const p = parts(d.event.start, d.event.timezone);
   const s = d.sections;
+  const palette = resolvePalette(theme, d.style);
   const enabled = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, Boolean(v.enabled)])) as Record<SectionKey, boolean>;
 
   return {
@@ -75,6 +77,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     polaroids: s.collage.polaroids.map((p) => ({ ...p, src: u(p.src) })),
     specimens: s.specimens.items.map((p) => ({ ...p, src: u(p.src) })),
     on: enabled,
+    palette,
+    pageColor: palette["--inv-paper"] ?? "",
   };
 }
 

@@ -25,7 +25,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   const live = invitationDataSchema.parse(row.data ?? {});
   const draft = row.draft ? invitationDataSchema.parse(row.draft) : live;
-  return <Editor slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} draft={draft} live={live} />;
+  return <Editor slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
 }
 
 export default function EditInvitationPage({ params }: PageProps<"/admin/undangan/[slug]">) {

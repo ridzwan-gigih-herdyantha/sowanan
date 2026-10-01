@@ -14,26 +14,21 @@ import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { getWishes } from "@/lib/guestbook";
 import { themeFonts } from "./fonts";
 
+// Warna datang dari palet (palette.ts), di sini hanya font, tekstur, dan alias.
 const vars = {
-  "--inv-paper": "#E8E5E0",
-  "--inv-wash": "#D6D2CB",
-  "--inv-night": "#1A1A19",
-  "--inv-accent": "#121212",
-  "--inv-gold": "#5C5853",
-  "--inv-gold-light": "#BDB8B0",
-  "--inv-ink": "#121212",
-  "--inv-line": "#9D978F",
+  "--bs-paper": "var(--inv-paper)",
   "--inv-display": "var(--font-bs-display), Georgia, serif",
   "--inv-body": "var(--font-bs-body), 'Helvetica Neue', Arial, sans-serif",
   "--inv-grain": "url(/img/bagas-sekar/grain.webp)",
 } as CSSProperties;
 
+// Bagian gelap membalik warna: latar memakai warna malam, teks memakai warna kertas dari akar tema.
 const dark = {
-  "--inv-paper": "#1A1A19",
-  "--inv-accent": "#E8E5E0",
-  "--inv-ink": "#E8E5E0",
-  "--inv-gold": "#BDB8B0",
-  "--inv-line": "#5E5A55",
+  "--inv-paper": "var(--inv-night)",
+  "--inv-accent": "var(--bs-paper)",
+  "--inv-ink": "var(--bs-paper)",
+  "--inv-gold": "var(--inv-gold-light)",
+  "--inv-line": "var(--bs-dline)",
 } as CSSProperties;
 
 const enter = (delay: number) => ({ className: "inv-enter", style: { "--enter-delay": `${delay}s` } as CSSProperties });
@@ -222,7 +217,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
         <div className="relative aspect-[3/2] lg:aspect-auto lg:min-h-[640px]">
           <Image src={inv.images.rsvp} alt="" fill sizes="(min-width: 980px) 50vw, 100vw" className="object-cover opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-t from-inv-night via-inv-night/30 to-transparent" />
-          <p className="absolute inset-x-5 bottom-6 max-w-[18ch] font-display text-[clamp(28px,7vw,44px)] leading-tight text-[#E8E5E0] italic sm:inset-x-8 lg:inset-x-12 lg:bottom-12">
+          <p className="absolute inset-x-5 bottom-6 max-w-[18ch] font-display text-[clamp(28px,7vw,44px)] leading-tight text-bs-paper italic sm:inset-x-8 lg:inset-x-12 lg:bottom-12">
             {inv.rsvpQuote}
           </p>
         </div>
@@ -336,7 +331,7 @@ export function BagasSekar({ inv }: { inv: InvitationView }) {
       door={{ kind: "walls", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateShort }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
-      style={vars}
+      style={{ ...vars, ...inv.palette }}
     >
       <main>
         <Hero inv={inv} />

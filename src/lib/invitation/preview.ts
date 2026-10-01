@@ -41,6 +41,8 @@ export function fillPreview(draft: InvitationData, sample: InvitationData | null
   }
 
   const data = walk(draft, sample, "") as InvitationData;
+  // Palet kosong berarti bawaan tema, bukan ambil dari contoh.
+  data.style = draft.style;
   if (Number.isNaN(Date.parse(data.event.start))) data.event.start = sample.event.start;
   if (Number.isNaN(Date.parse(data.event.end))) data.event.end = sample.event.end;
   return { data, filled };

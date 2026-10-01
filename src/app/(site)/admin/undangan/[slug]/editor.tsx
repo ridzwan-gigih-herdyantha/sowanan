@@ -8,8 +8,9 @@ import type { BridgeMessage } from "@/app/admin/pratinjau/[slug]/bridge";
 import { publishDraft, saveDraft, setPublished } from "../actions";
 import { InvitationTabs } from "../tabs";
 import { FieldInput, FormProvider } from "./fields";
+import { StylePanel } from "./style-panel";
 
-type Props = { slug: string; theme: string; label: string; published: boolean; paid: boolean; draft: InvitationData; live: InvitationData };
+type Props = { slug: string; theme: string; label: string; published: boolean; paid: boolean; pkg: string | null; draft: InvitationData; live: InvitationData };
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
 const groupOf = (() => {
@@ -44,7 +45,7 @@ function Switch({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
   );
 }
 
-export function Editor({ slug, theme, label, published: initialPublished, paid, draft, live }: Props) {
+export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live }: Props) {
   const [data, setData] = useState(draft);
   const [saved, setSaved] = useState(() => JSON.stringify(live));
   const [published, setPub] = useState(initialPublished);
@@ -225,6 +226,8 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
               </ul>
             </div>
           )}
+
+          <StylePanel theme={theme} style={data.style} pkg={pkg} onChange={(style) => setData((d) => ({ ...d, style }))} />
 
           {groups.map((g) => {
             const enabled = g.section ? data.sections[g.section].enabled : true;

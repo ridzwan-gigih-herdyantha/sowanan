@@ -31,7 +31,7 @@ export function BatikBand({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={`h-7 border-y-[3px] border-[#B8995E] ${className}`}
+      className={`h-7 border-y-[3px] border-pk-emas ${className}`}
       style={{ backgroundImage: `url(${ORNAMENTS.parang})`, backgroundSize: "220px", backgroundPosition: "center" }}
     />
   );

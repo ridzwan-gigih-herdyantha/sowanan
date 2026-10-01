@@ -69,10 +69,12 @@ const TILES = {
 
 export type TextureName = keyof typeof TILES;
 
+// Motif dipakai sebagai mask supaya warnanya bisa berupa CSS variable dari palet.
 export function texture(name: TextureName, color: string, opacity: number, scale = 1): CSSProperties {
   const { size, body } = TILES[name];
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" opacity="${opacity}">${body(color)}</svg>`;
-  return { backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`, backgroundSize: `${size * scale}px` };
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">${body("#000")}</svg>`;
+  const mask = `url("data:image/svg+xml,${encodeURIComponent(svg)}") 0 0 / ${size * scale}px repeat`;
+  return { backgroundColor: color, opacity, mask, WebkitMask: mask };
 }
 
 // Ukiran lung-lungan satu warna. Gambarnya dipakai sebagai mask, warnanya mengikuti warna teks (currentColor).
