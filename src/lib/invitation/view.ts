@@ -57,6 +57,9 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     collection: d.copy.collection,
     sesanti: d.copy.sesanti,
     sesantiArti: d.copy.sesantiArti,
+    ayat: d.copy.ayat,
+    ayatArti: d.copy.ayatArti,
+    ayatSumber: d.copy.ayatSumber,
     share: d.share,
     images: {
       hero: u(d.media.hero),

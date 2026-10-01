@@ -4,6 +4,8 @@ import Image from "next/image";
 import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
+import { pancuran } from "./sakinah/ambience";
+import { PintuDoor, type PintuProps } from "./sakinah/door";
 
 const GUEST_KEY = "sowanan:guest";
 
@@ -35,13 +37,14 @@ type Door =
   | { kind: "seal"; couple: string; monogram: string; seal: string }
   | { kind: "walls"; groom: string; bride: string; date: string }
   | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string }
-  | ({ kind: "kelir" } & Omit<KelirProps, "invited" | "onOpen">);
+  | ({ kind: "kelir" } & Omit<KelirProps, "invited" | "onOpen">)
+  | ({ kind: "pintu" } & Omit<PintuProps, "invited" | "onOpen">);
 
 type Props = {
   door: Door;
   music: string;
   // Musik bawaan yang dimainkan langsung di browser bila undangan tidak punya berkas musik.
-  synth?: "gending";
+  synth?: "gending" | "pancuran";
   className: string;
   style: CSSProperties;
   children: ReactNode;
@@ -78,7 +81,13 @@ export function InvitationShell({ door, music, synth, className, style, children
     };
   }, [open]);
 
-  useEffect(() => () => gending.pause(), []);
+  useEffect(
+    () => () => {
+      gending.pause();
+      pancuran.pause();
+    },
+    [],
+  );
 
   const guest = invited || typed || "";
   const setGuest = (name: string) => {
@@ -86,12 +95,13 @@ export function InvitationShell({ door, music, synth, className, style, children
     storeGuest(name);
   };
 
-  const useSynth = !music && synth === "gending";
+  const player = !music && synth ? (synth === "gending" ? gending : pancuran) : null;
+  const useSynth = player !== null;
   const hasMusic = Boolean(music) || useSynth;
 
   const play = () => {
-    if (useSynth) {
-      gending.play();
+    if (player) {
+      player.play();
       setPlaying(true);
       return;
     }
@@ -111,7 +121,7 @@ export function InvitationShell({ door, music, synth, className, style, children
 
   const toggleMusic = () => {
     if (playing) {
-      if (useSynth) gending.pause();
+      if (player) player.pause();
       else audio.current?.pause();
       setPlaying(false);
     } else play();
@@ -121,7 +131,7 @@ export function InvitationShell({ door, music, synth, className, style, children
     <GuestContext.Provider value={{ guest, setGuest }}>
       <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
         <noscript>
-          <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+          <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
         </noscript>
 
         {door.kind === "vellum" && (
@@ -185,8 +195,9 @@ export function InvitationShell({ door, music, synth, className, style, children
             onOpen={openInvitation}
           />
         )}
+        {door.kind === "pintu" && <PintuDoor groom={door.groom} bride={door.bride} date={door.date} hijri={door.hijri} invited={invited} onOpen={openInvitation} />}
 
-        {door.kind === "vellum" || door.kind === "kelir" ? null : door.kind === "seal" ? (
+        {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" ? null : door.kind === "seal" ? (
           <div
             className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
             aria-hidden={open}

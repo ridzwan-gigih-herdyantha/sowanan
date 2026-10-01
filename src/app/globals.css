@@ -107,6 +107,12 @@
   --font-display: var(--inv-display);
   --font-body: var(--inv-body);
   --font-jawa: var(--inv-jawa);
+  --font-arab: var(--inv-arab);
+  --color-sk-pasir: var(--sk-pasir);
+  --color-sk-night2: var(--sk-night2);
+  --color-sk-emas: var(--sk-emas);
+  --color-sk-glow: var(--sk-glow);
+  --color-sk-tex: var(--sk-tex);
 }
 
 .inv-paper {
@@ -727,26 +733,31 @@ html:has(.pk-root) {
 }
 
 /* Tombol bawaan komponen undangan dibuat padat supaya teksnya kontras. */
-.pk-root :is(button, a).border-inv-accent {
+.pk-root :is(button, a).border-inv-accent,
+.sk-root :is(button, a).border-inv-accent {
   border-color: var(--inv-ink);
   background: var(--inv-ink);
   color: var(--inv-wash);
 }
-.pk-root :is(button, a).border-inv-accent:hover {
+.pk-root :is(button, a).border-inv-accent:hover,
+.sk-root :is(button, a).border-inv-accent:hover {
   border-color: var(--inv-accent);
   background: var(--inv-accent);
 }
 
 /* Kolom isian dan pilihan diberi latar padat dan garis tegas supaya terlihat walau kosong. */
-.pk-root :is(input, textarea, button).border-inv-line {
+.pk-root :is(input, textarea, button).border-inv-line,
+.sk-root :is(input, textarea, button).border-inv-line {
   border-color: var(--pk-ukir);
   background-color: var(--inv-wash);
 }
-.pk-root :is(input, textarea):focus {
+.pk-root :is(input, textarea):focus,
+.sk-root :is(input, textarea):focus {
   border-color: var(--inv-ink);
   box-shadow: 0 0 0 1px var(--inv-ink);
 }
-.pk-root button.border-inv-line:hover {
+.pk-root button.border-inv-line:hover,
+.sk-root button.border-inv-line:hover {
   background-color: var(--inv-accent);
 }
 
@@ -772,4 +783,40 @@ html:has(.pk-root) {
   font-size: 64px;
   line-height: 1;
   color: color-mix(in srgb, var(--pk-ukir) 45%, transparent);
+}
+
+/* Sakinah */
+html:has(.sk-root) {
+  scrollbar-gutter: stable;
+}
+/* Pilihan RSVP di kartu yang sempit: jarak huruf dirapatkan supaya teks tidak keluar dari tombol. */
+.sk-root fieldset button.border-inv-line {
+  letter-spacing: 0.04em;
+  padding-inline: 0.5rem;
+}
+.sk-doa {
+  color: var(--inv-ink);
+  background: var(--inv-wash);
+  border: 1px solid var(--inv-line);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--inv-ink) 8%, transparent);
+}
+.sk-doa::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  background: var(--sk-emas);
+  clip-path: polygon(50% 0, 61% 26%, 85% 15%, 74% 39%, 100% 50%, 74% 61%, 85% 85%, 61% 74%, 50% 100%, 39% 74%, 15% 85%, 26% 61%, 0 50%, 26% 39%, 15% 15%, 39% 26%);
+}
+.sk-doa::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 18px;
+  right: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sk-emas) 30%, transparent 44%, transparent 56%, var(--sk-emas) 70%, transparent);
 }

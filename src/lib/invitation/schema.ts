@@ -66,6 +66,9 @@ export const invitationDataSchema = z.object({
       credit: str(),
       sesanti: str(),
       sesantiArti: str(),
+      ayat: str(),
+      ayatArti: str(),
+      ayatSumber: str(),
     })
     .prefault({}),
   share: z.object({ description: str(), ogDescription: str() }).prefault({}),

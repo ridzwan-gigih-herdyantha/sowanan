@@ -3,6 +3,7 @@ import type { InvitationData } from "@/lib/invitation/schema";
 import { defaultFonts as andiRina } from "./andi-rina/fonts";
 import { defaultFonts as bagasSekar } from "./bagas-sekar/fonts";
 import { defaultFonts as danangKinanthi } from "./danang-kinanthi/fonts";
+import { defaultFonts as fadhilNayla } from "./fadhil-nayla/fonts";
 import { defaultFonts as hendrawanLarasati } from "./hendrawan-larasati/fonts";
 
 // Font pilihan untuk add-on ganti font. Semua di-host sendiri lewat next/font dan tidak dipreload,
@@ -52,6 +53,12 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
     { id: "prasasti", name: "Cinzel & Alegreya Sans", display: cinzel, body: danangKinanthi.body },
     { id: "keraton", name: "Cormorant & Alegreya Sans", display: cormorant, body: danangKinanthi.body },
     { id: "serat", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
+  ],
+  "fadhil-nayla": [
+    { id: "", name: "Castoro & Figtree", ...fadhilNayla },
+    { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
+    { id: "lembut", name: "Cormorant & Jost", display: cormorant, body: jost },
+    { id: "klasik", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
   ],
 };
 

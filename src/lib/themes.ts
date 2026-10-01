@@ -11,4 +11,5 @@ export const THEMES: ThemeCard[] = [
   { slug: "bagas-sekar", name: "Ruang", style: "monokrom / minimalis", image: "/img/tema-bagas-sekar.webp", bg: "bg-[#d9d5ce]" },
   { slug: "hendrawan-larasati", name: "Herbarium", style: "bunga / botani", image: "/img/tema-hendrawan-larasati.webp", bg: "bg-[#e8dce2]" },
   { slug: "danang-kinanthi", name: "Pakeliran", style: "jawa / wayang", image: "/img/tema-danang-kinanthi.webp", bg: "bg-[#eadfc8]" },
+  { slug: "fadhil-nayla", name: "Sakinah", style: "islami / geometri", image: "/img/tema-fadhil-nayla.webp", bg: "bg-[#e3e0cc]" },
 ];

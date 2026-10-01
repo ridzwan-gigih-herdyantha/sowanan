@@ -42,7 +42,7 @@ export function Themes({ waHref }: { waHref: string }) {
         <SectionSub {...reveal()}>
           Pilih satu, lalu warnanya kami sesuaikan dengan tema acara kalian. Klik untuk membuka contoh aslinya.
         </SectionSub>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-7 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 md:gap-5 lg:grid-cols-5">
           {THEMES.map((t, i) => (
             <Card key={i} theme={t} index={i} waHref={waHref} />
           ))}

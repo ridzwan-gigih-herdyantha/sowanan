@@ -1,0 +1,194 @@
+{
+  "slug": "fadhil-nayla",
+  "theme": "fadhil-nayla",
+  "published": true,
+  "data": {
+    "monogram": "F & N",
+    "couple": {
+      "groom": {
+        "name": "Fadhil",
+        "full": "Muhammad Fadhil Rahman",
+        "role": "Putra pertama dari",
+        "parents": "Bapak H. Abdul Rahman & Ibu Hj. Siti Maryam",
+        "photo": "fadhil-nayla/groom_1.webp?v=mupa7gcx"
+      },
+      "bride": {
+        "name": "Nayla",
+        "full": "Nayla Azzahra",
+        "role": "Putri kedua dari",
+        "parents": "Bapak Hasan Basri & Ibu Fatimah Zahra",
+        "photo": "fadhil-nayla/bride_1.webp?v=mupa7gou"
+      }
+    },
+    "event": {
+      "start": "2027-10-10T08:00:00+07:00",
+      "end": "2027-10-10T14:00:00+07:00",
+      "timezone": "WIB",
+      "city": "Bandung, Jawa Barat",
+      "venue": {
+        "name": "Gedung Serbaguna Al Hikmah",
+        "address": "Jl. Cempaka Putih No. 8, Coblong, Bandung",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Coblong+Bandung"
+      },
+      "schedule": [
+        {
+          "time": "08.00",
+          "name": "Akad Nikah",
+          "until": "09.30"
+        },
+        {
+          "time": "11.00",
+          "name": "Walimatul 'Ursy",
+          "until": "14.00"
+        }
+      ],
+      "rsvpDeadline": "30 September 2027"
+    },
+    "copy": {
+      "honor": "Dengan memohon rahmat dan ridha Allah, kami mengharap kehadiran Bapak/Ibu/Saudara/i untuk memberikan doa restu.",
+      "credit": "Foto oleh Orhan Pergel di Pexels"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat dan ridha Allah, kami mengundangmu ke pernikahan Fadhil & Nayla di Bandung.",
+      "ogDescription": "Assalamu'alaikum. Dengan izin Allah, kami akan menikah."
+    },
+    "media": {
+      "hero": "fadhil-nayla/hero_1.webp?v=mupa7eex",
+      "heroWide": "fadhil-nayla/herowide_1.webp?v=mupa7fap",
+      "og": "fadhil-nayla/og_1.jpg?v=mupa7fio",
+      "music": "",
+      "venue": "fadhil-nayla/venue_1.webp?v=mupa7g06"
+    },
+    "sections": {
+      "couple": {
+        "enabled": true
+      },
+      "story": {
+        "enabled": true,
+        "items": [
+          {
+            "title": "Satu lingkar kajian",
+            "date": "09.2019",
+            "image": "fadhil-nayla/story_1.webp?v=mupa7h1s",
+            "short": "Saling tahu nama di kajian pekanan kampus.",
+            "long": "Kami pertama kali mengenal nama satu sama lain di lingkar kajian pekanan kampus. Fadhil mengurus pengeras suara, Nayla mencatat ringkasan materi. Tidak banyak bicara, hanya saling tahu bahwa yang lain ada."
+          },
+          {
+            "title": "Ta'aruf",
+            "date": "03.2025",
+            "image": "fadhil-nayla/story_2.webp?v=mupa7i5f",
+            "short": "Bertukar biodata lewat guru ngaji.",
+            "long": "Bertahun kemudian, lewat perantara guru ngaji kami, biodata kami saling bertemu. Pertemuan pertama ditemani keluarga, dengan teh hangat dan banyak pertanyaan yang ternyata jawabannya sama."
+          },
+          {
+            "title": "Khitbah",
+            "date": "02.2026",
+            "image": "fadhil-nayla/story_3.webp?v=mupa7ijr",
+            "short": "Fadhil datang bersama keluarganya.",
+            "long": "Fadhil datang ke rumah Nayla bersama keluarganya untuk menyampaikan niat baik. Setelah istikharah, keluarga Nayla menerima dengan hati yang lapang. Hari itu kami mulai menghitung hari."
+          },
+          {
+            "title": "Menuju akad",
+            "date": "10.2027",
+            "image": "fadhil-nayla/story_4.webp?v=mupa7iz5",
+            "short": "Bismillah, kami melangkah bersama.",
+            "long": "Dengan menyebut nama Allah, kami melangkah menuju akad. Semoga pernikahan ini menjadi ibadah terpanjang kami, dan kehadiranmu menjadi bagian dari doa yang mengantarkannya."
+          }
+        ]
+      },
+      "event": {
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "gallery": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "fadhil-nayla/gallery_1.webp?v=mupa7jjo",
+            "w": 1600,
+            "h": 1019,
+            "alt": "Fadhil dan Nayla menatap senja di padang rumput",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "fadhil-nayla/gallery_2.webp?v=mupa7k2y",
+            "w": 1200,
+            "h": 1800,
+            "alt": "Nayla di tengah ilalang saat matahari terbenam",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "fadhil-nayla/gallery_3.webp?v=mupa7ko8",
+            "w": 1200,
+            "h": 1800,
+            "alt": "Nayla bersandar di bahu Fadhil",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "fadhil-nayla/gallery_4.webp?v=mupa7l61",
+            "w": 1600,
+            "h": 1067,
+            "alt": "Fadhil dan Nayla berjalan di padang rumput",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "fadhil-nayla/gallery_5.webp?v=mupa7lz7",
+            "w": 1200,
+            "h": 1865,
+            "alt": "Buket bunga kering di tangan Nayla",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "fadhil-nayla/gallery_6.webp?v=mupa7mgl",
+            "w": 1200,
+            "h": 1800,
+            "alt": "Nayla memegang kamera",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "fadhil-nayla/gallery_7.webp?v=mupa7mya",
+            "w": 1200,
+            "h": 1559,
+            "alt": "Tangan Nayla di bahu Fadhil",
+            "caption": "",
+            "no": ""
+          }
+        ]
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "gifts": {
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "BSI",
+            "number": "7123456789",
+            "holder": "Muhammad Fadhil Rahman"
+          },
+          {
+            "bank": "Muamalat",
+            "number": "3210987654",
+            "holder": "Nayla Azzahra"
+          }
+        ],
+        "qris": "",
+        "note": "Nomor rekening di atas adalah contoh."
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      }
+    }
+  }
+}
