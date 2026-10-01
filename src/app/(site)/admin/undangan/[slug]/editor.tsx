@@ -173,7 +173,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
             <h1 className="flex min-w-0 items-center gap-2 font-serif text-2xl leading-tight">
               <span className="truncate">{label}</span>
               {!paid && (
-                <span title="Watermark BELUM AKTIF tampil di undangan. Ubah status di daftar undangan." className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 font-sans text-[11px] text-amber-900 ring-1 ring-amber-300">
+                <span title="Watermark SOWANAN.COM tampil di undangan. Ubah status di daftar undangan." className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 font-sans text-[11px] text-amber-900 ring-1 ring-amber-300">
                   Belum lunas
                 </span>
               )}

@@ -1,6 +1,6 @@
 import { WatermarkGuard } from "./watermark-guard";
 
-const TEXT = "BELUM AKTIF";
+const TEXT = "SOWANAN.COM";
 
 const tile = encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100"><text x="100" y="58" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-weight="700" font-size="21" letter-spacing="1.5" fill="rgba(17,17,17,.14)" stroke="rgba(255,255,255,.22)" stroke-width=".6">${TEXT}</text></svg>`,
@@ -10,7 +10,7 @@ const tile = encodeURIComponent(
 const layer = (offset: string) =>
   `content:"";position:fixed;top:-50%;left:-50%;width:200%;height:200%;z-index:2147483647;pointer-events:none;` +
   `--sw:max(340px,calc(34vw + 23vh));background:url("data:image/svg+xml,${tile}") ${offset}/var(--sw) calc(var(--sw)/2) repeat;` +
-  `transform:rotate(-30deg);display:block;visibility:visible;opacity:0.2`;
+  `transform:rotate(-30deg);display:block;visibility:visible;opacity:0.5`;
 
 export const LAYER_A = layer("0 0");
 export const LAYER_B = layer("calc(var(--sw)/2) calc(var(--sw)/4)");

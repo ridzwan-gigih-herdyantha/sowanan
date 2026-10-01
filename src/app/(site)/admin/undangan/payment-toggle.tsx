@@ -10,7 +10,7 @@ export function PaymentToggle({ slug, paid: initial }: { slug: string; paid: boo
 
   const toggle = () => {
     const next = !paid;
-    if (!confirm(next ? `Tandai ${slug} sudah lunas? Watermark BELUM AKTIF akan hilang.` : `Kembalikan ${slug} ke belum lunas? Watermark akan tampil lagi.`)) return;
+    if (!confirm(next ? `Tandai ${slug} sudah lunas? Watermark SOWANAN.COM akan hilang.` : `Kembalikan ${slug} ke belum lunas? Watermark akan tampil lagi.`)) return;
     start(async () => {
       const res = await setPaymentStatus(slug, next);
       if (res.ok) {

@@ -42,7 +42,7 @@ export function faqItems(s: Settings): { q: string; a: ReactNode; text: string }
     },
     {
       q: "Cara bayarnya?",
-      text: `DP ${s.dpPercent}% di awal, sisanya setelah draf disetujui. Transfer atau QRIS. Undangan yang belum lunas menampilkan tanda BELUM AKTIF dan belum bisa disebar.`,
+      text: `DP ${s.dpPercent}% di awal, sisanya setelah draf disetujui. Transfer atau QRIS. Undangan yang belum lunas menampilkan tanda SOWANAN.COM dan belum bisa disebar.`,
       a: null,
     },
   ].map((item) => ({ ...item, a: item.a ?? item.text }));
