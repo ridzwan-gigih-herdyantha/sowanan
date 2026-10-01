@@ -6,8 +6,11 @@ export type Base = { paper: string; accent: string; ink: string };
 export type Preset = { id: string; name: string; vars: Vars };
 export type Check = { fg: `--${string}`; bg: `--${string}`; label: string };
 
+export type Role = { key: `--${string}`; label: string };
+
 export type ThemePalette = {
   presets: Preset[];
+  roles: Role[];
   derive: (b: Base) => Vars;
   base: (v: Vars) => Base;
   swatch: `--${string}`[];

@@ -4,11 +4,13 @@ import { useState } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { contrast, CUSTOM, isHex, MIN_CONTRAST, type Vars } from "@/themes/palette";
 import { PALETTES, resolvePalette } from "@/themes/palettes";
+import { Spinner } from "./spinner";
 
 type Props = {
   theme: string;
   style: InvitationData["style"];
   pkg: string | null;
+  applying: string | null;
   onChange: (style: InvitationData["style"]) => void;
 };
 
@@ -29,7 +31,7 @@ function Swatch({ vars, keys }: { vars: Vars; keys: string[] }) {
 }
 
 // Panel gaya: pilih palet jadi tema, atau buat palet kustom dari tiga warna dasar dengan cek kontras.
-export function StylePanel({ theme, style, pkg, onChange }: Props) {
+export function StylePanel({ theme, style, pkg, applying, onChange }: Props) {
   const p = PALETTES[theme];
   const [open, setOpen] = useState(false);
   if (!p) return null;
@@ -48,7 +50,10 @@ export function StylePanel({ theme, style, pkg, onChange }: Props) {
     <section id="g-gaya" className="rounded-sm border border-line bg-white">
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-center gap-3 px-4 py-3 text-left">
         <span className="font-serif text-xl">Gaya</span>
-        <span className="text-[12px] text-ink-mute">{custom ? "Palet kustom" : p.presets.find((x) => x.id === current)?.name}</span>
+        <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-mute">
+          {applying && <Spinner className="size-3.5 text-wine" />}
+          {applying ? "Menerapkan..." : custom ? "Palet kustom" : p.presets.find((x) => x.id === current)?.name}
+        </span>
         <span className="ml-auto w-24">
           <Swatch vars={active} keys={p.swatch} />
         </span>
@@ -69,15 +74,22 @@ export function StylePanel({ theme, style, pkg, onChange }: Props) {
           <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {p.presets.map((x, i) => {
               const on = !custom && x.id === current;
+              const busy = applying !== null && (applying === x.id || (i === 0 && applying === "bawaan"));
               return (
                 <button
                   key={x.id}
                   type="button"
                   onClick={() => pick(x.id)}
                   aria-pressed={on}
-                  className={`rounded-sm border p-2 text-left transition-colors duration-150 ${on ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
+                  aria-busy={busy || undefined}
+                  className={`relative rounded-sm border p-2 text-left transition-colors duration-150 ${on ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
                 >
                   <Swatch vars={x.vars} keys={p.swatch} />
+                  {busy && (
+                    <span className="absolute inset-x-2 top-2 flex h-7 items-center justify-center rounded-sm bg-white/70">
+                      <Spinner className="size-4 text-ink" />
+                    </span>
+                  )}
                   <span className="mt-1.5 block text-[13px]">
                     {x.name}
                     {i === 0 && <span className="text-ink-mute"> (bawaan)</span>}

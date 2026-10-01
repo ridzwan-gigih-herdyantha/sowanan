@@ -52,6 +52,16 @@ export const palette: ThemePalette = {
       dline: mix(night, paper, 0.3),
     });
   },
+  roles: [
+    { key: "--inv-paper", label: "Latar" },
+    { key: "--inv-wash", label: "Latar kedua" },
+    { key: "--inv-ink", label: "Teks" },
+    { key: "--inv-gold", label: "Keterangan" },
+    { key: "--inv-gold-light", label: "Abu terang" },
+    { key: "--inv-night", label: "Bagian gelap" },
+    { key: "--inv-line", label: "Garis" },
+    { key: "--bs-dline", label: "Garis gelap" },
+  ],
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--inv-wash", "--inv-gold-light", "--inv-gold", "--inv-night"],
   checks: [

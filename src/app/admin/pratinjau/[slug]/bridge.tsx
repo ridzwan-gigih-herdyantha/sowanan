@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useTransition } from "react";
 
 type Props = { texts: Record<string, string>; media: Record<string, string>; sample: string[] };
 
@@ -9,7 +9,8 @@ export type BridgeMessage =
   | { type: "sowanan:edit"; path: string; value: string }
   | { type: "sowanan:commit" }
   | { type: "sowanan:focus"; path: string }
-  | { type: "sowanan:ready" };
+  | { type: "sowanan:ready" }
+  | { type: "sowanan:refreshed" };
 
 const post = (m: BridgeMessage) => window.parent.postMessage(m, window.location.origin);
 
@@ -30,6 +31,17 @@ export function PreviewBridge({ texts, media, sample }: Props) {
   const nodes = useRef(new WeakMap<HTMLElement, Text>());
   const pending = useRef(false);
   const state = useRef({ texts, media, sample });
+  const [refreshing, startRefresh] = useTransition();
+  const wasRefreshing = useRef(false);
+
+  // Kabari editor bila data baru dari server sudah selesai dirender, supaya indikator memuat bisa dimatikan.
+  useEffect(() => {
+    if (refreshing) wasRefreshing.current = true;
+    else if (wasRefreshing.current) {
+      wasRefreshing.current = false;
+      post({ type: "sowanan:refreshed" });
+    }
+  }, [refreshing]);
 
   useEffect(() => {
     state.current = { texts, media, sample };
@@ -39,7 +51,7 @@ export function PreviewBridge({ texts, media, sample }: Props) {
     const onMessage = (e: MessageEvent) => {
       if (e.origin !== window.location.origin || e.data?.type !== "sowanan:refresh") return;
       if (editing.current) pending.current = true;
-      else router.refresh();
+      else startRefresh(() => router.refresh());
     };
     window.addEventListener("message", onMessage);
     post({ type: "sowanan:ready" });
@@ -101,7 +113,7 @@ export function PreviewBridge({ texts, media, sample }: Props) {
       post({ type: "sowanan:commit" });
       if (pending.current) {
         pending.current = false;
-        router.refresh();
+        startRefresh(() => router.refresh());
       }
     };
 

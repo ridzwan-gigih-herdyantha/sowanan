@@ -4,6 +4,7 @@ const TABS = [
   { key: "edit", label: "Isi undangan", href: "" },
   { key: "tamu", label: "Tamu", href: "/tamu" },
   { key: "respon", label: "RSVP & ucapan", href: "/respon" },
+  { key: "palet", label: "Palet", href: "/palet" },
 ];
 
 export function InvitationTabs({ slug, current }: { slug: string; current: string }) {

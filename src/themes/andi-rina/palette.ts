@@ -56,6 +56,19 @@ export const palette: ThemePalette = {
       flap: mix(paper, ink, 0.13),
     });
   },
+  roles: [
+    { key: "--inv-paper", label: "Latar" },
+    { key: "--inv-wash", label: "Latar kedua" },
+    { key: "--inv-card", label: "Kartu" },
+    { key: "--inv-accent", label: "Aksen" },
+    { key: "--inv-ink", label: "Teks" },
+    { key: "--inv-night", label: "Bagian gelap" },
+    { key: "--ar-deep", label: "Gelap pekat" },
+    { key: "--inv-gold", label: "Emas" },
+    { key: "--inv-gold-light", label: "Pita senja" },
+    { key: "--ar-flap", label: "Tutup amplop" },
+    { key: "--inv-line", label: "Garis" },
+  ],
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--inv-wash", "--inv-accent", "--inv-night", "--inv-gold-light"],
   checks: [

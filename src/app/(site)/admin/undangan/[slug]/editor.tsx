@@ -8,6 +8,7 @@ import type { BridgeMessage } from "@/app/admin/pratinjau/[slug]/bridge";
 import { publishDraft, saveDraft, setPublished } from "../actions";
 import { InvitationTabs } from "../tabs";
 import { FieldInput, FormProvider } from "./fields";
+import { Spinner } from "./spinner";
 import { StylePanel } from "./style-panel";
 
 type Props = { slug: string; theme: string; label: string; published: boolean; paid: boolean; pkg: string | null; draft: InvitationData; live: InvitationData };
@@ -58,6 +59,9 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
   const [busy, setBusy] = useState(false);
   const frame = useRef<HTMLIFrameElement>(null);
   const lastSent = useRef(JSON.stringify(draft));
+  const latest = useRef(data);
+  // Palet yang sedang diterapkan ke pratinjau. Hilang setelah pratinjau selesai dirender ulang.
+  const [applying, setApplying] = useState<string | null>(null);
 
   const groups = useMemo(() => forTheme(GROUPS, theme), [theme]);
   const issues = useMemo(() => checkInvitation(data, theme), [data, theme]);
@@ -68,6 +72,16 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
   const update = useCallback((fn: (d: InvitationData) => InvitationData) => setData(fn), []);
 
   useEffect(() => {
+    latest.current = data;
+  }, [data]);
+
+  useEffect(() => {
+    if (!applying) return;
+    const t = window.setTimeout(() => setApplying(null), 12000);
+    return () => window.clearTimeout(t);
+  }, [applying]);
+
+  useEffect(() => {
     const json = JSON.stringify(data);
     if (json === lastSent.current) return;
     const t = window.setTimeout(async () => {
@@ -75,6 +89,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
       const res = await saveDraft(slug, data);
       if (!res.ok) {
         setDraftState("error");
+        setApplying(null);
         return;
       }
       lastSent.current = json;
@@ -106,6 +121,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
         const max = f && (f.kind === "text" || f.kind === "textarea") ? f.max : 2000;
         setData((d) => setIn(d, m.path, m.value.replace(/\s+/g, " ").slice(0, max)));
       } else if (m.type === "sowanan:focus") jump(m.path);
+      else if (m.type === "sowanan:refreshed" && JSON.stringify(latest.current) === lastSent.current) setApplying(null);
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
@@ -227,7 +243,17 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
             </div>
           )}
 
-          <StylePanel theme={theme} style={data.style} pkg={pkg} onChange={(style) => setData((d) => ({ ...d, style }))} />
+          <StylePanel
+            theme={theme}
+            style={data.style}
+            pkg={pkg}
+            applying={applying}
+            onChange={(style) => {
+              if (JSON.stringify(style) === JSON.stringify(data.style)) return;
+              setApplying(style.palette || "bawaan");
+              setData((d) => ({ ...d, style }));
+            }}
+          />
 
           {groups.map((g) => {
             const enabled = g.section ? data.sections[g.section].enabled : true;
@@ -290,12 +316,22 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
                 </button>
               )}
             </div>
-            <iframe
-              ref={frame}
-              src={`/admin/pratinjau/${slug}`}
-              title="Pratinjau undangan"
-              className={`w-full rounded-sm border border-line bg-white ${mobilePreview ? "min-h-0 flex-1" : "h-[calc(100dvh-160px)]"}`}
-            />
+            <div className={`relative ${mobilePreview ? "flex min-h-0 flex-1 flex-col" : ""}`}>
+              <iframe
+                ref={frame}
+                src={`/admin/pratinjau/${slug}`}
+                title="Pratinjau undangan"
+                className={`w-full rounded-sm border border-line bg-white ${mobilePreview ? "min-h-0 flex-1" : "h-[calc(100dvh-160px)]"}`}
+              />
+              {applying && (
+                <div role="status" className="absolute inset-0 flex items-start justify-center rounded-sm bg-ivory/55 pt-6 backdrop-blur-[1px] animate-[inv-pop_.2s_ease-out]">
+                  <span className="inline-flex items-center gap-2.5 rounded-full bg-ink px-4 py-2 text-[13px] text-white shadow-[0_8px_24px_rgba(0,0,0,.2)]">
+                    <Spinner />
+                    Menerapkan palet...
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </aside>
       </div>

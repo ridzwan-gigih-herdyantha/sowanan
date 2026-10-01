@@ -74,6 +74,19 @@ export const palette: ThemePalette = {
       noteB: mix(gold, paper, 0.84),
     });
   },
+  roles: [
+    { key: "--inv-paper", label: "Latar" },
+    { key: "--inv-wash", label: "Kartu" },
+    { key: "--inv-accent", label: "Aksen" },
+    { key: "--inv-ink", label: "Teks" },
+    { key: "--inv-gold", label: "Hijau daun" },
+    { key: "--inv-gold-light", label: "Emas" },
+    { key: "--inv-night", label: "Bagian gelap" },
+    { key: "--inv-tag-a", label: "Label pertama" },
+    { key: "--inv-tag-b", label: "Label kedua" },
+    { key: "--inv-tape", label: "Selotip" },
+    { key: "--inv-line", label: "Garis" },
+  ],
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--inv-accent", "--inv-gold", "--inv-tag-a", "--inv-tag-b"],
   checks: [
