@@ -839,3 +839,47 @@ html:has(.sk-root) {
     transform: translateY(calc(var(--d, 0px) * -1));
   }
 }
+
+/* Logo di halaman ketentuan. Ditambah lewat CSS supaya isi dokumen ketentuan tidak berubah. */
+.terms .brand,
+.terms .foot-brand {
+  position: relative;
+}
+.terms .brand {
+  padding-left: 46px;
+}
+.terms .foot-brand {
+  padding-left: 32px;
+}
+.terms .brand::before,
+.terms .foot-brand::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  aspect-ratio: 172 / 224;
+  background: #7c2b3e;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 172 224'%3E%3Cpath d='M0 224V86A86 86 0 0 1 67 2.13V224ZM105 2.13A86 86 0 0 1 172 86V224H105Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 172 224'%3E%3Cpath d='M0 224V86A86 86 0 0 1 67 2.13V224ZM105 2.13A86 86 0 0 1 172 86V224H105Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transform: translateY(-50%);
+}
+.terms .brand::before {
+  height: 40px;
+}
+.terms .foot-brand::before {
+  height: 26px;
+  background: #c5a3aa;
+}
+@media (max-width: 640px) {
+  .terms .brand {
+    padding-left: 38px;
+  }
+  .terms .brand::before {
+    height: 34px;
+  }
+  .terms .nav .brand span {
+    font-size: 9px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoMark } from "@/components/logo";
 import { Container, btn, cx } from "@/components/ui";
 
 const links = [
@@ -12,10 +13,13 @@ export function SiteHeader({ waHref }: { waHref: string }) {
   return (
     <header className="border-b border-line">
       <Container className="flex items-center justify-between gap-4 py-[22px]">
-        <Link prefetch={false} href="/" className="font-serif text-[26px] leading-tight tracking-[.5px] text-ink no-underline">
-          Sowanan
-          <span className="-mt-1 block font-sans text-[10px] tracking-[1.5px] text-ink-mute sm:text-[11px] sm:tracking-[2px]">
-            UNDANGAN PERNIKAHAN DIGITAL
+        <Link prefetch={false} href="/" className="flex min-w-0 items-center gap-2.5 text-ink no-underline sm:gap-3">
+          <LogoMark className="h-9 w-auto text-wine sm:h-11" />
+          <span className="font-serif text-[26px] leading-tight tracking-[.5px]">
+            Sowanan
+            <span className="-mt-1 block font-sans text-[9px] max-[379px]:hidden tracking-[1px] whitespace-nowrap text-ink-mute min-[400px]:text-[10px] min-[400px]:tracking-[1.5px] sm:text-[11px] sm:tracking-[2px]">
+              UNDANGAN PERNIKAHAN DIGITAL
+            </span>
           </span>
         </Link>
         <nav aria-label="Utama" className="flex items-center gap-[34px] text-[15px]">

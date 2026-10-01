@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { LogoMark } from "@/components/logo";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { THEME_NAMES } from "@/themes/media";
@@ -113,7 +114,10 @@ async function List() {
 export default function InvitationsPage() {
   return (
     <main className="mx-auto max-w-5xl px-5 py-12 sm:py-16">
-      <p className="text-[13px] tracking-[3px] text-wine">SOWANAN</p>
+      <p className="flex items-center gap-2.5 text-[13px] tracking-[3px] text-wine">
+        <LogoMark className="h-6 w-auto" />
+        SOWANAN
+      </p>
       <h1 className="mt-2 mb-8 font-serif text-[clamp(36px,8vw,48px)] leading-tight font-medium">Undangan</h1>
       <Suspense fallback={<p className="text-ink-mute">Memuat...</p>}>
         <List />

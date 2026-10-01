@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { LogoMark } from "@/components/logo";
 import { getSettings } from "@/lib/settings";
 import { hasSupabase } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -32,7 +33,10 @@ async function AdminGate() {
 export default function AdminPage() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-12 sm:py-16">
-      <p className="text-[13px] tracking-[3px] text-wine">SOWANAN</p>
+      <p className="flex items-center gap-2.5 text-[13px] tracking-[3px] text-wine">
+        <LogoMark className="h-6 w-auto" />
+        SOWANAN
+      </p>
       <h1 className="mt-2 mb-8 font-serif text-[clamp(36px,8vw,48px)] leading-tight font-medium">Pengaturan</h1>
       <Suspense fallback={<p className="text-ink-mute">Memuat...</p>}>
         <AdminGate />

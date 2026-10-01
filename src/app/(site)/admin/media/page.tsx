@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { LogoMark } from "@/components/logo";
 import { currentAdmin } from "@/lib/admin-auth";
 import { PURPOSES } from "@/lib/storage/media";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
@@ -45,7 +46,10 @@ async function MediaGate() {
 export default function MediaPage() {
   return (
     <main className="mx-auto max-w-4xl px-5 py-12 sm:py-16">
-      <p className="text-[13px] tracking-[3px] text-wine">SOWANAN</p>
+      <p className="flex items-center gap-2.5 text-[13px] tracking-[3px] text-wine">
+        <LogoMark className="h-6 w-auto" />
+        SOWANAN
+      </p>
       <h1 className="mt-2 mb-8 font-serif text-[clamp(36px,8vw,48px)] leading-tight font-medium">Media</h1>
       <Suspense fallback={<p className="text-ink-mute">Memuat...</p>}>
         <MediaGate />

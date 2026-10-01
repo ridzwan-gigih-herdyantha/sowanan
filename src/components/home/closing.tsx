@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoMark } from "@/components/logo";
 import { Container, SectionTitle, btn, cx, reveal } from "@/components/ui";
 
 export function ClosingCta({ hours, waHref }: { hours: string; waHref: string }) {
@@ -31,7 +32,10 @@ export function SiteFooter({ waHref, instagram }: { waHref: string; instagram: s
     <footer className="bg-ink text-sm text-dusk">
       <Container className="flex flex-col items-start gap-4 py-10 md:flex-row md:items-center md:justify-between md:gap-6">
         <div>
-          <div className="font-serif text-xl text-paper">Sowanan</div>
+          <div className="flex items-center gap-2.5 font-serif text-xl text-paper">
+            <LogoMark className="h-7 w-auto text-wine-pale" />
+            Sowanan
+          </div>
           <div className="mt-1.5">Undangan pernikahan digital &middot; Semarang</div>
           <div className="mt-1.5">Dibuat oleh Nine Dragon Labs</div>
         </div>
