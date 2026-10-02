@@ -81,7 +81,7 @@ export function HeroStage({ photo, groom, bride, names, below }: { photo: ReactN
           className="relative mt-[calc(min(100vw-28px,560px)*0.25)] w-[calc(100vw-28px)] max-w-[560px] shrink-0 lg:mt-[calc(min(40vw,600px)*0.21)] lg:w-[min(40vw,600px)] lg:max-w-none"
         >
           <Lung name="mahkota" className="absolute bottom-[calc(100%-10px)] left-1/2 z-10 w-[62%] -translate-x-1/2 text-pk-ukir lg:w-[54%]" />
-          <div className="relative h-[min(78svh,700px)] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-paper),0_0_0_6px_var(--pk-emas),0_26px_46px_rgba(62,46,34,.22)] lg:h-[max(520px,calc(100svh-250px))]">
+          <div className="relative h-[clamp(320px,calc(100svh-270px-env(safe-area-inset-bottom)),700px)] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-paper),0_0_0_6px_var(--pk-emas),0_26px_46px_rgba(62,46,34,.22)] lg:h-[max(520px,calc(100svh-250px))]">
             <motion.div
               initial={reduce ? false : { scale: 1.12 }}
               animate={on ? { scale: 1 } : undefined}

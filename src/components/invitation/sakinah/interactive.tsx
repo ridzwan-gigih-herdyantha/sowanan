@@ -98,7 +98,8 @@ export function SakinahHero({ photo, top, groom, bride, info }: { photo: ReactNo
       <div className="mx-auto mt-4 grid max-w-[1320px] items-center lg:mt-2 lg:grid-cols-[1fr_auto_1fr] lg:gap-12">
         {side(groom, "l", 1.1)}
 
-        <div className="relative mx-auto w-[min(100%-12px,500px)] lg:w-[min(34vw,520px)]">
+        {/* Di ponsel tinggi lengkung memakai sisa layar setelah bismillah dan nama, lebarnya ikut supaya tetap tegak. */}
+        <div className="relative mx-auto w-[min(100%-12px,500px,calc(var(--ah)*0.8))] [--ah:clamp(230px,calc(100svh-440px-env(safe-area-inset-bottom)),600px)] md:[--ah:clamp(250px,calc(100svh-530px),600px)] lg:w-[min(34vw,520px)]">
           <div aria-hidden="true" className="aspect-[4/1]" />
           <motion.div {...fade(0.7, -20)} className="absolute top-0 left-1/2 z-10 w-[66%] -translate-x-1/2">
             <Hias name="mahkota" className="w-full text-sk-emas" />
@@ -108,7 +109,7 @@ export function SakinahHero({ photo, top, groom, bride, info }: { photo: ReactNo
             animate={show ? { clipPath: "inset(0% 0% 0% 0%)" } : undefined}
             transition={reduce ? { duration: 0 } : { duration: 1.3, ease: [0.65, 0, 0.35, 1] }}
           >
-            <Arch className="h-[min(62svh,600px)] lg:h-[calc(100svh-250px)] lg:max-h-[760px] lg:min-h-[480px]" inner="bg-sk-pasir">
+            <Arch className="h-(--ah) lg:h-[calc(100svh-250px)] lg:max-h-[760px] lg:min-h-[480px]" inner="bg-sk-pasir">
               <motion.div
                 initial={reduce ? false : { scale: 1.12 }}
                 animate={show ? { scale: 1 } : undefined}
@@ -134,10 +135,10 @@ export function SakinahHero({ photo, top, groom, bride, info }: { photo: ReactNo
         {side(bride, "r", 1.25)}
       </div>
 
-      <motion.div {...fade(1.1)} className="relative z-10 mt-12 text-center lg:hidden">
-        <p aria-hidden="true" className="font-display text-[clamp(48px,14vw,80px)] leading-[0.95] text-inv-ink">
+      <motion.div {...fade(1.1)} className="relative z-10 mt-9 text-center lg:hidden">
+        <p aria-hidden="true" className="font-display text-[clamp(44px,12.5vw,72px)] leading-[0.95] text-inv-ink">
           {groom.name}
-          <span className="my-2 block font-display text-[0.42em] text-inv-accent">&amp;</span>
+          <span className="my-1 block font-display text-[0.42em] text-inv-accent">&amp;</span>
           {bride.name}
         </p>
       </motion.div>
