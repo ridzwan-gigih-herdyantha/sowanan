@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* Kartu harga yang sedang disorot (perangkat dengan hover) atau berisi elemen yang difokus. */
+@custom-variant lit {
+  @media (hover: hover) {
+    &:is(.plan:hover, .plan:hover *) {
+      @slot;
+    }
+  }
+  &:is(.plan:focus-within, .plan:focus-within *) {
+    @slot;
+  }
+}
+
 @theme {
   --color-ivory: #faf7f2;
   --color-blush: #f4eae6;
