@@ -34,7 +34,10 @@ export function RichField({ path, label, chip, help, height = 200 }: { path: str
   const value = String(getIn(s, path) ?? "");
   const host = useRef<HTMLDivElement>(null);
   const editor = useRef<{ el: HTMLElement; $: JQ } | null>(null);
+  // Nilai terakhir yang dikirim ke form, dan isi editor saat terakhir diisi dari luar beserta nilai aslinya.
   const emitted = useRef<string | null>(null);
+  const base = useRef({ html: "", raw: "" });
+  const silent = useRef(false);
   const [ready, setReady] = useState(false);
   const id = useId();
   const error = errors[path];
@@ -47,8 +50,6 @@ export function RichField({ path, label, chip, help, height = 200 }: { path: str
       if (!alive) return;
       const el = document.createElement("div");
       box.appendChild(el);
-      const initial = toHtml(String(getIn(s, path) ?? ""));
-      emitted.current = initial;
       $(el).summernote({
         lang: "id-ID",
         height,
@@ -57,16 +58,19 @@ export function RichField({ path, label, chip, help, height = 200 }: { path: str
         disableDragAndDrop: true,
         dialogsInBody: true,
         callbacks: {
+          // Summernote juga memicu onChange saat isinya diisi kode. Kalau isinya sama dengan saat diisi, nilai asli dipakai lagi.
           onChange: (html: string) => {
-            const next = isEmptyHtml(html) ? "" : html;
+            if (silent.current) return;
+            const next = html === base.current.html ? base.current.raw : isEmptyHtml(html) ? "" : html;
+            if (next === emitted.current) return;
             emitted.current = next;
             set(path, next);
           },
         },
       });
-      $(el).summernote("code", initial);
-      $(box as Element).find(".note-editable").attr({ "aria-label": label, "aria-describedby": `${id}-help`, role: "textbox", "aria-multiline": "true" });
       editor.current = { el, $ };
+      load(String(getIn(s, path) ?? ""));
+      $(box as Element).find(".note-editable").attr({ "aria-label": label, "aria-describedby": `${id}-help`, role: "textbox", "aria-multiline": "true" });
       setReady(true);
     });
     return () => {
@@ -80,12 +84,19 @@ export function RichField({ path, label, chip, help, height = 200 }: { path: str
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  function load(raw: string) {
+    const e = editor.current;
+    if (!e) return;
+    silent.current = true;
+    e.$(e.el).summernote("code", toHtml(raw));
+    base.current = { html: String(e.$(e.el).summernote("code")), raw };
+    emitted.current = raw;
+    silent.current = false;
+  }
+
   // Nilai berubah dari luar editor, misalnya tombol Batalkan perubahan.
   useEffect(() => {
-    const e = editor.current;
-    if (!e || value === emitted.current) return;
-    emitted.current = value;
-    e.$(e.el).summernote("code", toHtml(value));
+    if (value !== emitted.current) load(value);
   }, [value]);
 
   return (
