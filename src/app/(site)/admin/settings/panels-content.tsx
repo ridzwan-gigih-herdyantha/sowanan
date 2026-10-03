@@ -5,12 +5,13 @@ import { generalWaLink, themeCount, VARIABLES } from "@/lib/settings/text";
 import { THEME_NAMES } from "@/themes/media";
 import { useSettings } from "./form-context";
 import { ImagePicker } from "./image-picker";
+import { RichField } from "./rich-field";
 import { Card, Note, RepList, Row, Select, Text, width } from "./ui";
 
 const v = (k: string) => `{${k}}`;
 
 // Daftar kata pengganti untuk panel yang memakainya.
-export function VarsNote({ keys }: { keys: string[] }) {
+export function VarsNote({ keys, rich }: { keys: string[]; rich?: boolean }) {
   return (
     <Note>
       <details>
@@ -23,9 +24,13 @@ export function VarsNote({ keys }: { keys: string[] }) {
             </li>
           ))}
         </ul>
-        <p className="mt-2">
-          Format: <b>**tebal**</b> dan <code className="font-mono text-[12px]">[teks](tautan)</code>.
-        </p>
+        {rich ? (
+          <p className="mt-2">Kata pengganti juga bisa dipakai di dalam tautan, misalnya alamat tautan {v("wa_link")}.</p>
+        ) : (
+          <p className="mt-2">
+            Format: <b>**tebal**</b> dan <code className="font-mono text-[12px]">[teks](tautan)</code>.
+          </p>
+        )}
       </details>
     </Note>
   );
@@ -199,15 +204,15 @@ export function TanyaPanel() {
 export function KetentuanPanel() {
   return (
     <>
-      <VarsNote keys={["dp", "jam", "wa", "wa_link", "rekening_nama", "bank", "instagram", "masa_aktif", "pengerjaan"]} />
+      <VarsNote rich keys={["dp", "jam", "wa", "wa_link", "rekening_nama", "bank", "instagram", "masa_aktif", "pengerjaan"]} />
       <Card title="Halaman ketentuan">
         <Row>
           <Text path="terms.date" label="Tanggal berlaku" chip="view" max={40} className={width.md} />
           <Text path="terms.title" label="Judul halaman" chip="view" max={50} />
         </Row>
-        <Text path="terms.intro" label="Paragraf pembuka" chip="view" max={800} rows={3} />
+        <RichField path="terms.intro" label="Paragraf pembuka" chip="view" height={110} />
       </Card>
-      <Card title="Pasal" hint="Nomor pasal dibuat otomatis dari urutan. Satu baris kosong memisahkan paragraf, awali baris dengan tanda hubung untuk daftar, ### untuk subjudul, dan > untuk kotak catatan.">
+      <Card title="Pasal" hint="Nomor pasal dibuat otomatis dari urutan. Di toolbar, pilih Kutipan untuk kotak catatan dan Judul 3 untuk subjudul. Format yang ditempel dari Word atau situs lain dibersihkan saat disimpan.">
         <RepList
           path="terms.articles"
           noun="pasal"
@@ -216,7 +221,7 @@ export function KetentuanPanel() {
           render={(_, __, base) => (
             <>
               <Text path={`${base}.title`} label="Judul pasal" max={60} />
-              <Text path={`${base}.body`} label="Isi" max={6000} rows={6} />
+              <RichField path={`${base}.body`} label="Isi" />
             </>
           )}
         />

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Inline, RichText } from "@/components/rich-text";
 import { fill, generalWaLink, getSettings, textVars } from "@/lib/settings";
+import { renderHtml } from "@/lib/settings/sanitize";
 import { TERMS_CSS } from "./terms-css";
 
 export const metadata: Metadata = {
@@ -34,11 +34,7 @@ export default async function TermsPage() {
       <main className="wrap">
         <h1>{t.title}</h1>
         <p className="updated">Berlaku sejak {t.date}</p>
-        {t.intro && (
-          <p className="intro">
-            <Inline text={fill(t.intro, vars)} />
-          </p>
-        )}
+        {t.intro && <div className="intro" dangerouslySetInnerHTML={{ __html: renderHtml(t.intro, vars) }} />}
         {t.articles
           .filter((a) => a.on)
           .map((a, i) => (
@@ -46,7 +42,7 @@ export default async function TermsPage() {
               <h2>
                 {i + 1}. {a.title}
               </h2>
-              <RichText text={fill(a.body, vars)} />
+              <div dangerouslySetInnerHTML={{ __html: renderHtml(a.body, vars) }} />
             </section>
           ))}
       </main>

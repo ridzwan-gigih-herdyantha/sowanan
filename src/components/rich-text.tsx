@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
-// Teks pengaturan memakai format sederhana: baris kosong memisahkan paragraf, "- " untuk daftar, "### " untuk subjudul,
-// "> " untuk kotak catatan, **tebal**, dan [teks](tautan).
+// Teks pengaturan memakai format sederhana: baris kosong memisahkan paragraf, **tebal**, dan [teks](tautan).
 
 const safeHref = (href: string) => (/^(#|\/|https?:\/\/|mailto:|tel:)/.test(href) ? href : null);
 
@@ -45,35 +44,4 @@ export const paragraphs = (text: string) =>
 
 export function plain(text: string) {
   return text.replace(/\*\*(.+?)\*\*/g, "$1").replace(/\[([^\]]+)\]\([^)\s]+\)/g, "$1");
-}
-
-export function RichText({ text }: { text: string }) {
-  return (
-    <>
-      {paragraphs(text).map((block, i) => {
-        const lines = block.split("\n").map((l) => l.trim());
-        if (lines.every((l) => l.startsWith("- "))) {
-          return (
-            <ul key={i}>
-              {lines.map((l, j) => (
-                <li key={j}>{inline(l.slice(2), `${i}-${j}`)}</li>
-              ))}
-            </ul>
-          );
-        }
-        if (lines.length === 1 && lines[0].startsWith("### ")) return <h3 key={i}>{inline(lines[0].slice(4), `${i}`)}</h3>;
-        if (lines.every((l) => l.startsWith(">"))) {
-          const inner = lines.map((l) => l.replace(/^>\s?/, "")).join("\n");
-          return (
-            <div key={i} className="box">
-              {paragraphs(inner).map((p, j) => (
-                <p key={j}>{inline(p.replace(/\n/g, " "), `${i}-${j}`)}</p>
-              ))}
-            </div>
-          );
-        }
-        return <p key={i}>{inline(lines.join(" "), `${i}`)}</p>;
-      })}
-    </>
-  );
 }

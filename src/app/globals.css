@@ -895,3 +895,50 @@ html:has(.sk-root) {
     white-space: nowrap;
   }
 }
+
+/* Editor Summernote di halaman pengaturan, disesuaikan dengan gaya admin. */
+.sowanan-rte .note-editor.note-frame {
+  border-color: #e8e0d6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.sowanan-rte .note-editor.note-frame:focus-within {
+  border-color: var(--color-wine);
+  box-shadow: 0 0 0 3px #f6ebee;
+}
+.sowanan-rte .note-toolbar {
+  background: #fbf8f4;
+  border-bottom: 1px solid #e8e0d6;
+}
+.sowanan-rte .note-editable {
+  font-family: var(--font-jost), "Jost", sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #2a2320;
+}
+.sowanan-rte .note-editable p {
+  margin: 0 0 10px;
+}
+.sowanan-rte .note-editable h3 {
+  margin: 14px 0 6px;
+  font-size: 15px;
+  font-weight: 500;
+}
+.sowanan-rte .note-editable ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+.sowanan-rte .note-editable ol {
+  list-style: decimal;
+  padding-left: 20px;
+}
+.sowanan-rte .note-editable blockquote {
+  margin: 10px 0;
+  border-left: 3px solid var(--color-wine);
+  background: var(--color-blush);
+  padding: 10px 14px;
+}
+.sowanan-rte .note-editable a {
+  color: var(--color-wine);
+  text-decoration: underline;
+}

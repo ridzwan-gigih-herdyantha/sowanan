@@ -110,8 +110,8 @@ export const settingsSchema = z
     terms: z.object({
       date: req("Tanggal berlaku", 40),
       title: req("Judul halaman", 50),
-      intro: str("Paragraf pembuka", 800),
-      articles: z.array(z.object({ id, on: z.boolean(), title: req("Judul pasal", 60), body: str("Isi pasal", 6000) })).max(40, "Pasal maksimal 40."),
+      intro: str("Paragraf pembuka", 4000),
+      articles: z.array(z.object({ id, on: z.boolean(), title: req("Judul pasal", 60), body: str("Isi pasal", 20000) })).max(40, "Pasal maksimal 40."),
     }),
     packages: z.object({ dasar: pkg("Dasar"), lengkap: pkg("Lengkap"), istimewa: pkg("Istimewa") }),
     matrix: z

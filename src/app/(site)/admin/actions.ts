@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { SETTINGS_TAG, settingsSchema } from "@/lib/settings";
+import { cleanHtml } from "@/lib/settings/sanitize";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 
@@ -74,9 +75,16 @@ export async function saveSettings(json: string): Promise<FormState> {
     return { ok: false, message: `Ada ${n} isian yang perlu diperbaiki. Lihat tab bertanda titik merah.`, errors };
   }
 
+  // Isi ketentuan dari editor dibersihkan sebelum disimpan supaya hanya tag yang diizinkan yang tersimpan.
+  const terms = parsed.data.terms;
+  const clean = {
+    ...parsed.data,
+    terms: { ...terms, intro: cleanHtml(terms.intro), articles: terms.articles.map((a) => ({ ...a, body: cleanHtml(a.body) })) },
+  };
+
   const { error } = await supabaseAdmin()
     .from("settings")
-    .upsert({ id: 1, data: parsed.data, updated_at: new Date().toISOString() });
+    .upsert({ id: 1, data: clean, updated_at: new Date().toISOString() });
   if (error) return { ok: false, message: "Gagal menyimpan. Coba lagi." };
 
   updateTag(SETTINGS_TAG);
