@@ -15,6 +15,8 @@ type Ctx = {
   errors: Record<string, string>;
   focus: string;
   names: string;
+  // Batas jumlah item per daftar dari paket undangan, misalnya galeri foto.
+  limits?: Record<string, { max: number; note: string }>;
 };
 
 const FormCtx = createContext<Ctx | null>(null);
@@ -112,8 +114,10 @@ function MediaInput({ f, path }: { f: Extract<Field, { kind: "media" }>; path: s
 }
 
 function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: string }) {
-  const { slug, theme, data, update, errors, focus, names } = useForm();
+  const { slug, theme, data, update, errors, focus, names, limits } = useForm();
   const upload = useUploader(slug);
+  const cap = limits?.[path];
+  const max = cap ? Math.min(f.max ?? cap.max, cap.max) : f.max;
   const items = (getIn(data, path) as Record<string, unknown>[] | undefined) ?? [];
   const [open, setOpen] = useState<Set<number>>(() => new Set(items.length === 1 ? [0] : []));
   const [bulk, setBulk] = useState("");
@@ -121,7 +125,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
   const first = fields[0];
   const bulkMedia = first?.kind === "media" && PURPOSES[first.purpose].kind === "image" ? first : null;
   const titleField = fields.find((x) => x.kind === "text");
-  const full = f.max !== undefined && items.length >= f.max;
+  const full = max !== undefined && items.length >= max;
   const err = errors[path];
 
   const toggle = (i: number) =>
@@ -223,7 +227,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
               accept={ACCEPT.image}
               className="absolute inset-0 cursor-pointer opacity-0"
               onChange={async (e) => {
-                const files = Array.from(e.target.files ?? []).slice(0, (f.max ?? 99) - items.length);
+                const files = Array.from(e.target.files ?? []).slice(0, (max ?? 99) - items.length);
                 e.target.value = "";
                 let failed = 0;
                 for (const [n, file] of files.entries()) {
@@ -244,6 +248,12 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
           </span>
         )}
         {bulk && <span className="text-[13px] text-ink-mute">{bulk}</span>}
+        {cap && (
+          <span className={items.length > cap.max ? "text-wine" : "text-ink-mute"}>
+            {cap.note}
+            {items.length > cap.max && `, sekarang ${items.length}. Hapus ${items.length - cap.max} supaya sesuai paket.`}
+          </span>
+        )}
       </div>
     </div>
   );

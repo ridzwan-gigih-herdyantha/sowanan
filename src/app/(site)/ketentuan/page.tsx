@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { getSettings } from "@/lib/settings";
-import { TERMS_CSS, TERMS_HTML } from "./terms-html";
+import Link from "next/link";
+import { Inline, RichText } from "@/components/rich-text";
+import { fill, generalWaLink, getSettings, textVars } from "@/lib/settings";
+import { TERMS_CSS } from "./terms-css";
 
 export const metadata: Metadata = {
   title: "Syarat dan Ketentuan",
@@ -10,26 +12,61 @@ export const metadata: Metadata = {
   openGraph: { title: "Syarat dan Ketentuan | Sowanan", url: "/ketentuan", images: [{ url: "/img/og.jpg", width: 1200, height: 630 }] },
 };
 
-const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
-
-// 6285877936091 menjadi +62 858-7793-6091
-function prettyWa(n: string) {
-  const local = n.replace(/^62/, "");
-  return `+62 ${local.slice(0, 3)}-${local.slice(3, 7)}-${local.slice(7)}`;
-}
-
 export default async function TermsPage() {
   const s = await getSettings();
-  const html = TERMS_HTML.replaceAll("[TANGGAL BERLAKU]", esc(s.termsDate))
-    .replaceAll("[NAMA REKENING]", esc(s.payAccountName))
-    .replaceAll("[NOMOR-WA]", esc(s.waNumber))
-    .replaceAll("[NOMOR WHATSAPP]", esc(prettyWa(s.waNumber)))
-    .replaceAll("[AKUN-IG]", esc(s.instagram));
+  const vars = textVars(s);
+  const t = s.terms;
 
   return (
     <div className="terms">
       <style dangerouslySetInnerHTML={{ __html: TERMS_CSS }} />
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+      <header className="nav">
+        <div className="nav-in">
+          <Link prefetch={false} className="brand" href="/">
+            Sowanan<span>UNDANGAN PERNIKAHAN DIGITAL</span>
+          </Link>
+          <Link prefetch={false} className="back" href="/">
+            Kembali ke beranda
+          </Link>
+        </div>
+      </header>
+
+      <main className="wrap">
+        <h1>{t.title}</h1>
+        <p className="updated">Berlaku sejak {t.date}</p>
+        {t.intro && (
+          <p className="intro">
+            <Inline text={fill(t.intro, vars)} />
+          </p>
+        )}
+        {t.articles
+          .filter((a) => a.on)
+          .map((a, i) => (
+            <section key={a.id}>
+              <h2>
+                {i + 1}. {a.title}
+              </h2>
+              <RichText text={fill(a.body, vars)} />
+            </section>
+          ))}
+      </main>
+
+      <footer className="foot">
+        <div className="foot-in">
+          <div>
+            <div className="foot-brand">Sowanan</div>
+            {s.footer.line1 && <div style={{ marginTop: 6 }}>{fill(s.footer.line1, vars)}</div>}
+            {s.footer.line2 && <div style={{ marginTop: 6 }}>{fill(s.footer.line2, vars)}</div>}
+          </div>
+          <div>
+            <Link prefetch={false} href="/">
+              Beranda
+            </Link>
+            <a href={generalWaLink(s)}>WhatsApp</a>
+            <a href={`https://instagram.com/${s.contact.instagram}`}>Instagram</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

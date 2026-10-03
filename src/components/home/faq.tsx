@@ -1,67 +1,27 @@
-import Link from "next/link";
-import type { ReactNode } from "react";
-import { Container, SectionTitle, reveal, sectionPad } from "@/components/ui";
-import { perPlan, type Settings } from "@/lib/settings";
+import { Inline } from "@/components/rich-text";
+import { Container, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
+import { fill, type Settings } from "@/lib/settings";
 
-export function faqItems(s: Settings): { q: string; a: ReactNode; text: string }[] {
-  const aktif = `Paket ${perPlan(s, "active", "bulan")}, dihitung sejak tautan undangan kami serahkan. Setelah itu undangan menjadi arsip yang tetap bisa dibuka selama layanan beroperasi.`;
-  return [
-    {
-      q: "Berapa lama jadinya?",
-      text: `Tergantung paket: ${perPlan(s, "sla", "hari kerja")}. Hitungan dimulai sejak kami mengabari bahwa data dan foto sudah lengkap, bukan sejak pemesanan. Kalau antrean sedang penuh, kami kabari di awal, bukan setelah lewat.`,
-      a: null,
-    },
-    {
-      q: "Saya tidak paham teknis, bisa?",
-      text: "Bisa. Kalian cukup kirim data lewat WhatsApp, sisanya kami yang kerjakan sampai link siap sebar.",
-      a: null,
-    },
-    {
-      q: "Link-nya aktif sampai kapan?",
-      text: `${aktif} Ketentuan lengkapnya ada di halaman ketentuan.`,
-      a: (
-        <>
-          {aktif} Ketentuan lengkapnya ada di <Link prefetch={false} href="/ketentuan">halaman ketentuan</Link>.
-        </>
-      ),
-    },
-    {
-      q: "Bisa revisi berapa kali?",
-      text: "Bebas revisi sampai undangan disebar, atau 14 hari sejak draf pertama dikirim, mana yang lebih dulu. Kirim semua perubahan sekaligus dalam satu daftar supaya lebih cepat dikerjakan.",
-      a: null,
-    },
-    {
-      q: "Bisa untuk berapa tamu?",
-      text: "Tidak dibatasi. Satu link bisa disebar ke berapa pun tamu tanpa biaya tambahan.",
-      a: null,
-    },
-    {
-      q: "Kalau mau ganti tema di tengah jalan?",
-      text: "Masih bisa selama draf belum disetujui. Setelah disetujui, ganti tema dihitung pesanan baru.",
-      a: null,
-    },
-    {
-      q: "Cara bayarnya?",
-      text: `DP ${s.dpPercent}% di awal, sisanya setelah draf disetujui. Transfer atau QRIS. Undangan yang belum lunas menampilkan tanda SOWANAN.COM dan belum bisa disebar.`,
-      a: null,
-    },
-  ].map((item) => ({ ...item, a: item.a ?? item.text }));
-}
-
-export function Faq({ settings }: { settings: Settings }) {
+export function Faq({ settings, vars }: { settings: Settings; vars: Record<string, string> }) {
+  const sec = settings.sections.faq;
   return (
     <section id="tanya">
       <Container className={sectionPad}>
-        <SectionTitle className="mb-11" {...reveal()}>
-          Yang sering ditanyakan
+        <SectionTitle className={sec.sub ? undefined : "mb-11"} {...reveal()}>
+          {sec.title}
         </SectionTitle>
+        {sec.sub && <SectionSub {...reveal()}>{fill(sec.sub, vars)}</SectionSub>}
         <div className="grid grid-cols-1 gap-[26px] md:grid-cols-2 md:gap-x-14 md:gap-y-9">
-          {faqItems(settings).map((item, i) => (
-            <div key={item.q} {...reveal(i)}>
-              <h3 className="mb-[9px] text-lg font-medium">{item.q}</h3>
-              <p className="text-base leading-[1.65] text-ink-soft">{item.a}</p>
-            </div>
-          ))}
+          {settings.faq
+            .filter((f) => f.on)
+            .map((item, i) => (
+              <div key={item.id} {...reveal(i)}>
+                <h3 className="mb-[9px] text-lg font-medium">{item.q}</h3>
+                <p className="text-base leading-[1.65] text-ink-soft">
+                  <Inline text={fill(item.a, vars)} />
+                </p>
+              </div>
+            ))}
         </div>
       </Container>
     </section>

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { invitationDataSchema } from "@/lib/invitation/schema";
+import { galleryLimit, getSettings, PACKAGE_NAMES, type PackageId } from "@/lib/settings";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { invitationLabel, THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../../login-form";
@@ -25,7 +26,11 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   const live = invitationDataSchema.parse(row.data ?? {});
   const draft = row.draft ? invitationDataSchema.parse(row.draft) : live;
-  return <Editor slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
+  // Batas galeri mengikuti baris galeri_foto di isi paket. Tanpa batas atau paket belum dipilih berarti memakai batas tema.
+  const photos = galleryLimit(await getSettings(), row.package ?? null);
+  const limits =
+    typeof photos === "number" ? { "sections.gallery.photos": { max: photos, note: `Paket ${PACKAGE_NAMES[row.package as PackageId]} maksimal ${photos} foto` } } : undefined;
+  return <Editor limits={limits} slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
 }
 
 export default function EditInvitationPage({ params }: PageProps<"/admin/undangan/[slug]">) {

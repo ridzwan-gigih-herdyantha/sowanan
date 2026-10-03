@@ -1,78 +1,24 @@
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
-import { formatPhotos, formatRupiah, type Settings } from "@/lib/settings";
-import { THEME_NAMES } from "@/themes/media";
+import { cellView, fill, formatRupiah, months, PACKAGE_NAMES, planWaLink, visiblePackages, type Settings } from "@/lib/settings";
 
 type Feature = { label: string; note?: string; on: boolean };
-type Plan = { tier: string; badge?: string; price: number; blurb: string; sla: number; active: number; features: Feature[] };
+type Plan = { tier: string; badge: string; price: number; blurb: string; sla: number; active: number; features: Feature[]; waHref: string };
 
-const THEME_COUNT = Object.keys(THEME_NAMES).length;
-
-const masa = (bulan: number) => (bulan >= 24 && bulan % 12 === 0 ? `${bulan / 12} tahun` : `${bulan} bulan`);
-const galeri = (n: number | null) => {
-  const s = formatPhotos(n);
-  return s[0].toUpperCase() + s.slice(1);
-};
-
-// Semua paket menampilkan daftar yang sama supaya mudah dibandingkan. Tingkat 0 Dasar, 1 Lengkap, 2 Istimewa.
-function features(level: number, photos: number | null): Feature[] {
-  return [
-    { label: "Pilihan tema", note: level === 0 ? `2 dari ${THEME_COUNT} tema` : `Semua ${THEME_COUNT} tema`, on: true },
-    { label: "Warna tema disesuaikan", on: level >= 1 },
-    { label: "Galeri foto", note: galeri(photos), on: true },
-    { label: "Musik latar bawaan tema", on: true },
-    { label: "Musik latar pilihan sendiri", on: level >= 1 },
-    { label: "Cerita perjalanan kalian", on: level >= 1 },
-    { label: "Nama tamu muncul di undangan", on: level >= 1 },
-    { label: "Peta lokasi dan hitung mundur", on: true },
-    { label: "RSVP dan buku ucapan", on: true },
-    { label: "Amplop digital", on: true },
-    { label: "Sebar tanpa batas jumlah tamu", on: true },
-    { label: "Daftar tamu diunduh ke Excel", on: level >= 2 },
-    { label: "QR absensi tamu di lokasi", on: level >= 2 },
-    { label: "Revisi bebas sampai undangan disebar", on: true },
-  ];
-}
-
+// Semua paket menampilkan daftar isi yang sama supaya mudah dibandingkan.
 function plans(s: Settings): Plan[] {
-  return [
-    {
-      tier: "Dasar",
-      price: s.priceDasar,
-      blurb: "Yang penting undangan cepat tersebar",
-      sla: s.slaDasar,
-      active: s.activeDasar,
-      features: features(0, s.photosDasar),
-    },
-    {
-      tier: "Lengkap",
-      badge: "Rekomendasi kami",
-      price: s.priceLengkap,
-      blurb: "Paling seimbang antara fitur dan harga",
-      sla: s.slaLengkap,
-      active: s.activeLengkap,
-      features: features(1, s.photosLengkap),
-    },
-    {
-      tier: "Istimewa",
-      price: s.priceIstimewa,
-      blurb: "Paling cepat jadi, siap untuk hari H",
-      sla: s.slaIstimewa,
-      active: s.activeIstimewa,
-      features: features(2, s.photosIstimewa),
-    },
-  ];
-}
-
-function addons(s: Settings) {
-  return [
-    { name: "Tambah 10 foto galeri", for: "Dasar dan Lengkap", price: s.addonPhotos },
-    { name: "Ganti font atau palet warna", for: "Dasar", price: s.addonStyle },
-    { name: "Musik pilihan sendiri", for: "Dasar", price: s.addonMusic },
-    { name: "Ekspor daftar tamu ke Excel", for: "Lengkap", price: s.addonExport },
-    { name: "Pengerjaan kilat 24 jam", for: "Dasar dan Lengkap", price: s.addonExpress },
-    { name: "Alamat domain sendiri (.com)", for: "Semua paket, termasuk domain 1 tahun", price: s.addonDomain },
-    { name: "Perpanjangan masa aktif 1 tahun", for: "Semua paket", price: s.addonExtend },
-  ];
+  return visiblePackages(s).map((id) => {
+    const p = s.packages[id];
+    return {
+      tier: PACKAGE_NAMES[id],
+      badge: p.badge,
+      price: p.price,
+      blurb: p.blurb,
+      sla: p.sla,
+      active: p.active,
+      features: s.matrix.map((row) => ({ label: row.label, ...cellView(s, row, id) })),
+      waHref: planWaLink(s, id),
+    };
+  });
 }
 
 function Mark({ on }: { on: boolean }) {
@@ -84,7 +30,8 @@ function Mark({ on }: { on: boolean }) {
 }
 
 // Kartu berubah ke warna tombol saat disorot atau saat isinya mendapat fokus (variant lit di globals.css).
-function PlanCard({ p, waHref, rec }: { p: Plan; waHref: string; rec: boolean }) {
+function PlanCard({ p }: { p: Plan }) {
+  const rec = !!p.badge;
   const fade = "transition-colors duration-200";
   return (
     <article className="plan relative flex h-full flex-col rounded-[14px] border border-night-line bg-night px-[22px] pt-7 pb-[26px] transition-[background-color,border-color,transform] duration-200 lit:border-wine-soft lit:bg-wine-soft sm:px-7 sm:pt-[34px] sm:pb-[30px] [@media(hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none">
@@ -100,7 +47,7 @@ function PlanCard({ p, waHref, rec }: { p: Plan; waHref: string; rec: boolean })
       <dl className={cx("mb-[22px] flex border-y border-night-line lit:border-ink/20", fade)}>
         {[
           ["Jadi dalam", `${p.sla} hari kerja`],
-          ["Masa aktif", masa(p.active)],
+          ["Masa aktif", months(p.active)],
         ].map(([lab, val], i) => (
           <div key={lab} className={cx("flex-1 py-3.5", i > 0 && "border-l border-night-line pl-4 lit:border-ink/20", fade)}>
             <dt className={cx("mb-[5px] text-[10px] tracking-[.17em] text-mist uppercase lit:text-ink/70", fade)}>{lab}</dt>
@@ -124,7 +71,7 @@ function PlanCard({ p, waHref, rec }: { p: Plan; waHref: string; rec: boolean })
       </ul>
 
       <a
-        href={waHref}
+        href={p.waHref}
         aria-label={`Pesan paket ${p.tier}`}
         className={cx(
           "block rounded-lg border px-[18px] py-3.5 text-center text-sm tracking-[.04em] no-underline transition-colors duration-200 lit:border-ink lit:bg-ink lit:text-paper focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-paper",
@@ -137,42 +84,51 @@ function PlanCard({ p, waHref, rec }: { p: Plan; waHref: string; rec: boolean })
   );
 }
 
-export function Pricing({ settings, waHref }: { settings: Settings; waHref: string }) {
+export function Pricing({ settings, vars }: { settings: Settings; vars: Record<string, string> }) {
+  const { harga, addon } = settings.sections;
+  const addons = settings.addons.filter((a) => a.on);
+  const list = plans(settings);
   return (
-    <section id="paket" className="bg-ink text-paper">
+    <section id="harga" className="bg-ink text-paper">
       <Container className={sectionPad}>
         <SectionTitle className="text-paper" {...reveal()}>
-          Harga
+          {harga.title}
         </SectionTitle>
-        <SectionSub className="max-w-[52ch] font-light text-mist" {...reveal()}>
-          Bayar sekali, tidak ada biaya bulanan. Tautan undangan dan hosting sudah termasuk selama masa aktif.
-        </SectionSub>
-        <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-3 lg:gap-[22px]">
-          {plans(settings).map((p, i) => (
+        {harga.sub && (
+          <SectionSub className="max-w-[52ch] font-light text-mist" {...reveal()}>
+            {fill(harga.sub, vars)}
+          </SectionSub>
+        )}
+        <div className={cx("grid grid-cols-1 gap-[18px] lg:gap-[22px]", list.length === 3 ? "lg:grid-cols-3" : list.length === 2 ? "lg:grid-cols-2" : "mx-auto max-w-[420px]")}>
+          {list.map((p, i) => (
             <div key={p.tier} {...reveal(i)}>
-              <PlanCard p={p} waHref={waHref} rec={!!p.badge} />
+              <PlanCard p={p} />
             </div>
           ))}
         </div>
-        <p className="mt-[26px] text-center text-[13.5px] font-light text-mist" {...reveal()}>
-          Pembayaran dengan uang muka 50 persen. Undangan dilepas tanpa watermark setelah pelunasan.
-        </p>
+        {settings.payment.note && (
+          <p className="mt-[26px] text-center text-[13.5px] font-light text-mist" {...reveal()}>
+            {fill(settings.payment.note, vars)}
+          </p>
+        )}
 
-        <div className="mt-16 md:mt-[78px]" {...reveal()}>
-          <h3 className="font-serif text-[28px] font-medium text-paper">Tambahan di luar paket</h3>
-          <p className="mt-2 text-base font-light text-mist">Bisa ditambahkan saat memesan. Sebutkan saja lewat WhatsApp.</p>
-          <ul className="mt-[30px] grid grid-cols-1 md:grid-cols-2 md:gap-x-12">
-            {addons(settings).map((a) => (
-              <li key={a.name} className="flex items-baseline justify-between gap-[18px] border-t border-night-line py-[18px]">
-                <span className="min-w-0 text-[15px] leading-snug font-light text-dusk-light">
-                  {a.name}
-                  <small className="mt-[3px] block text-xs text-mist">{a.for}</small>
-                </span>
-                <span className="shrink-0 font-serif text-[19px] text-wine-soft">{formatRupiah(a.price)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {addons.length > 0 && (
+          <div className="mt-16 md:mt-[78px]" {...reveal()}>
+            <h3 className="font-serif text-[28px] font-medium text-paper">{addon.title}</h3>
+            {addon.sub && <p className="mt-2 text-base font-light text-mist">{fill(addon.sub, vars)}</p>}
+            <ul className="mt-[30px] grid grid-cols-1 md:grid-cols-2 md:gap-x-12">
+              {addons.map((a) => (
+                <li key={a.id} className="flex items-baseline justify-between gap-[18px] border-t border-night-line py-[18px]">
+                  <span className="min-w-0 text-[15px] leading-snug font-light text-dusk-light">
+                    {a.name}
+                    {a.scope && <small className="mt-[3px] block text-xs text-mist">{a.scope}</small>}
+                  </span>
+                  <span className="shrink-0 font-serif text-[19px] text-wine-soft">{formatRupiah(a.price)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Container>
     </section>
   );

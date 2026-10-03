@@ -11,7 +11,7 @@ import { FieldInput, FormProvider } from "./fields";
 import { Spinner } from "./spinner";
 import { StylePanel } from "./style-panel";
 
-type Props = { slug: string; theme: string; label: string; published: boolean; paid: boolean; pkg: string | null; draft: InvitationData; live: InvitationData };
+type Props = { slug: string; theme: string; label: string; published: boolean; paid: boolean; pkg: string | null; draft: InvitationData; live: InvitationData; limits?: Record<string, { max: number; note: string }> };
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
 const groupOf = (() => {
@@ -46,7 +46,7 @@ function Switch({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
   );
 }
 
-export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live }: Props) {
+export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, limits }: Props) {
   const [data, setData] = useState(draft);
   const [saved, setSaved] = useState(() => JSON.stringify(live));
   const [published, setPub] = useState(initialPublished);
@@ -180,7 +180,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
   const count = (key: string) => (showIssues ? issues.filter((i) => i.group === key).length : 0);
 
   return (
-    <FormProvider value={{ slug, theme, data, update, errors, focus, names }}>
+    <FormProvider value={{ slug, theme, data, update, errors, focus, names, limits }}>
       <div className="-mx-5 border-b border-line bg-ivory/95 px-5 py-3 backdrop-blur lg:sticky lg:top-0 lg:z-30">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <div className="min-w-0 flex-1 basis-full lg:basis-0">

@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/logo";
 import { Container, SectionTitle, btn, cx, reveal } from "@/components/ui";
+import { fill, type Settings } from "@/lib/settings";
 
-export function ClosingCta({ hours, waHref }: { hours: string; waHref: string }) {
+export function ClosingCta({ settings, vars, waHref }: { settings: Settings; vars: Record<string, string>; waHref: string }) {
+  const c = settings.closing;
   return (
     <section className="bg-wine">
       <Container className="flex flex-col items-start gap-6 py-14 md:flex-row md:items-center md:justify-between md:gap-12 md:py-[72px]">
         <div {...reveal()}>
-          <SectionTitle className="text-white">Tanggal acaranya kapan?</SectionTitle>
-          <p className="max-w-[56ch] text-[17px] text-[#f2dfe2]">
-            Chat saja dulu, belum harus memesan. Kami balas dalam 1 jam di jam {hours}.
-          </p>
+          <SectionTitle className="text-white">{c.title}</SectionTitle>
+          {c.text && <p className="max-w-[56ch] text-[17px] text-[#f2dfe2]">{fill(c.text, vars)}</p>}
         </div>
         <a
           href={waHref}
@@ -19,15 +19,16 @@ export function ClosingCta({ hours, waHref }: { hours: string; waHref: string })
             "w-full shrink-0 bg-white px-[34px] py-[18px] text-center text-wine-dark hover:-translate-y-0.5 hover:bg-[#fff3f5] md:w-auto",
           )}
         >
-          Chat WhatsApp
+          {c.button}
         </a>
       </Container>
     </section>
   );
 }
 
-export function SiteFooter({ waHref, instagram }: { waHref: string; instagram: string }) {
+export function SiteFooter({ settings, vars, waHref }: { settings: Settings; vars: Record<string, string>; waHref: string }) {
   const link = "mr-[22px] inline-block text-dusk no-underline transition-colors duration-200 hover:text-paper md:mr-0 md:ml-[26px]";
+  const f = settings.footer;
   return (
     <footer className="bg-ink text-sm text-dusk">
       <Container className="flex flex-col items-start gap-4 py-10 md:flex-row md:items-center md:justify-between md:gap-6">
@@ -36,8 +37,8 @@ export function SiteFooter({ waHref, instagram }: { waHref: string; instagram: s
             <LogoMark className="h-7 w-auto text-wine-pale" />
             Sowanan
           </div>
-          <div className="mt-1.5">Undangan pernikahan digital &middot; Semarang</div>
-          <div className="mt-1.5">Dibuat oleh Nine Dragon Labs</div>
+          {f.line1 && <div className="mt-1.5">{fill(f.line1, vars)}</div>}
+          {f.line2 && <div className="mt-1.5">{fill(f.line2, vars)}</div>}
         </div>
         <div>
           <Link prefetch={false} href="/ketentuan" className={link}>
@@ -46,9 +47,14 @@ export function SiteFooter({ waHref, instagram }: { waHref: string; instagram: s
           <a href={waHref} className={link}>
             WhatsApp
           </a>
-          <a href={`https://instagram.com/${instagram}`} className={link} rel="noopener">
+          <a href={`https://instagram.com/${settings.contact.instagram}`} className={link} rel="noopener">
             Instagram
           </a>
+          {settings.contact.email && (
+            <a href={`mailto:${settings.contact.email}`} className={link}>
+              Email
+            </a>
+          )}
         </div>
       </Container>
     </footer>

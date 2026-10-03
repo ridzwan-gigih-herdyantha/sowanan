@@ -4,7 +4,7 @@ import { updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { parseSettingsForm, SETTINGS_TAG } from "@/lib/settings";
+import { SETTINGS_TAG, settingsSchema } from "@/lib/settings";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 
@@ -55,16 +55,23 @@ export async function logout() {
   redirect("/admin");
 }
 
-export async function saveSettings(_prev: FormState, form: FormData): Promise<FormState> {
+export async function saveSettings(json: string): Promise<FormState> {
   const supabase = await supabaseServer();
   const { data } = await supabase.auth.getUser();
   if (!data.user) return { ok: false, message: "Sesi berakhir. Silakan masuk lagi." };
 
-  const parsed = parseSettingsForm(form);
+  let raw: unknown;
+  try {
+    raw = JSON.parse(json);
+  } catch {
+    return { ok: false, message: "Data pengaturan tidak terbaca. Muat ulang halaman." };
+  }
+  const parsed = settingsSchema.safeParse(raw);
   if (!parsed.success) {
     const errors: Record<string, string> = {};
-    for (const issue of parsed.error.issues) errors[String(issue.path[0])] ??= issue.message;
-    return { ok: false, message: "Periksa lagi isian yang ditandai.", errors };
+    for (const issue of parsed.error.issues) errors[issue.path.join(".")] ??= issue.message;
+    const n = Object.keys(errors).length;
+    return { ok: false, message: `Ada ${n} isian yang perlu diperbaiki. Lihat tab bertanda titik merah.`, errors };
   }
 
   const { error } = await supabaseAdmin()
@@ -73,5 +80,5 @@ export async function saveSettings(_prev: FormState, form: FormData): Promise<Fo
   if (error) return { ok: false, message: "Gagal menyimpan. Coba lagi." };
 
   updateTag(SETTINGS_TAG);
-  return { ok: true, message: "Pengaturan tersimpan. Homepage sudah memakai nilai baru.", at: Date.now() };
+  return { ok: true, message: "Pengaturan tersimpan. Homepage dan ketentuan sudah memakai isi baru.", at: Date.now() };
 }

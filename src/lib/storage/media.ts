@@ -31,6 +31,7 @@ export const PURPOSES = {
   specimen: img("Foto spesimen", 700),
   poster: img("Poster video", 900),
   qris: img("QRIS", 800, { lossless: true }),
+  cover: img("Sampul tema", 780),
   video: { kind: "video", label: "Video", maxBytes: 15 * 1024 * 1024, types: { "video/mp4": "mp4", "video/webm": "webm" } },
   music: { kind: "audio", label: "Musik latar", maxBytes: 8 * 1024 * 1024, types: { "audio/mpeg": "mp3", "audio/mp4": "m4a", "audio/ogg": "ogg" } },
 } satisfies Record<string, Preset>;

@@ -1,37 +1,36 @@
 import { Countdown } from "@/components/countdown";
+import { Inline, paragraphs } from "@/components/rich-text";
 import { Container, btn } from "@/components/ui";
+import { fill, resolveHref, type Settings } from "@/lib/settings";
 
 export type HeroDemo = { groom: string; bride: string; date: string; dateLong: string };
 
-type Props = { price: string; sla: string; hours: string; waHref: string; demo: HeroDemo };
+type Props = { settings: Settings; vars: Record<string, string>; waHref: string; demo: HeroDemo };
 
-export function Hero({ price, sla, hours, waHref, demo }: Props) {
+export function Hero({ settings, vars, waHref, demo }: Props) {
+  const h = settings.hero;
   return (
     <section>
       <Container className="flex flex-col items-stretch gap-11 pt-11 pb-10 sm:pt-16 sm:pb-14 md:flex-row md:items-center lg:gap-[72px] lg:pt-[84px] lg:pb-[76px]">
         <div className="flex-auto md:max-w-[560px]">
-          <p className="mb-[22px] text-[13px] tracking-[3px] text-wine">KABARNYA SAMPAI DULU, SEBELUM TAMUNYA DATANG</p>
-          <h1 className="mb-6 font-serif text-[clamp(38px,6vw,64px)] leading-[1.06] font-medium">
-            Undangan nikah digital, mulai {price}.
-          </h1>
-          <p className="mb-[18px] max-w-[62ch] text-[clamp(16px,1.6vw,19px)] leading-[1.65] text-ink-soft">
-            Kirim nama, tanggal, lokasi, dan foto lewat WhatsApp. Undangan kalian jadi dalam {sla}, tinggal disebar ke
-            semua tamu.
-          </p>
-          <p className="mb-[18px] max-w-[62ch] text-[clamp(16px,1.6vw,19px)] leading-[1.65] text-ink-soft">
-            Sudah termasuk peta lokasi, RSVP, buku ucapan, dan amplop digital. Tanpa biaya tambahan.
-          </p>
+          {h.eyebrow && <p className="mb-[22px] text-[13px] tracking-[3px] text-wine uppercase">{fill(h.eyebrow, vars)}</p>}
+          <h1 className="mb-6 font-serif text-[clamp(38px,6vw,64px)] leading-[1.06] font-medium">{fill(h.title, vars)}</h1>
+          {paragraphs(fill(h.sub, vars)).map((p, i) => (
+            <p key={i} className="mb-[18px] max-w-[62ch] text-[clamp(16px,1.6vw,19px)] leading-[1.65] text-ink-soft">
+              <Inline text={p} />
+            </p>
+          ))}
           <div className="flex flex-col items-stretch gap-4 text-center sm:flex-row sm:flex-wrap sm:items-center sm:text-left">
-            <a href={waHref} className={btn.primary}>
-              Pesan lewat WhatsApp
+            <a href={resolveHref(h.cta1Href, waHref)} className={btn.primary}>
+              {h.cta1}
             </a>
-            <a href="#tema" className={btn.ghost}>
-              Lihat pilihan tema
-            </a>
+            {h.cta2 && (
+              <a href={resolveHref(h.cta2Href, waHref)} className={btn.ghost}>
+                {h.cta2}
+              </a>
+            )}
           </div>
-          <p className="mt-[26px] text-[15px] text-ink-mute">
-            Dibalas dalam 1 jam, jam {hours} &middot; Bisa disebar ke berapa pun tamu
-          </p>
+          {h.note && <p className="mt-[26px] text-[15px] text-ink-mute">{fill(h.note, vars)}</p>}
         </div>
 
         <div

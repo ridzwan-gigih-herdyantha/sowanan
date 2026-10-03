@@ -7,9 +7,10 @@ import { storeMedia } from "@/lib/storage/store";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 type Result<T> = { ok: true; data: T } | { ok: false; error: string };
+export type SitePurpose = "qris" | "cover";
 
-// Gambar QRIS pembayaran Sowanan disimpan di folder site/, terpisah dari folder undangan.
-export async function createQrisTicket(type: string, size: number): Promise<Result<{ path: string; token: string }>> {
+// Gambar milik situs (QRIS pembayaran, sampul tema) disimpan di folder site/, terpisah dari folder undangan.
+export async function createSiteUpload(type: string, size: number): Promise<Result<{ path: string; token: string }>> {
   if (!(await currentAdmin())) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
   if (!IMAGE_TYPES.includes(type)) return { ok: false, error: "Format gambar harus JPG, PNG, WebP, HEIC, atau AVIF." };
   if (size > MAX_RAW_IMAGE_BYTES) return { ok: false, error: "Gambar maksimal 25MB." };
@@ -19,14 +20,21 @@ export async function createQrisTicket(type: string, size: number): Promise<Resu
   return { ok: true, data: { path, token: data.token } };
 }
 
-export async function finalizeQris(tmpPath: string, type: string): Promise<Result<{ path: string; url: string }>> {
+export async function finalizeSiteUpload(tmpPath: string, type: string, purpose: SitePurpose): Promise<Result<{ path: string; url: string }>> {
   if (!(await currentAdmin())) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
-  if (!/^tmp\/[0-9a-f-]{36}$/.test(tmpPath)) return { ok: false, error: "Permintaan tidak valid." };
+  if (!/^tmp\/[0-9a-f-]{36}$/.test(tmpPath) || (purpose !== "qris" && purpose !== "cover")) return { ok: false, error: "Permintaan tidak valid." };
   const bucket = supabaseAdmin().storage.from(BUCKET);
   try {
     const { data, error } = await bucket.download(tmpPath);
     if (error || !data) return { ok: false, error: "File sementara tidak ditemukan. Unggah ulang." };
-    const stored = await storeMedia(supabaseAdmin(), { slug: "site", purpose: "qris", buffer: Buffer.from(await data.arrayBuffer()), contentType: type, index: 1 });
+    const stored = await storeMedia(supabaseAdmin(), {
+      slug: "site",
+      purpose,
+      buffer: Buffer.from(await data.arrayBuffer()),
+      contentType: type,
+      // QRIS selalu satu berkas yang ditimpa. Sampul tema mendapat nomor baru tiap unggahan.
+      index: purpose === "qris" ? 1 : undefined,
+    });
     return { ok: true, data: { path: stored.path, url: mediaUrl(stored.path) } };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Gagal memproses gambar." };

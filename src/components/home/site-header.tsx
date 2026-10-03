@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/logo";
 import { Container, btn, cx } from "@/components/ui";
+import type { Settings } from "@/lib/settings";
 
-const links = [
-  { href: "#tema", label: "Pilihan Tema" },
-  { href: "#fitur", label: "Fitur" },
-  { href: "#paket", label: "Harga" },
-  { href: "#tanya", label: "Tanya Jawab" },
-];
-
-export function SiteHeader({ waHref }: { waHref: string }) {
+export function SiteHeader({ settings, waHref }: { settings: Settings; waHref: string }) {
+  const sec = settings.sections;
+  const links = [
+    { href: "#tema", label: sec.tema.title },
+    { href: "#fitur", label: sec.fitur.title },
+    { href: "#harga", label: sec.harga.title },
+    { href: "#tanya", label: sec.faq.title },
+  ];
   return (
     <header className="border-b border-line">
       <Container className="flex items-center justify-between gap-4 py-[22px]">
@@ -22,12 +23,12 @@ export function SiteHeader({ waHref }: { waHref: string }) {
             </span>
           </span>
         </Link>
-        <nav aria-label="Utama" className="flex items-center gap-[34px] text-[15px]">
+        <nav aria-label="Utama" className="flex items-center gap-7 text-[15px] min-[1260px]:gap-[34px]">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="hidden text-ink no-underline transition-colors duration-200 hover:text-wine lg:inline"
+              className="hidden whitespace-nowrap text-ink no-underline transition-colors duration-200 hover:text-wine min-[1180px]:inline"
             >
               {l.label}
             </a>

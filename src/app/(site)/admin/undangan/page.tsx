@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { LogoMark } from "@/components/logo";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../login-form";
-import { AdminNav } from "../nav";
+import { AdminFrame } from "../frame";
 import { CreateForm } from "./create-form";
 import { PackageSelect } from "./package-select";
 import { PaymentToggle } from "./payment-toggle";
@@ -36,10 +35,19 @@ const BASE_COLS =
 
 async function List() {
   if (!hasSupabase()) {
-    return <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Supabase belum dikonfigurasi di environment.</p>;
+    return (
+      <AdminFrame current="/admin/undangan" title="Undangan">
+        <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Supabase belum dikonfigurasi di environment.</p>
+      </AdminFrame>
+    );
   }
   const admin = await currentAdmin();
-  if (!admin) return <LoginForm />;
+  if (!admin)
+    return (
+      <AdminFrame current="/admin/undangan" title="Undangan">
+        <LoginForm />
+      </AdminFrame>
+    );
 
   const sb = supabaseAdmin();
   // Kolom payment_status (migrasi 0005) dan package (0006) bisa belum ada, jadi dicoba bertahap.
@@ -56,8 +64,7 @@ async function List() {
   const unpaid = rows.filter((r) => r.payment_status === "belum_lunas").length;
 
   return (
-    <>
-      <AdminNav email={admin.email ?? ""} current="/admin/undangan" />
+    <AdminFrame email={admin.email ?? ""} current="/admin/undangan" title="Undangan">
       <CreateForm themes={themes} />
 
       <div className="mt-10 flex flex-wrap items-baseline justify-between gap-2">
@@ -107,21 +114,16 @@ async function List() {
           </li>
         ))}
       </ul>
-    </>
+    </AdminFrame>
   );
 }
 
 export default function InvitationsPage() {
   return (
-    <main className="mx-auto max-w-5xl px-5 py-12 sm:py-16">
-      <p className="flex items-center gap-2.5 text-[13px] tracking-[3px] text-wine">
-        <LogoMark className="h-6 w-auto" />
-        SOWANAN
-      </p>
-      <h1 className="mt-2 mb-8 font-serif text-[clamp(36px,8vw,48px)] leading-tight font-medium">Undangan</h1>
-      <Suspense fallback={<p className="text-ink-mute">Memuat...</p>}>
+    <div className="min-h-dvh bg-ivory">
+      <Suspense fallback={<p className="px-5 py-16 text-ink-mute">Memuat...</p>}>
         <List />
       </Suspense>
-    </main>
+    </div>
   );
 }

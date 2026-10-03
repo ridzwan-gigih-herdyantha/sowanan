@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { LogoMark } from "@/components/logo";
 import { currentAdmin } from "@/lib/admin-auth";
 import { PURPOSES } from "@/lib/storage/media";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { invitationLabel, themeMedia } from "@/themes/media";
 import { LoginForm } from "../login-form";
-import { AdminNav } from "../nav";
+import { AdminFrame } from "../frame";
 import { listMedia } from "./actions";
 import { MediaManager } from "./media-manager";
 
@@ -17,10 +16,19 @@ export const metadata: Metadata = {
 
 async function MediaGate() {
   if (!hasSupabase()) {
-    return <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Supabase belum dikonfigurasi di environment.</p>;
+    return (
+      <AdminFrame current="/admin/media" title="Media">
+        <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Supabase belum dikonfigurasi di environment.</p>
+      </AdminFrame>
+    );
   }
   const admin = await currentAdmin();
-  if (!admin) return <LoginForm />;
+  if (!admin)
+    return (
+      <AdminFrame current="/admin/media" title="Media">
+        <LoginForm />
+      </AdminFrame>
+    );
 
   const { data } = await supabaseAdmin().from("invitations").select("slug, theme").order("slug");
   const slugs = (data ?? []).map((r) => r.slug as string);
@@ -30,8 +38,7 @@ async function MediaGate() {
   const purposes = Object.entries(PURPOSES).map(([key, p]) => ({ key, label: p.label, kind: p.kind }));
 
   return (
-    <>
-      <AdminNav email={admin.email ?? ""} current="/admin/media" />
+    <AdminFrame email={admin.email ?? ""} current="/admin/media" title="Media">
       <MediaManager
       slugs={slugs}
       initialFiles={initial?.ok ? initial.data : []}
@@ -39,21 +46,16 @@ async function MediaGate() {
       allowed={allowed}
       labels={labels}
       />
-    </>
+    </AdminFrame>
   );
 }
 
 export default function MediaPage() {
   return (
-    <main className="mx-auto max-w-4xl px-5 py-12 sm:py-16">
-      <p className="flex items-center gap-2.5 text-[13px] tracking-[3px] text-wine">
-        <LogoMark className="h-6 w-auto" />
-        SOWANAN
-      </p>
-      <h1 className="mt-2 mb-8 font-serif text-[clamp(36px,8vw,48px)] leading-tight font-medium">Media</h1>
-      <Suspense fallback={<p className="text-ink-mute">Memuat...</p>}>
+    <div className="min-h-dvh bg-ivory">
+      <Suspense fallback={<p className="px-5 py-16 text-ink-mute">Memuat...</p>}>
         <MediaGate />
       </Suspense>
-    </main>
+    </div>
   );
 }

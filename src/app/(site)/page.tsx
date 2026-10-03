@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { ClosingCta, SiteFooter, WhatsAppFloat } from "@/components/home/closing";
-import { Faq, faqItems } from "@/components/home/faq";
+import { Faq } from "@/components/home/faq";
 import { Features } from "@/components/home/features";
 import { Hero } from "@/components/home/hero";
 import { Pricing } from "@/components/home/pricing";
 import { SiteHeader } from "@/components/home/site-header";
 import { Steps } from "@/components/home/steps";
 import { Themes } from "@/components/home/themes";
-import { formatRupiah, getSettings, highestPrice, lowestPrice, slaRange, type Settings, waLink } from "@/lib/settings";
+import { plain } from "@/components/rich-text";
+import { fill, formatRupiah, generalWaLink, getSettings, highestPrice, lowestPrice, slaRange, textVars, type Settings } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
 import { getInvitation } from "@/lib/invitation/load";
 import { toView } from "@/lib/invitation/view";
@@ -31,6 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 function jsonLd(s: Settings) {
+  const vars = textVars(s);
   return [
     {
       "@context": "https://schema.org",
@@ -39,27 +41,31 @@ function jsonLd(s: Settings) {
       description: "Jasa undangan pernikahan digital. Pesan lewat WhatsApp, undangan jadi dalam hitungan hari.",
       url: SITE_URL,
       image: `${SITE_URL}/img/og.jpg`,
-      telephone: `+${s.waNumber}`,
+      telephone: `+${s.contact.wa}`,
+      ...(s.contact.email && { email: s.contact.email }),
       areaServed: "ID",
-      address: { "@type": "PostalAddress", addressLocality: "Semarang", addressCountry: "ID" },
-      sameAs: [`https://instagram.com/${s.instagram}`],
+      address: { "@type": "PostalAddress", ...(s.contact.city && { addressLocality: s.contact.city }), addressCountry: "ID" },
+      sameAs: [`https://instagram.com/${s.contact.instagram}`],
       priceRange: `${formatRupiah(lowestPrice(s))} - ${formatRupiah(highestPrice(s))}`,
     },
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: faqItems(s).map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.text },
-      })),
+      mainEntity: s.faq
+        .filter((f) => f.on)
+        .map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: plain(fill(f.a, vars)) },
+        })),
     },
   ];
 }
 
 export default async function Home() {
   const s = await getSettings();
-  const wa = waLink(s.waNumber, s.waMessage);
+  const vars = textVars(s);
+  const wa = generalWaLink(s);
   const record = await getInvitation("andi-rina");
   const view = record && toView(record.slug, record.data);
   const demo: HeroDemo = view
@@ -72,17 +78,17 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(s)).replace(/</g, "\\u003c") }}
       />
-      <SiteHeader waHref={wa} />
+      <SiteHeader settings={s} waHref={wa} />
       <main>
-        <Hero price={formatRupiah(lowestPrice(s))} sla={slaRange(s)} hours={s.operatingHours} waHref={wa} demo={demo} />
-        <Themes waHref={wa} />
-        <Features />
-        <Pricing settings={s} waHref={wa} />
-        <Steps sla={slaRange(s)} />
-        <Faq settings={s} />
-        <ClosingCta hours={s.operatingHours} waHref={wa} />
+        <Hero settings={s} vars={vars} waHref={wa} demo={demo} />
+        <Themes settings={s} vars={vars} waHref={wa} />
+        <Features settings={s} vars={vars} />
+        <Pricing settings={s} vars={vars} />
+        <Steps settings={s} vars={vars} />
+        <Faq settings={s} vars={vars} />
+        <ClosingCta settings={s} vars={vars} waHref={wa} />
       </main>
-      <SiteFooter waHref={wa} instagram={s.instagram} />
+      <SiteFooter settings={s} vars={vars} waHref={wa} />
       <WhatsAppFloat waHref={wa} />
       <RevealOnScroll />
     </>
