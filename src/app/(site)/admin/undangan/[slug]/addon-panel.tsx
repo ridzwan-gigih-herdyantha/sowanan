@@ -144,16 +144,16 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
                 {formatRupiah(total)}
               </dd>
             </div>
-{dp > 0 && (
-  <div className="flex justify-between gap-4 text-[13px] text-ink-mute">
-    <dt>Uang muka {dp}%</dt>
-    <dd className="tabular-nums">
-      {dp < 100
-        ? `${formatRupiah(deposit)}, sisa ${formatRupiah(total - deposit)}`
-        : "Harus lunas"}
-    </dd>
-  </div>
-)}
+            {dp > 0 && (
+              <div className="flex justify-between gap-4 text-[13px] text-ink-mute">
+                <dt>Uang muka {dp}%</dt>
+                <dd className="tabular-nums">
+                  {dp < 100
+                    ? `${formatRupiah(deposit)}, sisa ${formatRupiah(total - deposit)}`
+                    : "Harus lunas"}
+                </dd>
+              </div>
+            )}
           </dl>
         </>
       )}
