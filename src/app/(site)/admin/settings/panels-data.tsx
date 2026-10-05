@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ACTIVE_MONTHS, newId, PACKAGE_IDS, PACKAGE_NAMES, SYSTEM_KEYS, type MatrixRow, type PackageId } from "@/lib/settings/schema";
+import { ACTIVE_MONTHS, COUNT_KEYS, newId, PACKAGE_IDS, PACKAGE_NAMES, SYSTEM_KEYS, UNLOCK_KEYS, type MatrixRow, type PackageId, type Settings, type SystemKey } from "@/lib/settings/schema";
 import { months, themeCount } from "@/lib/settings/text";
 import { setIn, useSettings } from "./form-context";
 import { ImagePicker } from "./image-picker";
@@ -32,6 +32,7 @@ function PackageCard({ id }: { id: PackageId }) {
 }
 
 const KEY_OPTIONS: [string, string][] = [["", "Tanpa kunci"], ...Object.keys(SYSTEM_KEYS).map((k): [string, string] => [k, k])];
+const UNLOCK_OPTIONS: [string, string][] = [["", "Tidak membuka apa pun"], ...UNLOCK_KEYS.map((k): [string, string] => [k, k === "galeri_foto" ? "galeri_foto (tambah foto)" : k])];
 const COLS = "grid-cols-[26px_minmax(170px,1fr)_118px_140px_repeat(3,96px)_34px]";
 
 function Matrix() {
@@ -137,6 +138,7 @@ function Matrix() {
                 <span role="cell">
                   <SelectBox
                     label={`Tipe baris ${i + 1}`}
+                    disabled={Boolean(r.key)}
                     value={r.kind}
                     invalid={!!errors[`matrix.${i}.kind`]}
                     options={[
@@ -153,7 +155,7 @@ function Matrix() {
                     value={r.key}
                     invalid={!!errors[`matrix.${i}.key`]}
                     options={KEY_OPTIONS}
-                    onChange={(v) => update((d) => setIn(setIn(d, `matrix.${i}.key`, v), `matrix.${i}.kind`, v ? "count" : d.matrix[i].kind))}
+                    onChange={(v) => update((d) => setIn(setIn(d, `matrix.${i}.key`, v), `matrix.${i}.kind`, v ? (COUNT_KEYS.includes(v as SystemKey) ? "count" : "check") : d.matrix[i].kind))}
                     className="px-2.5! py-2! font-mono sm:text-[11.5px]!"
                   />
                 </span>
@@ -213,8 +215,14 @@ function Matrix() {
           + Tambah baris
         </button>
         <span className="min-w-[240px] flex-1 text-[11.5px] leading-normal text-ink-mute">
-          Kunci sistem hanya diisi untuk baris yang mengubah perilaku aplikasi. <code className="font-mono">jumlah_tema</code> dihitung otomatis dari tab Tema,{" "}
-          <code className="font-mono">galeri_foto</code> membatasi jumlah foto galeri di editor undangan sesuai paketnya.
+          Kunci sistem hanya diisi untuk baris yang mengubah perilaku aplikasi. Isian undangan mengikuti paketnya:{" "}
+          {Object.entries(SYSTEM_KEYS).map(([k, d], n) => (
+            <span key={k}>
+              {n > 0 && ", "}
+              <code className="font-mono">{k}</code> {d.charAt(0).toLowerCase() + d.slice(1)}
+            </span>
+          ))}
+          .
         </span>
       </div>
     </div>
@@ -253,13 +261,26 @@ export function AddonPanel() {
         path="addons"
         noun="item"
         max={30}
-        blank={() => ({ id: newId(), on: true, name: "", price: NaN, scope: "" })}
-        render={(_, __, base) => (
-          <Row>
-            <Text path={`${base}.name`} label="Nama tambahan" max={46} />
-            <NumberField path={`${base}.price`} label="Harga" chip="view" prefix="Rp" rupiah className={width.sm} />
-            <Text path={`${base}.scope`} label="Berlaku untuk" max={60} />
-          </Row>
+        blank={(): Settings["addons"][number] => ({ id: newId(), on: true, name: "", price: NaN, scope: "", unlock: "", amount: 0 })}
+        render={(item, __, base) => (
+          <>
+            <Row>
+              <Text path={`${base}.name`} label="Nama tambahan" max={46} />
+              <NumberField path={`${base}.price`} label="Harga" chip="view" prefix="Rp" rupiah className={width.sm} />
+              <Text path={`${base}.scope`} label="Berlaku untuk" max={60} />
+            </Row>
+            <Row>
+              <Select
+                path={`${base}.unlock`}
+                label="Membuka di editor"
+                chip="sys"
+                className={width.md}
+                options={UNLOCK_OPTIONS}
+                help="Dicentang per undangan setelah dibayar, lalu membuka isian di luar paket."
+              />
+              {item.unlock === "galeri_foto" && <NumberField path={`${base}.amount`} label="Foto per unit" chip="sys" suffix="foto" className={width.sm} />}
+            </Row>
+          </>
         )}
       />
     </Card>

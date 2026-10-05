@@ -1,7 +1,7 @@
 "use client";
 
 import { ICONS, newId, PACKAGE_IDS, PACKAGE_NAMES, THEME_TIERS, type Settings } from "@/lib/settings/schema";
-import { generalWaLink, themeCount, VARIABLES } from "@/lib/settings/text";
+import { generalWaLink, themeCount, themesLimited, VARIABLES } from "@/lib/settings/text";
 import { THEME_NAMES } from "@/themes/media";
 import { useSettings } from "./form-context";
 import { ImagePicker } from "./image-picker";
@@ -141,14 +141,22 @@ const SLUG_OPTIONS = Object.entries(THEME_NAMES).map(([slug, name]): [string, st
 export function TemaPanel() {
   const { s } = useSettings();
   const counts = PACKAGE_IDS.map((p) => `${PACKAGE_NAMES[p]} ${themeCount(s, p).n}`).join(", ");
+  const limited = themesLimited(s);
   return (
     <Card
       title="Daftar tema"
       hint={
-        <>
-          Slug dan kolom Tersedia di paket dipakai sistem, sisanya tampilan. Jumlah tema di kartu harga dihitung dari kolom Tersedia di paket. Sekarang:{" "}
-          <b className="font-medium text-[#2A2320]">{counts}</b> dari {themeCount(s, "dasar").total} tema aktif.
-        </>
+        limited ? (
+          <>
+            Slug dan kolom Tersedia di paket dipakai sistem, sisanya tampilan. Pilihan tema saat membuat undangan dan jumlah tema di kartu harga mengikuti kolom Tersedia di paket. Sekarang:{" "}
+            <b className="font-medium text-[#2A2320]">{counts}</b> dari {themeCount(s, "dasar").total} tema aktif.
+          </>
+        ) : (
+          <>
+            Semua paket bisa memilih semua tema, karena baris berkunci <code className="font-mono">jumlah_tema</code> tidak ada di Isi paket. Kolom Tersedia di paket baru dipakai lagi
+            kalau baris itu ditambahkan kembali.
+          </>
+        )
       }
     >
       <RepList
@@ -166,7 +174,15 @@ export function TemaPanel() {
               <Text path={`${base}.name`} label="Nama tema" max={24} />
               <Select path={`${base}.slug`} label="Slug" chip="sys" className={width.md} options={SLUG_OPTIONS} help="Kode tema yang sudah dibuat pengembang." />
               <Text path={`${base}.demo`} label="Tautan demo" placeholder="/andi-rina" help="Kosong berarti kartu membuka WhatsApp." />
-              <Select path={`${base}.tier`} label="Tersedia di paket" chip="sys" className={width.md} options={Object.entries(THEME_TIERS)} />
+              <Select
+                path={`${base}.tier`}
+                label="Tersedia di paket"
+                chip="sys"
+                className={width.md}
+                options={Object.entries(THEME_TIERS)}
+                disabled={!limited}
+                help={limited ? undefined : "Tidak dipakai, semua paket bebas memilih."}
+              />
             </Row>
             <Row>
               <Text path={`${base}.style`} label="Deskripsi satu baris" max={90} placeholder="film / urban" />

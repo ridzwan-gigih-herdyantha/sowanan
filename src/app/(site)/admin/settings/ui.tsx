@@ -132,25 +132,26 @@ export function Text({ path, label, chip, help, max, rows, type = "text", placeh
   );
 }
 
-export function Select({ path, label, chip, help, options, className, toValue }: { path: string; label: string; chip?: "sys" | "view"; help?: ReactNode; options: [string, string][]; className?: string; toValue?: (v: string) => unknown }) {
+export function Select({ path, label, chip, help, options, className, toValue, disabled }: { path: string; label: string; chip?: "sys" | "view"; help?: ReactNode; options: [string, string][]; className?: string; toValue?: (v: string) => unknown; disabled?: boolean }) {
   const { s, set, errors } = useSettings();
   const error = errors[path];
   return (
     <Field label={label} chip={chip} help={help} error={error} className={className}>
       {(id, describedBy) => (
-        <SelectBox id={id} describedBy={describedBy} value={String(getIn(s, path) ?? "")} options={options} invalid={!!error} onChange={(v) => set(path, toValue ? toValue(v) : v)} />
+        <SelectBox id={id} describedBy={describedBy} disabled={disabled} value={String(getIn(s, path) ?? "")} options={options} invalid={!!error} onChange={(v) => set(path, toValue ? toValue(v) : v)} />
       )}
     </Field>
   );
 }
 
-export function SelectBox({ id, describedBy, value, options, invalid, onChange, className, label }: { id?: string; describedBy?: string; value: string; options: [string, string][]; invalid?: boolean; onChange: (v: string) => void; className?: string; label?: string }) {
+export function SelectBox({ id, describedBy, value, options, invalid, onChange, className, label, disabled }: { id?: string; describedBy?: string; value: string; options: [string, string][]; invalid?: boolean; onChange: (v: string) => void; className?: string; label?: string; disabled?: boolean }) {
   return (
     <span className="relative block">
       <select
         id={id}
         value={value}
         aria-label={label}
+        disabled={disabled}
         aria-invalid={invalid}
         aria-describedby={describedBy}
         onChange={(e) => onChange(e.target.value)}

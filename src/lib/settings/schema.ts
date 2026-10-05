@@ -28,8 +28,20 @@ export type ThemeTier = keyof typeof THEME_TIERS;
 export const SYSTEM_KEYS = {
   jumlah_tema: "Dihitung otomatis dari tab Tema",
   galeri_foto: "Membatasi jumlah foto galeri di editor undangan",
+  musik_sendiri: "Membuka unggah musik sendiri di editor undangan",
+  warna_tema: "Membuka ganti palet dan font di editor undangan",
+  cerita: "Membuka bagian Cerita di editor undangan",
+  nama_tamu: "Membuka halaman nama tamu",
+  ekspor_excel: "Membuka unduh Excel di halaman RSVP",
 } as const;
 export type SystemKey = keyof typeof SYSTEM_KEYS;
+// Kunci berjumlah dicatat sebagai angka, sisanya cukup termasuk atau tidak.
+export const COUNT_KEYS: SystemKey[] = ["jumlah_tema", "galeri_foto"];
+export type FeatureKey = Exclude<SystemKey, "jumlah_tema" | "galeri_foto">;
+export const FEATURE_KEYS = Object.keys(SYSTEM_KEYS).filter((k) => !COUNT_KEYS.includes(k as SystemKey)) as FeatureKey[];
+// Add-on bisa membuka satu kunci. Untuk galeri_foto, jumlah foto per unit diisi di kolom amount.
+export const UNLOCK_KEYS = ["galeri_foto", ...FEATURE_KEYS] as const;
+export type UnlockKey = (typeof UNLOCK_KEYS)[number];
 
 export const ACTIVE_MONTHS = [3, 6, 12, 24] as const;
 
@@ -125,7 +137,19 @@ export const settingsSchema = z
         }),
       )
       .max(40, "Isi paket maksimal 40 baris."),
-    addons: z.array(z.object({ id, on: z.boolean(), name: req("Nama tambahan", 46), price: rupiah("Harga tambahan"), scope: str("Berlaku untuk", 60) })).max(30, "Tambahan maksimal 30."),
+    addons: z
+      .array(
+        z.object({
+          id,
+          on: z.boolean(),
+          name: req("Nama tambahan", 46),
+          price: rupiah("Harga tambahan"),
+          scope: str("Berlaku untuk", 60),
+          unlock: z.enum(["", ...UNLOCK_KEYS]).default(""),
+          amount: count("Tambahan foto", 0, 500).default(0),
+        }),
+      )
+      .max(30, "Tambahan maksimal 30."),
     contact: z.object({
       wa: z.string().trim().regex(/^628\d{7,12}$/, "Nomor WhatsApp harus format 628xxx, 10 sampai 15 digit."),
       instagram: z
@@ -160,10 +184,16 @@ export const settingsSchema = z
     s.matrix.forEach((r, i) => {
       if (!r.key) return;
       if (keys.has(r.key)) ctx.addIssue({ code: "custom", path: ["matrix", i, "key"], message: "Kunci ini sudah dipakai baris lain." });
-      if (r.kind !== "count") ctx.addIssue({ code: "custom", path: ["matrix", i, "kind"], message: "Baris berkunci sistem harus bertipe Berjumlah." });
+      const wantCount = COUNT_KEYS.includes(r.key);
+      if (wantCount !== (r.kind === "count")) {
+        ctx.addIssue({ code: "custom", path: ["matrix", i, "kind"], message: wantCount ? "Kunci ini harus bertipe Berjumlah." : "Kunci ini harus bertipe Centang." });
+      }
       keys.add(r.key);
     });
     if (!PACKAGE_IDS.some((p) => s.packages[p].on)) ctx.addIssue({ code: "custom", path: ["packages", "dasar", "on"], message: "Minimal satu paket harus tampil." });
+    s.addons.forEach((a, i) => {
+      if (a.unlock === "galeri_foto" && a.amount < 1) ctx.addIssue({ code: "custom", path: ["addons", i, "amount"], message: "Isi jumlah foto yang ditambahkan per unit." });
+    });
     if (s.contact.open >= s.contact.close) ctx.addIssue({ code: "custom", path: ["contact", "close"], message: "Jam tutup harus setelah jam buka." });
   });
 

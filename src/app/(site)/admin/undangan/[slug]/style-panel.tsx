@@ -10,7 +10,8 @@ import { Spinner } from "./spinner";
 type Props = {
   theme: string;
   style: InvitationData["style"];
-  pkg: string | null;
+  // Alasan gaya tidak bisa diubah karena tidak termasuk paket.
+  locked?: string;
   applying: string | null;
   onChange: (style: InvitationData["style"]) => void;
 };
@@ -32,7 +33,7 @@ function Swatch({ vars, keys }: { vars: Vars; keys: string[] }) {
 }
 
 // Panel gaya: pilih palet jadi tema, buat palet kustom dari tiga warna dasar dengan cek kontras, dan pilih pasangan font.
-export function StylePanel({ theme, style, pkg, applying, onChange }: Props) {
+export function StylePanel({ theme, style, locked, applying, onChange }: Props) {
   const p = PALETTES[theme];
   const [open, setOpen] = useState(false);
   if (!p) return null;
@@ -67,130 +68,136 @@ export function StylePanel({ theme, style, pkg, applying, onChange }: Props) {
 
       {open && (
         <div className="border-t border-line p-4">
-          {pkg === "dasar" && changed && (
-            <p className="mb-4 rounded-sm bg-amber-50 px-3 py-2 text-[13px] text-amber-900 ring-1 ring-amber-200">
-              Paket Dasar. Ganti palet atau font termasuk add-on &ldquo;Ganti font atau palet warna&rdquo;, pastikan sudah dibayar.
+          {locked && (
+            <p className={`mb-4 rounded-sm px-3 py-2 text-[13px] ${changed ? "bg-blush/60 text-wine ring-1 ring-wine/40" : "bg-ivory text-ink-mute ring-1 ring-line"}`}>
+              {locked}
+              {changed && " Gaya yang sudah diubah perlu dikembalikan ke bawaan sebelum simpan final."}
             </p>
           )}
 
-          <p className="text-[13px] text-ink-mute">Palet jadi</p>
-          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {p.presets.map((x, i) => {
-              const on = !custom && x.id === current;
-              const busy = applying !== null && (applying === x.id || (i === 0 && applying === "bawaan"));
-              return (
-                <button
-                  key={x.id}
-                  type="button"
-                  onClick={() => pick(x.id)}
-                  aria-pressed={on}
-                  aria-busy={busy || undefined}
-                  className={`relative rounded-sm border p-2 text-left transition-colors duration-150 ${on ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
-                >
-                  <Swatch vars={x.vars} keys={p.swatch} />
-                  {busy && (
-                    <span className="absolute inset-x-2 top-2 flex h-7 items-center justify-center rounded-sm bg-white/70">
-                      <Spinner className="size-4 text-ink" />
+          {!locked && (
+            <>
+            <p className="text-[13px] text-ink-mute">Palet jadi</p>
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {p.presets.map((x, i) => {
+                const on = !custom && x.id === current;
+                const busy = applying !== null && (applying === x.id || (i === 0 && applying === "bawaan"));
+                return (
+                  <button
+                    key={x.id}
+                    type="button"
+                    onClick={() => pick(x.id)}
+                    aria-pressed={on}
+                    aria-busy={busy || undefined}
+                    className={`relative rounded-sm border p-2 text-left transition-colors duration-150 ${on ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
+                  >
+                    <Swatch vars={x.vars} keys={p.swatch} />
+                    {busy && (
+                      <span className="absolute inset-x-2 top-2 flex h-7 items-center justify-center rounded-sm bg-white/70">
+                        <Spinner className="size-4 text-ink" />
+                      </span>
+                    )}
+                    <span className="mt-1.5 block text-[13px]">
+                      {x.name}
+                      {i === 0 && <span className="text-ink-mute"> (bawaan)</span>}
                     </span>
-                  )}
-                  <span className="mt-1.5 block text-[13px]">
-                    {x.name}
-                    {i === 0 && <span className="text-ink-mute"> (bawaan)</span>}
-                  </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <p className="text-[13px] text-ink-mute">Palet kustom</p>
+              {!custom && (
+                <button type="button" onClick={startCustom} className="rounded-sm border border-ink px-3 py-1.5 text-[13px]">
+                  Buat dari palet ini
                 </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-5 flex items-center justify-between gap-3">
-            <p className="text-[13px] text-ink-mute">Palet kustom</p>
-            {!custom && (
-              <button type="button" onClick={startCustom} className="rounded-sm border border-ink px-3 py-1.5 text-[13px]">
-                Buat dari palet ini
-              </button>
-            )}
-          </div>
-
-          {custom && (
-            <>
-              <div className="mt-2 grid gap-3 sm:grid-cols-3">
-                {BASE_FIELDS.map((f) => {
-                  const v = style.custom[f.key];
-                  return (
-                    <label key={f.key} className="block text-[13px]">
-                      {f.label}
-                      <span className="mt-1 flex items-center gap-2 rounded-sm border border-line px-2 py-1.5 focus-within:border-wine">
-                        <input type="color" value={isHex(v) ? v : "#000000"} onChange={(e) => setBase(f.key, e.target.value)} className="size-7 shrink-0 cursor-pointer border-0 bg-transparent p-0" aria-label={`Pilih warna ${f.label.toLowerCase()}`} />
-                        <input
-                          value={v}
-                          onChange={(e) => setBase(f.key, e.target.value.startsWith("#") ? e.target.value : `#${e.target.value}`)}
-                          maxLength={7}
-                          spellCheck={false}
-                          className={`w-full bg-transparent font-mono text-[13px] outline-none ${isHex(v) ? "" : "text-wine"}`}
-                        />
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-              <p className="mt-2 text-[12px] text-ink-mute">Warna lain (latar kedua, bagian gelap, garis, emas) diturunkan otomatis dari ketiganya.</p>
-
-              <ul className="mt-3 grid gap-1.5">
-                {p.checks.map((c) => {
-                  const fg = active[c.fg];
-                  const bg = active[c.bg];
-                  const ratio = fg && bg ? contrast(fg, bg) : 0;
-                  const ok = ratio >= MIN_CONTRAST;
-                  return (
-                    <li key={c.label} className="flex items-center gap-3 text-[13px]">
-                      <span className="flex h-7 w-16 shrink-0 items-center justify-center rounded-sm text-[13px] ring-1 ring-black/10" style={{ background: bg, color: fg }}>
-                        Aa
-                      </span>
-                      <span className="flex-1">{c.label}</span>
-                      <span className={`tabular-nums ${ok ? "text-emerald-700" : "text-wine"}`}>
-                        {ratio.toFixed(1)} {ok ? "lolos" : "kurang"}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-              {p.checks.some((c) => contrast(active[c.fg], active[c.bg]) < MIN_CONTRAST) && (
-                <p className="mt-2 text-[12px] text-wine">Ada pasangan yang kontrasnya di bawah {MIN_CONTRAST}. Teksnya bisa sulit dibaca, coba gelapkan warna teks atau terangkan latar.</p>
               )}
-            </>
-          )}
+            </div>
 
-          {fonts.length > 0 && (
-            <>
-              <p className="mt-6 text-[13px] text-ink-mute">Pasangan font (judul dan isi)</p>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {fonts.map((f, i) => {
-                  const on = f.id === (font?.id ?? "");
-                  const busy = applying === `font:${f.id || "bawaan"}`;
-                  return (
-                    <button
-                      key={f.id || "bawaan"}
-                      type="button"
-                      onClick={() => onChange({ ...style, font: f.id })}
-                      aria-pressed={on}
-                      aria-busy={busy || undefined}
-                      className={`relative rounded-sm border px-3 py-2.5 text-left transition-colors duration-150 ${on ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
-                    >
-                      <span className="block truncate text-[26px] leading-tight" style={{ fontFamily: fontStack(f.display, "display") }}>
-                        Dua hati, <i>satu cerita</i>
-                      </span>
-                      <span className="mt-0.5 block text-[14px] text-ink-soft" style={{ fontFamily: fontStack(f.body, "body") }}>
-                        Teks isi undangan, tanggal, dan alamat acara.
-                      </span>
-                      <span className="mt-1.5 flex items-center gap-2 text-[12px] text-ink-mute">
-                        {busy && <Spinner className="size-3.5 text-wine" />}
-                        {f.name}
-                        {i === 0 && " (bawaan)"}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+            {custom && (
+              <>
+                <div className="mt-2 grid gap-3 sm:grid-cols-3">
+                  {BASE_FIELDS.map((f) => {
+                    const v = style.custom[f.key];
+                    return (
+                      <label key={f.key} className="block text-[13px]">
+                        {f.label}
+                        <span className="mt-1 flex items-center gap-2 rounded-sm border border-line px-2 py-1.5 focus-within:border-wine">
+                          <input type="color" value={isHex(v) ? v : "#000000"} onChange={(e) => setBase(f.key, e.target.value)} className="size-7 shrink-0 cursor-pointer border-0 bg-transparent p-0" aria-label={`Pilih warna ${f.label.toLowerCase()}`} />
+                          <input
+                            value={v}
+                            onChange={(e) => setBase(f.key, e.target.value.startsWith("#") ? e.target.value : `#${e.target.value}`)}
+                            maxLength={7}
+                            spellCheck={false}
+                            className={`w-full bg-transparent font-mono text-[13px] outline-none ${isHex(v) ? "" : "text-wine"}`}
+                          />
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-[12px] text-ink-mute">Warna lain (latar kedua, bagian gelap, garis, emas) diturunkan otomatis dari ketiganya.</p>
+
+                <ul className="mt-3 grid gap-1.5">
+                  {p.checks.map((c) => {
+                    const fg = active[c.fg];
+                    const bg = active[c.bg];
+                    const ratio = fg && bg ? contrast(fg, bg) : 0;
+                    const ok = ratio >= MIN_CONTRAST;
+                    return (
+                      <li key={c.label} className="flex items-center gap-3 text-[13px]">
+                        <span className="flex h-7 w-16 shrink-0 items-center justify-center rounded-sm text-[13px] ring-1 ring-black/10" style={{ background: bg, color: fg }}>
+                          Aa
+                        </span>
+                        <span className="flex-1">{c.label}</span>
+                        <span className={`tabular-nums ${ok ? "text-emerald-700" : "text-wine"}`}>
+                          {ratio.toFixed(1)} {ok ? "lolos" : "kurang"}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {p.checks.some((c) => contrast(active[c.fg], active[c.bg]) < MIN_CONTRAST) && (
+                  <p className="mt-2 text-[12px] text-wine">Ada pasangan yang kontrasnya di bawah {MIN_CONTRAST}. Teksnya bisa sulit dibaca, coba gelapkan warna teks atau terangkan latar.</p>
+                )}
+              </>
+            )}
+
+            {fonts.length > 0 && (
+              <>
+                <p className="mt-6 text-[13px] text-ink-mute">Pasangan font (judul dan isi)</p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {fonts.map((f, i) => {
+                    const on = f.id === (font?.id ?? "");
+                    const busy = applying === `font:${f.id || "bawaan"}`;
+                    return (
+                      <button
+                        key={f.id || "bawaan"}
+                        type="button"
+                        onClick={() => onChange({ ...style, font: f.id })}
+                        aria-pressed={on}
+                        aria-busy={busy || undefined}
+                        className={`relative rounded-sm border px-3 py-2.5 text-left transition-colors duration-150 ${on ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
+                      >
+                        <span className="block truncate text-[26px] leading-tight" style={{ fontFamily: fontStack(f.display, "display") }}>
+                          Dua hati, <i>satu cerita</i>
+                        </span>
+                        <span className="mt-0.5 block text-[14px] text-ink-soft" style={{ fontFamily: fontStack(f.body, "body") }}>
+                          Teks isi undangan, tanggal, dan alamat acara.
+                        </span>
+                        <span className="mt-1.5 flex items-center gap-2 text-[12px] text-ink-mute">
+                          {busy && <Spinner className="size-3.5 text-wine" />}
+                          {f.name}
+                          {i === 0 && " (bawaan)"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
             </>
           )}
 

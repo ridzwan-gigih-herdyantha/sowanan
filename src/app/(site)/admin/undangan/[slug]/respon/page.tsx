@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
+import { invitationRules } from "@/lib/invitation/rules";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { invitationLabel, THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../../../login-form";
@@ -25,6 +26,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const { data: row } = await sb.from("invitations").select("id, slug, theme").eq("slug", slug).maybeSingle();
   if (!row || !THEME_NAMES[row.theme]) notFound();
 
+  const exportLock = (await invitationRules(slug))?.rules.locked.ekspor_excel;
   const [rsvps, wishes, guests] = await Promise.all([
     sb.from("rsvps").select("id, name, attending, guests, created_at").eq("invitation_id", row.id).order("created_at", { ascending: false }).limit(5000),
     sb.from("wishes").select("id, name, message, created_at").eq("invitation_id", row.id).order("created_at", { ascending: false }).limit(5000),
@@ -42,7 +44,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         </div>
         <InvitationTabs slug={slug} current="respon" />
       </div>
-      <Responses slug={slug} rsvps={rsvps.data ?? []} wishes={wishes.data ?? []} guestNames={(guests.data ?? []).map((g) => g.name)} />
+      <Responses slug={slug} exportLock={exportLock} rsvps={rsvps.data ?? []} wishes={wishes.data ?? []} guestNames={(guests.data ?? []).map((g) => g.name)} />
     </>
   );
 }

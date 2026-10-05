@@ -1,16 +1,23 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createInvitation, type CreateState } from "./actions";
 
-const input = "mt-2 block w-full rounded-sm border bg-white px-3 py-2.5 text-base font-normal outline-none focus:border-wine";
+const input = "mt-2 block w-full rounded-sm border bg-white px-3 py-2.5 text-base font-normal outline-none focus:border-wine disabled:bg-ivory disabled:text-ink-mute";
 
-export function CreateForm({ themes }: { themes: { key: string; name: string }[] }) {
+type Theme = { key: string; name: string; packages: string[] };
+
+// Paket dipilih dulu, lalu daftar tema hanya berisi tema yang tersedia di paket itu.
+export function CreateForm({ packages, themes }: { packages: { id: string; name: string }[]; themes: Theme[] }) {
   const [state, action, pending] = useActionState<CreateState, FormData>(createInvitation, {});
+  const [pkg, setPkg] = useState("");
+  const [theme, setTheme] = useState("");
+  const available = themes.filter((t) => t.packages.includes(pkg));
+  const chosen = available.some((t) => t.key === theme) ? theme : (available[0]?.key ?? "");
 
   return (
-    <form action={action} className="grid gap-4 rounded-sm border border-line bg-white p-4 sm:grid-cols-[minmax(0,1fr)_200px_auto] sm:items-end">
-      <label className="block text-[14px] font-medium">
+    <form action={action} className="grid gap-4 rounded-sm border border-line bg-white p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_170px_200px_auto] lg:items-end">
+      <label className="block text-[14px] font-medium sm:col-span-2 lg:col-span-1">
         Link undangan
         <span className={`mt-2 flex overflow-hidden rounded-sm border bg-white focus-within:border-wine ${state.error ? "border-wine" : "border-line"}`}>
           <span className="flex items-center bg-blush px-3 text-[14px] font-normal text-ink-mute">sowanan.com/</span>
@@ -27,20 +34,41 @@ export function CreateForm({ themes }: { themes: { key: string; name: string }[]
         </span>
       </label>
       <label className="block text-[14px] font-medium">
+        Paket
+        <select name="package" required value={pkg} onChange={(e) => setPkg(e.target.value)} className={`${input} ${pkg ? "border-line" : "border-dashed border-ink-mute text-ink-mute"}`}>
+          <option value="" disabled>
+            Pilih paket
+          </option>
+          {packages.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="block text-[14px] font-medium">
         Tema
-        <select name="theme" required className={`${input} border-line`}>
-          {themes.map((t) => (
+        <select name="theme" required disabled={!pkg} value={chosen} onChange={(e) => setTheme(e.target.value)} className={`${input} border-line`}>
+          {!pkg && <option value="">Pilih paket dulu</option>}
+          {available.map((t) => (
             <option key={t.key} value={t.key}>
               {t.name}
             </option>
           ))}
         </select>
       </label>
-      <button type="submit" disabled={pending} className="rounded-sm bg-wine px-5 py-3 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-60">
+      <button
+        type="submit"
+        disabled={pending || !pkg || !chosen}
+        className="rounded-sm bg-wine px-5 py-3 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-60 sm:col-span-2 lg:col-span-1"
+      >
         {pending ? "Membuat..." : "Buat undangan"}
       </button>
-      {state.error && <p className="text-[13px] text-wine sm:col-span-3">{state.error}</p>}
-      <p className="text-[13px] text-ink-mute sm:col-span-3">Huruf kecil, angka, dan tanda hubung. Link tidak bisa diganti setelah disebar ke tamu.</p>
+      {state.error && <p className="text-[13px] text-wine sm:col-span-2 lg:col-span-4">{state.error}</p>}
+      <p className="text-[13px] text-ink-mute sm:col-span-2 lg:col-span-4">
+        Huruf kecil, angka, dan tanda hubung. Link tidak bisa diganti setelah disebar ke tamu.
+        {/* {pkg && ` Paket ini bisa memakai ${available.length} dari ${themes.length} tema. Isian undangan menyesuaikan batas paketnya.`} */}
+      </p>
     </form>
   );
 }

@@ -48,18 +48,35 @@ export function fromLegacy(d: Legacy): Settings {
   return s;
 }
 
+// Kunci sistem yang ditambahkan belakangan diberikan ke baris bawaan yang belum punya kunci,
+// supaya pengaturan lama langsung ikut aturan paket tanpa diatur ulang. Isian admin tidak ditimpa.
+export function withSystemKeys(s: Settings): Settings {
+  const used = new Set(s.matrix.map((r) => r.key).filter(Boolean));
+  const matrix = s.matrix.map((r) => {
+    const def = DEFAULT_SETTINGS.matrix.find((x) => x.id === r.id);
+    if (r.key || !def?.key || used.has(def.key) || def.kind !== r.kind) return r;
+    used.add(def.key);
+    return { ...r, key: def.key };
+  });
+  const addons = s.addons.map((a) => {
+    const def = DEFAULT_SETTINGS.addons.find((x) => x.id === a.id);
+    return a.unlock || !def?.unlock ? a : { ...a, unlock: def.unlock, amount: def.amount };
+  });
+  return { ...s, matrix, addons };
+}
+
 // Bagian yang tidak lolos validasi diganti nilai bawaan, supaya satu isian rusak tidak menjatuhkan seluruh halaman.
 export function normalizeSettings(raw: unknown): Settings {
   if (!raw || typeof raw !== "object") return DEFAULT_SETTINGS;
   const d = raw as Legacy;
   if (d.version !== 2) return fromLegacy(d);
   const whole = settingsSchema.safeParse(d);
-  if (whole.success) return whole.data;
+  if (whole.success) return withSystemKeys(whole.data);
   const s: Record<string, unknown> = { ...DEFAULT_SETTINGS };
   for (const [key, schema] of Object.entries(settingsSchema.shape)) {
     const part = schema.safeParse(d[key]);
     if (part.success) s[key] = part.data;
   }
   const merged = settingsSchema.safeParse(s);
-  return merged.success ? merged.data : DEFAULT_SETTINGS;
+  return merged.success ? withSystemKeys(merged.data) : DEFAULT_SETTINGS;
 }

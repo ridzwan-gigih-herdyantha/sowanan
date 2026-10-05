@@ -6,7 +6,7 @@ import { deleteResponse } from "./actions";
 
 type Rsvp = { id: number; name: string; attending: boolean; guests: number; created_at: string };
 type Wish = { id: number; name: string; message: string; created_at: string };
-type Props = { slug: string; rsvps: Rsvp[]; wishes: Wish[]; guestNames: string[] };
+type Props = { slug: string; rsvps: Rsvp[]; wishes: Wish[]; guestNames: string[]; exportLock?: string };
 
 const PAGE = 50;
 const field = "block w-full rounded-sm border border-line bg-white px-3 py-2.5 text-base outline-none focus:border-wine";
@@ -28,7 +28,7 @@ function Stat({ label, value, note }: { label: string; value: number | string; n
   );
 }
 
-export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, guestNames }: Props) {
+export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, guestNames, exportLock }: Props) {
   const [rsvps, setRsvps] = useState(initialRsvps);
   const [wishes, setWishes] = useState(initialWishes);
   const [tab, setTab] = useState<"rsvp" | "wish">("rsvp");
@@ -148,7 +148,8 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
             ))}
           </div>
         )}
-        {list.length > 0 && (
+        {list.length > 0 && exportLock && <span className="max-w-xs text-[12px] text-ink-mute">{exportLock}</span>}
+        {list.length > 0 && !exportLock && (
           <button type="button" onClick={exportXlsx} className="text-[14px] text-wine underline underline-offset-4">
             Unduh Excel
           </button>

@@ -5,7 +5,17 @@ import { cacheLife, cacheTag } from "next/cache";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { invitationDataSchema, type InvitationData } from "./schema";
 
-export type InvitationRecord = { id: string | null; slug: string; theme: string; published: boolean; paid: boolean; data: InvitationData };
+export type InvitationRecord = {
+  id: string | null;
+  slug: string;
+  theme: string;
+  published: boolean;
+  paid: boolean;
+  data: InvitationData;
+  // Paket dan add-on yang dibayar. Undangan contoh tidak berpaket, jadi semua fitur aktif.
+  pkg?: string | null;
+  addons?: Record<string, number>;
+};
 
 export const invitationTag = (slug: string) => `invitation-${slug}`;
 export const INVITATIONS_TAG = "invitations";
@@ -45,7 +55,16 @@ export async function getInvitation(slug: string): Promise<InvitationRecord | nu
 
   cacheLife("max");
   // Kalau kolom payment_status belum ada (migrasi 0005 belum jalan), anggap lunas supaya halaman tidak rusak.
-  return { id: data.id, slug: data.slug, theme: data.theme, published: data.published, paid: data.payment_status !== "belum_lunas", data: parsed.data };
+  return {
+    id: data.id,
+    slug: data.slug,
+    theme: data.theme,
+    published: data.published,
+    paid: data.payment_status !== "belum_lunas",
+    data: parsed.data,
+    pkg: data.package ?? null,
+    addons: data.addons ?? {},
+  };
 }
 
 export async function listPublishedSlugs(): Promise<string[]> {

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { DEFAULT_GUEST_MESSAGE, MAX_GUESTS } from "@/lib/guests";
+import { invitationRules } from "@/lib/invitation/rules";
 import { invitationDataSchema } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
@@ -27,6 +28,24 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const sb = supabaseAdmin();
   const { data: row } = await sb.from("invitations").select("id, slug, theme, published, data, draft, guest_message").eq("slug", slug).maybeSingle();
   if (!row || !THEME_NAMES[row.theme]) notFound();
+
+  const lock = (await invitationRules(slug))?.rules.locked.nama_tamu;
+  if (lock) {
+    return (
+      <>
+        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
+          <div className="min-w-0">
+            <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine">
+              Semua undangan
+            </Link>
+            <h1 className="truncate font-serif text-3xl leading-tight">{invitationLabel(row.slug, row.theme)}</h1>
+          </div>
+          <InvitationTabs slug={slug} current="tamu" />
+        </div>
+        <p className="mt-5 rounded-sm bg-blush px-4 py-3 text-[14px]">{lock}</p>
+      </>
+    );
+  }
 
   const { data: guests, error } = await sb
     .from("guests")

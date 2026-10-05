@@ -1,4 +1,4 @@
-import { PACKAGE_IDS, PACKAGE_NAMES, type MatrixRow, type PackageId, type Settings, type ThemeTier } from "./schema";
+import { FEATURE_KEYS, PACKAGE_IDS, PACKAGE_NAMES, type FeatureKey, type MatrixRow, type PackageId, type Settings, type ThemeTier } from "./schema";
 
 export function formatRupiah(value: number): string {
   return "Rp" + value.toLocaleString("id-ID");
@@ -105,6 +105,11 @@ export const resolveHref = (href: string, waHref: string) => href || waHref;
 const TIER_RANK: Record<ThemeTier, number> = { semua: 0, lengkap: 1, istimewa: 2 };
 export const themeAllowed = (tier: ThemeTier, p: PackageId) => PACKAGE_IDS.indexOf(p) >= TIER_RANK[tier];
 
+// Tema dibatasi per paket hanya kalau isi paket punya baris jumlah_tema, sama seperti kunci lain:
+// baris dihapus berarti tidak dibatasi, dan kolom Tersedia di paket di tab Tema tidak dipakai.
+export const themesLimited = (s: Pick<Settings, "matrix">) => s.matrix.some((r) => r.key === "jumlah_tema");
+export const themeAvailable = (s: Pick<Settings, "matrix">, tier: ThemeTier, p: PackageId) => !themesLimited(s) || themeAllowed(tier, p);
+
 export function themeCount(s: Settings, p: PackageId) {
   const active = s.themes.filter((t) => t.on);
   return { n: active.filter((t) => themeAllowed(t.tier, p)).length, total: active.length };
@@ -122,11 +127,39 @@ export function cellView(s: Settings, row: MatrixRow, p: PackageId): { on: boole
   return { on: true, note: row.key === "galeri_foto" ? `${c.n} foto` : String(c.n) };
 }
 
-// Batas foto galeri untuk paket. undefined berarti paket belum dipilih atau baris tidak ada.
-export function galleryLimit(s: Settings, p: string | null): number | null | undefined {
-  if (!p || !(PACKAGE_IDS as readonly string[]).includes(p)) return undefined;
-  const row = s.matrix.find((r) => r.key === "galeri_foto");
-  if (!row) return undefined;
-  const c = row.cells[p as PackageId];
-  return c.on ? c.n : 0;
+// Add-on yang sudah dibayar per undangan: jumlah unit per id add-on.
+export type Purchased = Record<string, number>;
+
+export type PackageRules = {
+  pkg: PackageId | null;
+  // Tidak ada berarti jumlah foto tidak dibatasi paket.
+  photos?: { max: number; note: string };
+  // Fitur yang terkunci beserta alasannya.
+  locked: Partial<Record<FeatureKey, string>>;
+};
+
+// Aturan isi undangan dari paket ditambah add-on yang sudah dibayar. Paket belum dipilih berarti tanpa batasan.
+export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string | null, bought: Purchased = {}): PackageRules {
+  if (!pkg || !(PACKAGE_IDS as readonly string[]).includes(pkg)) return { pkg: null, locked: {} };
+  const p = pkg as PackageId;
+  const name = PACKAGE_NAMES[p];
+  const units = (id: string) => Math.max(0, Math.floor(bought[id] ?? 0));
+  const unlocking = (key: string) => s.addons.filter((a) => a.unlock === key);
+
+  const locked: PackageRules["locked"] = {};
+  for (const key of FEATURE_KEYS) {
+    const row = s.matrix.find((r) => r.key === key);
+    if (!row || row.cells[p].on || unlocking(key).some((a) => units(a.id) > 0)) continue;
+    const addon = unlocking(key)[0];
+    locked[key] = `Paket ${name} tidak termasuk ${row.label.toLowerCase()}.${addon ? ` Centang add-on ${addon.name} setelah dibayar.` : " Ganti ke paket yang menyediakannya."}`;
+  }
+
+  let photos: PackageRules["photos"];
+  const g = s.matrix.find((r) => r.key === "galeri_foto");
+  const base = g ? (g.cells[p].on ? g.cells[p].n : 0) : null;
+  if (base !== null) {
+    const extra = unlocking("galeri_foto").reduce((n, a) => n + units(a.id) * a.amount, 0);
+    photos = { max: base + extra, note: `Paket ${name} maksimal ${base} foto${extra ? `, ditambah ${extra} dari add-on` : ""}` };
+  }
+  return { pkg: p, photos, locked };
 }

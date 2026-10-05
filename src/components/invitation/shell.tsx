@@ -12,6 +12,12 @@ type GuestCtx = { guest: string; setGuest: (name: string) => void };
 const GuestContext = createContext<GuestCtx>({ guest: "", setGuest: () => {} });
 export const useGuest = () => useContext(GuestContext);
 
+// Nama tamu dari tautan (?to=) hanya dipakai kalau paket undangan menyertakannya.
+const GuestNamesContext = createContext(true);
+export function GuestNames({ allowed, children }: { allowed: boolean; children: ReactNode }) {
+  return <GuestNamesContext.Provider value={allowed}>{children}</GuestNamesContext.Provider>;
+}
+
 const noop = () => () => {};
 function readGuestParam() {
   const to = new URLSearchParams(window.location.search).get("to");
@@ -66,7 +72,8 @@ const arrow = (
 );
 
 export function InvitationShell({ door, music, synth, className, style, children }: Props) {
-  const invited = useSyncExternalStore(noop, readGuestParam, () => "");
+  const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
+  const invited = useContext(GuestNamesContext) ? fromLink : "";
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [playing, setPlaying] = useState(false);

@@ -17,6 +17,8 @@ type Ctx = {
   names: string;
   // Batas jumlah item per daftar dari paket undangan, misalnya galeri foto.
   limits?: Record<string, { max: number; note: string }>;
+  // Isian yang tidak termasuk paket, beserta alasannya.
+  locks?: Record<string, string>;
 };
 
 const FormCtx = createContext<Ctx | null>(null);
@@ -260,10 +262,30 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
 }
 
 export function FieldInput({ f, path }: { f: Field; path: string }) {
-  const { data, update, errors } = useForm();
+  const { data, update, errors, locks } = useForm();
   const err = errors[path];
   const value = getIn(data, path);
   const set = (v: unknown) => update((d) => setIn(d, path, v));
+
+  const lock = locks?.[path];
+  if (lock) {
+    return (
+      <div id={`f-${path}`} className="sm:col-span-2">
+        <p className="text-[14px] font-medium">{f.label}</p>
+        <div className={`mt-2 rounded-sm border px-3 py-2.5 text-[13px] ${value ? "border-wine bg-blush/60 text-wine" : "border-line bg-ivory text-ink-mute"}`}>
+          {lock}
+          {Boolean(value) && (
+            <>
+              {" "}Isian yang sudah ada tidak akan dipakai.{" "}
+              <button type="button" onClick={() => set("")} className="underline underline-offset-4">
+                Hapus
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   switch (f.kind) {
     case "heading":

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
+import { getSettings, PACKAGE_IDS, PACKAGE_NAMES, themeAvailable, visiblePackages } from "@/lib/settings";
 import { THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../login-form";
 import { AdminFrame } from "../frame";
@@ -59,13 +60,19 @@ async function List() {
       break;
     }
   }
-  const themes = Object.entries(THEME_NAMES).map(([key, name]) => ({ key, name }));
+  // Tema mengikuti kolom Tersedia di paket pada pengaturan, sama dengan validasi di server.
+  const settings = await getSettings();
+  const packages = visiblePackages(settings).map((id) => ({ id, name: PACKAGE_NAMES[id] }));
+  const themes = Object.entries(THEME_NAMES).map(([key, name]) => {
+    const entry = settings.themes.find((t) => t.slug === key);
+    return { key, name: entry?.name ?? name, packages: PACKAGE_IDS.filter((p) => !entry || themeAvailable(settings, entry.tier, p)) };
+  });
   const couple = (r: Row) => [r.rg || r.dg, r.rb || r.db].filter(Boolean).join(" & ") || "Belum diisi";
   const unpaid = rows.filter((r) => r.payment_status === "belum_lunas").length;
 
   return (
     <AdminFrame email={admin.email ?? ""} current="/admin/undangan" title="Undangan">
-      <CreateForm themes={themes} />
+      <CreateForm packages={packages} themes={themes} />
 
       <div className="mt-10 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-serif text-2xl">Daftar undangan</h2>

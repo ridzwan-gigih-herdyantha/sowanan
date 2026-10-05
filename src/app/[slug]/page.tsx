@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { getInvitation, listPublishedSlugs } from "@/lib/invitation/load";
 import { toView } from "@/lib/invitation/view";
+import { GuestNames } from "@/components/invitation/shell";
 import { Watermark } from "@/components/invitation/watermark";
+import { getSettings, packageRules } from "@/lib/settings";
 import { THEMES } from "@/themes";
 
 export async function generateStaticParams() {
@@ -13,7 +15,8 @@ export async function generateStaticParams() {
 async function load(slug: string) {
   const inv = await getInvitation(slug);
   if (!inv || !inv.published || !THEMES[inv.theme]) return null;
-  return { theme: THEMES[inv.theme], paid: inv.paid, view: toView(inv.slug, inv.data, inv.theme) };
+  const rules = packageRules(await getSettings(), inv.pkg ?? null, inv.addons);
+  return { theme: THEMES[inv.theme], paid: inv.paid, guestNames: !rules.locked.nama_tamu, view: toView(inv.slug, inv.data, inv.theme) };
 }
 
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {
@@ -45,7 +48,9 @@ export default async function InvitationPage({ params }: PageProps<"/[slug]">) {
   const { Component } = found.theme;
   return (
     <>
-      <Component inv={found.view} />
+      <GuestNames allowed={found.guestNames}>
+        <Component inv={found.view} />
+      </GuestNames>
       {!found.paid && <Watermark />}
     </>
   );

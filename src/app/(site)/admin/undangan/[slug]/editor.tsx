@@ -3,15 +3,30 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
+import { packageIssues } from "@/lib/invitation/package-check";
 import { checkInvitation, fieldPatterns, forTheme, GROUPS, patternOf, setIn, type Issue } from "@/lib/invitation/spec";
+import type { Settings } from "@/lib/settings/schema";
+import { packageRules, type Purchased } from "@/lib/settings/text";
 import type { BridgeMessage } from "@/app/admin/pratinjau/[slug]/bridge";
 import { publishDraft, saveDraft, setPublished } from "../actions";
 import { InvitationTabs } from "../tabs";
+import { AddonPanel } from "./addon-panel";
 import { FieldInput, FormProvider } from "./fields";
 import { Spinner } from "./spinner";
 import { StylePanel } from "./style-panel";
 
-type Props = { slug: string; theme: string; label: string; published: boolean; paid: boolean; pkg: string | null; draft: InvitationData; live: InvitationData; limits?: Record<string, { max: number; note: string }> };
+type Props = {
+  slug: string;
+  theme: string;
+  label: string;
+  published: boolean;
+  paid: boolean;
+  pkg: string | null;
+  draft: InvitationData;
+  live: InvitationData;
+  packageData: Pick<Settings, "matrix" | "addons">;
+  bought: Purchased;
+};
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
 const groupOf = (() => {
@@ -36,17 +51,17 @@ const groupOf = (() => {
   };
 })();
 
-function Switch({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
+function Switch({ on, onChange, label, disabled }: { on: boolean; onChange: (v: boolean) => void; label: string; disabled?: boolean }) {
   return (
-    <label className="inline-flex shrink-0 cursor-pointer items-center gap-2 text-[13px] text-ink-soft">
+    <label className={`inline-flex shrink-0 items-center gap-2 text-[13px] text-ink-soft ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}>
       <span className="hidden sm:inline">{on ? "Tampil" : "Disembunyikan"}</span>
-      <input type="checkbox" checked={on} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" aria-label={label} />
+      <input type="checkbox" checked={on} disabled={disabled} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" aria-label={label} />
       <span className="relative h-5 w-9 rounded-full bg-line transition-colors duration-150 peer-checked:bg-wine peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-wine after:absolute after:top-0.5 after:left-0.5 after:size-4 after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-150 peer-checked:after:translate-x-4" />
     </label>
   );
 }
 
-export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, limits }: Props) {
+export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, packageData, bought: initialBought }: Props) {
   const [data, setData] = useState(draft);
   const [saved, setSaved] = useState(() => JSON.stringify(live));
   const [published, setPub] = useState(initialPublished);
@@ -63,8 +78,13 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
   // Palet yang sedang diterapkan ke pratinjau. Hilang setelah pratinjau selesai dirender ulang.
   const [applying, setApplying] = useState<string | null>(null);
 
+  const [bought, setBought] = useState(initialBought);
+  const rules = useMemo(() => packageRules(packageData, pkg, bought), [packageData, pkg, bought]);
+  const limits = useMemo(() => (rules.photos ? { "sections.gallery.photos": rules.photos } : undefined), [rules]);
+  const locks = useMemo(() => (rules.locked.musik_sendiri ? { "media.music": rules.locked.musik_sendiri } : undefined), [rules]);
+
   const groups = useMemo(() => forTheme(GROUPS, theme), [theme]);
-  const issues = useMemo(() => checkInvitation(data, theme), [data, theme]);
+  const issues = useMemo(() => [...checkInvitation(data, theme), ...packageIssues(data, theme, rules)], [data, theme, rules]);
   const errors = useMemo(() => (showIssues ? Object.fromEntries(issues.map((i) => [i.path, i.message])) : {}), [issues, showIssues]);
   const dirty = JSON.stringify(data) !== saved;
   const names = [data.couple.groom.name, data.couple.bride.name].filter(Boolean).join(" dan ") || "mempelai";
@@ -100,6 +120,10 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
   }, [data, slug]);
 
   const jump = useCallback((path: string) => {
+    if (path === "style") {
+      document.getElementById("g-gaya")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     const g = groupOf(path);
     if (g) setOpen((s) => new Set(s).add(g));
     setFocus(path);
@@ -180,7 +204,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
   const count = (key: string) => (showIssues ? issues.filter((i) => i.group === key).length : 0);
 
   return (
-    <FormProvider value={{ slug, theme, data, update, errors, focus, names, limits }}>
+    <FormProvider value={{ slug, theme, data, update, errors, focus, names, limits, locks }}>
       <div className="-mx-5 border-b border-line bg-ivory/95 px-5 py-3 backdrop-blur lg:sticky lg:top-0 lg:z-30">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <div className="min-w-0 flex-1 basis-full lg:basis-0">
@@ -234,7 +258,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
                 {issues.slice(0, 8).map((i) => (
                   <li key={i.path + i.message}>
                     <button type="button" onClick={() => jump(i.path)} className="text-left underline-offset-4 hover:underline">
-                      {groups.find((g) => g.key === i.group)?.title}: {i.message}
+                      {groups.find((g) => g.key === i.group)?.title ?? "Gaya"}: {i.message}
                     </button>
                   </li>
                 ))}
@@ -243,10 +267,12 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
             </div>
           )}
 
+          <AddonPanel slug={slug} pkg={pkg} addons={packageData.addons} bought={bought} onChange={setBought} />
+
           <StylePanel
             theme={theme}
             style={data.style}
-            pkg={pkg}
+            locked={rules.locked.warna_tema}
             applying={applying}
             onChange={(style) => {
               if (JSON.stringify(style) === JSON.stringify(data.style)) return;
@@ -257,6 +283,8 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
 
           {groups.map((g) => {
             const enabled = g.section ? data.sections[g.section].enabled : true;
+            // Bagian yang tidak termasuk paket boleh dimatikan, tapi tidak bisa dinyalakan.
+            const lock = g.section === "story" ? rules.locked.cerita : undefined;
             const isOpen = open.has(g.key);
             const fields = forTheme(g.fields, theme);
             const n = count(g.key);
@@ -286,8 +314,14 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
                       </svg>
                     )}
                   </button>
-                  {g.section && <Switch on={enabled} onChange={(v) => setSection(g.section!, v)} label={`Tampilkan ${g.title}`} />}
+                  {g.section && <Switch on={enabled} disabled={Boolean(lock) && !enabled} onChange={(v) => setSection(g.section!, v)} label={`Tampilkan ${g.title}`} />}
                 </div>
+                {lock && (
+                  <p className={`border-t border-line px-4 py-2.5 text-[13px] ${enabled ? "bg-blush/60 text-wine" : "text-ink-mute"}`}>
+                    {lock}
+                    {enabled && " Matikan bagian ini sebelum simpan final."}
+                  </p>
+                )}
                 {isOpen && fields.length > 0 && (
                   <div className="border-t border-line p-4">
                     {enabled ? (
