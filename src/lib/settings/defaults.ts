@@ -27,79 +27,103 @@ Data yang dianggap lengkap meliputi nama kedua mempelai, nama orang tua, susunan
 `,
   ),
   article(
+    "harga",
+    "Paket dan harga",
+    `
+Kami menyediakan tiga paket.
+
+### Dasar (Rp49.000)
+
+Satu tema pilihan Anda dari katalog, ditampilkan apa adanya. Galeri hingga 3 foto. Musik latar bawaan tema. Peta lokasi, hitung mundur, RSVP, buku ucapan, amplop digital, dan penyebaran tanpa batas jumlah tamu.
+
+### Lengkap (Rp199.000)
+
+Seluruh isi paket Dasar, dengan warna tema disesuaikan palet acara Anda. Galeri hingga 15 foto. Musik latar pilihan sendiri, cerita perjalanan, dan nama tamu yang muncul di undangan.
+
+### Istimewa (Rp499.000)
+
+Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Pada paket ini Anda dapat meminta hingga 2 bagian tambahan yang belum ada di tema, atau meminta tema baru yang kami rancang khusus untuk Anda.
+
+Bagian tambahan yang dimaksud adalah bagian yang menampilkan isi, misalnya denah lokasi, susunan acara, profil keluarga, atau informasi akomodasi. Permintaan yang memerlukan sistem baru, misalnya pemilihan kursi, undian, atau metode pembayaran di luar yang kami sediakan, tidak termasuk dalam paket ini dan akan kami tawarkan sebagai pekerjaan tersendiri.
+
+Tema baru yang kami rancang untuk paket Istimewa dapat kami tambahkan ke katalog tema Sowanan setelah acara Anda selesai, dengan seluruh nama, foto, dan data acara Anda dihapus lebih dulu.
+
+Harga di atas berlaku sekali bayar. Tidak ada biaya bulanan dan tidak ada biaya perpanjangan.
+`,
+  ),
+  article(
     "bayar",
     "Pembayaran",
     `
-- Pembayaran melalui transfer bank atau QRIS ke rekening atas nama **{rekening_nama}**
-- DP sebesar {dp}% dari total pesanan dibayar di awal. Pengerjaan dimulai setelah DP diterima
-- Sisa pembayaran dilunasi setelah draf undangan Anda setujui
-- Pembayaran dianggap sah setelah bukti transfer dikirim ke WhatsApp yang sama
+Paket Dasar dibayar lunas di muka.
 
-> **Undangan yang belum lunas menampilkan tanda "SOWANAN.COM".**
->
-> Selama pelunasan belum diterima, undangan tetap bisa Anda buka dan periksa, tetapi menampilkan tanda melintang di layar sehingga belum layak disebar ke tamu. Tanda tersebut kami hapus segera setelah pelunasan diterima, pada jam layanan.
+Paket Lengkap dan Istimewa dibayar dengan uang muka {dp} persen, dan sisanya dilunasi sebelum undangan dilepas tanpa watermark.
+
+Pembayaran melalui transfer bank atau QRIS ke rekening yang kami sebutkan saat pemesanan. Pengerjaan dimulai setelah pembayaran yang disyaratkan kami terima.
 `,
   ),
   article(
     "waktu",
     "Waktu pengerjaan",
     `
-Waktu pengerjaan dihitung sejak kami mengabari Anda bahwa data sudah lengkap dan pengerjaan dimulai, bukan sejak pemesanan atau sejak DP diterima. Selama data masih kurang, hitungan belum berjalan.
+Waktu pengerjaan dihitung dalam hari kerja, terhitung setelah dua hal terpenuhi: data undangan yang lengkap kami terima, dan pembayaran yang disyaratkan masuk.
 
-- Hari kerja adalah Senin sampai Sabtu, di luar hari libur nasional
-- Bila antrean sedang penuh, kami memberitahukan perkiraan waktu yang lebih panjang sebelum Anda melunasi DP, bukan setelahnya
-- Pengerjaan kilat 24 jam tersedia sebagai tambahan dan memotong antrean
+Pesanan dikerjakan berurutan sesuai waktu masuk. Pesanan yang masuk setelah pukul 15.00 dihitung mulai hari kerja berikutnya.
+
+Jam kerja kami pukul 08.00 sampai 17.00, Senin sampai Sabtu. Hari Minggu dan hari libur nasional tidak dihitung sebagai hari kerja.
+
+Waktu pengerjaan per paket:
+
+- Dasar: 1 hari kerja
+- Lengkap: 2 sampai 3 hari kerja
+- Istimewa: 3 sampai 7 hari kerja
+
+Permintaan revisi setelah undangan kami kirim dikerjakan berurutan juga, dan tidak termasuk dalam waktu pengerjaan di atas.
 `,
   ),
   article(
     "revisi",
     "Revisi",
     `
-**Anda bebas mengajukan revisi** sampai undangan disebar, atau sampai 14 hari sejak draf pertama dikirim, mana yang lebih dahulu tercapai.
+**Dasar** mendapat 1 putaran revisi. Satu putaran berarti Anda mengumpulkan seluruh perubahan yang diinginkan dan mengirimkannya sekaligus. Revisi tambahan di luar itu dikenakan biaya yang kami sampaikan lebih dulu.
 
-### Satu revisi berarti satu kali kirim daftar perubahan
+**Lengkap** mendapat revisi bebas sampai undangan Anda sebar.
 
-Kumpulkan dulu seluruh perubahan yang Anda inginkan dalam satu daftar, lalu kirim sekaligus. Kami kerjakan seluruhnya dalam satu putaran. Cara ini membuat pengerjaan lebih cepat dibandingkan mengirim perubahan satu per satu.
+**Istimewa** mendapat revisi bebas sampai undangan Anda sebar, ditambah 2 putaran revisi atas rancangan desain. Pada paket ini kami mengirim satu konsep desain lebih dulu, dan Anda dapat memintanya diubah dua kali sebelum kami lanjutkan ke pengerjaan.
 
-### Yang termasuk revisi
+Penggantian tema dapat dilakukan sebelum pengerjaan dimulai. Setelah pengerjaan dimulai, penggantian tema dihitung sebagai revisi.
 
-- Perubahan teks: nama, gelar, susunan acara, waktu, alamat
-- Ganti atau tambah foto sesuai jumlah yang tersedia di paket
-- Ganti titik lokasi, nomor rekening, dan tautan
-- Penyesuaian warna, untuk paket yang menyediakannya
-
-### Yang tidak termasuk revisi
-
-- Ganti tema setelah draf disetujui. Ini dihitung sebagai pesanan baru
-- Perubahan tata letak, ukuran, dan susunan bagian dari tema
-- Penyuntingan foto seperti retouch, ganti latar, atau penggabungan gambar
-- Penambahan fitur yang tidak ada di paket Anda
-
-Revisi diterima dan dikerjakan pada jam layanan, setiap hari pukul {jam} WIB.
+Revisi mencakup perubahan isi dan tampilan dalam lingkup paket yang Anda beli. Permintaan yang keluar dari lingkup paket akan kami sampaikan sebagai penawaran terpisah, bukan ditolak begitu saja.
 `,
   ),
   article(
     "aktif",
-    "Masa aktif dan arsip",
+    "Arsip permanen",
     `
-Masa aktif adalah periode undangan Anda dapat diakses penuh oleh tamu, dihitung sejak tautan undangan kami serahkan kepada Anda. Lamanya mengikuti paket yang dipilih.
+Undangan Anda tidak memiliki masa aktif dan tidak akan kami hapus.
 
-Setelah masa aktif berakhir, undangan **tidak dihapus**. Undangan berubah menjadi arsip: halaman tetap bisa dibuka dan dibaca, sementara konfirmasi kehadiran dan buku ucapan ditutup. Data tamu yang sudah terkumpul tetap dapat Anda minta.
+Tiga puluh hari setelah tanggal acara, undangan berhenti menerima perubahan dan berubah menjadi arsip. Isinya tetap dapat dibuka siapa pun di alamat yang sama, selamanya, tanpa biaya tambahan.
 
-Masa aktif dapat diperpanjang kapan saja dengan biaya Rp 50.000 per tahun.
+Yang tetap ada pada arsip: nama mempelai, tanggal dan lokasi acara, peta, cerita, galeri foto, musik latar, dan ucapan yang sudah masuk.
 
-Ketentuan arsip ini berlaku selama layanan Sowanan beroperasi.
+Yang berhenti berfungsi pada arsip: panel ubah data, formulir RSVP, pengiriman ucapan baru, amplop digital, hitung mundur, dan tautan berisi nama tamu.
+
+Tujuh hari sebelum undangan menjadi arsip, kami mengirimkan pemberitahuan beserta salinan daftar tamu dan rekap ucapan dalam bentuk berkas yang dapat Anda simpan.
+
+Arsip permanen berlaku untuk undangan yang beralamat di sowanan.com. Undangan yang memakai domain milik Anda sendiri bergantung pada perpanjangan domain tersebut, yang berada di luar kendali kami.
+
+Kami dapat memindahkan arsip ke alamat baru selama isinya tetap dapat diakses, dan akan memberi tahu Anda lebih dulu apabila itu terjadi. Apabila suatu saat layanan Sowanan berhenti beroperasi, kami memberi pemberitahuan sekurang-kurangnya 90 hari sebelumnya agar Anda sempat mengunduh arsip Anda.
 `,
   ),
   article(
     "alamat",
     "Alamat undangan",
     `
-Setiap undangan memiliki alamat berupa sowanan.com diikuti nama yang Anda pilih, misalnya sowanan.com/andi-rina.
+Undangan Anda beralamat di sowanan.com diikuti nama yang Anda pilih, selama nama tersebut belum dipakai pemesan lain.
 
-> **Alamat undangan tidak dapat diubah setelah draf disetujui.** Setelah tautan tersebar ke tamu, mengubahnya berarti seluruh tautan lama tidak lagi berfungsi. Pastikan alamat sudah sesuai sebelum Anda menyetujui draf.
+Apabila Anda menambahkan domain sendiri, domain tersebut kami daftarkan atas nama Anda, bukan atas nama Sowanan. Harga add-on sudah termasuk biaya pendaftaran untuk satu tahun pertama beserta pemasangannya.
 
-Beberapa nama tidak dapat dipakai karena digunakan sistem kami. Bila nama pilihan Anda termasuk di dalamnya, kami akan menawarkan alternatif.
+Mulai tahun kedua, perpanjangan domain dilakukan langsung oleh Anda ke penyedia domain, dan biayanya mengikuti harga yang berlaku di sana. Apabila domain tidak diperpanjang, undangan Anda tetap dapat diakses di alamat sowanan.com seperti semula.
 `,
   ),
   article(
@@ -124,13 +148,15 @@ Bila di kemudian hari ada gugatan hak cipta atas lagu yang Anda kirim, kami akan
   ),
   article(
     "isi",
-    "Isi undangan",
+    "Isi undangan dan penggunaan sebagai contoh",
     `
-Seluruh isi undangan berasal dari data yang Anda kirimkan. Kebenaran nama, gelar, tanggal, waktu, dan alamat menjadi tanggung jawab Anda, termasuk kesalahan yang baru disadari setelah undangan disebar.
+Isi undangan sepenuhnya milik Anda. Anda bertanggung jawab atas kebenaran data acara dan atas hak pakai foto serta musik yang Anda kirimkan kepada kami.
 
-Dengan mengirimkan foto, Anda menyatakan berhak menggunakannya. Kami dapat menolak pesanan yang isinya melanggar hukum, mengandung penipuan, atau memakai identitas pihak lain tanpa izin.
+Kami dapat menampilkan undangan Anda sebagai contoh karya di sowanan.com dan di media sosial Sowanan, setelah acara Anda selesai, dengan dua ketentuan.
 
-Kami tidak menampilkan undangan klien sebagai contoh di halaman mana pun tanpa izin Anda.
+Pertama, buku ucapan dan daftar RSVP disembunyikan pada versi yang ditampilkan sebagai contoh, sehingga nama dan pesan dari tamu Anda tidak ikut dipublikasikan.
+
+Kedua, Anda dapat meminta undangan Anda dicabut dari halaman contoh kapan saja, dan kami akan mencabutnya tanpa menanyakan alasan. Pencabutan ini tidak memengaruhi arsip permanen Anda, yang tetap dapat diakses seperti biasa.
 `,
   ),
   article(
@@ -256,7 +282,7 @@ export const DEFAULT_SETTINGS: Settings = {
     },
   ],
   terms: {
-    date: "30 September 2026",
+    date: "5 Oktober 2026",
     title: "Syarat dan Ketentuan",
     intro:
       "Dokumen ini menjelaskan bagaimana layanan Sowanan bekerja: apa yang kami kerjakan, apa yang menjadi tanggung jawab Anda, dan apa yang terjadi bila ada perubahan. Dengan memesan undangan di Sowanan, Anda dianggap telah membaca dan menyetujui ketentuan di halaman ini.",
