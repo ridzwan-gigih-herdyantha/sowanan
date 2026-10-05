@@ -10,9 +10,6 @@ import { Themes } from "@/components/home/themes";
 import { plain } from "@/components/rich-text";
 import { fill, formatRupiah, generalWaLink, getSettings, highestPrice, lowestPrice, slaRange, textVars, type Settings } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
-import { getInvitation } from "@/lib/invitation/load";
-import { toView } from "@/lib/invitation/view";
-import type { HeroDemo } from "@/components/home/hero";
 import { RevealOnScroll } from "@/components/reveal-on-scroll";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -66,11 +63,6 @@ export default async function Home() {
   const s = await getSettings();
   const vars = textVars(s);
   const wa = generalWaLink(s);
-  const record = await getInvitation("andi-rina");
-  const view = record && toView(record.slug, record.data);
-  const demo: HeroDemo = view
-    ? { groom: view.groom.name, bride: view.bride.name, date: view.date, dateLong: view.dateLong }
-    : { groom: "Andi", bride: "Rina", date: "2026-12-12T08:00:00+07:00", dateLong: "Sabtu, 12 Desember 2026" };
 
   return (
     <>
@@ -80,7 +72,7 @@ export default async function Home() {
       />
       <SiteHeader settings={s} waHref={wa} />
       <main>
-        <Hero settings={s} vars={vars} waHref={wa} demo={demo} />
+        <Hero settings={s} vars={vars} waHref={wa} />
         <Themes settings={s} vars={vars} waHref={wa} />
         <Features settings={s} vars={vars} />
         <Pricing settings={s} vars={vars} />

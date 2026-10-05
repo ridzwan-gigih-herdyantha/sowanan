@@ -1,17 +1,20 @@
-import { Countdown } from "@/components/countdown";
 import { Inline, paragraphs } from "@/components/rich-text";
 import { Container, btn } from "@/components/ui";
 import { fill, resolveHref, type Settings } from "@/lib/settings";
+import { mediaUrl } from "@/lib/storage/media";
+import { HeroSlider } from "./hero-slider";
 
-export type HeroDemo = { groom: string; bride: string; date: string; dateLong: string };
+type Props = { settings: Settings; vars: Record<string, string>; waHref: string };
 
-type Props = { settings: Settings; vars: Record<string, string>; waHref: string; demo: HeroDemo };
-
-export function Hero({ settings, vars, waHref, demo }: Props) {
+export function Hero({ settings, vars, waHref }: Props) {
   const h = settings.hero;
+  // Slider memakai tema yang tampil di bagian Pilihan tema dan punya gambar sampul.
+  const slides = settings.themes
+    .filter((t) => t.on && t.image)
+    .map((t) => ({ name: t.name, style: t.style, image: mediaUrl(t.image), href: t.demo || waHref }));
   return (
     <section>
-      <Container className="flex flex-col items-stretch gap-11 pt-11 pb-10 sm:pt-16 sm:pb-14 md:flex-row md:items-center lg:gap-[72px] lg:pt-[84px] lg:pb-[76px]">
+      <Container className="flex flex-col items-stretch gap-11 pt-11 pb-10 sm:pt-16 sm:pb-14 md:flex-row md:items-center lg:gap-[144px] lg:pt-[clamp(36px,8svh,84px)] lg:pb-[clamp(36px,8svh,76px)]">
         <div className="flex-auto md:max-w-[560px]">
           {h.eyebrow && <p className="mb-[22px] text-[13px] tracking-[3px] text-wine uppercase">{fill(h.eyebrow, vars)}</p>}
           <h1 className="mb-6 font-serif text-[clamp(38px,6vw,64px)] leading-[1.06] font-medium">{fill(h.title, vars)}</h1>
@@ -33,31 +36,7 @@ export function Hero({ settings, vars, waHref, demo }: Props) {
           {h.note && <p className="mt-[26px] text-[15px] text-ink-mute">{fill(h.note, vars)}</p>}
         </div>
 
-        <div
-          aria-hidden="true"
-          className="mx-auto w-full max-w-[340px] flex-none rounded-[36px] bg-ink p-3 md:mx-0 md:w-[280px] lg:w-[320px]"
-        >
-          <div className="flex flex-col items-center gap-[18px] rounded-[26px] bg-blush px-7 py-11 text-center">
-            <p className="text-[11px] tracking-[3px] text-wine">THE WEDDING OF</p>
-            <p className="font-serif text-[46px] leading-[1.1]">
-              {demo.groom}
-              <br />
-              <span className="text-[26px] italic">&amp;</span>
-              <br />
-              {demo.bride}
-            </p>
-            <div className="h-px w-12 bg-wine-soft" />
-            <p className="text-[13px] tracking-[1px] text-ink-soft">{demo.dateLong}</p>
-            <Countdown
-              target={demo.date}
-              className="flex gap-2"
-              cellClassName="w-[52px] rounded-sm bg-ivory py-2.5 text-lg"
-            />
-            <div className="mt-1.5 rounded-sm bg-wine px-[26px] py-3 text-[13px] tracking-[1px] text-white">
-              Buka Undangan
-            </div>
-          </div>
-        </div>
+        <HeroSlider slides={slides} />
       </Container>
     </section>
   );
