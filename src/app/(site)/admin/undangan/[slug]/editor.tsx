@@ -63,7 +63,10 @@ function Switch({ on, onChange, label, disabled }: { on: boolean; onChange: (v: 
 }
 
 export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, packageData, bought: initialBought, dp }: Props) {
-  const [data, setData] = useState(draft);
+  // Bagian yang tidak termasuk paket langsung dimatikan, lalu draf tersimpan otomatis.
+  const [data, setData] = useState(() =>
+    packageRules(packageData, pkg, initialBought).locked.cerita && draft.sections.story.enabled ? setIn(draft, "sections.story.enabled", false) : draft,
+  );
   const [saved, setSaved] = useState(() => JSON.stringify(live));
   const [published, setPub] = useState(initialPublished);
   const [draftState, setDraftState] = useState<"saved" | "saving" | "error">("saved");
@@ -284,7 +287,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
 
           {groups.map((g) => {
             const enabled = g.section ? data.sections[g.section].enabled : true;
-            // Bagian yang tidak termasuk paket boleh dimatikan, tapi tidak bisa dinyalakan.
+            // Bagian yang tidak termasuk paket selalu mati dan saklarnya dikunci.
             const lock = g.section === "story" ? rules.locked.cerita : undefined;
             const isOpen = open.has(g.key);
             const fields = forTheme(g.fields, theme);
@@ -315,14 +318,9 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
                       </svg>
                     )}
                   </button>
-                  {g.section && <Switch on={enabled} disabled={Boolean(lock) && !enabled} onChange={(v) => setSection(g.section!, v)} label={`Tampilkan ${g.title}`} />}
+                  {g.section && <Switch on={enabled && !lock} disabled={Boolean(lock)} onChange={(v) => setSection(g.section!, v)} label={`Tampilkan ${g.title}`} />}
                 </div>
-                {lock && (
-                  <p className={`border-t border-line px-4 py-2.5 text-[13px] ${enabled ? "bg-blush/60 text-wine" : "text-ink-mute"}`}>
-                    {lock}
-                    {enabled && " Matikan bagian ini sebelum simpan final."}
-                  </p>
-                )}
+                {lock && <p className="border-t border-line px-4 py-2.5 text-[13px] text-ink-mute">{lock}</p>}
                 {isOpen && fields.length > 0 && (
                   <div className="border-t border-line p-4">
                     {enabled ? (

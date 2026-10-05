@@ -8,7 +8,7 @@ import { packageIssues } from "@/lib/invitation/package-check";
 import { invitationRules } from "@/lib/invitation/rules";
 import { emptyInvitationData, invitationDataSchema, type InvitationData } from "@/lib/invitation/schema";
 import { checkInvitation, type Issue } from "@/lib/invitation/spec";
-import { getSettings, PACKAGE_IDS, PACKAGE_NAMES, themeAvailable, type PackageId, type Purchased, type Settings } from "@/lib/settings";
+import { getSettings, PACKAGE_IDS, PACKAGE_NAMES, packageRules, themeAvailable, type PackageId, type Purchased, type Settings } from "@/lib/settings";
 import { validateSlug } from "@/lib/reserved-slugs";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { THEME_NAMES } from "@/themes/media";
@@ -52,14 +52,17 @@ export async function createInvitation(_: CreateState, form: FormData): Promise<
   if (!check.ok) return { error: check.reason, slug };
   if (!(PACKAGE_IDS as readonly string[]).includes(pkg)) return { error: "Pilih paket.", slug };
   if (!THEME_NAMES[theme]) return { error: "Pilih tema.", slug };
-  const themeIssue = themeError(await getSettings(), theme, pkg as PackageId);
+  const settings = await getSettings();
+  const themeIssue = themeError(settings, theme, pkg as PackageId);
   if (themeIssue) return { error: themeIssue, slug };
 
   const sb = supabaseAdmin();
   const { data: taken } = await sb.from("invitations").select("id").eq("slug", slug).maybeSingle();
   if (taken) return { error: `Link sowanan.com/${slug} sudah dipakai.`, slug };
 
+  // Bagian yang tidak termasuk paket dibuat dalam keadaan mati.
   const empty = emptyInvitationData();
+  if (packageRules(settings, pkg).locked.cerita) empty.sections.story.enabled = false;
   const { error } = await sb.from("invitations").insert({ slug, theme, package: pkg, published: false, data: empty, draft: empty });
   if (error) return { error: "Gagal membuat undangan.", slug };
   refresh(slug);

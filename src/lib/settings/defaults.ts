@@ -279,7 +279,7 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     { id: "musik", label: "Musik latar bawaan tema", kind: "check", key: "", cells: all },
     { id: "musik2", label: "Musik latar pilihan sendiri", kind: "check", key: "musik_sendiri", cells: cells(false, true, true) },
-    { id: "cerita", label: "Cerita perjalanan kalian", kind: "check", key: "cerita", cells: cells(false, true, true) },
+    { id: "cerita", label: "Cerita perjalanan pasangan", kind: "check", key: "cerita", cells: cells(false, true, true) },
     { id: "nama", label: "Nama tamu muncul di undangan", kind: "check", key: "nama_tamu", cells: cells(false, true, true) },
     { id: "peta", label: "Peta lokasi dan hitung mundur", kind: "check", key: "", cells: all },
     { id: "rsvp", label: "RSVP dan buku ucapan", kind: "check", key: "", cells: all },
