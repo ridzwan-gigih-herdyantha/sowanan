@@ -248,7 +248,7 @@ export const DEFAULT_SETTINGS: Settings = {
     text: "Chat saja dulu, belum harus memesan. Kami balas dalam 1 jam di jam {jam}.",
     button: "Chat WhatsApp",
   },
-  footer: { line1: "Undangan pernikahan digital · {kota}", line2: "Dibuat oleh Nine Dragon Labs" },
+  footer: { line1: "Undangan pernikahan digital · {kota}", line2: "" },
   themes: [
     { id: "senja", on: true, name: "Senja Kota", slug: "andi-rina", demo: "/andi-rina", tier: "semua", style: "film / urban", image: "/img/tema-andi-rina.webp" },
     { id: "ruang", on: true, name: "Ruang", slug: "bagas-sekar", demo: "/bagas-sekar", tier: "semua", style: "monokrom / minimalis", image: "/img/tema-bagas-sekar.webp" },
