@@ -1,5 +1,5 @@
 import "server-only";
-import { getSettings, packageRules, type PackageRules, type Purchased } from "@/lib/settings";
+import { getSettingsFresh, packageRules, type PackageRules, type Purchased } from "@/lib/settings";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 type Row = { theme: string; package?: string | null; addons?: Purchased };
@@ -11,7 +11,7 @@ export async function invitationRules(slug: string): Promise<{ theme: string; ru
     if (error) continue;
     if (!data) return null;
     const row = data as unknown as Row;
-    return { theme: row.theme, rules: packageRules(await getSettings(), row.package ?? null, row.addons ?? {}) };
+    return { theme: row.theme, rules: packageRules(await getSettingsFresh(), row.package ?? null, row.addons ?? {}) };
   }
   return null;
 }

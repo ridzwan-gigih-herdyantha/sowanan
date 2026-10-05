@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type KeyboardEvent } from "react";
 import type { Settings } from "@/lib/settings/schema";
-import { saveSettings } from "../actions";
+import { reloadSettings, saveSettings } from "../actions";
 import { FormCtx, setIn } from "./form-context";
 import { BerandaPanel, KetentuanPanel, TanyaPanel, TemaPanel } from "./panels-content";
 import { AddonPanel, KontakPanel, PaketPanel, PembayaranPanel } from "./panels-data";
@@ -77,6 +77,21 @@ export function SettingsForm({ initial }: { initial: Settings }) {
     open(TABS[(i + dir + TABS.length) % TABS.length].key, true);
   };
 
+  const reload = () => {
+    if (dirty && !window.confirm("Perubahan yang belum disimpan akan hilang. Muat ulang dari database?")) return;
+    start(async () => {
+      const res = await reloadSettings().catch(() => ({ ok: false as const, message: "Gagal memuat. Cek koneksi lalu coba lagi." }));
+      if (!res.ok) {
+        setToast({ ok: false, message: res.message });
+        return;
+      }
+      setSaved(res.settings);
+      setS(res.settings);
+      setErrors({});
+      setToast({ ok: true, message: "Isi terbaru dari database dimuat. Homepage dan ketentuan memakai isi ini mulai kunjungan berikutnya." });
+    });
+  };
+
   const save = () =>
     start(async () => {
       const res = await saveSettings(serialize(s));
@@ -143,9 +158,18 @@ export function SettingsForm({ initial }: { initial: Settings }) {
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#E8E0D6] bg-white shadow-[0_-2px_14px_rgba(42,35,32,.06)]">
         <div className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-x-4 gap-y-2.5 px-4 py-3.5 sm:px-7">
           <span className="text-[13px] text-ink-mute" aria-live="polite">
-            {pending ? "Menyimpan..." : dirty ? <><b className="font-medium text-[#5C5048]">Ada perubahan</b> yang belum disimpan</> : savedAt ? "Tersimpan baru saja" : "Semua perubahan tersimpan"}
+            {pending ? "Memproses..." : dirty ? <><b className="font-medium text-[#5C5048]">Ada perubahan</b> yang belum disimpan</> : savedAt ? "Tersimpan baru saja" : "Semua perubahan tersimpan"}
           </span>
-          <div className="ml-auto flex gap-2.5">
+          <div className="ml-auto flex flex-wrap gap-2.5">
+            <button
+              type="button"
+              disabled={pending}
+              onClick={reload}
+              title="Ambil isi terbaru dari database dan perbarui homepage serta ketentuan. Pakai setelah mengubah database lewat SQL editor."
+              className={button.quiet}
+            >
+              Muat ulang dari database
+            </button>
             <button
               type="button"
               disabled={!dirty || pending}

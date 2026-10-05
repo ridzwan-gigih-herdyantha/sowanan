@@ -4,7 +4,7 @@ import { updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { SETTINGS_TAG, settingsSchema } from "@/lib/settings";
+import { getSettingsFresh, SETTINGS_TAG, settingsSchema, type Settings } from "@/lib/settings";
 import { cleanHtml } from "@/lib/settings/sanitize";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -89,4 +89,15 @@ export async function saveSettings(json: string): Promise<FormState> {
 
   updateTag(SETTINGS_TAG);
   return { ok: true, message: "Pengaturan tersimpan. Homepage dan ketentuan sudah memakai isi baru.", at: Date.now() };
+}
+
+// Ambil pengaturan terbaru dari database dan perbarui cache halaman publik. Dipakai setelah database
+// diubah di luar aplikasi, misalnya lewat SQL editor Supabase, supaya homepage dan ketentuan ikut berubah.
+export async function reloadSettings(): Promise<{ ok: true; settings: Settings } | { ok: false; message: string }> {
+  const supabase = await supabaseServer();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) return { ok: false, message: "Sesi berakhir. Silakan masuk lagi." };
+  const settings = await getSettingsFresh();
+  updateTag(SETTINGS_TAG);
+  return { ok: true, settings };
 }

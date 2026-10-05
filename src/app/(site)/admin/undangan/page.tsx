@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
-import { getSettings, PACKAGE_IDS, PACKAGE_NAMES, themeAvailable, visiblePackages } from "@/lib/settings";
+import { getSettingsFresh, PACKAGE_IDS, PACKAGE_NAMES, themeAvailable, visiblePackages } from "@/lib/settings";
 import { THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../login-form";
 import { AdminFrame } from "../frame";
@@ -61,7 +61,7 @@ async function List() {
     }
   }
   // Tema mengikuti kolom Tersedia di paket pada pengaturan, sama dengan validasi di server.
-  const settings = await getSettings();
+  const settings = await getSettingsFresh();
   const packages = visiblePackages(settings).map((id) => ({ id, name: PACKAGE_NAMES[id] }));
   const themes = Object.entries(THEME_NAMES).map(([key, name]) => {
     const entry = settings.themes.find((t) => t.slug === key);

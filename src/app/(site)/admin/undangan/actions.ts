@@ -8,7 +8,7 @@ import { packageIssues } from "@/lib/invitation/package-check";
 import { invitationRules } from "@/lib/invitation/rules";
 import { emptyInvitationData, invitationDataSchema, type InvitationData } from "@/lib/invitation/schema";
 import { checkInvitation, type Issue } from "@/lib/invitation/spec";
-import { getSettings, PACKAGE_IDS, PACKAGE_NAMES, packageRules, themeAvailable, type PackageId, type Purchased, type Settings } from "@/lib/settings";
+import { getSettingsFresh, PACKAGE_IDS, PACKAGE_NAMES, packageRules, themeAvailable, type PackageId, type Purchased, type Settings } from "@/lib/settings";
 import { validateSlug } from "@/lib/reserved-slugs";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { THEME_NAMES } from "@/themes/media";
@@ -52,7 +52,7 @@ export async function createInvitation(_: CreateState, form: FormData): Promise<
   if (!check.ok) return { error: check.reason, slug };
   if (!(PACKAGE_IDS as readonly string[]).includes(pkg)) return { error: "Pilih paket.", slug };
   if (!THEME_NAMES[theme]) return { error: "Pilih tema.", slug };
-  const settings = await getSettings();
+  const settings = await getSettingsFresh();
   const themeIssue = themeError(settings, theme, pkg as PackageId);
   if (themeIssue) return { error: themeIssue, slug };
 
@@ -128,7 +128,7 @@ export async function setPackage(slug: string, pkg: string): Promise<Result> {
   if (!(PACKAGE_IDS as readonly string[]).includes(pkg)) return { ok: false, error: "Pilih paket." };
   const theme = await themeOf(slug);
   if (!theme) return { ok: false, error: "Undangan tidak ditemukan." };
-  const themeIssue = themeError(await getSettings(), theme, pkg as PackageId);
+  const themeIssue = themeError(await getSettingsFresh(), theme, pkg as PackageId);
   if (themeIssue) return { ok: false, error: themeIssue };
   const { error } = await supabaseAdmin().from("invitations").update({ package: pkg }).eq("slug", slug);
   if (error) return { ok: false, error: "Gagal menyimpan paket. Pastikan migrasi 0006 sudah dijalankan." };
@@ -138,7 +138,7 @@ export async function setPackage(slug: string, pkg: string): Promise<Result> {
 // Add-on yang sudah dibayar. Hanya id add-on di pengaturan yang disimpan, jumlahnya 0 sampai 20 unit.
 export async function setAddons(slug: string, addons: Purchased): Promise<Result> {
   if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
-  const known = new Set((await getSettings()).addons.map((a) => a.id));
+  const known = new Set((await getSettingsFresh()).addons.map((a) => a.id));
   const clean: Purchased = {};
   for (const [id, n] of Object.entries(addons ?? {})) {
     const units = Math.floor(Number(n));

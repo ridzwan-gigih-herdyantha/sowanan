@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { LogoMark } from "@/components/logo";
-import { getSettings } from "@/lib/settings";
+import { getSettingsFresh } from "@/lib/settings";
 import { hasSupabase } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 import { LoginForm } from "./login-form";
@@ -45,7 +45,7 @@ async function AdminGate() {
     );
   }
 
-  const settings = await getSettings();
+  const settings = await getSettingsFresh();
   return (
     <>
       <AdminTopBar email={data.user.email ?? ""} current="/admin" />
