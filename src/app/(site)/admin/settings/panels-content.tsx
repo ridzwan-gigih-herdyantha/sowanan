@@ -82,6 +82,7 @@ export function BerandaPanel() {
           </Row>
         ))}
         <Text path="sections.tema.foot" label="Kalimat di bawah daftar tema" chip="view" max={160} help="Contoh tautan ke WhatsApp: [Kirim contohnya lewat WhatsApp]({wa_link})" />
+        <Text path="sections.harga.foot" label="Kalimat di bawah harga" chip="view" max={240} help="Tampil dalam kotak setelah daftar tambahan. Kosongkan untuk menyembunyikan." />
       </Card>
 
       <Card title="Daftar fitur" hint="Urutan di sini sama dengan urutan di halaman. Yang dimatikan tetap tersimpan, hanya tidak ditampilkan.">

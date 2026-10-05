@@ -25,11 +25,15 @@ export function highestPrice(s: Settings): number {
   return Math.max(...visiblePackages(s).map((p) => s.packages[p].price));
 }
 
-// Contoh: "1 sampai 3 hari kerja"
+const days = (min: number, max: number) => (min === max ? `${min} hari kerja` : `${min} sampai ${max} hari kerja`);
+
+// Waktu pengerjaan satu paket. Contoh: "2 sampai 3 hari kerja"
+export const slaText = (pk: Settings["packages"][PackageId]) => days(pk.sla, pk.slaMax ?? pk.sla);
+
+// Rentang semua paket yang tampil. Contoh: "1 sampai 7 hari kerja"
 export function slaRange(s: Settings): string {
-  const days = visiblePackages(s).map((p) => s.packages[p].sla);
-  const [min, max] = [Math.min(...days), Math.max(...days)];
-  return min === max ? `${min} hari kerja` : `${min} sampai ${max} hari kerja`;
+  const list = visiblePackages(s).map((p) => s.packages[p]);
+  return days(Math.min(...list.map((pk) => pk.sla)), Math.max(...list.map((pk) => pk.slaMax ?? pk.sla)));
 }
 
 export function months(n: number): string {
@@ -38,12 +42,13 @@ export function months(n: number): string {
 
 // Paket dengan nilai sama digabung. Contoh: "Dasar 3 bulan, Lengkap dan Istimewa 12 bulan"
 export function perPlan(s: Settings, field: "active" | "sla"): string {
-  const groups = new Map<number, string[]>();
+  const groups = new Map<string, string[]>();
   for (const p of visiblePackages(s)) {
-    const n = s.packages[p][field];
-    groups.set(n, [...(groups.get(n) ?? []), PACKAGE_NAMES[p]]);
+    const pk = s.packages[p];
+    const text = field === "sla" ? slaText(pk) : months(pk.active);
+    groups.set(text, [...(groups.get(text) ?? []), PACKAGE_NAMES[p]]);
   }
-  return [...groups].map(([n, names]) => `${names.join(" dan ")} ${field === "sla" ? `${n} hari kerja` : months(n)}`).join(", ");
+  return [...groups].map(([text, names]) => `${names.join(" dan ")} ${text}`).join(", ");
 }
 
 // "08:00" dan "20:00" menjadi "08.00 sampai 20.00"
@@ -124,7 +129,8 @@ export function cellView(s: Settings, row: MatrixRow, p: PackageId): { on: boole
   const c = row.cells[p];
   if (row.kind === "check" || !c.on) return { on: c.on };
   if (c.n === null) return { on: true, note: "Tanpa batas" };
-  return { on: true, note: row.key === "galeri_foto" ? `${c.n} foto` : String(c.n) };
+  const unit = row.unit || (row.key === "galeri_foto" ? "{n} foto" : "{n}");
+  return { on: true, note: unit.replaceAll("{n}", String(c.n)) };
 }
 
 // Add-on yang sudah dibayar per undangan: jumlah unit per id add-on.

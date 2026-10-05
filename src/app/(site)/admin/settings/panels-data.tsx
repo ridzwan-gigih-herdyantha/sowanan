@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ACTIVE_MONTHS, COUNT_KEYS, newId, PACKAGE_IDS, PACKAGE_NAMES, SYSTEM_KEYS, UNLOCK_KEYS, type MatrixRow, type PackageId, type Settings, type SystemKey } from "@/lib/settings/schema";
-import { months, themeCount } from "@/lib/settings/text";
+import { COUNT_KEYS, newId, PACKAGE_IDS, PACKAGE_NAMES, SYSTEM_KEYS, UNLOCK_KEYS, type MatrixRow, type PackageId, type Settings, type SystemKey } from "@/lib/settings/schema";
+import { slaText, themeCount } from "@/lib/settings/text";
 import { setIn, useSettings } from "./form-context";
 import { ImagePicker } from "./image-picker";
 import { VarsNote } from "./panels-content";
@@ -12,7 +12,6 @@ function PackageCard({ id }: { id: PackageId }) {
   const { s, set, errors } = useSettings();
   const p = s.packages[id];
   const base = `packages.${id}`;
-  const options = [...new Set([...ACTIVE_MONTHS, p.active])].sort((a, b) => a - b).map((n): [string, string] => [String(n), months(n)]);
   return (
     <div className={cx("rounded-[9px] border border-[#E8E0D6] bg-[#FCFAF7] px-4 pt-4 pb-[18px] [&_.field]:mb-[13px] [&_.field:last-child]:mb-0", !p.on && "opacity-70")}>
       <div className="mb-3.5 flex items-center gap-2 border-b border-[#E8E0D6] pb-3">
@@ -25,8 +24,11 @@ function PackageCard({ id }: { id: PackageId }) {
       <NumberField path={`${base}.price`} label="Harga" chip="sys" prefix="Rp" rupiah />
       <Text path={`${base}.badge`} label="Label kecil" chip="view" max={22} help="Kosongkan kalau tidak perlu. Hindari klaim jumlah pembeli." />
       <Text path={`${base}.blurb`} label="Kalimat penjelas" chip="view" max={60} rows={2} />
-      <NumberField path={`${base}.sla`} label="Pengerjaan" chip="sys" suffix="hari kerja" />
-      <Select path={`${base}.active`} label="Masa aktif" chip="sys" options={options} toValue={Number} help="Tampil di kartu harga dan jawaban tanya jawab." />
+      <Row className="gap-x-3 [&>*]:min-w-[110px]!">
+        <NumberField path={`${base}.sla`} label="Pengerjaan" chip="sys" suffix="hari" />
+        <NumberField path={`${base}.slaMax`} label="Paling lama" suffix="hari" help="Kosongkan kalau tetap." />
+      </Row>
+      <Text path={`${base}.revision`} label="Revisi" chip="view" max={30} placeholder="Bebas" help={`Tampil di kartu: ${slaText(p)}.`} />
     </div>
   );
 }
@@ -126,7 +128,7 @@ function Matrix() {
                     ))}
                   </button>
                 </span>
-                <span role="cell">
+                <span role="cell" className="flex flex-col gap-1.5">
                   <input
                     value={r.label}
                     aria-label={`Isi paket baris ${i + 1}`}
@@ -134,6 +136,16 @@ function Matrix() {
                     onChange={(e) => edit(i, "label", e.target.value)}
                     className={cx(input, "px-2.5! py-2! sm:text-[13px]!", errors[`matrix.${i}.label`] ? "border-wine" : "border-[#E8E0D6]")}
                   />
+                  {r.kind === "count" && !computed && (
+                    <input
+                      value={r.unit}
+                      placeholder={r.key === "galeri_foto" ? "{n} foto" : "Format, contoh: sampai {n} bagian"}
+                      aria-label={`Format jumlah baris ${i + 1}, {n} diganti angkanya`}
+                      title="{n} diganti angkanya"
+                      onChange={(e) => edit(i, "unit", e.target.value)}
+                      className={cx(input, "border-[#E8E0D6] px-2.5! py-1.5! text-ink-mute sm:text-[12px]!")}
+                    />
+                  )}
                 </span>
                 <span role="cell">
                   <SelectBox
@@ -209,7 +221,7 @@ function Matrix() {
       <div className="flex flex-wrap items-center gap-3.5 border-t border-[#E8E0D6] bg-[#FBF8F4] px-4 py-[13px] sm:px-5">
         <button
           type="button"
-          onClick={() => write([...rows, { id: newId(), label: "", kind: "check", key: "", cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: false, n: null } } }])}
+          onClick={() => write([...rows, { id: newId(), label: "", kind: "check", unit: "", key: "", cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: false, n: null } } }])}
           className={cx(button.ghost, button.sm, "flex-none whitespace-nowrap")}
         >
           + Tambah baris
@@ -332,7 +344,7 @@ export function PembayaranPanel() {
         </Row>
       </Card>
       <Card title="Kalimat pembayaran di halaman harga">
-        <Text path="payment.note" label="Catatan di bawah kartu harga" chip="view" max={160} rows={2} help="Tulis {dp} supaya angkanya mengikuti kolom persentase uang muka." />
+        <Text path="payment.note" label="Catatan di bawah kartu harga" chip="view" max={400} rows={3} help="Tulis {dp} supaya angkanya mengikuti kolom persentase uang muka. **tebal** untuk menebalkan." />
       </Card>
     </>
   );

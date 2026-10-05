@@ -73,7 +73,11 @@ const pkg = (name: string) =>
     price: rupiah(`Harga ${name}`),
     badge: str(`Label kecil ${name}`, 22),
     blurb: str(`Kalimat penjelas ${name}`, 60),
+    // Pengerjaan berupa rentang hari kerja. slaMax kosong berarti sama dengan sla.
     sla: count(`Pengerjaan ${name}`, 1, 30),
+    slaMax: z.preprocess((v) => (v === "" || v === null ? undefined : v), count(`Pengerjaan paling lama ${name}`, 1, 60).optional()),
+    revision: str(`Revisi ${name}`, 30).default(""),
+    // Tidak tampil lagi sejak undangan menjadi arsip permanen. Disimpan untuk data lama.
     active: count(`Masa aktif ${name}`, 1, 60),
   });
 
@@ -93,7 +97,7 @@ export const settingsSchema = z
     sections: z.object({
       tema: section("pilihan tema").extend({ foot: str("Kalimat di bawah daftar tema", 160) }),
       fitur: section("fitur"),
-      harga: section("harga"),
+      harga: section("harga").extend({ foot: str("Kalimat di bawah harga", 240).default("") }),
       addon: section("tambahan"),
       cara: section("cara pesan"),
       faq: section("tanya jawab"),
@@ -132,6 +136,8 @@ export const settingsSchema = z
           id,
           label: req("Isi paket", 60),
           kind: z.enum(["check", "count"]),
+          // Cara menulis jumlah di kartu harga, {n} diganti angkanya. Contoh: {n} foto, sampai {n} bagian.
+          unit: str("Format jumlah", 40).default(""),
           key: z.enum(["", ...(Object.keys(SYSTEM_KEYS) as SystemKey[])]),
           cells: z.object({ dasar: cell, lengkap: cell, istimewa: cell }),
         }),
@@ -171,7 +177,7 @@ export const settingsSchema = z
       dp: count("Persentase uang muka", 0, 100),
       qrisNmid: str("NMID QRIS", 40),
       qrisImage: str("Gambar QRIS", 300),
-      note: str("Catatan di bawah kartu harga", 160),
+      note: str("Catatan di bawah kartu harga", 400),
     }),
   })
   .superRefine((s, ctx) => {
@@ -190,6 +196,12 @@ export const settingsSchema = z
       }
       keys.add(r.key);
     });
+    for (const p of PACKAGE_IDS) {
+      const pk = s.packages[p];
+      if (pk.slaMax !== undefined && pk.slaMax < pk.sla) {
+        ctx.addIssue({ code: "custom", path: ["packages", p, "slaMax"], message: "Paling lama tidak boleh lebih cepat dari paling cepat." });
+      }
+    }
     if (!PACKAGE_IDS.some((p) => s.packages[p].on)) ctx.addIssue({ code: "custom", path: ["packages", "dasar", "on"], message: "Minimal satu paket harus tampil." });
     s.addons.forEach((a, i) => {
       if (a.unlock === "galeri_foto" && a.amount < 1) ctx.addIssue({ code: "custom", path: ["addons", i, "amount"], message: "Isi jumlah foto yang ditambahkan per unit." });

@@ -187,7 +187,7 @@ const parseNum = (v: string) => {
 // Angka disimpan sebagai bilangan. Isian kosong disimpan NaN supaya validasi server menolaknya dengan pesan yang jelas.
 export function NumberField({ path, label, chip, help, prefix, suffix, rupiah, className }: { path: string; label: string; chip?: "sys" | "view"; help?: ReactNode; prefix?: string; suffix?: string; rupiah?: boolean; className?: string }) {
   const { s, set, errors } = useSettings();
-  const value = getIn(s, path) as number;
+  const value = getIn(s, path) as number | undefined;
   const error = errors[path];
   return (
     <Field label={label} chip={chip} help={help} error={error} className={className}>
@@ -197,7 +197,7 @@ export function NumberField({ path, label, chip, help, prefix, suffix, rupiah, c
           <input
             id={id}
             inputMode="numeric"
-            value={rupiah ? toRupiah(value) : Number.isNaN(value) ? "" : String(value)}
+            value={rupiah ? toRupiah(value ?? null) : value == null || Number.isNaN(value) ? "" : String(value)}
             aria-invalid={!!error}
             aria-describedby={describedBy}
             onChange={(e) => set(path, parseNum(e.target.value))}

@@ -6,7 +6,16 @@ type Legacy = Record<string, unknown>;
 const num = (v: unknown, fallback: number) => (typeof v === "number" && Number.isFinite(v) ? v : fallback);
 const txt = (v: unknown, fallback: string) => (typeof v === "string" ? v : fallback);
 const CAP = { dasar: "Dasar", lengkap: "Lengkap", istimewa: "Istimewa" } as const;
-const ADDON_KEYS = ["addonPhotos", "addonStyle", "addonMusic", "addonExport", "addonExpress", "addonDomain", "addonExtend"];
+// Harga add-on versi 1 per id add-on. Dicocokkan per id, bukan urutan, karena urutan add-on bisa berubah.
+const ADDON_KEYS: Record<string, string> = {
+  addonPhotos: "foto",
+  addonStyle: "gaya",
+  addonMusic: "musik",
+  addonExport: "excel",
+  addonExpress: "kilat",
+  addonDomain: "domain",
+  addonExtend: "perpanjang",
+};
 
 // "08.00 sampai 20.00" menjadi ["08:00", "20:00"]
 function legacyHours(v: unknown): [string, string] | null {
@@ -30,9 +39,10 @@ export function fromLegacy(d: Legacy): Settings {
       if (v === null || typeof v === "number") gallery.cells[p] = { on: true, n: v };
     }
   }
-  ADDON_KEYS.forEach((k, i) => {
-    if (s.addons[i]) s.addons[i].price = num(d[k], s.addons[i].price);
-  });
+  for (const [key, id] of Object.entries(ADDON_KEYS)) {
+    const addon = s.addons.find((a) => a.id === id);
+    if (addon) addon.price = num(d[key], addon.price);
+  }
   s.contact.wa = txt(d.waNumber, s.contact.wa);
   s.contact.instagram = txt(d.instagram, s.contact.instagram);
   const h = legacyHours(d.operatingHours);

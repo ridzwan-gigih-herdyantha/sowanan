@@ -1,8 +1,9 @@
+import { Inline } from "@/components/rich-text";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
-import { cellView, fill, formatRupiah, months, PACKAGE_NAMES, planWaLink, visiblePackages, type Settings } from "@/lib/settings";
+import { cellView, fill, formatRupiah, PACKAGE_NAMES, planWaLink, slaText, visiblePackages, type Settings } from "@/lib/settings";
 
 type Feature = { label: string; note?: string; on: boolean };
-type Plan = { tier: string; badge: string; price: number; blurb: string; sla: number; active: number; features: Feature[]; waHref: string };
+type Plan = { tier: string; badge: string; price: number; blurb: string; specs: [string, string][]; features: Feature[]; waHref: string };
 
 // Semua paket menampilkan daftar isi yang sama supaya mudah dibandingkan.
 function plans(s: Settings): Plan[] {
@@ -13,8 +14,8 @@ function plans(s: Settings): Plan[] {
       badge: p.badge,
       price: p.price,
       blurb: p.blurb,
-      sla: p.sla,
-      active: p.active,
+      // Strip spesifikasi ada di posisi yang sama di semua kartu.
+      specs: [["Jadi dalam", slaText(p)], ...(p.revision ? ([["Revisi", p.revision]] as [string, string][]) : [])],
       features: s.matrix.map((row) => ({ label: row.label, ...cellView(s, row, id) })),
       waHref: planWaLink(s, id),
     };
@@ -23,7 +24,7 @@ function plans(s: Settings): Plan[] {
 
 function Mark({ on }: { on: boolean }) {
   return (
-    <svg viewBox="0 0 16 16" aria-hidden="true" className={cx("absolute top-[0.35em] left-0 size-3.5 fill-none stroke-[1.7]", on ? "stroke-wine-soft lit:stroke-ink" : "stroke-ink-mute lit:stroke-ink/45")}>
+    <svg viewBox="0 0 16 16" aria-hidden="true" className={cx("absolute top-[0.22em] left-0 size-3.5 fill-none stroke-[1.7]", on ? "stroke-wine-soft lit:stroke-ink" : "stroke-ink-mute lit:stroke-ink/45")}>
       {on ? <path d="M2 8.5l4 4 8-9" /> : <path d="M3 3l10 10M13 3L3 13" />}
     </svg>
   );
@@ -42,30 +43,27 @@ function PlanCard({ p }: { p: Plan }) {
       )}
       <h3 className={cx("mb-4 text-[11px] font-medium tracking-[.26em] text-mist uppercase lit:text-ink/70", fade)}>{p.tier}</h3>
       <p className={cx("mb-2.5 font-serif text-[38px] leading-none font-medium text-paper lit:text-ink sm:text-[42px]", fade)}>{formatRupiah(p.price)}</p>
-      <p className={cx("mb-[22px] text-sm leading-normal font-light text-mist lit:text-ink/70", fade)}>{p.blurb}</p>
+      <p className={cx("mb-[22px] text-sm leading-normal font-light text-mist lit:text-ink/70 lg:min-h-[42px]", fade)}>{p.blurb}</p>
 
-      <dl className={cx("mb-[22px] flex border-y border-night-line lit:border-ink/20", fade)}>
-        {[
-          ["Jadi dalam", `${p.sla} hari kerja`],
-          ["Masa aktif", months(p.active)],
-        ].map(([lab, val], i) => (
-          <div key={lab} className={cx("flex-1 py-3.5", i > 0 && "border-l border-night-line pl-4 lit:border-ink/20", fade)}>
-            <dt className={cx("mb-[5px] text-[10px] tracking-[.17em] text-mist uppercase lit:text-ink/70", fade)}>{lab}</dt>
-            <dd className={cx("font-serif text-lg leading-tight text-paper lit:text-ink sm:text-xl", fade)}>{val}</dd>
+      <dl className={cx("mb-[22px] border-y border-night-line lit:border-ink/20", fade)}>
+        {p.specs.map(([lab, val], i) => (
+          <div key={lab} className={cx("flex items-baseline justify-between gap-3.5 py-[11px]", i > 0 && "border-t border-night-line lit:border-ink/20", fade)}>
+            <dt className={cx("flex-none text-[10px] tracking-[.12em] text-mist uppercase lit:text-ink/70 sm:tracking-[.17em]", fade)}>{lab}</dt>
+            <dd className={cx("text-right font-serif text-[17px] leading-tight text-paper lit:text-ink sm:text-lg", fade)}>{val}</dd>
           </div>
         ))}
       </dl>
 
-      <ul className="mb-7 flex-1">
+      <ul className="mb-7 flex-1 [&>li:last-child]:mb-0">
         {p.features.map((f) => (
           <li
             key={f.label}
-            className={cx("relative py-1 pl-7 text-[14.5px] leading-snug font-light", f.on ? "text-dusk-light lit:text-ink" : "text-ink-mute opacity-75 lit:text-ink/45 lit:opacity-100", fade)}
+            className={cx("relative mb-2.5 pl-[26px] text-sm leading-[1.45] font-light", f.on ? "text-dusk-light lit:text-ink" : "text-ink-mute opacity-75 lit:text-ink/45 lit:opacity-100", fade)}
           >
             <Mark on={f.on} />
             <span className="sr-only">{f.on ? "Termasuk: " : "Tidak termasuk: "}</span>
             {f.label}
-            {f.note && <span className={cx("mt-0.5 block text-[12.5px] tracking-[.02em] text-mist lit:text-ink/70", fade)}>{f.note}</span>}
+            {f.note && <span className={cx("text-wine-soft lit:text-ink/66", fade)}> {f.note}</span>}
           </li>
         ))}
       </ul>
@@ -95,7 +93,7 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
           {harga.title}
         </SectionTitle>
         {harga.sub && (
-          <SectionSub className="max-w-[52ch] font-light text-mist" {...reveal()}>
+          <SectionSub className="max-w-[54ch] font-light text-mist" {...reveal()}>
             {fill(harga.sub, vars)}
           </SectionSub>
         )}
@@ -107,8 +105,8 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
           ))}
         </div>
         {settings.payment.note && (
-          <p className="mt-[26px] text-center text-[13.5px] font-light text-mist" {...reveal()}>
-            {fill(settings.payment.note, vars)}
+          <p className="mx-auto mt-[26px] max-w-[62ch] text-center text-[13.5px] leading-[1.7] font-light text-mist [&_strong]:font-normal [&_strong]:text-dusk-light" {...reveal()}>
+            <Inline text={fill(settings.payment.note, vars)} />
           </p>
         )}
 
@@ -127,6 +125,15 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {harga.foot && (
+          <div
+            className="mt-[54px] rounded-xl border border-night-line px-[26px] py-[22px] text-center text-[14.5px] leading-[1.7] font-light text-mist [&_a]:border-b [&_a]:border-wine-soft/40 [&_a]:text-wine-soft [&_a]:no-underline [&_a]:transition-colors [&_a:hover]:border-paper [&_a:hover]:text-paper"
+            {...reveal()}
+          >
+            <Inline text={fill(harga.foot, vars)} />
           </div>
         )}
       </Container>
