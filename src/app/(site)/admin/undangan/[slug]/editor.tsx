@@ -24,8 +24,9 @@ type Props = {
   pkg: string | null;
   draft: InvitationData;
   live: InvitationData;
-  packageData: Pick<Settings, "matrix" | "addons">;
+  packageData: Pick<Settings, "matrix" | "addons" | "packages">;
   bought: Purchased;
+  dp: number;
 };
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
@@ -61,7 +62,7 @@ function Switch({ on, onChange, label, disabled }: { on: boolean; onChange: (v: 
   );
 }
 
-export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, packageData, bought: initialBought }: Props) {
+export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, packageData, bought: initialBought, dp }: Props) {
   const [data, setData] = useState(draft);
   const [saved, setSaved] = useState(() => JSON.stringify(live));
   const [published, setPub] = useState(initialPublished);
@@ -267,7 +268,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
             </div>
           )}
 
-          <AddonPanel slug={slug} pkg={pkg} addons={packageData.addons} bought={bought} onChange={setBought} />
+          <AddonPanel slug={slug} pkg={pkg} packages={packageData.packages} addons={packageData.addons} bought={bought} dp={dp} onChange={setBought} />
 
           <StylePanel
             theme={theme}

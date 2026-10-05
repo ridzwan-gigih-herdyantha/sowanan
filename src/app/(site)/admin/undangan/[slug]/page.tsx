@@ -27,8 +27,8 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const live = invitationDataSchema.parse(row.data ?? {});
   const draft = row.draft ? invitationDataSchema.parse(row.draft) : live;
   // Aturan paket dihitung di editor dari isi paket dan add-on di pengaturan, supaya langsung berubah saat add-on dicentang.
-  const { matrix, addons } = await getSettings();
-  return <Editor packageData={{ matrix, addons }} bought={(row.addons as Purchased | undefined) ?? {}} slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
+  const { matrix, addons, packages, payment } = await getSettings();
+  return <Editor packageData={{ matrix, addons, packages }} dp={payment.dp} bought={(row.addons as Purchased | undefined) ?? {}} slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
 }
 
 export default function EditInvitationPage({ params }: PageProps<"/admin/undangan/[slug]">) {
