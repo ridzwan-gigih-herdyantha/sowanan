@@ -69,8 +69,9 @@ export function SettingsForm({ initial }: { initial: Settings }) {
     if (focus) tabRefs.current[key]?.focus();
   };
 
+  // Panah kiri kanan untuk strip tab di HP, panah atas bawah untuk sidebar di layar lebar.
   const onTabKey = (e: KeyboardEvent<HTMLButtonElement>) => {
-    const dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    const dir = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
     if (!dir) return;
     e.preventDefault();
     const i = TABS.findIndex((t) => t.key === tab);
@@ -112,48 +113,59 @@ export function SettingsForm({ initial }: { initial: Settings }) {
 
   return (
     <FormCtx.Provider value={ctx}>
-      <div role="tablist" aria-label="Kelompok pengaturan" className="-mx-4 mb-[26px] flex items-center gap-1 overflow-x-auto border-b border-[#E8E0D6] px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
-        {TABS.map((t, i) => {
-          const head = i === 0 || TABS[i - 1].group !== t.group;
-          const sep = head && i > 0;
-          return (
-            <span key={t.key} className="contents">
-              {sep && <span aria-hidden="true" className="mx-3 h-[18px] w-px flex-none bg-[#E8E0D6]" />}
-              {head && (
-                <span aria-hidden="true" className="flex-none pr-2 pl-0.5 text-[10px] tracking-[.18em] text-ink-mute uppercase">
-                  {t.group}
-                </span>
-              )}
-              <button
-                ref={(el) => {
-                  tabRefs.current[t.key] = el;
-                }}
-                type="button"
-                role="tab"
-                id={`tab-${t.key}`}
-                aria-selected={tab === t.key}
-                aria-controls={`panel-${t.key}`}
-                tabIndex={tab === t.key ? 0 : -1}
-                onClick={() => open(t.key)}
-                onKeyDown={onTabKey}
-                className={cx(
-                  "-mb-px flex-none border-b-2 px-3.5 pt-3 pb-[13px] text-[13.5px] whitespace-nowrap transition-colors duration-150 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-wine",
-                  tab === t.key ? "border-wine font-medium text-wine" : "border-transparent text-ink-mute hover:text-[#2A2320]",
+      <div className="lg:grid lg:grid-cols-[184px_minmax(0,1fr)] lg:items-start lg:gap-8">
+        <div
+          role="tablist"
+          aria-label="Kelompok pengaturan"
+          className="-mx-4 mb-[26px] flex items-center gap-1 overflow-x-auto border-b border-[#E8E0D6] px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 lg:sticky lg:top-[86px] lg:mx-0 lg:mb-0 lg:max-h-[calc(100dvh-180px)] lg:flex-col lg:flex-nowrap lg:items-stretch lg:gap-0.5 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:pr-5"
+        >
+          {TABS.map((t, i) => {
+            const head = i === 0 || TABS[i - 1].group !== t.group;
+            const sep = head && i > 0;
+            return (
+              <span key={t.key} className="contents">
+                {sep && <span aria-hidden="true" className="mx-3 h-[18px] w-px flex-none bg-[#E8E0D6] lg:hidden" />}
+                {head && (
+                  <span aria-hidden="true" className={cx("flex-none pr-2 pl-0.5 text-[10px] tracking-[.18em] text-ink-mute uppercase lg:px-3 lg:pb-2", i > 0 && "lg:mt-6")}>
+                    {t.group}
+                  </span>
                 )}
-              >
-                {t.label}
-                {errorTabs.has(t.key) && <span className="ml-1.5 inline-block size-[7px] rounded-full bg-wine align-middle" aria-label="ada isian bermasalah" />}
-              </button>
-            </span>
-          );
-        })}
-      </div>
-
-      {TABS.map(({ key, Panel }) => (
-        <div key={key} id={`panel-${key}`} role="tabpanel" aria-labelledby={`tab-${key}`} hidden={tab !== key}>
-          <Panel />
+                <button
+                  ref={(el) => {
+                    tabRefs.current[t.key] = el;
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`tab-${t.key}`}
+                  aria-selected={tab === t.key}
+                  aria-controls={`panel-${t.key}`}
+                  tabIndex={tab === t.key ? 0 : -1}
+                  onClick={() => open(t.key)}
+                  onKeyDown={onTabKey}
+                  className={cx(
+                    "-mb-px flex flex-none items-center border-b-2 px-3.5 pt-3 pb-[13px] text-[13.5px] whitespace-nowrap transition-colors duration-150 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-wine",
+                    "lg:mb-0 lg:rounded-sm lg:border-b-0 lg:px-3 lg:py-2.5 lg:text-left lg:text-[14px]",
+                    tab === t.key
+                      ? "border-wine font-medium text-wine lg:bg-blush"
+                      : "border-transparent text-ink-mute hover:text-[#2A2320] lg:hover:bg-[#F5EFE8]",
+                  )}
+                >
+                  {t.label}
+                  {errorTabs.has(t.key) && <span className="ml-1.5 inline-block size-[7px] rounded-full bg-wine align-middle lg:ml-auto" aria-label="ada isian bermasalah" />}
+                </button>
+              </span>
+            );
+          })}
         </div>
-      ))}
+
+        <div className="min-w-0">
+          {TABS.map(({ key, Panel }) => (
+            <div key={key} id={`panel-${key}`} role="tabpanel" aria-labelledby={`tab-${key}`} hidden={tab !== key}>
+              <Panel />
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#E8E0D6] bg-white shadow-[0_-2px_14px_rgba(42,35,32,.06)]">
         <div className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-x-4 gap-y-2.5 px-4 py-3.5 sm:px-7">
