@@ -13,9 +13,11 @@ const CARD_BG: Record<string, string> = {
   "fadhil-nayla": "bg-[#e3e0cc]",
 };
 
+// Satu tautan per kartu, yaitu tombolnya. Area klik tombol diperluas menutupi seluruh kartu lewat after:inset-0.
 function Card({ theme, index, waHref }: { theme: ThemeEntry; index: number; waHref: string }) {
+  const demo = Boolean(theme.demo);
   return (
-    <a href={theme.demo || waHref} className="group block text-inherit no-underline" {...reveal(index)}>
+    <div className="group relative" {...reveal(index)}>
       <div
         className={cx(
           "relative flex h-80 items-center justify-center overflow-hidden rounded-sm border border-line text-sm tracking-[1px] text-wine transition-colors duration-200 group-hover:border-wine sm:h-[400px]",
@@ -39,9 +41,21 @@ function Card({ theme, index, waHref }: { theme: ThemeEntry; index: number; waHr
           <span>{theme.name}</span>
         )}
       </div>
-      <p className="mt-3.5 font-serif text-2xl transition-colors duration-200 group-hover:text-wine">{theme.name}</p>
-      {theme.style && <p className="mt-[3px] text-[15px] text-ink-mute">{theme.style}</p>}
-    </a>
+      {/* Di ponsel nama dan tombol bersampingan, di layar lebar tombol di bawah nama. */}
+      <div className="mt-3.5 flex items-center justify-between gap-3 sm:block">
+        <div className="min-w-0">
+          <p className="font-serif text-2xl transition-colors duration-200 group-hover:text-wine">{theme.name}</p>
+          {theme.style && <p className="mt-[3px] text-[15px] text-ink-mute">{theme.style}</p>}
+        </div>
+        <a
+          href={theme.demo || waHref}
+          aria-label={demo ? `Lihat demo tema ${theme.name}` : `Tanya tema ${theme.name} lewat WhatsApp`}
+          className="inline-flex flex-none items-center rounded-sm border border-wine px-4 py-2 text-[15px] text-wine no-underline transition-colors duration-200 group-hover:bg-wine group-hover:text-white after:absolute after:inset-0 after:z-10 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wine motion-reduce:transition-none sm:mt-4"
+        >
+          {demo ? "Lihat demo" : "Tanya di WhatsApp"}
+        </a>
+      </div>
+    </div>
   );
 }
 
