@@ -86,9 +86,9 @@ export function Features({ settings, vars }: { settings: Settings; vars: Record<
               <div>
                 <h3 className="mb-1.5 text-lg font-medium">{f.name}</h3>
                 {f.label && (
-                  <span className="mb-2 inline-block rounded-sm bg-blush px-2 py-0.5 text-[12px] tracking-[0.5px] text-wine">{f.label}</span>
+                  <span className="mb-2 inline-block rounded-sm bg-blush px-2 py-0.5 text-[13px] tracking-[0.5px] text-wine">{f.label}</span>
                 )}
-                {f.text && <p className="text-[15px] leading-[1.6] text-ink-body">{fill(f.text, vars)}</p>}
+                {f.text && <p className="text-[16px] leading-[1.6] text-ink-body">{fill(f.text, vars)}</p>}
               </div>
             </div>
           ))}

@@ -30,7 +30,7 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
   const link = "mr-[22px] inline-block text-dusk no-underline transition-colors duration-200 hover:text-paper md:mr-0 md:ml-[26px]";
   const f = settings.footer;
   return (
-    <footer className="bg-ink text-sm text-dusk">
+    <footer className="bg-ink text-[15px] text-dusk">
       <Container className="flex flex-col items-start gap-4 py-10 md:flex-row md:items-center md:justify-between md:gap-6">
         <div>
           <div className="flex items-center gap-2.5 font-serif text-xl text-paper">

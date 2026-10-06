@@ -16,7 +16,7 @@ export function Hero({ settings, vars, waHref }: Props) {
     <section>
       <Container className="flex flex-col items-stretch gap-11 pt-11 pb-10 sm:pt-16 sm:pb-14 md:flex-row md:items-center lg:gap-[144px] lg:pt-[clamp(36px,8svh,84px)] lg:pb-[clamp(36px,8svh,76px)]">
         <div className="flex-auto md:max-w-[560px]">
-          {h.eyebrow && <p className="mb-[22px] text-[13px] tracking-[3px] text-wine uppercase">{fill(h.eyebrow, vars)}</p>}
+          {h.eyebrow && <p className="mb-[22px] text-[14px] tracking-[3px] text-wine uppercase">{fill(h.eyebrow, vars)}</p>}
           <h1 className="mb-6 font-serif text-[clamp(38px,6vw,64px)] leading-[1.06] font-medium">{fill(h.title, vars)}</h1>
           {paragraphs(fill(h.sub, vars)).map((p, i) => (
             <p key={i} className="mb-[18px] max-w-[62ch] text-[clamp(16px,1.6vw,19px)] leading-[1.65] text-ink-soft">
@@ -33,7 +33,7 @@ export function Hero({ settings, vars, waHref }: Props) {
               </a>
             )}
           </div>
-          {h.note && <p className="mt-[26px] text-[15px] text-ink-mute">{fill(h.note, vars)}</p>}
+          {h.note && <p className="mt-[26px] text-[16px] text-ink-mute">{fill(h.note, vars)}</p>}
         </div>
 
         <HeroSlider slides={slides} />

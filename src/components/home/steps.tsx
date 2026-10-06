@@ -18,7 +18,7 @@ export function Steps({ settings, vars }: { settings: Settings; vars: Record<str
               </p>
               <div>
                 <h3 className="mb-[9px] text-[19px] font-medium">{s.title}</h3>
-                {s.text && <p className="text-[15px] leading-[1.65] text-ink-soft">{fill(s.text, vars)}</p>}
+                {s.text && <p className="text-[16px] leading-[1.65] text-ink-soft">{fill(s.text, vars)}</p>}
               </div>
             </li>
           ))}

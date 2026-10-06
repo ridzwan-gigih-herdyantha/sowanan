@@ -74,7 +74,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
       <div className="mt-3.5 flex flex-col items-center gap-1.5 text-center">
         {/* <p aria-live={auto ? "off" : "polite"} className="w-full min-w-0">
           <span className="block truncate font-serif text-xl leading-tight">{current.name}</span>
-          {current.style && <span className="block truncate text-[13px] text-ink-mute">{current.style}</span>}
+          {current.style && <span className="block truncate text-[14px] text-ink-mute">{current.style}</span>}
         </p> */}
         {n > 1 && (
           <div className="flex flex-none items-center gap-1">

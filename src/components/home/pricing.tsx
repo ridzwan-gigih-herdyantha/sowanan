@@ -24,7 +24,7 @@ function plans(s: Settings): Plan[] {
 
 function Mark({ on }: { on: boolean }) {
   return (
-    <svg viewBox="0 0 16 16" aria-hidden="true" className={cx("absolute top-[0.22em] left-0 size-3.5 fill-none stroke-[1.7]", on ? "stroke-wine-soft lit:stroke-ink" : "stroke-ink-mute lit:stroke-ink/45")}>
+    <svg viewBox="0 0 16 16" aria-hidden="true" className={cx("absolute top-[0.27em] left-0 size-3.5 fill-none stroke-[1.7]", on ? "stroke-wine-soft lit:stroke-ink" : "stroke-ink-mute lit:stroke-ink/45")}>
       {on ? <path d="M2 8.5l4 4 8-9" /> : <path d="M3 3l10 10M13 3L3 13" />}
     </svg>
   );
@@ -37,19 +37,19 @@ function PlanCard({ p }: { p: Plan }) {
   return (
     <article className="plan relative flex h-full flex-col rounded-[14px] border border-night-line bg-night px-[22px] pt-7 pb-[26px] transition-[background-color,border-color,transform] duration-200 lit:border-wine-soft lit:bg-wine-soft sm:px-7 sm:pt-[34px] sm:pb-[30px] [@media(hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none">
       {p.badge && (
-        <span className={cx("absolute top-[26px] right-[22px] rounded-full border border-wine-soft/50 bg-wine-soft/28 px-[11px] py-[5px] text-[10px] font-medium tracking-[.17em] text-paper uppercase lit:border-ink/30 lit:bg-ink/14 lit:text-ink sm:top-[30px] sm:right-[26px]", fade)}>
+        <span className={cx("absolute top-[26px] right-[22px] rounded-full border border-wine-soft/50 bg-wine-soft/28 px-[11px] py-[5px] text-[11px] font-medium tracking-[.15em] text-paper uppercase lit:border-ink/30 lit:bg-ink/14 lit:text-ink sm:top-[30px] sm:right-[26px]", fade)}>
           {p.badge}
         </span>
       )}
-      <h3 className={cx("mb-4 text-[11px] font-medium tracking-[.26em] text-mist uppercase lit:text-ink/70", fade)}>{p.tier}</h3>
+      <h3 className={cx("mb-4 text-[12px] font-medium tracking-[.24em] text-mist uppercase lit:text-ink/70", fade)}>{p.tier}</h3>
       <p className={cx("mb-2.5 font-serif text-[38px] leading-none font-medium text-paper lit:text-ink sm:text-[42px]", fade)}>{formatRupiah(p.price)}</p>
-      <p className={cx("mb-[22px] text-sm leading-normal font-light text-mist lit:text-ink/70 lg:min-h-[42px]", fade)}>{p.blurb}</p>
+      <p className={cx("mb-[22px] text-[15px] leading-normal text-mist lit:text-ink/70 lg:min-h-[46px]", fade)}>{p.blurb}</p>
 
       <dl className={cx("mb-[22px] border-y border-night-line lit:border-ink/20", fade)}>
         {p.specs.map(([lab, val], i) => (
           <div key={lab} className={cx("flex items-baseline justify-between gap-3.5 py-[11px]", i > 0 && "border-t border-night-line lit:border-ink/20", fade)}>
-            <dt className={cx("flex-none text-[10px] tracking-[.12em] text-mist uppercase lit:text-ink/70 sm:tracking-[.17em]", fade)}>{lab}</dt>
-            <dd className={cx("text-right font-serif text-[17px] leading-tight text-paper lit:text-ink sm:text-lg", fade)}>{val}</dd>
+            <dt className={cx("flex-none text-[11px] tracking-[.12em] text-mist uppercase lit:text-ink/70 sm:tracking-[.15em]", fade)}>{lab}</dt>
+            <dd className={cx("text-right font-serif text-[18px] leading-tight text-paper lit:text-ink sm:text-[19px]", fade)}>{val}</dd>
           </div>
         ))}
       </dl>
@@ -58,7 +58,7 @@ function PlanCard({ p }: { p: Plan }) {
         {p.features.map((f) => (
           <li
             key={f.label}
-            className={cx("relative mb-2.5 pl-[26px] text-sm leading-[1.45] font-light", f.on ? "text-dusk-light lit:text-ink" : "text-ink-mute opacity-75 lit:text-ink/45 lit:opacity-100", fade)}
+            className={cx("relative mb-2.5 pl-[26px] text-[15px] leading-[1.45]", f.on ? "text-dusk-light lit:text-ink" : "text-ink-mute opacity-75 lit:text-ink/45 lit:opacity-100", fade)}
           >
             <Mark on={f.on} />
             <span className="sr-only">{f.on ? "Termasuk: " : "Tidak termasuk: "}</span>
@@ -72,7 +72,7 @@ function PlanCard({ p }: { p: Plan }) {
         href={p.waHref}
         aria-label={`Pesan paket ${p.tier}`}
         className={cx(
-          "block rounded-lg border px-[18px] py-3.5 text-center text-sm tracking-[.04em] no-underline transition-colors duration-200 lit:border-ink lit:bg-ink lit:text-paper focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-paper",
+          "block rounded-lg border px-[18px] py-3.5 text-center text-[15px] tracking-[.04em] no-underline transition-colors duration-200 lit:border-ink lit:bg-ink lit:text-paper focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-paper",
           rec ? "border-wine-soft bg-wine-soft text-ink" : "border-wine-soft text-paper",
         )}
       >
@@ -93,7 +93,7 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
           {harga.title}
         </SectionTitle>
         {harga.sub && (
-          <SectionSub className="max-w-[54ch] font-light text-mist" {...reveal()}>
+          <SectionSub className="max-w-[54ch] text-mist" {...reveal()}>
             {fill(harga.sub, vars)}
           </SectionSub>
         )}
@@ -105,7 +105,7 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
           ))}
         </div>
         {settings.payment.note && (
-          <p className="mx-auto mt-[26px] max-w-[62ch] text-center text-[13.5px] leading-[1.7] font-light text-mist [&_strong]:font-normal [&_strong]:text-dusk-light" {...reveal()}>
+          <p className="mx-auto mt-[26px] max-w-[62ch] text-center text-[14.5px] leading-[1.7] text-mist [&_strong]:font-normal [&_strong]:text-dusk-light" {...reveal()}>
             <Inline text={fill(settings.payment.note, vars)} />
           </p>
         )}
@@ -113,15 +113,15 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
         {addons.length > 0 && (
           <div className="mt-16 md:mt-[78px]" {...reveal()}>
             <h3 className="font-serif text-[28px] font-medium text-paper">{addon.title}</h3>
-            {addon.sub && <p className="mt-2 text-base font-light text-mist">{fill(addon.sub, vars)}</p>}
+            {addon.sub && <p className="mt-2 text-[17px] text-mist">{fill(addon.sub, vars)}</p>}
             <ul className="mt-[30px] grid grid-cols-1 md:grid-cols-2 md:gap-x-12">
               {addons.map((a) => (
                 <li key={a.id} className="flex items-baseline justify-between gap-[18px] border-t border-night-line py-[18px]">
-                  <span className="min-w-0 text-[15px] leading-snug font-light text-dusk-light">
+                  <span className="min-w-0 text-[16px] leading-snug text-dusk-light">
                     {a.name}
-                    {a.scope && <small className="mt-[3px] block text-xs text-mist">{a.scope}</small>}
+                    {a.scope && <small className="mt-[3px] block text-[13px] text-mist">{a.scope}</small>}
                   </span>
-                  <span className="shrink-0 font-serif text-[19px] text-wine-soft">{formatRupiah(a.price)}</span>
+                  <span className="shrink-0 font-serif text-[24px] leading-none text-wine-soft">{formatRupiah(a.price)}</span>
                 </li>
               ))}
             </ul>
@@ -130,7 +130,7 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
 
         {harga.foot && (
           <div
-            className="mt-[54px] rounded-xl border border-night-line px-[26px] py-[22px] text-center text-[14.5px] leading-[1.7] font-light text-mist [&_a]:border-b [&_a]:border-wine-soft/40 [&_a]:text-wine-soft [&_a]:no-underline [&_a]:transition-colors [&_a:hover]:border-paper [&_a:hover]:text-paper"
+            className="mt-[54px] rounded-xl border border-night-line px-[26px] py-[22px] text-center text-[15.5px] leading-[1.7] text-mist [&_a]:border-b [&_a]:border-wine-soft/40 [&_a]:text-wine-soft [&_a]:no-underline [&_a]:transition-colors [&_a:hover]:border-paper [&_a:hover]:text-paper"
             {...reveal()}
           >
             <Inline text={fill(harga.foot, vars)} />

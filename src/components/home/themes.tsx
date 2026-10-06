@@ -40,7 +40,7 @@ function Card({ theme, index, waHref }: { theme: ThemeEntry; index: number; waHr
         )}
       </div>
       <p className="mt-3.5 font-serif text-2xl transition-colors duration-200 group-hover:text-wine">{theme.name}</p>
-      {theme.style && <p className="mt-[3px] text-sm text-ink-mute">{theme.style}</p>}
+      {theme.style && <p className="mt-[3px] text-[15px] text-ink-mute">{theme.style}</p>}
     </a>
   );
 }
