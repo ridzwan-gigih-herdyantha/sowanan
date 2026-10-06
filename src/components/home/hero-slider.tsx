@@ -13,10 +13,9 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   const [index, setIndex] = useState(0);
   const [seen, setSeen] = useState(() => new Set([0, 1]));
   const [hover, setHover] = useState(false);
-  const [stopped, setStopped] = useState(false);
   const reduce = useReducedMotion();
   const n = slides.length;
-  const auto = n > 1 && !reduce && !stopped && !hover;
+  const auto = n > 1 && !reduce && !hover;
 
   const go = (i: number) => {
     const next = (i + n) % n;
@@ -28,7 +27,6 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
     if (!auto) return;
     const t = setTimeout(() => go(index + 1), INTERVAL);
     return () => clearTimeout(t);
-    // go hanya membaca n dan setter, cukup dipicu oleh index dan status auto.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auto, index]);
 
@@ -90,18 +88,6 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                 <span className={cx("block size-1.5 rounded-full transition-[transform,background-color] duration-200 motion-reduce:transition-none", i === index ? "scale-[1.7] bg-wine" : "bg-wine-soft")} />
               </button>
             ))}
-            {!reduce && (
-              <button
-                type="button"
-                onClick={() => setStopped((v) => !v)}
-                aria-label={stopped ? "Putar slide otomatis" : "Jeda slide otomatis"}
-                className="ml-1 flex size-7 items-center justify-center rounded-full border border-line text-ink-soft transition-colors duration-150 hover:border-wine hover:text-wine focus-visible:outline-2 focus-visible:outline-wine"
-              >
-                <svg viewBox="0 0 12 12" aria-hidden="true" className="size-2.5 fill-current">
-                  {stopped ? <path d="M3 1.5l7 4.5-7 4.5z" /> : <path d="M2.5 1.5h2.5v9H2.5zM7 1.5h2.5v9H7z" />}
-                </svg>
-              </button>
-            )}
           </div>
         )}
       </div>
