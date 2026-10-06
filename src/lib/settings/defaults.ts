@@ -286,7 +286,7 @@ export const DEFAULT_SETTINGS: Settings = {
       label: "Bagian tambahan di luar tema",
       kind: "count",
       unit: "sampai {n} bagian",
-      key: "",
+      key: "bagian_tambahan",
       cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: true, n: 2 } },
     },
     {

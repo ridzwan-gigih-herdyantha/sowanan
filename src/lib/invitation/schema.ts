@@ -38,6 +38,13 @@ export const SECTION_KEYS = [
   "closing",
 ] as const;
 
+// Bagian tambahan di luar tema ditempatkan setelah pembuka atau setelah salah satu section.
+export const EXTRA_ANCHORS = ["hero", ...SECTION_KEYS] as const;
+export type ExtraAnchor = (typeof EXTRA_ANCHORS)[number];
+// Warna latar bagian tambahan, semuanya diambil dari palet tema yang aktif.
+export const EXTRA_TONES = { paper: "Latar utama tema", wash: "Latar kedua tema", accent: "Warna aksen tema", ink: "Gelap, warna teks tema" } as const;
+export type ExtraTone = keyof typeof EXTRA_TONES;
+
 export const TIMEZONES = { WIB: "+07:00", WITA: "+08:00", WIT: "+09:00" } as const;
 
 export const invitationDataSchema = z.object({
@@ -98,6 +105,15 @@ export const invitationDataSchema = z.object({
       closing: section({}),
     })
     .prefault({}),
+  extras: list(
+    z.object({
+      title: str(),
+      body: str(),
+      photos: list(z.object({ src: str(), w: num(), h: num() })),
+      tone: z.enum(Object.keys(EXTRA_TONES) as [ExtraTone, ...ExtraTone[]]).catch("paper"),
+      after: z.enum(EXTRA_ANCHORS).catch("event"),
+    }),
+  ),
 });
 
 export type InvitationData = z.infer<typeof invitationDataSchema>;

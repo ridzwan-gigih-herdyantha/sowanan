@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { TIMEZONES } from "@/lib/invitation/schema";
-import { forTheme, getIn, setIn, type Field } from "@/lib/invitation/spec";
+import { extraAnchors, forTheme, getIn, setIn, type Field } from "@/lib/invitation/spec";
 import { mediaUrl, PURPOSES } from "@/lib/storage/media";
 import { ACCEPT, useUploader, type UploadResult } from "../../media/use-uploader";
 
@@ -154,7 +154,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
           <span className="ml-2 font-normal text-ink-mute">{items.length}</span>
         </p>
       </div>
-      {err && <p className="mt-1 text-[13px] text-wine">{err}</p>}
+      {err ? <p className="mt-1 text-[13px] text-wine">{err}</p> : f.hint && <p className="mt-1 text-[13px] text-ink-mute">{f.hint}</p>}
 
       <ul className="mt-2 grid gap-2">
         {items.map((item, i) => {
@@ -253,7 +253,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
         {cap && (
           <span className={items.length > cap.max ? "text-wine" : "text-ink-mute"}>
             {cap.note}
-            {items.length > cap.max && `, sekarang ${items.length}. Hapus ${items.length - cap.max} supaya sesuai paket.`}
+            {items.length > cap.max && (cap.max ? `, sekarang ${items.length}. Hapus ${items.length - cap.max} supaya sesuai paket.` : " Hapus semuanya supaya sesuai paket.")}
           </span>
         )}
       </div>
@@ -262,7 +262,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
 }
 
 export function FieldInput({ f, path }: { f: Field; path: string }) {
-  const { data, update, errors, locks } = useForm();
+  const { theme, data, update, errors, locks } = useForm();
   const err = errors[path];
   const value = getIn(data, path);
   const set = (v: unknown) => update((d) => setIn(d, path, v));
@@ -326,6 +326,22 @@ export function FieldInput({ f, path }: { f: Field; path: string }) {
           <input type="number" min={f.min} max={f.max} value={Number(value ?? 0)} onChange={(e) => set(Math.max(f.min, Math.min(f.max, Number(e.target.value) || 0)))} className={input(err)} />
         </Label>
       );
+    case "anchor": {
+      const options = extraAnchors(theme);
+      const known = options.some((o) => o.value === value);
+      return (
+        <Label f={f} path={path} err={err}>
+          <select value={String(value ?? "")} onChange={(e) => set(e.target.value)} className={input(err)}>
+            {!known && <option value={String(value ?? "")}>Tidak ada di tema ini, tampil sebelum Penutup</option>}
+            {options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </Label>
+      );
+    }
     case "select":
       return (
         <Label f={f} path={path} err={err}>
@@ -347,7 +363,9 @@ export function FieldInput({ f, path }: { f: Field; path: string }) {
             className={input(err)}
           >
             {f.options.map((o) => (
-              <option key={o}>{o}</option>
+              <option key={o} value={o}>
+                {f.labels?.[o] ?? o}
+              </option>
             ))}
           </select>
         </Label>

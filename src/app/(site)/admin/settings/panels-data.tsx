@@ -34,7 +34,7 @@ function PackageCard({ id }: { id: PackageId }) {
 }
 
 const KEY_OPTIONS: [string, string][] = [["", "Tanpa kunci"], ...Object.keys(SYSTEM_KEYS).map((k): [string, string] => [k, k])];
-const UNLOCK_OPTIONS: [string, string][] = [["", "Tidak membuka apa pun"], ...UNLOCK_KEYS.map((k): [string, string] => [k, k === "galeri_foto" ? "galeri_foto (tambah foto)" : k])];
+const UNLOCK_OPTIONS: [string, string][] = [["", "Tidak membuka apa pun"], ...UNLOCK_KEYS.map((k): [string, string] => [k, k === "galeri_foto" ? "galeri_foto (tambah foto)" : k === "bagian_tambahan" ? "bagian_tambahan (tambah bagian)" : k])];
 const COLS = "grid-cols-[26px_minmax(170px,1fr)_118px_140px_repeat(3,96px)_34px]";
 
 function Matrix() {
@@ -291,6 +291,7 @@ export function AddonPanel() {
                 help="Dicentang per undangan setelah dibayar, lalu membuka isian di luar paket."
               />
               {item.unlock === "galeri_foto" && <NumberField path={`${base}.amount`} label="Foto per unit" chip="sys" suffix="foto" className={width.sm} />}
+              {item.unlock === "bagian_tambahan" && <NumberField path={`${base}.amount`} label="Bagian per unit" chip="sys" suffix="bagian" className={width.sm} />}
             </Row>
           </>
         )}

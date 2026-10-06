@@ -1,5 +1,5 @@
 import type { Purpose } from "@/lib/storage/media";
-import type { InvitationData, SectionKey } from "./schema";
+import { EXTRA_TONES, type ExtraAnchor, type InvitationData, type SectionKey } from "./schema";
 
 const A = "andi-rina";
 const B = "bagas-sekar";
@@ -12,8 +12,9 @@ export type Field =
   | (Base & { kind: "text" | "textarea"; max: number; format?: "url" | "time"; placeholder?: string })
   | (Base & { kind: "media"; purpose: Purpose; dims?: boolean })
   | (Base & { kind: "datetime" })
-  | (Base & { kind: "select"; options: string[] })
+  | (Base & { kind: "select"; options: string[]; labels?: Record<string, string> })
   | (Base & { kind: "number"; min: number; max: number })
+  | (Base & { kind: "anchor" })
   | (Base & { kind: "heading" })
   | (Base & { kind: "list"; item: string; fields: Field[]; blank: Record<string, unknown>; min?: number; max?: number });
 
@@ -233,6 +234,36 @@ export const GROUPS: Group[] = [
     ],
   },
   {
+    key: "extras",
+    title: "Bagian tambahan",
+    note: "Di luar isi tema.",
+    fields: [
+      {
+        kind: "list",
+        path: "extras",
+        label: "Bagian tambahan",
+        item: "Bagian",
+        max: 6,
+        blank: { title: "", body: "", photos: [], tone: "paper", after: "event" },
+        fields: [
+          text("title", "Judul", 60, { placeholder: "Informasi Akomodasi" }),
+          { kind: "anchor", path: "after", label: "Tampil setelah" },
+          { kind: "select", path: "tone", label: "Warna latar", options: Object.keys(EXTRA_TONES), labels: EXTRA_TONES, hint: "Mengikuti palet tema yang aktif." },
+          area("body", "Isi", 1200, { placeholder: "Tulis isinya di sini. Baris baru tetap terbawa." }),
+          {
+            kind: "list",
+            path: "photos",
+            label: "Foto",
+            item: "Foto",
+            hint: "Opsional, tanpa batas jumlah.",
+            blank: { src: "", w: 0, h: 0 },
+            fields: [media("src", "Foto", "extra", { dims: true })],
+          },
+        ],
+      },
+    ],
+  },
+  {
     key: "share",
     title: "Footer dan bagikan",
     note: "Selalu tampil.",
@@ -246,6 +277,12 @@ export const GROUPS: Group[] = [
 ];
 
 export const forTheme = <T extends { themes?: string[] }>(items: T[], theme: string) => items.filter((i) => !i.themes || i.themes.includes(theme));
+
+// Posisi bagian tambahan yang ada di tema ini, berurutan seperti di undangan.
+export function extraAnchors(theme: string): { value: ExtraAnchor; label: string }[] {
+  const sections = forTheme(GROUPS, theme).flatMap((g) => (g.section ? [{ value: g.section as ExtraAnchor, label: g.title }] : []));
+  return [{ value: "hero", label: "Pembuka" }, ...sections];
+}
 
 export function getIn(obj: unknown, path: string): unknown {
   return path.split(".").reduce<unknown>((o, k) => (o == null ? undefined : (o as Record<string, unknown>)[k]), obj);
@@ -277,7 +314,7 @@ function checkFields(data: unknown, fields: Field[], theme: string, prefix: stri
       items.forEach((_, i) => checkFields(data, f.fields, theme, `${path}.${i}.`, group, `${f.item} ${i + 1}: `, out));
       continue;
     }
-    if (f.kind === "heading" || f.kind === "select" || f.kind === "number") continue;
+    if (f.kind === "heading" || f.kind === "select" || f.kind === "number" || f.kind === "anchor") continue;
 
     const v = typeof value === "string" ? value.trim() : "";
     if (!v) {

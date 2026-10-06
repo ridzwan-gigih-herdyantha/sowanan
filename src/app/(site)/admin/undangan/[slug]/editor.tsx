@@ -93,7 +93,12 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
     lockedRef.current = locked;
   }, [locked]);
   const rules = useMemo(() => packageRules(packageData, pkg, bought), [packageData, pkg, bought]);
-  const limits = useMemo(() => (rules.photos ? { "sections.gallery.photos": rules.photos } : undefined), [rules]);
+  const limits = useMemo(() => {
+    const out: Record<string, { max: number; note: string }> = {};
+    if (rules.photos) out["sections.gallery.photos"] = rules.photos;
+    if (rules.extras) out.extras = rules.extras;
+    return out;
+  }, [rules]);
   const locks = useMemo(() => (rules.locked.musik_sendiri ? { "media.music": rules.locked.musik_sendiri } : undefined), [rules]);
 
   const groups = useMemo(() => forTheme(GROUPS, theme), [theme]);
@@ -335,7 +340,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
           {groups.map((g) => {
             const enabled = g.section ? data.sections[g.section].enabled : true;
             // Bagian yang tidak termasuk paket selalu mati dan saklarnya dikunci.
-            const lock = g.section === "story" ? rules.locked.cerita : undefined;
+            const lock = g.section === "story" ? rules.locked.cerita : g.key === "extras" && rules.extras?.max === 0 ? rules.extras.note : undefined;
             const isOpen = open.has(g.key);
             const fields = forTheme(g.fields, theme);
             const n = count(g.key);

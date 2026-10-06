@@ -135,7 +135,7 @@ export function cellView(s: Settings, row: MatrixRow, p: PackageId): { on: boole
   const c = row.cells[p];
   if (row.kind === "check" || !c.on) return { on: c.on };
   if (c.n === null) return { on: true, note: "Tanpa batas" };
-  const unit = row.unit || (row.key === "galeri_foto" ? "{n} foto" : "{n}");
+  const unit = row.unit || (row.key === "galeri_foto" ? "{n} foto" : row.key === "bagian_tambahan" ? "sampai {n} bagian" : "{n}");
   return { on: true, note: unit.replaceAll("{n}", String(c.n)) };
 }
 
@@ -144,8 +144,9 @@ export type Purchased = Record<string, number>;
 
 export type PackageRules = {
   pkg: PackageId | null;
-  // Tidak ada berarti jumlah foto tidak dibatasi paket.
+  // Tidak ada berarti jumlahnya tidak dibatasi paket.
   photos?: { max: number; note: string };
+  extras?: { max: number; note: string };
   // Fitur yang terkunci beserta alasannya.
   locked: Partial<Record<FeatureKey, string>>;
 };
@@ -166,12 +167,19 @@ export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string
     locked[key] = `Paket ${name} tidak termasuk ${row.label.toLowerCase()}.${addon ? ` Centang add-on ${addon.name} setelah dibayar.` : " Ganti ke paket yang menyediakannya."}`;
   }
 
-  let photos: PackageRules["photos"];
-  const g = s.matrix.find((r) => r.key === "galeri_foto");
-  const base = g ? (g.cells[p].on ? g.cells[p].n : 0) : null;
-  if (base !== null) {
-    const extra = unlocking("galeri_foto").reduce((n, a) => n + units(a.id) * a.amount, 0);
-    photos = { max: base + extra, note: `Paket ${name} maksimal ${base} foto${extra ? `, ditambah ${extra} dari add-on` : ""}` };
-  }
-  return { pkg: p, photos, locked };
+  // Baris berjumlah yang dihapus atau bertanda tanpa batas berarti tidak dibatasi.
+  const limit = (key: "galeri_foto" | "bagian_tambahan", unit: string, none: string) => {
+    const row = s.matrix.find((r) => r.key === key);
+    const base = row ? (row.cells[p].on ? row.cells[p].n : 0) : null;
+    if (base === null) return undefined;
+    const extra = unlocking(key).reduce((n, a) => n + units(a.id) * a.amount, 0);
+    if (!base && !extra) {
+      const addon = unlocking(key)[0];
+      return { max: 0, note: `Paket ${name} ${none}.${addon ? ` Centang add-on ${addon.name} setelah dibayar.` : " Ganti ke paket yang menyediakannya."}` };
+    }
+    return { max: base + extra, note: `Paket ${name} maksimal ${base} ${unit}${extra ? `, ditambah ${extra} dari add-on` : ""}` };
+  };
+  const photos = limit("galeri_foto", "foto", "tidak termasuk galeri foto");
+  const extras = limit("bagian_tambahan", "bagian tambahan", "tidak termasuk bagian tambahan di luar tema");
+  return { pkg: p, photos, extras, locked };
 }

@@ -56,7 +56,7 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
 
   const row = (a: Addon) => {
     const units = bought[a.id] ?? 0;
-    const multi = a.unlock === "galeri_foto";
+    const multi = a.unlock === "galeri_foto" || a.unlock === "bagian_tambahan";
     return (
       <li key={a.id} className="flex items-center gap-3 rounded-sm border border-line px-3 py-2 text-[14px]">
         {multi ? (
@@ -64,7 +64,7 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
             <span className="min-w-0 flex-1">
               {a.name}
               <span className="block text-[12px] text-ink-mute">
-                {formatRupiah(a.price)} per unit, +{a.amount} foto
+                {formatRupiah(a.price)} per unit, +{a.amount} {a.unlock === "galeri_foto" ? "foto" : "bagian"}
               </span>
             </span>
             <span className="flex items-center gap-1">

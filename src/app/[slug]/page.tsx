@@ -17,7 +17,9 @@ async function load(slug: string) {
   if (!inv || !inv.published || !THEMES[inv.theme]) return null;
   const rules = packageRules(await getSettings(), inv.pkg ?? null, inv.addons);
   const archived = Boolean(inv.archived);
-  const view = toView(inv.slug, inv.data, inv.theme);
+  // Bagian tambahan di luar tema dibatasi paket, kelebihannya tidak ditampilkan.
+  const data = rules.extras ? { ...inv.data, extras: inv.data.extras.slice(0, rules.extras.max) } : inv.data;
+  const view = toView(inv.slug, data, inv.theme);
   // Arsip: hitung mundur, RSVP, dan amplop digital disembunyikan. Isi lain dan buku ucapan tetap tampil.
   if (archived) view.on = { ...view.on, countdown: false, rsvp: false, gifts: false };
   return { theme: THEMES[inv.theme], paid: inv.paid, archived, guestNames: !rules.locked.nama_tamu && !archived, view };

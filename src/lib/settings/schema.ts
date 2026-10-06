@@ -28,6 +28,7 @@ export type ThemeTier = keyof typeof THEME_TIERS;
 export const SYSTEM_KEYS = {
   jumlah_tema: "Dihitung otomatis dari tab Tema",
   galeri_foto: "Membatasi jumlah foto galeri di editor undangan",
+  bagian_tambahan: "Membatasi jumlah bagian tambahan di luar tema di editor undangan",
   musik_sendiri: "Membuka unggah musik sendiri di editor undangan",
   warna_tema: "Membuka ganti palet dan font di editor undangan",
   cerita: "Membuka bagian Cerita di editor undangan",
@@ -36,11 +37,12 @@ export const SYSTEM_KEYS = {
 } as const;
 export type SystemKey = keyof typeof SYSTEM_KEYS;
 // Kunci berjumlah dicatat sebagai angka, sisanya cukup termasuk atau tidak.
-export const COUNT_KEYS: SystemKey[] = ["jumlah_tema", "galeri_foto"];
-export type FeatureKey = Exclude<SystemKey, "jumlah_tema" | "galeri_foto">;
+export const COUNT_KEYS: SystemKey[] = ["jumlah_tema", "galeri_foto", "bagian_tambahan"];
+export type FeatureKey = Exclude<SystemKey, "jumlah_tema" | "galeri_foto" | "bagian_tambahan">;
 export const FEATURE_KEYS = Object.keys(SYSTEM_KEYS).filter((k) => !COUNT_KEYS.includes(k as SystemKey)) as FeatureKey[];
-// Add-on bisa membuka satu kunci. Untuk galeri_foto, jumlah foto per unit diisi di kolom amount.
-export const UNLOCK_KEYS = ["galeri_foto", ...FEATURE_KEYS] as const;
+// Add-on bisa membuka satu kunci. Untuk kunci berjumlah, tambahan per unit diisi di kolom amount.
+export const AMOUNT_KEYS = ["galeri_foto", "bagian_tambahan"] as const;
+export const UNLOCK_KEYS = [...AMOUNT_KEYS, ...FEATURE_KEYS] as const;
 export type UnlockKey = (typeof UNLOCK_KEYS)[number];
 
 export const ACTIVE_MONTHS = [3, 6, 12, 24] as const;
@@ -152,7 +154,7 @@ export const settingsSchema = z
           price: rupiah("Harga tambahan"),
           scope: str("Berlaku untuk", 60),
           unlock: z.enum(["", ...UNLOCK_KEYS]).default(""),
-          amount: count("Tambahan foto", 0, 500).default(0),
+          amount: count("Tambahan per unit", 0, 500).default(0),
         }),
       )
       .max(30, "Tambahan maksimal 30."),
@@ -204,7 +206,9 @@ export const settingsSchema = z
     }
     if (!PACKAGE_IDS.some((p) => s.packages[p].on)) ctx.addIssue({ code: "custom", path: ["packages", "dasar", "on"], message: "Minimal satu paket harus tampil." });
     s.addons.forEach((a, i) => {
-      if (a.unlock === "galeri_foto" && a.amount < 1) ctx.addIssue({ code: "custom", path: ["addons", i, "amount"], message: "Isi jumlah foto yang ditambahkan per unit." });
+      if ((AMOUNT_KEYS as readonly string[]).includes(a.unlock) && a.amount < 1) {
+        ctx.addIssue({ code: "custom", path: ["addons", i, "amount"], message: a.unlock === "galeri_foto" ? "Isi jumlah foto yang ditambahkan per unit." : "Isi jumlah bagian yang ditambahkan per unit." });
+      }
     });
     if (s.contact.open >= s.contact.close) ctx.addIssue({ code: "custom", path: ["contact", "close"], message: "Jam tutup harus setelah jam buka." });
   });

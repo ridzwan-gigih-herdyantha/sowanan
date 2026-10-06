@@ -12,8 +12,15 @@ export function packageIssues(data: InvitationData, theme: string, rules: Packag
     out.push({
       path: "sections.gallery.photos",
       group: "gallery",
-      message: `${rules.photos.note}, sekarang ${photos}. Hapus ${photos - rules.photos.max} foto atau tambah add-on.`,
+      message: rules.photos.max
+        ? `${rules.photos.note}, sekarang ${photos}. Hapus ${photos - rules.photos.max} foto atau tambah add-on.`
+        : `${rules.photos.note} Hapus semua foto atau matikan bagian Galeri.`,
     });
+  }
+  const extras = data.extras.length;
+  if (rules.extras && extras > rules.extras.max) {
+    const { max, note } = rules.extras;
+    out.push({ path: "extras", group: "extras", message: max ? `${note}, sekarang ${extras}. Hapus ${extras - max} bagian.` : `${note} Hapus semua bagian tambahan.` });
   }
   if (rules.locked.musik_sendiri && data.media.music) {
     out.push({ path: "media.music", group: "hero", message: `${rules.locked.musik_sendiri} Hapus musik yang diunggah.` });

@@ -1,6 +1,7 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
+import { Extras } from "@/components/invitation/extras";
 import { Greeting } from "@/components/invitation/greeting";
 import { Rsvp } from "@/components/invitation/rsvp";
 import { Fasad, GiftCard, HangingLantern, Riwaq, SakinahHero, StarCountdown } from "@/components/invitation/sakinah/interactive";
@@ -438,25 +439,35 @@ export function FadhilNayla({ inv }: { inv: InvitationView }) {
       <main>
         <Hero inv={inv} />
         <Ayat inv={inv} />
+        <Extras inv={inv} at="hero" />
         {inv.on.couple && <Couple inv={inv} />}
+        <Extras inv={inv} at="couple" />
         {inv.on.story && (
           <>
             <Divider tone="gading" />
             <StorySection inv={inv} />
           </>
         )}
+        <Extras inv={inv} at="story" />
         {inv.on.event && <EventDetails inv={inv} />}
+        <Extras inv={inv} at="event" />
         {inv.on.countdown && <CountdownSection inv={inv} />}
+        <Extras inv={inv} at="countdown" />
         {inv.on.gallery && (
           <>
             <Divider tone="gading" />
             <GallerySection inv={inv} />
           </>
         )}
+        <Extras inv={inv} at="gallery" />
         {inv.on.rsvp && <RsvpSection inv={inv} />}
+        <Extras inv={inv} at="rsvp" />
         {inv.on.gifts && <Gifts inv={inv} />}
+        <Extras inv={inv} at="gifts" />
         {inv.on.wishes && <WishesSection inv={inv} />}
+        <Extras inv={inv} at="wishes" />
         {inv.on.closing && <Closing inv={inv} />}
+        <Extras inv={inv} at="closing" />
       </main>
       <Footer inv={inv} />
       <RevealOnScroll />

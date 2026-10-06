@@ -2,7 +2,8 @@ import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
 import { resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
-import type { InvitationData, SectionKey } from "./schema";
+import type { ExtraAnchor, ExtraTone, InvitationData, SectionKey } from "./schema";
+import { extraAnchors } from "./spec";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
 
@@ -19,6 +20,21 @@ function parts(iso: string, tz: keyof typeof ZONES) {
     .format(new Date(iso))
     .split("/");
   return { weekday: get("weekday"), day: get("day"), month: get("month"), year: get("year"), dd: num[0], mm: num[1], yyyy: num[2] };
+}
+
+export type ExtraView = { title: string; body: string; tone: ExtraTone; photos: { src: string; w: number; h: number; alt: string }[] };
+
+// Bagian tambahan dikelompokkan per posisi. Posisi yang tidak ada di tema (misalnya setelah ganti tema) tampil sebelum Penutup.
+function groupExtras(d: InvitationData, theme: string) {
+  const known = new Set(extraAnchors(theme).map((a) => a.value));
+  const out: Partial<Record<ExtraAnchor, ExtraView[]>> = {};
+  for (const e of d.extras) {
+    const photos = e.photos.filter((p) => p.src).map((p, i) => ({ src: u(p.src), w: p.w || 1600, h: p.h || 1200, alt: `${e.title || "Foto"} ${i + 1}` }));
+    if (!e.title.trim() && !e.body.trim() && !photos.length) continue;
+    const at = known.has(e.after) ? e.after : "wishes";
+    (out[at] ??= []).push({ title: e.title, body: e.body, tone: e.tone, photos });
+  }
+  return out;
 }
 
 export function toView(slug: string, d: InvitationData, theme = "") {
@@ -81,6 +97,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     polaroids: s.collage.polaroids.map((p) => ({ ...p, src: u(p.src) })),
     specimens: s.specimens.items.map((p) => ({ ...p, src: u(p.src) })),
     on: enabled,
+    extras: groupExtras(d, theme),
     palette,
     fonts: resolveFonts(theme, d.style),
     pageColor: palette["--inv-paper"] ?? "",

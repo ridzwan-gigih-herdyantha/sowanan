@@ -1,6 +1,7 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
+import { Extras } from "@/components/invitation/extras";
 import { Greeting } from "@/components/invitation/greeting";
 import { Lung, Lurik, Motif, Seret, texture, Wiru, type MotifName, type TextureName } from "@/components/invitation/pakeliran-ornaments";
 import { Amplop, BabakList, HeroStage, PuppetFlip, SaronCountdown, Simpingan, TancepKayon } from "@/components/invitation/pakeliran/interactive";
@@ -406,14 +407,18 @@ export function DanangKinanthi({ inv }: { inv: InvitationView }) {
       <main>
         <Hero inv={inv} />
         <Wiru />
+        <Extras inv={inv} at="hero" />
         {inv.on.couple && <Couple inv={inv} />}
+        <Extras inv={inv} at="couple" />
         {inv.on.story && (
           <>
             <Lurik />
             <StorySection inv={inv} />
           </>
         )}
+        <Extras inv={inv} at="story" />
         {inv.on.event && <EventDetails inv={inv} />}
+        <Extras inv={inv} at="event" />
         {inv.on.countdown && (
           <>
             <Lurik variant="b" />
@@ -421,26 +426,32 @@ export function DanangKinanthi({ inv }: { inv: InvitationView }) {
             <BatikBand />
           </>
         )}
+        <Extras inv={inv} at="countdown" />
         {inv.on.gallery && <GallerySection inv={inv} />}
+        <Extras inv={inv} at="gallery" />
         {inv.on.rsvp && (
           <>
             <Lurik />
             <RsvpSection inv={inv} />
           </>
         )}
+        <Extras inv={inv} at="rsvp" />
         {inv.on.gifts && <Gifts inv={inv} />}
+        <Extras inv={inv} at="gifts" />
         {inv.on.wishes && (
           <>
             <Wiru />
             <WishesSection inv={inv} />
           </>
         )}
+        <Extras inv={inv} at="wishes" />
         {inv.on.closing && (
           <>
             <Lurik variant="b" />
             <Closing inv={inv} />
           </>
         )}
+        <Extras inv={inv} at="closing" />
       </main>
       <Footer inv={inv} />
       <RevealOnScroll />
