@@ -1,9 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { downloadQr, QrCode } from "@/components/qr-code";
 import { fillGuestMessage, guestLink, MAX_GUESTS, parseCsv, parseGuestRows, parseGuestText, type GuestInput } from "@/lib/guests";
-import { addGuests, checkinLink, deleteGuests, markSent, saveGuestMessage, setGuestCheckin, updateGuest, type Guest } from "./actions";
+import type { CheckinSchedule } from "@/lib/checkin";
+import { addGuests, checkinLink, deleteGuests, openCheckinNow, markSent, saveGuestMessage, setGuestCheckin, updateGuest, type Guest } from "./actions";
 
 type Props = {
   slug: string;
@@ -15,8 +17,8 @@ type Props = {
   // Alasan unduh Excel terkunci, kosong berarti boleh.
   excelLock: string | null;
   qr: { on: true } | { on: false; reason: string | null };
-  // Jam buka dan tutup absensi di lokasi, kosong kalau tanggal acara belum diisi.
-  window: { from: string; until: string } | null;
+  // Jadwal absensi di lokasi, kosong kalau tanggal acara belum diisi atau undangan contoh.
+  window: CheckinSchedule | null;
 };
 type Notice = { tone: "ok" | "error"; text: string } | null;
 
@@ -33,7 +35,18 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const router = useRouter();
   const url = token ? `${origin}/absen/${token}` : "";
+
+  async function setOpen(next: boolean) {
+    if (next && !confirm("Buka absensi sekarang? Tamu yang memindai QR bisa langsung mencatat kehadiran, walaupun acara belum dimulai.")) return;
+    setBusy(true);
+    const res = await openCheckinNow(slug, next).catch(() => ({ ok: false as const, error: "Gagal menyimpan. Cek koneksi." }));
+    setBusy(false);
+    if (!res.ok) return setError(res.error);
+    setError("");
+    router.refresh();
+  }
 
   async function load(regenerate = false) {
     if (regenerate && !confirm("Ganti QR kehadiran? QR yang sudah dicetak langsung tidak bisa dipakai lagi.")) return;
@@ -61,9 +74,26 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
         Cetak QR ini dan pasang di meja penerima tamu. Tamu memindainya dengan kamera HP. Tamu yang pernah membuka link pribadinya langsung dikenali, yang lain cukup menulis nama. Nama di luar daftar tetap tercatat sebagai datang langsung.
       </p>
       {open && (
-        <p className="mt-2 text-[13px] text-ink-mute">
-          Absensi dibuka {open.from} sampai {open.until}.
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-sm bg-ivory px-4 py-3 text-[14px]">
+          <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${open.state === "open" ? "bg-wine text-white" : "bg-white text-ink-soft ring-1 ring-line"}`}>
+            {open.state === "open" ? "Sedang dibuka" : open.state === "before" ? "Belum dibuka" : "Sudah ditutup"}
+          </span>
+          <span className="min-w-0 flex-1 text-ink-soft">
+            {open.manual ? "Dibuka manual " : "Dibuka "}
+            {open.from} sampai {open.until}.
+          </span>
+          {open.canOpen && open.state !== "open" && (
+            <button type="button" onClick={() => setOpen(true)} disabled={busy} className="rounded-sm bg-wine px-4 py-2 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-50">
+              Buka sekarang
+            </button>
+          )}
+          {open.manual && (
+            <button type="button" onClick={() => setOpen(false)} disabled={busy} className="text-[14px] text-ink-mute underline underline-offset-4 hover:text-wine disabled:opacity-50">
+              Kembalikan ke jadwal
+            </button>
+          )}
+          {!open.canOpen && open.state === "before" && <span className="w-full text-[12px] text-ink-mute">Jalankan migrasi 0010 untuk bisa membuka absensi lebih awal.</span>}
+        </div>
       )}
       {token ? (
         <div className="mt-4 grid gap-5 sm:grid-cols-[180px_minmax(0,1fr)] sm:items-start">

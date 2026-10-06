@@ -14,7 +14,10 @@ export type CheckinResult =
   | { status: "unknown" }
   | { status: "closed"; reason: string };
 
-type InvitationRow = { id: string; slug: string; theme: string; data: unknown; package?: string | null; addons?: Purchased };
+type InvitationRow = { id: string; slug: string; theme: string; data: unknown; package?: string | null; addons?: Purchased; checkin_opened_at?: string | null };
+
+// Kolom checkin_opened_at (migrasi 0010) dan package, addons (0006, 0007) bisa belum ada, jadi dicoba bertahap.
+const ROW_COLS = ["id, slug, theme, data, package, addons, checkin_opened_at", "id, slug, theme, data, package, addons", "id, slug, theme, data"];
 
 const HOUR = 3_600_000;
 // Absensi dibuka 3 jam sebelum acara sampai 3 jam setelah selesai, supaya foto QR yang tersebar tidak bisa dipakai dari rumah.
@@ -25,11 +28,17 @@ export const newCheckinToken = () => randomBytes(18).toString("base64url");
 export const validGuestToken = (k: string) => /^[a-z0-9]{8,32}$/i.test(k);
 const normalizeName = (s: string) => s.replace(/\s+/g, " ").trim();
 
-export function checkinWindow(data: InvitationData): { from: Date; until: Date } | null {
+// openedAt: admin menekan Buka sekarang. Absensi langsung terbuka, dan tutup sesuai jadwal atau 12 jam setelah dibuka, mana yang lebih lama.
+export function checkinWindow(data: InvitationData, openedAt?: string | null): { from: Date; until: Date; manual: boolean } | null {
   const start = Date.parse(data.event.start);
   if (!Number.isFinite(start)) return null;
   const end = Date.parse(data.event.end);
-  return { from: new Date(start - OPEN_BEFORE), until: new Date((Number.isFinite(end) && end > start ? end : start + 12 * HOUR) + CLOSE_AFTER) };
+  const from = start - OPEN_BEFORE;
+  const until = (Number.isFinite(end) && end > start ? end : start + 12 * HOUR) + CLOSE_AFTER;
+  const opened = openedAt ? Date.parse(openedAt) : NaN;
+  if (Number.isFinite(opened) && opened < from) return { from: new Date(opened), until: new Date(Math.max(until, opened + 12 * HOUR)), manual: true };
+  if (Number.isFinite(opened) && opened > until) return { from: new Date(opened), until: new Date(opened + 12 * HOUR), manual: true };
+  return { from: new Date(from), until: new Date(until), manual: false };
 }
 
 const whenFmt = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" });
@@ -41,7 +50,7 @@ async function rulesLock(row: InvitationRow): Promise<string | null> {
 }
 
 async function bySlug(slug: string): Promise<InvitationRow | null> {
-  for (const cols of ["id, slug, theme, data, package, addons", "id, slug, theme, data"]) {
+  for (const cols of ROW_COLS) {
     const { data, error } = await supabaseAdmin().from("invitations").select(cols).eq("slug", slug).maybeSingle();
     if (!error) return (data as unknown as InvitationRow) ?? null;
   }
@@ -62,7 +71,7 @@ export type CheckinPage = { row: InvitationRow; couple: string; open: true } | {
 export async function checkinPage(token: string, now = Date.now()): Promise<CheckinPage | null> {
   if (!/^[A-Za-z0-9_-]{20,40}$/.test(token)) return null;
   let row: InvitationRow | null = null;
-  for (const cols of ["id, slug, theme, data, package, addons", "id, slug, theme, data"]) {
+  for (const cols of ROW_COLS) {
     const res = await supabaseAdmin().from("invitations").select(cols).eq("checkin_token", token).maybeSingle();
     if (!res.error) {
       row = (res.data as unknown as InvitationRow) ?? null;
@@ -80,7 +89,7 @@ export async function checkinPage(token: string, now = Date.now()): Promise<Chec
   const demo = isDemo(row.slug, row.theme);
   if (archiveInfo(parsed.data, now, demo).archived) return closed("Acara sudah lama selesai, absensi ditutup.");
   // Undangan contoh selalu terbuka untuk demo.
-  const w = checkinWindow(parsed.data);
+  const w = checkinWindow(parsed.data, row.checkin_opened_at);
   if (!demo && w) {
     if (now < w.from.getTime()) return closed(`Absensi dibuka mulai ${formatWhen(w.from)}.`);
     if (now > w.until.getTime()) return closed("Acara sudah selesai, absensi ditutup.");
@@ -140,11 +149,15 @@ export async function setCheckedIn(invitationId: string, guestId: number, presen
   return data ?? null;
 }
 
-// Untuk panel admin: jam buka dan tutup absensi.
-export async function windowForSlug(slug: string): Promise<{ from: string; until: string } | null> {
+export type CheckinSchedule = { from: string; until: string; state: "before" | "open" | "after"; manual: boolean; canOpen: boolean };
+
+// Untuk panel admin: jam buka dan tutup absensi, statusnya sekarang, dan apakah tombol Buka sekarang bisa dipakai.
+export async function windowForSlug(slug: string, now = Date.now()): Promise<CheckinSchedule | null> {
   const row = await bySlug(slug);
   const parsed = row && invitationDataSchema.safeParse(row.data);
   if (!row || !parsed?.success || isDemo(row.slug, row.theme)) return null;
-  const w = checkinWindow(parsed.data);
-  return w ? { from: formatWhen(w.from), until: formatWhen(w.until) } : null;
+  const w = checkinWindow(parsed.data, row.checkin_opened_at);
+  if (!w) return null;
+  const state = now < w.from.getTime() ? "before" : now > w.until.getTime() ? "after" : "open";
+  return { from: formatWhen(w.from), until: formatWhen(w.until), state, manual: w.manual, canOpen: "checkin_opened_at" in row };
 }

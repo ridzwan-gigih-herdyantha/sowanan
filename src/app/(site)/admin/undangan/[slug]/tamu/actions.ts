@@ -112,6 +112,17 @@ export async function setGuestCheckin(slug: string, guestId: number, present: bo
   return { ok: true, data: guest.checked_in_at };
 }
 
+// Buka absensi sekarang walaupun belum jadwalnya, atau kembalikan ke jadwal acara.
+export async function openCheckinNow(slug: string, open: boolean): Promise<Result<null>> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  const { error } = await supabaseAdmin()
+    .from("invitations")
+    .update({ checkin_opened_at: open ? new Date().toISOString() : null })
+    .eq("slug", slug);
+  if (error) return { ok: false, error: "Gagal menyimpan. Pastikan migrasi 0010 sudah dijalankan." };
+  return { ok: true, data: null };
+}
+
 // Link di QR kehadiran milik mempelai. Dibuat saat pertama diminta, atau diganti kalau QR lama bocor.
 export async function checkinLink(slug: string, regenerate = false): Promise<Result<string>> {
   if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
