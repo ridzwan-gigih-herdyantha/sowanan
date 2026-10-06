@@ -12,6 +12,8 @@ import { checkInvitation, type Issue } from "@/lib/invitation/spec";
 import { getSettingsFresh, PACKAGE_IDS, PACKAGE_NAMES, packageRules, themeAvailable, type PackageId, type Purchased, type Settings } from "@/lib/settings";
 import { validateSlug } from "@/lib/reserved-slugs";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { BUCKET } from "@/lib/storage/media";
+import { wishesTag } from "@/lib/guestbook";
 import { THEME_NAMES } from "@/themes/media";
 
 type Result = { ok: true; at: string } | { ok: false; error: string; issues?: Issue[] };
@@ -185,4 +187,55 @@ export async function markArchiveNotified(slug: string, notified: boolean): Prom
   const { error } = await supabaseAdmin().from("invitations").update({ archive_notified_at: at }).eq("slug", slug);
   if (error) return { ok: false, error: "Gagal menyimpan. Pastikan migrasi 0008 sudah dijalankan." };
   return { ok: true, at: at ?? "" };
+}
+
+type DeleteSummary = { couple: string; rsvps: number; wishes: number; guests: number; files: number };
+
+async function storageFiles(slug: string): Promise<string[]> {
+  const out: string[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await supabaseAdmin().storage.from(BUCKET).list(slug, { limit: 1000, offset });
+    if (error || !data?.length) break;
+    out.push(...data.filter((f) => f.id).map((f) => `${slug}/${f.name}`));
+    if (data.length < 1000) break;
+  }
+  return out;
+}
+
+// Yang ikut terhapus, ditampilkan di dialog konfirmasi sebelum admin menghapus.
+export async function deleteSummary(slug: string): Promise<{ ok: true; data: DeleteSummary } | { ok: false; error: string }> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  const sb = supabaseAdmin();
+  const { data: row } = await sb.from("invitations").select("id, theme, data, draft").eq("slug", slug).maybeSingle();
+  if (!row) return { ok: false, error: "Undangan tidak ditemukan." };
+  if (isDemo(slug, row.theme)) return { ok: false, error: "Undangan contoh dipakai di homepage dan tidak bisa dihapus." };
+  const count = async (table: string) => (await sb.from(table).select("id", { count: "exact", head: true }).eq("invitation_id", row.id)).count ?? 0;
+  const [rsvps, wishes, guests, files] = await Promise.all([count("rsvps"), count("wishes"), count("guests"), storageFiles(slug)]);
+  const parsed = invitationDataSchema.safeParse(row.draft ?? row.data);
+  const couple = parsed.success ? [parsed.data.couple.groom.name, parsed.data.couple.bride.name].filter(Boolean).join(" & ") : "";
+  return { ok: true, data: { couple, rsvps, wishes, guests, files: files.length } };
+}
+
+// Hapus permanen. RSVP, ucapan, dan daftar tamu ikut terhapus lewat foreign key, berkas di storage dihapus di sini.
+export async function deleteInvitation(slug: string, confirmSlug: string): Promise<{ ok: true; warning?: string } | { ok: false; error: string }> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  if (confirmSlug.trim() !== slug) return { ok: false, error: "Ketik slug undangan dengan tepat untuk menghapus." };
+  const sb = supabaseAdmin();
+  const { data: row } = await sb.from("invitations").select("theme").eq("slug", slug).maybeSingle();
+  if (!row) return { ok: false, error: "Undangan tidak ditemukan." };
+  if (isDemo(slug, row.theme)) return { ok: false, error: "Undangan contoh dipakai di homepage dan tidak bisa dihapus." };
+
+  // Baris dihapus dulu. Kalau storage gagal, yang tersisa hanya berkas yatim, bukan undangan tanpa foto.
+  const { error } = await sb.from("invitations").delete().eq("slug", slug);
+  if (error) return { ok: false, error: "Gagal menghapus undangan." };
+  refresh(slug);
+  updateTag(wishesTag(slug));
+
+  const files = await storageFiles(slug);
+  let failed = 0;
+  for (let i = 0; i < files.length; i += 100) {
+    const { error: e } = await sb.storage.from(BUCKET).remove(files.slice(i, i + 100));
+    if (e) failed += files.slice(i, i + 100).length;
+  }
+  return failed ? { ok: true, warning: `Undangan terhapus, tapi ${failed} berkas di storage gagal dihapus. Hapus manual dari halaman Media.` } : { ok: true };
 }

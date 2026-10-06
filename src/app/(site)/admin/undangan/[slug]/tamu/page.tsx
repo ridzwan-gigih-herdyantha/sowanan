@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
-import { DEFAULT_GUEST_MESSAGE, MAX_GUESTS } from "@/lib/guests";
+import { qrEnabled, windowForSlug } from "@/lib/checkin";
+import { DEFAULT_GUEST_MESSAGE, GUEST_COLS, MAX_GUESTS } from "@/lib/guests";
 import { invitationRules } from "@/lib/invitation/rules";
 import { invitationDataSchema } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
@@ -11,6 +12,7 @@ import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { invitationLabel, THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../../../login-form";
 import { InvitationTabs } from "../../tabs";
+import type { Guest } from "./actions";
 import { GuestManager } from "./guest-manager";
 
 export const metadata: Metadata = {
@@ -29,7 +31,8 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const { data: row } = await sb.from("invitations").select("id, slug, theme, published, data, draft, guest_message").eq("slug", slug).maybeSingle();
   if (!row || !THEME_NAMES[row.theme]) notFound();
 
-  const lock = (await invitationRules(slug))?.rules.locked.nama_tamu;
+  const rules = (await invitationRules(slug))?.rules;
+  const lock = rules?.locked.nama_tamu;
   if (lock) {
     return (
       <>
@@ -47,18 +50,22 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
     );
   }
 
-  const { data: guests, error } = await sb
-    .from("guests")
-    .select("id, name, phone, sent_at")
-    .eq("invitation_id", row.id)
-    .order("created_at", { ascending: true })
-    .order("id", { ascending: true })
-    .limit(MAX_GUESTS);
-  if (error) return <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Tabel tamu belum ada. Jalankan supabase/migrations/0004_guests.sql.</p>;
+  let guests: Guest[] | null = null;
+  for (const cols of GUEST_COLS) {
+    const res = await sb.from("guests").select(cols).eq("invitation_id", row.id).order("created_at", { ascending: true }).order("id", { ascending: true }).limit(MAX_GUESTS);
+    if (!res.error) {
+      guests = res.data as unknown as Guest[];
+      break;
+    }
+  }
+  if (!guests) return <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Tabel tamu belum ada. Jalankan supabase/migrations/0004_guests.sql.</p>;
 
   const d = invitationDataSchema.parse(row.draft ?? row.data ?? {});
   const couple = [d.couple.groom.name, d.couple.bride.name].filter(Boolean).join(" & ");
   const date = Date.parse(d.event.start) ? toView(slug, d).dateLong : "";
+  // QR absensi butuh kolom dari migrasi 0009. Tanpa itu fitur dianggap belum siap.
+  const qr = await qrEnabled(slug);
+  const columns = guests.length ? "qr_token" in guests[0] : !(await sb.from("guests").select("qr_token").limit(1)).error;
 
   return (
     <>
@@ -81,6 +88,9 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         template={row.guest_message ?? DEFAULT_GUEST_MESSAGE}
         couple={couple}
         date={date}
+        excelLock={rules?.locked.ekspor_excel ?? null}
+        window={qr.enabled ? await windowForSlug(slug) : null}
+        qr={qr.enabled ? (columns ? { on: true } : { on: false, reason: "Terjadi kesalahan pada server" }) : { on: false, reason: qr.reason ?? null }}
       />
     </>
   );

@@ -4,9 +4,9 @@ import Image from "next/image";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
+import { GUEST_KEY, guestCodeKey, recall, remember } from "@/lib/guest-memory";
 import { PintuDoor, type PintuProps } from "./sakinah/door";
 
-const GUEST_KEY = "sowanan:guest";
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
 const GuestContext = createContext<GuestCtx>({ guest: "", setGuest: () => {} });
@@ -17,6 +17,12 @@ const ArchivedContext = createContext(false);
 export const useArchived = () => useContext(ArchivedContext);
 export function Archived({ archived, children }: { archived: boolean; children: ReactNode }) {
   return <ArchivedContext.Provider value={archived}>{children}</ArchivedContext.Provider>;
+}
+
+// Slug undangan untuk mengingat kode link pribadi tamu (?k=). Kosong di pratinjau admin, jadi tidak ada yang disimpan.
+const SlugContext = createContext("");
+export function InvitationSlug({ slug, children }: { slug: string; children: ReactNode }) {
+  return <SlugContext.Provider value={slug}>{children}</SlugContext.Provider>;
 }
 
 // Nama tamu dari tautan (?to=) hanya dipakai kalau paket undangan menyertakannya.
@@ -64,19 +70,8 @@ function readGuestParam() {
   return to ? to.trim().slice(0, 40) : "";
 }
 
-function readStoredGuest() {
-  try {
-    return localStorage.getItem(GUEST_KEY) ?? "";
-  } catch {
-    return "";
-  }
-}
-
-function storeGuest(name: string) {
-  try {
-    localStorage.setItem(GUEST_KEY, name);
-  } catch {}
-}
+const readStoredGuest = () => recall(GUEST_KEY);
+const storeGuest = (name: string) => remember(GUEST_KEY, name);
 
 type Door =
   | { kind: "seal"; couple: string; monogram: string; seal: string }
@@ -113,7 +108,16 @@ const arrow = (
 
 export function InvitationShell({ door, music, synth, className, style, children }: Props) {
   const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
-  const invited = useContext(GuestNamesContext) ? fromLink : "";
+  const namesAllowed = useContext(GuestNamesContext);
+  const invited = namesAllowed ? fromLink : "";
+  const slug = useContext(SlugContext);
+
+  // Kode link pribadi diingat di HP tamu, supaya saat memindai QR mempelai di lokasi tamu langsung dikenali.
+  useEffect(() => {
+    if (!slug || !namesAllowed) return;
+    const k = new URLSearchParams(window.location.search).get("k");
+    if (k && /^[a-z0-9]{8,32}$/i.test(k)) remember(guestCodeKey(slug), k);
+  }, [slug, namesAllowed]);
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [playing, setPlaying] = useState(false);

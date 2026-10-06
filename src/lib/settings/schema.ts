@@ -33,7 +33,8 @@ export const SYSTEM_KEYS = {
   warna_tema: "Membuka ganti palet dan font di editor undangan",
   cerita: "Membuka bagian Cerita di editor undangan",
   nama_tamu: "Membuka halaman nama tamu",
-  ekspor_excel: "Membuka unduh Excel di halaman RSVP",
+  ekspor_excel: "Membuka unduh Excel di halaman RSVP dan daftar tamu",
+  qr_absensi: "Membuka QR kehadiran tamu dan halaman pemindai di lokasi",
 } as const;
 export type SystemKey = keyof typeof SYSTEM_KEYS;
 // Kunci berjumlah dicatat sebagai angka, sisanya cukup termasuk atau tidak.

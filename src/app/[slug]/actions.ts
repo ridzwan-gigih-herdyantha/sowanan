@@ -70,3 +70,4 @@ export async function submitRsvp(slug: string, input: z.infer<typeof rsvpSchema>
 
   return { ok: true, data: null };
 }
+

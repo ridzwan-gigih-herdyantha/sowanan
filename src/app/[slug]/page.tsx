@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { getInvitation, listPublishedSlugs } from "@/lib/invitation/load";
 import { toView } from "@/lib/invitation/view";
-import { Archived, GuestNames } from "@/components/invitation/shell";
+import { Archived, GuestNames, InvitationSlug } from "@/components/invitation/shell";
 import { Watermark } from "@/components/invitation/watermark";
 import { getSettings, packageRules } from "@/lib/settings";
 import { THEMES } from "@/themes";
@@ -56,7 +56,9 @@ export default async function InvitationPage({ params }: PageProps<"/[slug]">) {
     <>
       <Archived archived={found.archived}>
         <GuestNames allowed={found.guestNames}>
-          <Component inv={found.view} />
+          <InvitationSlug slug={found.view.slug}>
+            <Component inv={found.view} />
+          </InvitationSlug>
         </GuestNames>
       </Archived>
       {!found.paid && <Watermark />}

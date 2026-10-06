@@ -9,6 +9,9 @@ import { THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../login-form";
 import { AdminFrame } from "../frame";
 import { CreateForm } from "./create-form";
+import { DeleteButton } from "./delete-button";
+import { FILTERS, type FilterKey } from "./filter-options";
+import { Filters } from "./filters";
 import { PackageSelect } from "./package-select";
 import { PaymentToggle } from "./payment-toggle";
 
@@ -51,7 +54,23 @@ function ArchiveBadge({ slug, info, notified }: { slug: string; info: ArchiveInf
   );
 }
 
-async function List() {
+type Query = Partial<Record<FilterKey | "q", string>>;
+
+const pick = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)?.trim() || undefined;
+
+// Hanya nilai yang dikenal yang dipakai, supaya parameter URL asal-asalan tidak mengosongkan daftar.
+function readQuery(sp: Record<string, string | string[] | undefined>): Query {
+  const out: Query = {};
+  const q = pick(sp.q);
+  if (q) out.q = q.slice(0, 80);
+  for (const key of Object.keys(FILTERS) as FilterKey[]) {
+    const v = pick(sp[key]);
+    if (v && v in FILTERS[key].options) out[key] = v;
+  }
+  return out;
+}
+
+async function List({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   if (!hasSupabase()) {
     return (
       <AdminFrame current="/admin/undangan" title="Undangan">
@@ -89,6 +108,21 @@ async function List() {
   const archive = (r: Row) => archiveFromDates(r.es, r.ee, undefined, isDemo(r.slug, r.theme));
   const toNotify = rows.filter((r) => archive(r).noticeDue && !r.archive_notified_at).length;
 
+  const query = readQuery(await searchParams);
+  const needle = query.q?.toLowerCase();
+  const shown = rows.filter((r) => {
+    if (needle && ![couple(r), r.slug, r.dg, r.db].some((v) => v?.toLowerCase().includes(needle))) return false;
+    if (query.paket && (r.package || "kosong") !== query.paket) return false;
+    if (query.bayar && (r.payment_status === "belum_lunas" ? "belum" : "lunas") !== query.bayar) return false;
+    if (query.status === "contoh" ? !isDemo(r.slug, r.theme) : query.status && (r.published ? "tayang" : "draf") !== query.status) return false;
+    if (query.arsip) {
+      const a = archive(r);
+      const state = a.archived ? "beku" : a.noticeDue && !r.archive_notified_at ? "segera" : "aktif";
+      if (state !== query.arsip) return false;
+    }
+    return true;
+  });
+
   return (
     <AdminFrame email={admin.email ?? ""} current="/admin/undangan" title="Undangan">
       <CreateForm packages={packages} themes={themes} />
@@ -101,6 +135,8 @@ async function List() {
         </p>
       </div>
 
+      <Filters shown={shown.length} total={rows.length} />
+
       <div className="mt-3 hidden grid-cols-[minmax(0,1fr)_140px_110px_80px_100px_150px] gap-4 border-b border-line pb-2 text-[12px] tracking-[1px] text-ink-mute uppercase lg:grid">
         <span>Pasangan</span>
         <span>Paket</span>
@@ -110,7 +146,8 @@ async function List() {
         <span className="sr-only">Aksi</span>
       </div>
       <ul className="divide-y divide-line border-b border-line">
-        {rows.map((r) => (
+        {shown.length === 0 && <li className="py-10 text-center text-[15px] text-ink-mute">{rows.length ? "Tidak ada undangan yang cocok dengan filter." : "Belum ada undangan."}</li>}
+        {shown.map((r) => (
           <li key={r.slug} className="grid grid-cols-2 items-center gap-x-4 gap-y-3 py-4 lg:grid-cols-[minmax(0,1fr)_140px_110px_80px_100px_150px]">
             <div className="col-span-2 min-w-0 lg:col-span-1">
               <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="block truncate font-serif text-xl text-ink no-underline hover:text-wine">
@@ -138,6 +175,7 @@ async function List() {
               <Link href={`/admin/undangan/${r.slug}/respon`} prefetch={false} className="text-wine underline underline-offset-4">
                 RSVP
               </Link>
+              {!isDemo(r.slug, r.theme) && <DeleteButton slug={r.slug} />}
             </span>
           </li>
         ))}
@@ -146,11 +184,11 @@ async function List() {
   );
 }
 
-export default function InvitationsPage() {
+export default function InvitationsPage({ searchParams }: PageProps<"/admin/undangan">) {
   return (
     <div className="min-h-dvh bg-ivory">
       <Suspense fallback={<p className="px-5 py-16 text-ink-mute">Memuat...</p>}>
-        <List />
+        <List searchParams={searchParams} />
       </Suspense>
     </div>
   );

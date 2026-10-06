@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Dropdown } from "../dropdown";
 import { setPackage } from "./actions";
 
+// Belum dipilih hanya muncul untuk undangan lama yang dibuat sebelum paket wajib dipilih.
 const OPTIONS = [
   ["", "Belum dipilih"],
   ["dasar", "Dasar"],
@@ -17,12 +19,15 @@ export function PackageSelect({ slug, value: initial }: { slug: string; value: s
 
   return (
     <span className="inline-flex flex-col">
-      <select
+      <Dropdown
         value={value}
         disabled={pending}
-        aria-label={`Paket ${slug}`}
-        onChange={(e) => {
-          const next = e.target.value;
+        label={`Paket ${slug}`}
+        placeholder="Belum dipilih"
+        size="sm"
+        tone={value ? "default" : "empty"}
+        options={OPTIONS.filter(([v]) => v || !initial).map(([v, label]) => ({ value: v, label, disabled: !v }))}
+        onChange={(next) => {
           const prev = value;
           setValue(next);
           start(async () => {
@@ -34,15 +39,7 @@ export function PackageSelect({ slug, value: initial }: { slug: string; value: s
             }
           });
         }}
-        className={`rounded-sm border bg-white px-2 py-1.5 text-[14px] outline-none focus:border-wine disabled:opacity-50 ${value ? "border-line" : "border-dashed border-ink-mute text-ink-mute"}`}
-      >
-        {/* Belum dipilih hanya muncul untuk undangan lama yang dibuat sebelum paket wajib dipilih. */}
-        {OPTIONS.filter(([v]) => v || !initial).map(([v, label]) => (
-          <option key={v} value={v} disabled={!v}>
-            {label}
-          </option>
-        ))}
-      </select>
+      />
       {error && <span className="mt-1 max-w-48 text-[11px] text-wine">{error}</span>}
     </span>
   );

@@ -151,6 +151,9 @@ export type PackageRules = {
   locked: Partial<Record<FeatureKey, string>>;
 };
 
+// Huruf awal dikecilkan untuk dipakai di tengah kalimat, kecuali singkatan seperti QR atau RSVP.
+const lowerFirst = (s: string) => (/^[A-Z]{2}/.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
+
 // Aturan isi undangan dari paket ditambah add-on yang sudah dibayar. Paket belum dipilih berarti tanpa batasan.
 export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string | null, bought: Purchased = {}): PackageRules {
   if (!pkg || !(PACKAGE_IDS as readonly string[]).includes(pkg)) return { pkg: null, locked: {} };
@@ -164,7 +167,7 @@ export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string
     const row = s.matrix.find((r) => r.key === key);
     if (!row || row.cells[p].on || unlocking(key).some((a) => units(a.id) > 0)) continue;
     const addon = unlocking(key)[0];
-    locked[key] = `Paket ${name} tidak termasuk ${row.label.toLowerCase()}.${addon ? ` Centang add-on ${addon.name} setelah dibayar.` : " Ganti ke paket yang menyediakannya."}`;
+    locked[key] = `Paket ${name} tidak termasuk ${lowerFirst(row.label)}.${addon ? ` Centang add-on ${addon.name} setelah dibayar.` : " Ganti ke paket yang menyediakannya."}`;
   }
 
   // Baris berjumlah yang dihapus atau bertanda tanpa batas berarti tidak dibatasi.

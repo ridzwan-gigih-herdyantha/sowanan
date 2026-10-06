@@ -1,9 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { Dropdown } from "../dropdown";
 import { createInvitation, type CreateState } from "./actions";
-
-const input = "mt-2 block w-full rounded-sm border bg-white px-3 py-2.5 text-base font-normal outline-none focus:border-wine disabled:bg-ivory disabled:text-ink-mute";
 
 type Theme = { key: string; name: string; packages: string[] };
 
@@ -33,30 +32,32 @@ export function CreateForm({ packages, themes }: { packages: { id: string; name:
           />
         </span>
       </label>
-      <label className="block text-[14px] font-medium">
-        Paket
-        <select name="package" required value={pkg} onChange={(e) => setPkg(e.target.value)} className={`${input} ${pkg ? "border-line" : "border-dashed border-ink-mute text-ink-mute"}`}>
-          <option value="" disabled>
-            Pilih paket
-          </option>
-          {packages.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="block text-[14px] font-medium">
-        Tema
-        <select name="theme" required disabled={!pkg} value={chosen} onChange={(e) => setTheme(e.target.value)} className={`${input} border-line`}>
-          {!pkg && <option value="">Pilih paket dulu</option>}
-          {available.map((t) => (
-            <option key={t.key} value={t.key}>
-              {t.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="text-[14px] font-medium">
+        <span aria-hidden="true">Paket</span>
+        <Dropdown
+          name="package"
+          label="Paket"
+          placeholder="Pilih paket"
+          value={pkg}
+          options={packages.map((p) => ({ value: p.id, label: p.name }))}
+          onChange={setPkg}
+          tone={pkg ? "default" : "empty"}
+          className="mt-2"
+        />
+      </div>
+      <div className="text-[14px] font-medium">
+        <span aria-hidden="true">Tema</span>
+        <Dropdown
+          name="theme"
+          label="Tema"
+          placeholder={pkg ? "Pilih tema" : "Pilih paket dulu"}
+          value={chosen}
+          disabled={!pkg}
+          options={available.map((t) => ({ value: t.key, label: t.name }))}
+          onChange={setTheme}
+          className="mt-2"
+        />
+      </div>
       <button
         type="submit"
         disabled={pending || !pkg || !chosen}

@@ -307,7 +307,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "sebar", label: "Sebar tanpa batas jumlah tamu", kind: "check", unit: "", key: "", cells: all },
     { id: "desain", label: "Revisi desain, 2 putaran", kind: "check", unit: "", key: "", cells: cells(false, false, true) },
     { id: "excel", label: "Daftar tamu diunduh ke Excel", kind: "check", unit: "", key: "ekspor_excel", cells: cells(false, false, true) },
-    { id: "qr", label: "QR absensi tamu di lokasi", kind: "check", unit: "", key: "", cells: cells(false, false, true) },
+    { id: "qr", label: "QR absensi tamu di lokasi", kind: "check", unit: "", key: "qr_absensi", cells: cells(false, false, true) },
     { id: "arsip", label: "Arsip permanen setelah acara", kind: "check", unit: "", key: "", cells: all },
   ],
   // Add-on lama yang tidak dijual lagi disembunyikan, bukan dihapus, supaya undangan yang sudah membelinya tetap terhitung.

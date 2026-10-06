@@ -2,6 +2,13 @@ export type GuestInput = { name: string; phone: string | null };
 
 export const MAX_GUESTS = 2000;
 
+// Kolom qr_token dan checked_in_at (migrasi 0009) serta walk_in (0010) bisa belum ada, jadi dicoba bertahap.
+export const GUEST_COLS = [
+  "id, name, phone, sent_at, qr_token, checked_in_at, walk_in",
+  "id, name, phone, sent_at, qr_token, checked_in_at",
+  "id, name, phone, sent_at",
+] as const;
+
 export function normalizePhone(raw: string): string | null {
   let d = raw.replace(/[^\d+]/g, "");
   if (d.startsWith("+")) d = d.slice(1);
@@ -87,8 +94,9 @@ Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan m
 Terima kasih.
 {mempelai}`;
 
-export function guestLink(origin: string, slug: string, name: string) {
-  return `${origin}/${slug}?to=${encodeURIComponent(name).replace(/%20/g, "+")}`;
+// k adalah kode QR kehadiran tamu, hanya ikut kalau undangan memakai QR absensi.
+export function guestLink(origin: string, slug: string, name: string, k?: string | null) {
+  return `${origin}/${slug}?to=${encodeURIComponent(name).replace(/%20/g, "+")}${k ? `&k=${k}` : ""}`;
 }
 
 export function fillGuestMessage(template: string, vars: { nama: string; link: string; mempelai: string; tanggal: string }) {

@@ -1,10 +1,23 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { downloadQr, QrCode } from "@/components/qr-code";
 import { fillGuestMessage, guestLink, MAX_GUESTS, parseCsv, parseGuestRows, parseGuestText, type GuestInput } from "@/lib/guests";
-import { addGuests, deleteGuests, markSent, saveGuestMessage, updateGuest, type Guest } from "./actions";
+import { addGuests, checkinLink, deleteGuests, markSent, saveGuestMessage, setGuestCheckin, updateGuest, type Guest } from "./actions";
 
-type Props = { slug: string; origin: string; initial: Guest[]; template: string; couple: string; date: string };
+type Props = {
+  slug: string;
+  origin: string;
+  initial: Guest[];
+  template: string;
+  couple: string;
+  date: string;
+  // Alasan unduh Excel terkunci, kosong berarti boleh.
+  excelLock: string | null;
+  qr: { on: true } | { on: false; reason: string | null };
+  // Jam buka dan tutup absensi di lokasi, kosong kalau tanggal acara belum diisi.
+  window: { from: string; until: string } | null;
+};
 type Notice = { tone: "ok" | "error"; text: string } | null;
 
 const field = "mt-2 block w-full rounded-sm border border-line bg-white px-3 py-2.5 text-base font-normal outline-none focus:border-wine";
@@ -12,6 +25,86 @@ const PAGE = 50;
 
 const prettyPhone = (p: string) => `+${p.slice(0, 2)} ${p.slice(2, 5)} ${p.slice(5, 9)} ${p.slice(9)}`.trim();
 const sentFmt = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const fullFmt = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" });
+
+// QR milik mempelai. Dicetak dan dipasang di meja penerima tamu, tamu memindainya dengan HP sendiri.
+function AttendancePanel({ slug, origin, present, invited, walkIns, window: open }: { slug: string; origin: string; present: number; invited: number; walkIns: number; window: Props["window"] }) {
+  const [token, setToken] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
+  const url = token ? `${origin}/absen/${token}` : "";
+
+  async function load(regenerate = false) {
+    if (regenerate && !confirm("Ganti QR kehadiran? QR yang sudah dicetak langsung tidak bisa dipakai lagi.")) return;
+    setBusy(true);
+    const res = await checkinLink(slug, regenerate).catch(() => ({ ok: false as const, error: "Gagal memuat. Cek koneksi." }));
+    setBusy(false);
+    if (!res.ok) return setError(res.error);
+    setError("");
+    setToken(res.data);
+  }
+
+  return (
+    <section className="rounded-sm border border-line bg-white p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="font-serif text-2xl">QR kehadiran</h2>
+        <p className="text-[14px]">
+          <span className="font-serif text-2xl">{present}</span>
+          <span className="text-ink-mute">
+            {" "}
+            dari {invited} tamu hadir{walkIns > 0 && `, ditambah ${walkIns} datang langsung`}
+          </span>
+        </p>
+      </div>
+      <p className="mt-2 text-[14px] text-ink-soft">
+        Cetak QR ini dan pasang di meja penerima tamu. Tamu memindainya dengan kamera HP. Tamu yang pernah membuka link pribadinya langsung dikenali, yang lain cukup menulis nama. Nama di luar daftar tetap tercatat sebagai datang langsung.
+      </p>
+      {open && (
+        <p className="mt-2 text-[13px] text-ink-mute">
+          Absensi dibuka {open.from} sampai {open.until}.
+        </p>
+      )}
+      {token ? (
+        <div className="mt-4 grid gap-5 sm:grid-cols-[180px_minmax(0,1fr)] sm:items-start">
+          <QrCode value={url} label="QR kehadiran untuk dicetak" className="rounded-sm ring-1 ring-line" />
+          <div className="grid gap-3">
+            <input readOnly value={url} onFocus={(e) => e.target.select()} aria-label="Link QR kehadiran" className={`${field} mt-0 font-mono text-[13px]`} />
+            <div className="flex flex-wrap gap-x-5 gap-y-2 text-[14px]">
+              <button type="button" onClick={() => downloadQr(url, `qr-kehadiran-${slug}.png`)} className="text-wine underline underline-offset-4">
+                Unduh QR untuk dicetak
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(url);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1500);
+                }}
+                className="text-ink-soft hover:text-wine"
+              >
+                {copied ? "Tersalin" : "Salin link"}
+              </button>
+              <button type="button" onClick={() => load(true)} disabled={busy} className="text-ink-mute hover:text-wine disabled:opacity-50">
+                Ganti QR
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => load()}
+          disabled={busy}
+          className="mt-4 rounded-sm border border-wine px-4 py-2 text-[14px] text-wine transition-colors duration-150 hover:bg-wine hover:text-white disabled:opacity-50"
+        >
+          {busy ? "Memuat..." : "Tampilkan QR kehadiran"}
+        </button>
+      )}
+      {error && <p className="mt-3 text-[13px] text-wine">{error}</p>}
+    </section>
+  );
+}
 
 function Preview({ list, existing }: { list: GuestInput[]; existing: Set<string> }) {
   const dup = list.filter((g) => existing.has(g.name.toLowerCase())).length;
@@ -38,7 +131,7 @@ function Preview({ list, existing }: { list: GuestInput[]; existing: Set<string>
   );
 }
 
-export function GuestManager({ slug, origin, initial, template: initialTemplate, couple, date }: Props) {
+export function GuestManager({ slug, origin, initial, template: initialTemplate, couple, date, excelLock, qr, window: checkinWindow }: Props) {
   const [guests, setGuests] = useState(initial);
   const [tab, setTab] = useState<"paste" | "excel">("paste");
   const [text, setText] = useState("");
@@ -60,9 +153,12 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
     return q ? guests.filter((g) => g.name.toLowerCase().includes(q) || g.phone?.includes(q.replace(/\D/g, "") || "~")) : guests;
   }, [guests, query]);
   const sentCount = guests.filter((g) => g.sent_at).length;
+  const presentCount = guests.filter((g) => g.checked_in_at && !g.walk_in).length;
+  const walkInCount = guests.filter((g) => g.walk_in).length;
+  const invitedCount = guests.length - walkInCount;
 
-  const link = (name: string) => guestLink(origin, slug, name);
-  const message = (name: string) => fillGuestMessage(template, { nama: name, link: link(name), mempelai: couple, tanggal: date });
+  const link = (g: Guest) => guestLink(origin, slug, g.name, qr.on ? g.qr_token : null);
+  const message = (g: Guest) => fillGuestMessage(template, { nama: g.name, link: link(g), mempelai: couple, tanggal: date });
 
   async function readFile(file: File) {
     setNotice(null);
@@ -120,7 +216,7 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
   }
 
   async function send(g: Guest) {
-    const url = `https://wa.me/${g.phone ?? ""}?text=${encodeURIComponent(message(g.name))}`;
+    const url = `https://wa.me/${g.phone ?? ""}?text=${encodeURIComponent(message(g))}`;
     window.open(url, "_blank", "noopener");
     if (g.sent_at) return;
     const res = await markSent(slug, g.id, true);
@@ -133,7 +229,7 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
   }
 
   async function copy(g: Guest, what: "link" | "pesan") {
-    await navigator.clipboard.writeText(what === "link" ? link(g.name) : message(g.name));
+    await navigator.clipboard.writeText(what === "link" ? link(g) : message(g));
     setCopied(g.id);
     setTimeout(() => setCopied((c) => (c === g.id ? 0 : c)), 1500);
   }
@@ -144,15 +240,29 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
     setSavedTemplate(template);
   }
 
-  function exportCsv() {
-    const esc = (s: string) => `"${s.replace(/"/g, '""')}"`;
-    const lines = [["Nama", "WhatsApp", "Link", "Terkirim"], ...guests.map((g) => [g.name, g.phone ?? "", link(g.name), g.sent_at ? "ya" : ""])];
-    const blob = new Blob(["﻿" + lines.map((l) => l.map(esc).join(",")).join("\n")], { type: "text/csv;charset=utf-8" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `tamu-${slug}.csv`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+  async function togglePresent(g: Guest) {
+    if (g.checked_in_at && !confirm(`Batalkan tanda hadir ${g.name}?`)) return;
+    const res = await setGuestCheckin(slug, g.id, !g.checked_in_at);
+    if (!res.ok) return setNotice({ tone: "error", text: res.error });
+    setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, checked_in_at: res.data } : x)));
+  }
+
+  async function exportXlsx() {
+    const { default: writeXlsxFile } = await import("write-excel-file/browser");
+    const head = (value: string) => ({ value, fontWeight: "bold" as const, backgroundColor: "#F2F2F2" });
+    const columns = ["Nama", "WhatsApp", "Link undangan", "Terkirim", ...(qr.on ? ["Hadir", "Keterangan"] : [])];
+    const rows = guests.map((g) => [
+      g.name,
+      g.phone ? `+${g.phone}` : "",
+      link(g),
+      g.sent_at ? fullFmt.format(new Date(g.sent_at)) : "",
+      ...(qr.on ? [g.checked_in_at ? fullFmt.format(new Date(g.checked_in_at)) : "", g.walk_in ? "Datang langsung" : "Tamu undangan"] : []),
+    ]);
+    await writeXlsxFile([columns.map(head), ...rows], {
+      sheet: "Daftar tamu",
+      columns: [{ width: 30 }, { width: 18 }, { width: 60 }, { width: 20 }, ...(qr.on ? [{ width: 20 }, { width: 18 }] : [])],
+      stickyRowsCount: 1,
+    }).toFile(`tamu-${slug}.xlsx`);
   }
 
   return (
@@ -235,6 +345,12 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
         )}
       </section>
 
+      {qr.on ? (
+        <AttendancePanel slug={slug} origin={origin} present={presentCount} invited={invitedCount} walkIns={walkInCount} window={checkinWindow} />
+      ) : (
+        qr.reason && <p className="rounded-sm bg-ivory px-4 py-3 text-[13px] text-ink-mute">QR absensi tamu: {qr.reason}</p>
+      )}
+
       <details className="rounded-sm border border-line bg-white">
         <summary className="cursor-pointer px-4 py-3 font-serif text-xl">Template pesan WhatsApp</summary>
         <div className="border-t border-line p-4">
@@ -261,6 +377,7 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
           {guests.length > 0 && (
             <p className="text-[13px] text-ink-mute">
               {sentCount} terkirim, {guests.length - sentCount} belum
+              {qr.on && `, ${presentCount} hadir${walkInCount ? `, ${walkInCount} datang langsung` : ""}`}
             </p>
           )}
         </div>
@@ -277,9 +394,13 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
               placeholder="Cari nama atau nomor"
               className={`${field} mt-0 max-w-xs flex-1`}
             />
-            <button type="button" onClick={exportCsv} className="text-[14px] text-wine underline underline-offset-4">
-              Unduh CSV berisi link
-            </button>
+            {excelLock ? (
+              <span className="text-[13px] text-ink-mute">{excelLock}</span>
+            ) : (
+              <button type="button" onClick={exportXlsx} className="text-[14px] text-wine underline underline-offset-4">
+                Unduh Excel
+              </button>
+            )}
           </div>
         )}
 
@@ -304,12 +425,20 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
               ) : (
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
                   <div className="min-w-0 flex-1 basis-48">
-                    <p className="truncate font-medium">{g.name}</p>
+                    <p className="truncate font-medium">
+                      {g.name}
+                      {g.walk_in && <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-normal text-amber-900">Datang langsung</span>}
+                    </p>
                     <p className="text-[13px] text-ink-mute">
                       {g.phone ? prettyPhone(g.phone) : "Tanpa nomor"}
                       {g.sent_at && (
                         <button type="button" onClick={() => toggleSent(g)} title="Klik untuk batal tandai" className="ml-2 rounded-full bg-ivory px-2 py-0.5 text-[11px] text-ink-soft">
                           Terkirim {sentFmt.format(new Date(g.sent_at))}
+                        </button>
+                      )}
+                      {qr.on && g.checked_in_at && (
+                        <button type="button" onClick={() => togglePresent(g)} title="Klik untuk batalkan" className="ml-2 rounded-full bg-wine px-2 py-0.5 text-[11px] text-white">
+                          Hadir {sentFmt.format(new Date(g.checked_in_at))}
                         </button>
                       )}
                     </p>
@@ -324,6 +453,11 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
                     <button type="button" onClick={() => copy(g, "pesan")} className="text-ink-soft hover:text-wine">
                       Salin pesan
                     </button>
+                    {qr.on && !g.checked_in_at && (
+                      <button type="button" onClick={() => togglePresent(g)} className="text-ink-soft hover:text-wine">
+                        Tandai hadir
+                      </button>
+                    )}
                     <button type="button" onClick={() => setEditing({ id: g.id, name: g.name, phone: g.phone ?? "" })} className="text-ink-soft hover:text-wine">
                       Ubah
                     </button>
