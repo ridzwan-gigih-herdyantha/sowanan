@@ -28,6 +28,7 @@ export const PURPOSES = {
   story: img("Foto cerita", 1400),
   gallery: img("Foto galeri", 1800),
   extra: img("Foto bagian tambahan", 1600),
+  thumb: img("Sampul lagu", 800),
   polaroid: img("Foto polaroid", 900),
   specimen: img("Foto spesimen", 700),
   poster: img("Poster video", 900),

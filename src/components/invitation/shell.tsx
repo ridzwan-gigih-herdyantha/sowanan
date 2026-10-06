@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
 import { PintuDoor, type PintuProps } from "./sakinah/door";
@@ -23,6 +23,39 @@ export function Archived({ archived, children }: { archived: boolean; children: 
 const GuestNamesContext = createContext(true);
 export function GuestNames({ allowed, children }: { allowed: boolean; children: ReactNode }) {
   return <GuestNamesContext.Provider value={allowed}>{children}</GuestNamesContext.Provider>;
+}
+
+// Video dan lagu di bagian tambahan. Saat salah satu diputar, media lain berhenti dan musik latar meredup lalu berhenti.
+// Setelah semuanya berhenti, musik latar menyala lagi pelan-pelan kalau tadinya sedang menyala.
+type MediaCtx = { claim: (id: string, stop: () => void) => void; release: (id: string) => void };
+const MediaContext = createContext<MediaCtx>({ claim: () => {}, release: () => {} });
+export const useInvitationMedia = () => useContext(MediaContext);
+
+// Detik.
+const FADE_OUT = 0.9;
+const FADE_IN = 1.4;
+
+type Fader = { ctx: AudioContext; gain: GainNode };
+
+// Volume elemen audio tidak bisa diubah di iOS, jadi fade memakai Web Audio. Elemen audio wajib crossOrigin anonymous.
+function connectFader(el: HTMLAudioElement): Fader | null {
+  const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AC) return null;
+  try {
+    const ctx = new AC();
+    const gain = ctx.createGain();
+    ctx.createMediaElementSource(el).connect(gain).connect(ctx.destination);
+    return { ctx, gain };
+  } catch {
+    return null;
+  }
+}
+
+function ramp({ ctx, gain }: Fader, to: number, seconds: number) {
+  const t = ctx.currentTime;
+  gain.gain.cancelScheduledValues(t);
+  gain.gain.setValueAtTime(gain.gain.value, t);
+  gain.gain.linearRampToValueAtTime(to, t + Math.max(0.01, seconds));
 }
 
 const noop = () => () => {};
@@ -85,6 +118,15 @@ export function InvitationShell({ door, music, synth, className, style, children
   const [open, setOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
+  const fader = useRef<Fader | null>(null);
+  const fadeTimer = useRef(0);
+  const playingRef = useRef(false);
+  const active = useRef(new Map<string, () => void>());
+  const resumeAfter = useRef(false);
+
+  useEffect(() => {
+    playingRef.current = playing;
+  }, [playing]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -106,17 +148,70 @@ export function InvitationShell({ door, music, synth, className, style, children
   const useSynth = player !== null;
   const hasMusic = Boolean(music) || useSynth;
 
-  const play = () => {
+  const play = (fade = 0.4) => {
+    window.clearTimeout(fadeTimer.current);
     if (player) {
-      player.play();
+      player.play(fade);
       setPlaying(true);
       return;
     }
-    audio.current
-      ?.play()
+    const el = audio.current;
+    if (!el) return;
+    fader.current ??= connectFader(el);
+    const f = fader.current;
+    if (f) {
+      void f.ctx.resume();
+      if (el.paused) f.gain.gain.value = 0;
+      ramp(f, 1, fade);
+    }
+    el.play()
       .then(() => setPlaying(true))
       .catch(() => setPlaying(false));
   };
+
+  const stopMusic = (fade: number) => {
+    setPlaying(false);
+    if (player) return player.pause(fade);
+    const el = audio.current;
+    const f = fader.current;
+    if (!el) return;
+    if (!f) return el.pause();
+    ramp(f, 0, fade);
+    window.clearTimeout(fadeTimer.current);
+    fadeTimer.current = window.setTimeout(() => el.pause(), fade * 1000 + 60);
+  };
+
+  const stopExtras = () => {
+    const stops = [...active.current.values()];
+    active.current.clear();
+    stops.forEach((stop) => stop());
+  };
+
+  const claim = (id: string, stop: () => void) => {
+    for (const [key, other] of [...active.current]) {
+      if (key === id) continue;
+      active.current.delete(key);
+      other();
+    }
+    active.current.set(id, stop);
+    if (playingRef.current) {
+      resumeAfter.current = true;
+      stopMusic(FADE_OUT);
+    }
+  };
+
+  const release = (id: string) => {
+    if (!active.current.delete(id) || active.current.size || !resumeAfter.current) return;
+    resumeAfter.current = false;
+    play(FADE_IN);
+  };
+
+  // Media memanggil lewat objek stabil, isinya selalu fungsi terbaru.
+  const handlers = useRef({ claim, release });
+  useEffect(() => {
+    handlers.current = { claim, release };
+  });
+  const media = useMemo<MediaCtx>(() => ({ claim: (id, stop) => handlers.current.claim(id, stop), release: (id) => handlers.current.release(id) }), []);
 
   const openInvitation = () => {
     const name = guest || readStoredGuest();
@@ -127,163 +222,164 @@ export function InvitationShell({ door, music, synth, className, style, children
   };
 
   const toggleMusic = () => {
-    if (playing) {
-      if (player) player.pause();
-      else audio.current?.pause();
-      setPlaying(false);
-    } else play();
+    resumeAfter.current = false;
+    if (playing) return stopMusic(0.3);
+    stopExtras();
+    play(0.6);
   };
 
   return (
     <GuestContext.Provider value={{ guest, setGuest }}>
-      <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
-        <noscript>
-          <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
-        </noscript>
+      <MediaContext.Provider value={media}>
+        <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
+          <noscript>
+            <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+          </noscript>
 
-        {door.kind === "vellum" && (
-          <div
-            className="inv-door-vellum fixed inset-0 z-50 flex flex-col justify-end px-6 pb-[8vh] backdrop-blur-md [background:color-mix(in_srgb,var(--inv-wash)_82%,transparent)] sm:px-10"
-            aria-hidden={open}
-          >
-            <p className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">LEMBAR KOLEKSI {door.number}</p>
-            <p className="mt-4 font-display text-[clamp(52px,15vw,112px)] leading-[0.95] text-inv-accent">
-              {door.groom}
-              <br />
-              <span className="italic">&amp;</span> {door.bride}
-            </p>
-            <div className="relative mt-8 w-full max-w-md -rotate-1 border border-inv-line bg-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.08)]">
-              <span className="inv-tape -top-2.5 left-10 -rotate-3" aria-hidden="true" />
-              <div className="flex items-center justify-between border-b border-inv-line px-5 py-2.5 text-[10px] font-medium tracking-[0.2em] text-inv-gold">
-                <span>HERBARIUM SOWANAN</span>
-                <span>{door.number}</span>
-              </div>
-              <div className="flex items-end gap-4 px-5 pt-4 pb-5">
-                <div className="relative h-20 w-16 shrink-0 rotate-3 border border-inv-line bg-inv-paper p-1">
-                  <Image src={door.specimen} alt="" width={64} height={80} className="size-full object-cover" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">DIKUMPULKAN UNTUK</span>
-                  <span className="mt-1 block truncate border-b border-dashed border-inv-line pb-1 font-display text-[28px] leading-tight text-inv-accent italic">
-                    {invited || "Tamu kami"}
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 border-t border-inv-line text-[13px]">
-                <div className="border-r border-inv-line px-5 py-2.5">
-                  <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">TANGGAL</span>
-                  {door.date}
-                </div>
-                <div className="px-5 py-2.5">
-                  <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">LOKASI</span>
-                  {door.place}
-                </div>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={openInvitation}
-              className="inv-cta mt-8 flex w-full max-w-md items-center justify-between rounded-sm bg-inv-accent px-7 py-5 text-[13px] font-medium tracking-[0.2em] text-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+          {door.kind === "vellum" && (
+            <div
+              className="inv-door-vellum fixed inset-0 z-50 flex flex-col justify-end px-6 pb-[8vh] backdrop-blur-md [background:color-mix(in_srgb,var(--inv-wash)_82%,transparent)] sm:px-10"
+              aria-hidden={open}
             >
-              BUKA LEMBARNYA
-              {arrow}
-            </button>
-          </div>
-        )}
-
-        {door.kind === "kelir" && (
-          <KelirDoor
-            groom={door.groom}
-            bride={door.bride}
-            groomAksara={door.groomAksara}
-            brideAksara={door.brideAksara}
-            date={door.date}
-            invited={invited}
-            onOpen={openInvitation}
-          />
-        )}
-        {door.kind === "pintu" && <PintuDoor groom={door.groom} bride={door.bride} date={door.date} hijri={door.hijri} invited={invited} onOpen={openInvitation} />}
-
-        {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" ? null : door.kind === "seal" ? (
-          <div
-            className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
-            aria-hidden={open}
-          >
-            <p className="text-[11px] tracking-[0.22em] text-inv-ink/70">PERNIKAHAN</p>
-            <p className="mt-3 mb-10 font-display text-[44px] leading-none text-inv-accent">{door.couple}</p>
-            <GuestField invited={invited} greeting="Kepada Yth." className="mb-2" />
-            <button
-              type="button"
-              onClick={openInvitation}
-              className="inv-seal inv-pulse group relative mt-8 size-44 rounded-full"
-              aria-label="Buka undangan"
-            >
-              <Image src={door.seal} alt="" width={176} height={176} preload className="size-44 transition-transform duration-200 group-hover:scale-105" />
-              <span className="absolute inset-0 flex items-center justify-center font-display text-3xl text-[#f3d6ae] [text-shadow:0_1px_0_rgba(0,0,0,.35)]">
-                {door.monogram}
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={openInvitation}
-              className="mt-8 inline-flex items-center gap-3 rounded-sm bg-inv-accent px-9 py-4 text-[13px] font-medium tracking-[0.2em] text-inv-paper shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
-            >
-              BUKA UNDANGAN
-              {arrow}
-            </button>
-          </div>
-        ) : (
-          <div className="inv-door-walls fixed inset-0 z-50" aria-hidden={open}>
-            <div className="inv-wall-l inv-paper absolute inset-y-0 left-0 w-1/2 border-r border-inv-line">
-              <p className="absolute top-[14%] left-5 font-display text-[clamp(52px,15vw,120px)] leading-none sm:left-10">{door.groom}</p>
-            </div>
-            <div className="inv-wall-r inv-paper absolute inset-y-0 right-0 w-1/2">
-              <p className="absolute top-[26%] right-5 font-display text-[clamp(52px,15vw,120px)] leading-none italic sm:right-10">
-                {door.bride}
+              <p className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">LEMBAR KOLEKSI {door.number}</p>
+              <p className="mt-4 font-display text-[clamp(52px,15vw,112px)] leading-[0.95] text-inv-accent">
+                {door.groom}
+                <br />
+                <span className="italic">&amp;</span> {door.bride}
               </p>
-            </div>
-            <div className="inv-door-ui inv-paper absolute inset-x-0 bottom-[8%] flex flex-col items-center border-y border-inv-line px-8 py-10 text-center">
-              <p className="mb-6 text-[11px] font-medium tracking-[0.24em] text-inv-ink/70">KAMI MENGUNDANGMU</p>
-              <GuestField invited={invited} greeting="Untuk" className="mb-2" />
+              <div className="relative mt-8 w-full max-w-md -rotate-1 border border-inv-line bg-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.08)]">
+                <span className="inv-tape -top-2.5 left-10 -rotate-3" aria-hidden="true" />
+                <div className="flex items-center justify-between border-b border-inv-line px-5 py-2.5 text-[10px] font-medium tracking-[0.2em] text-inv-gold">
+                  <span>HERBARIUM SOWANAN</span>
+                  <span>{door.number}</span>
+                </div>
+                <div className="flex items-end gap-4 px-5 pt-4 pb-5">
+                  <div className="relative h-20 w-16 shrink-0 rotate-3 border border-inv-line bg-inv-paper p-1">
+                    <Image src={door.specimen} alt="" width={64} height={80} className="size-full object-cover" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">DIKUMPULKAN UNTUK</span>
+                    <span className="mt-1 block truncate border-b border-dashed border-inv-line pb-1 font-display text-[28px] leading-tight text-inv-accent italic">
+                      {invited || "Tamu kami"}
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 border-t border-inv-line text-[13px]">
+                  <div className="border-r border-inv-line px-5 py-2.5">
+                    <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">TANGGAL</span>
+                    {door.date}
+                  </div>
+                  <div className="px-5 py-2.5">
+                    <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">LOKASI</span>
+                    {door.place}
+                  </div>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={openInvitation}
-                className="inv-cta mt-6 inline-flex w-full max-w-xs items-center justify-between rounded-sm bg-inv-ink px-7 py-5 text-[13px] font-medium tracking-[0.24em] text-inv-paper shadow-[0_10px_28px_rgba(0,0,0,.2)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+                className="inv-cta mt-8 flex w-full max-w-md items-center justify-between rounded-sm bg-inv-accent px-7 py-5 text-[13px] font-medium tracking-[0.2em] text-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+              >
+                BUKA LEMBARNYA
+                {arrow}
+              </button>
+            </div>
+          )}
+
+          {door.kind === "kelir" && (
+            <KelirDoor
+              groom={door.groom}
+              bride={door.bride}
+              groomAksara={door.groomAksara}
+              brideAksara={door.brideAksara}
+              date={door.date}
+              invited={invited}
+              onOpen={openInvitation}
+            />
+          )}
+          {door.kind === "pintu" && <PintuDoor groom={door.groom} bride={door.bride} date={door.date} hijri={door.hijri} invited={invited} onOpen={openInvitation} />}
+
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" ? null : door.kind === "seal" ? (
+            <div
+              className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
+              aria-hidden={open}
+            >
+              <p className="text-[11px] tracking-[0.22em] text-inv-ink/70">PERNIKAHAN</p>
+              <p className="mt-3 mb-10 font-display text-[44px] leading-none text-inv-accent">{door.couple}</p>
+              <GuestField invited={invited} greeting="Kepada Yth." className="mb-2" />
+              <button
+                type="button"
+                onClick={openInvitation}
+                className="inv-seal inv-pulse group relative mt-8 size-44 rounded-full"
+                aria-label="Buka undangan"
+              >
+                <Image src={door.seal} alt="" width={176} height={176} preload className="size-44 transition-transform duration-200 group-hover:scale-105" />
+                <span className="absolute inset-0 flex items-center justify-center font-display text-3xl text-[#f3d6ae] [text-shadow:0_1px_0_rgba(0,0,0,.35)]">
+                  {door.monogram}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={openInvitation}
+                className="mt-8 inline-flex items-center gap-3 rounded-sm bg-inv-accent px-9 py-4 text-[13px] font-medium tracking-[0.2em] text-inv-paper shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
               >
                 BUKA UNDANGAN
                 {arrow}
               </button>
-              <p className="mt-8 font-display text-lg tracking-[0.12em]">{door.date}</p>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="inv-door-walls fixed inset-0 z-50" aria-hidden={open}>
+              <div className="inv-wall-l inv-paper absolute inset-y-0 left-0 w-1/2 border-r border-inv-line">
+                <p className="absolute top-[14%] left-5 font-display text-[clamp(52px,15vw,120px)] leading-none sm:left-10">{door.groom}</p>
+              </div>
+              <div className="inv-wall-r inv-paper absolute inset-y-0 right-0 w-1/2">
+                <p className="absolute top-[26%] right-5 font-display text-[clamp(52px,15vw,120px)] leading-none italic sm:right-10">
+                  {door.bride}
+                </p>
+              </div>
+              <div className="inv-door-ui inv-paper absolute inset-x-0 bottom-[8%] flex flex-col items-center border-y border-inv-line px-8 py-10 text-center">
+                <p className="mb-6 text-[11px] font-medium tracking-[0.24em] text-inv-ink/70">KAMI MENGUNDANGMU</p>
+                <GuestField invited={invited} greeting="Untuk" className="mb-2" />
+                <button
+                  type="button"
+                  onClick={openInvitation}
+                  className="inv-cta mt-6 inline-flex w-full max-w-xs items-center justify-between rounded-sm bg-inv-ink px-7 py-5 text-[13px] font-medium tracking-[0.24em] text-inv-paper shadow-[0_10px_28px_rgba(0,0,0,.2)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  BUKA UNDANGAN
+                  {arrow}
+                </button>
+                <p className="mt-8 font-display text-lg tracking-[0.12em]">{door.date}</p>
+              </div>
+            </div>
+          )}
 
-        <div inert={!open}>{children}</div>
+          <div inert={!open}>{children}</div>
 
-        {open && hasMusic && (
-          <button
-            type="button"
-            onClick={toggleMusic}
-            aria-pressed={playing}
-            aria-label={playing ? "Matikan musik" : "Nyalakan musik"}
-            className="fixed right-4 bottom-4 z-40 flex size-12 items-center justify-center rounded-full bg-inv-night text-inv-gold-light shadow-[0_6px_20px_rgba(0,0,0,.3)] transition-transform duration-150 active:scale-95 sm:right-6 sm:bottom-6"
-          >
-            {playing ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <rect x="6" y="5" width="4" height="14" rx="1" />
-                <rect x="14" y="5" width="4" height="14" rx="1" />
-              </svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <path d="M9 18V6l10-2v12" />
-                <circle cx="6.5" cy="18" r="2.5" />
-                <circle cx="16.5" cy="16" r="2.5" />
-              </svg>
-            )}
-          </button>
-        )}
-        {music && <audio ref={audio} src={music} preload="none" loop />}
-      </div>
+          {open && hasMusic && (
+            <button
+              type="button"
+              onClick={toggleMusic}
+              aria-pressed={playing}
+              aria-label={playing ? "Matikan musik" : "Nyalakan musik"}
+              className="fixed right-4 bottom-4 z-40 flex size-12 items-center justify-center rounded-full bg-inv-night text-inv-gold-light shadow-[0_6px_20px_rgba(0,0,0,.3)] transition-transform duration-150 active:scale-95 sm:right-6 sm:bottom-6"
+            >
+              {playing ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <rect x="6" y="5" width="4" height="14" rx="1" />
+                  <rect x="14" y="5" width="4" height="14" rx="1" />
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                  <path d="M9 18V6l10-2v12" />
+                  <circle cx="6.5" cy="18" r="2.5" />
+                  <circle cx="16.5" cy="16" r="2.5" />
+                </svg>
+              )}
+            </button>
+          )}
+          {music && <audio ref={audio} src={music} preload="none" loop crossOrigin="anonymous" />}
+        </div>
+      </MediaContext.Provider>
     </GuestContext.Provider>
   );
 }

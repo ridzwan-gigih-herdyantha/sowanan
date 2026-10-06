@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { ExtraAnchor, ExtraTone } from "@/lib/invitation/schema";
 import type { InvitationView } from "@/lib/invitation/view";
+import { ExtraTracks, ExtraVideos } from "./extras-media";
 import { Gallery } from "./gallery";
 
 // Warna latar mengikuti palet tema yang aktif, termasuk palet kustom dari tab Palet.
@@ -31,6 +32,16 @@ export function Extras({ inv, at }: { inv: InvitationView; at: ExtraAnchor }) {
           {e.photos.length > 1 && (
             <div className="mt-10">
               <Gallery photos={e.photos} variant="grid" />
+            </div>
+          )}
+          {e.videos.length > 0 && (
+            <div className="mt-10">
+              <ExtraVideos videos={e.videos} />
+            </div>
+          )}
+          {e.tracks.length > 0 && (
+            <div className="mt-10">
+              <ExtraTracks tracks={e.tracks} />
             </div>
           )}
         </div>

@@ -104,12 +104,13 @@ class Gending {
   private visuals: number[] = [];
   playing = false;
 
-  play() {
+  // fade dalam detik.
+  play(fade = 0.6) {
     if (this.playing) return;
     const a = audio();
     this.bus = a.ctx.createGain();
     this.bus.gain.setValueAtTime(0.0001, a.ctx.currentTime);
-    this.bus.gain.exponentialRampToValueAtTime(0.85, a.ctx.currentTime + 0.6);
+    this.bus.gain.exponentialRampToValueAtTime(0.85, a.ctx.currentTime + Math.max(0.05, fade));
     this.bus.connect(a.out);
     this.next = a.ctx.currentTime + 0.15;
     // Dibuka dengan gong sebelum ketukan pertama, seperti tanda gending dimulai.
@@ -119,7 +120,7 @@ class Gending {
     this.timer = window.setInterval(() => this.tick(), 250);
   }
 
-  pause() {
+  pause(fade = 0.25) {
     if (!this.playing) return;
     this.playing = false;
     window.clearInterval(this.timer);
@@ -128,7 +129,7 @@ class Gending {
     // Nada yang sudah dijadwalkan ikut bus lama, jadi cukup bus itu yang dibisukan.
     const a = audio();
     this.bus?.gain.cancelScheduledValues(a.ctx.currentTime);
-    this.bus?.gain.setTargetAtTime(0.0001, a.ctx.currentTime, 0.08);
+    this.bus?.gain.setTargetAtTime(0.0001, a.ctx.currentTime, Math.max(0.02, fade / 3));
     this.bus = null;
   }
 

@@ -110,6 +110,8 @@ export const invitationDataSchema = z.object({
       title: str(),
       body: str(),
       photos: list(z.object({ src: str(), w: num(), h: num() })),
+      videos: list(z.object({ src: str(), poster: str() })),
+      tracks: list(z.object({ src: str(), cover: str(), title: str(), artist: str() })),
       tone: z.enum(Object.keys(EXTRA_TONES) as [ExtraTone, ...ExtraTone[]]).catch("paper"),
       after: z.enum(EXTRA_ANCHORS).catch("event"),
     }),

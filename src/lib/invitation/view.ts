@@ -22,7 +22,14 @@ function parts(iso: string, tz: keyof typeof ZONES) {
   return { weekday: get("weekday"), day: get("day"), month: get("month"), year: get("year"), dd: num[0], mm: num[1], yyyy: num[2] };
 }
 
-export type ExtraView = { title: string; body: string; tone: ExtraTone; photos: { src: string; w: number; h: number; alt: string }[] };
+export type ExtraView = {
+  title: string;
+  body: string;
+  tone: ExtraTone;
+  photos: { src: string; w: number; h: number; alt: string }[];
+  videos: { src: string; poster: string }[];
+  tracks: { src: string; cover: string; title: string; artist: string }[];
+};
 
 // Bagian tambahan dikelompokkan per posisi. Posisi yang tidak ada di tema (misalnya setelah ganti tema) tampil sebelum Penutup.
 function groupExtras(d: InvitationData, theme: string) {
@@ -30,9 +37,11 @@ function groupExtras(d: InvitationData, theme: string) {
   const out: Partial<Record<ExtraAnchor, ExtraView[]>> = {};
   for (const e of d.extras) {
     const photos = e.photos.filter((p) => p.src).map((p, i) => ({ src: u(p.src), w: p.w || 1600, h: p.h || 1200, alt: `${e.title || "Foto"} ${i + 1}` }));
-    if (!e.title.trim() && !e.body.trim() && !photos.length) continue;
+    const videos = e.videos.filter((v) => v.src).map((v) => ({ src: u(v.src), poster: u(v.poster) }));
+    const tracks = e.tracks.filter((t) => t.src).map((t, i) => ({ src: u(t.src), cover: u(t.cover), title: t.title || `Lagu ${i + 1}`, artist: t.artist }));
+    if (!e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length) continue;
     const at = known.has(e.after) ? e.after : "wishes";
-    (out[at] ??= []).push({ title: e.title, body: e.body, tone: e.tone, photos });
+    (out[at] ??= []).push({ title: e.title, body: e.body, tone: e.tone, photos, videos, tracks });
   }
   return out;
 }
