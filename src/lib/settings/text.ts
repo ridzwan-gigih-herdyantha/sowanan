@@ -64,6 +64,9 @@ export function planWaLink(s: Settings, p: PackageId) {
 // Kata pengganti yang boleh ditulis di teks pengaturan. Nilainya selalu mengikuti data terbaru.
 export const VARIABLES: Record<string, string> = {
   harga: "harga paket termurah",
+  harga_dasar: "harga paket Dasar",
+  harga_lengkap: "harga paket Lengkap",
+  harga_istimewa: "harga paket Istimewa",
   waktu: "rentang waktu pengerjaan",
   pengerjaan: "waktu pengerjaan tiap paket",
   masa_aktif: "masa aktif tiap paket",
@@ -83,6 +86,9 @@ export const VARIABLES: Record<string, string> = {
 export function textVars(s: Settings): Record<string, string> {
   return {
     harga: formatRupiah(lowestPrice(s)),
+    harga_dasar: formatRupiah(s.packages.dasar.price),
+    harga_lengkap: formatRupiah(s.packages.lengkap.price),
+    harga_istimewa: formatRupiah(s.packages.istimewa.price),
     waktu: slaRange(s),
     pengerjaan: perPlan(s, "sla"),
     masa_aktif: perPlan(s, "active"),

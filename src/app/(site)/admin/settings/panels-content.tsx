@@ -199,7 +199,7 @@ export function TemaPanel() {
 export function TanyaPanel() {
   return (
     <>
-      <VarsNote keys={["pengerjaan", "masa_aktif", "dp", "jam", "harga", "wa_link"]} />
+      <VarsNote keys={["harga", "harga_dasar", "harga_lengkap", "harga_istimewa", "pengerjaan", "dp", "kota", "jam", "wa_link"]} />
       <Card title="Tanya jawab" hint="Urutkan dari yang paling sering ditanya. Jawaban soal waktu pengerjaan, masa aktif, dan cara bayar sebaiknya memakai kata pengganti, bukan diketik ulang di sini.">
         <RepList
           path="faq"
