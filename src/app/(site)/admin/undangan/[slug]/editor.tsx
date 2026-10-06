@@ -8,7 +8,7 @@ import { checkInvitation, fieldPatterns, forTheme, GROUPS, patternOf, setIn, typ
 import type { Settings } from "@/lib/settings/schema";
 import { packageRules, type Purchased } from "@/lib/settings/text";
 import type { BridgeMessage } from "@/app/admin/pratinjau/[slug]/bridge";
-import { publishDraft, saveDraft, setPublished } from "../actions";
+import { publishDraft, saveDraft, setPublished, unlockArchive } from "../actions";
 import { InvitationTabs } from "../tabs";
 import { AddonPanel } from "./addon-panel";
 import { FieldInput, FormProvider } from "./fields";
@@ -27,6 +27,8 @@ type Props = {
   packageData: Pick<Settings, "matrix" | "addons" | "packages">;
   bought: Purchased;
   dp: number;
+  // Status arsip. Kosong berarti tanggal acara belum diisi atau undangan contoh.
+  archive: { archived: boolean; locked: boolean; archiveAt: string; unlockedUntil: string | null } | null;
 };
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
@@ -62,7 +64,7 @@ function Switch({ on, onChange, label, disabled }: { on: boolean; onChange: (v: 
   );
 }
 
-export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, packageData, bought: initialBought, dp }: Props) {
+export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, packageData, bought: initialBought, dp, archive }: Props) {
   // Bagian yang tidak termasuk paket langsung dimatikan, lalu draf tersimpan otomatis.
   const [data, setData] = useState(() =>
     packageRules(packageData, pkg, initialBought).locked.cerita && draft.sections.story.enabled ? setIn(draft, "sections.story.enabled", false) : draft,
@@ -83,6 +85,13 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
   const [applying, setApplying] = useState<string | null>(null);
 
   const [bought, setBought] = useState(initialBought);
+  // Undangan beku tidak bisa diubah kecuali admin membuka kunci sementara.
+  const [locked, setLocked] = useState(archive?.locked ?? false);
+  const [unlockedUntil, setUnlockedUntil] = useState(archive?.unlockedUntil ?? null);
+  const lockedRef = useRef(locked);
+  useEffect(() => {
+    lockedRef.current = locked;
+  }, [locked]);
   const rules = useMemo(() => packageRules(packageData, pkg, bought), [packageData, pkg, bought]);
   const limits = useMemo(() => (rules.photos ? { "sections.gallery.photos": rules.photos } : undefined), [rules]);
   const locks = useMemo(() => (rules.locked.musik_sendiri ? { "media.music": rules.locked.musik_sendiri } : undefined), [rules]);
@@ -107,7 +116,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
 
   useEffect(() => {
     const json = JSON.stringify(data);
-    if (json === lastSent.current) return;
+    if (locked || json === lastSent.current) return;
     const t = window.setTimeout(async () => {
       setDraftState("saving");
       const res = await saveDraft(slug, data);
@@ -121,7 +130,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
       frame.current?.contentWindow?.postMessage({ type: "sowanan:refresh" }, window.location.origin);
     }, 700);
     return () => window.clearTimeout(t);
-  }, [data, slug]);
+  }, [data, slug, locked]);
 
   const jump = useCallback((path: string) => {
     if (path === "style") {
@@ -145,6 +154,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
       if (e.origin !== window.location.origin || e.source !== frame.current?.contentWindow) return;
       const m = e.data;
       if (m.type === "sowanan:edit") {
+        if (lockedRef.current) return;
         const f = fields.get(patternOf(m.path));
         const max = f && (f.kind === "text" || f.kind === "textarea") ? f.max : 2000;
         setData((d) => setIn(d, m.path, m.value.replace(/\s+/g, " ").slice(0, max)));
@@ -167,7 +177,22 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
     if (list[0]) jump(list[0].path);
   };
 
+  async function unlock() {
+    if (!window.confirm("Buka kunci arsip selama 24 jam? Selama itu isi undangan bisa diubah dan disimpan lagi.")) return;
+    setBusy(true);
+    const res = await unlockArchive(slug).catch(() => ({ ok: false as const, error: "Gagal membuka kunci. Cek koneksi." }));
+    setBusy(false);
+    if (!res.ok) return setToast({ tone: "error", text: res.error });
+    setLocked(false);
+    setUnlockedUntil(res.at);
+    setToast({ tone: "ok", text: "Kunci arsip dibuka selama 24 jam." });
+  }
+
   async function publish() {
+    if (locked) {
+      setToast({ tone: "error", text: "Undangan ini sudah menjadi arsip. Buka kunci dulu kalau perlu koreksi." });
+      return;
+    }
     if (issues.length) {
       flagIssues(issues);
       setToast({ tone: "error", text: `${issues.length} isian perlu dilengkapi. Yang bermasalah ditandai merah.` });
@@ -244,7 +269,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
             <button
               type="button"
               onClick={publish}
-              disabled={busy}
+              disabled={busy || locked}
               className="hidden rounded-sm bg-wine px-5 py-2.5 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-60 lg:block"
             >
               {busy ? "Memproses..." : published ? "Tayangkan perubahan" : "Simpan versi final"}
@@ -255,6 +280,28 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
 
       <div className="mt-6 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-8">
         <div className="grid content-start gap-3">
+          {archive && (locked || unlockedUntil) && (
+            <div role="status" className={`rounded-sm border p-4 text-[14px] ${locked ? "border-line bg-blush/60" : "border-amber-300 bg-amber-50 text-amber-900"}`}>
+              {locked ? (
+                <>
+                  <p>
+                    Undangan ini sudah menjadi arsip sejak <b className="font-medium">{archive.archiveAt}</b>. Isinya tetap tayang, tapi tidak bisa diubah lagi. RSVP, ucapan baru,
+                    amplop digital, hitung mundur, dan tautan nama tamu sudah berhenti.
+                  </p>
+                  <button type="button" onClick={unlock} disabled={busy} className="mt-2 text-wine underline underline-offset-4 disabled:opacity-50">
+                    Buka kunci 24 jam untuk koreksi
+                  </button>
+                </>
+              ) : (
+                <p>
+                  Kunci arsip dibuka sementara sampai{" "}
+                  {new Date(unlockedUntil!).toLocaleString("id-ID", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" })} WIB. Setelah itu
+                  undangan kembali terkunci.
+                </p>
+              )}
+            </div>
+          )}
+          <fieldset disabled={locked} className="contents">
           {showIssues && issues.length > 0 && (
             <div role="alert" className="rounded-sm border border-wine/40 bg-blush/60 p-4 text-[14px]">
               <p className="font-medium text-wine">{issues.length} isian perlu dilengkapi sebelum disimpan final</p>
@@ -337,6 +384,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
               </section>
             );
           })}
+          </fieldset>
         </div>
 
         <aside className={mobilePreview ? "fixed inset-0 z-50 flex flex-col bg-ink/70 p-3 backdrop-blur-sm" : "hidden lg:block"}>
@@ -374,7 +422,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
           <button type="button" onClick={() => setMobilePreview(true)} className="flex-1 rounded-sm border border-ink px-4 py-3 text-[14px]">
             Lihat preview
           </button>
-          <button type="button" onClick={publish} disabled={busy} className="flex-1 rounded-sm bg-wine px-4 py-3 text-[14px] text-white disabled:opacity-60">
+          <button type="button" onClick={publish} disabled={busy || locked} className="flex-1 rounded-sm bg-wine px-4 py-3 text-[14px] text-white disabled:opacity-60">
             {busy ? "Memproses..." : published ? "Tayangkan" : "Simpan final"}
           </button>
         </div>

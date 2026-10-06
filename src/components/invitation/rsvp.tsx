@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { submitRsvp } from "@/app/[slug]/actions";
-import { useGuest } from "./shell";
+import { useArchived, useGuest } from "./shell";
 
 type Step = "attend" | "count" | "name" | "done";
 
@@ -19,6 +19,7 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
   const [pending, start] = useTransition();
 
   const value = name ?? guest;
+  const archived = useArchived();
 
   const send = () =>
     start(async () => {
@@ -28,6 +29,8 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
       setGuest(value.trim());
       setStep("done");
     });
+
+  if (archived) return <p className="text-[15px] text-inv-ink/75">Konfirmasi kehadiran sudah ditutup karena undangan ini sudah menjadi arsip.</p>;
 
   return (
     <div aria-live="polite">

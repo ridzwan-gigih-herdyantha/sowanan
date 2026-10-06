@@ -3,6 +3,7 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { cacheLife, cacheTag } from "next/cache";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
+import { archiveInfo, isDemo } from "./archive";
 import { invitationDataSchema, type InvitationData } from "./schema";
 
 export type InvitationRecord = {
@@ -15,6 +16,8 @@ export type InvitationRecord = {
   // Paket dan add-on yang dibayar. Undangan contoh tidak berpaket, jadi semua fitur aktif.
   pkg?: string | null;
   addons?: Record<string, number>;
+  // Sudah dibekukan menjadi arsip permanen, 30 hari setelah acara.
+  archived?: boolean;
 };
 
 export const invitationTag = (slug: string) => `invitation-${slug}`;
@@ -53,7 +56,13 @@ export async function getInvitation(slug: string): Promise<InvitationRecord | nu
     return null;
   }
 
-  cacheLife("max");
+  // Cache halaman kedaluwarsa sendiri saat undangan dibekukan, supaya tampilan arsip muncul tanpa perlu
+  // disimpan ulang. Setelah beku isinya tidak berubah lagi, jadi boleh di-cache selamanya.
+  const archive = archiveInfo(parsed.data, Date.now(), isDemo(data.slug, data.theme));
+  const untilArchive = archive.archiveAt && !archive.archived ? Math.ceil((archive.archiveAt.getTime() - Date.now()) / 1000) : 0;
+  if (untilArchive > 0) cacheLife({ stale: Math.min(300, untilArchive), revalidate: untilArchive, expire: untilArchive + 3600 });
+  else cacheLife("max");
+
   // Kalau kolom payment_status belum ada (migrasi 0005 belum jalan), anggap lunas supaya halaman tidak rusak.
   return {
     id: data.id,
@@ -64,6 +73,7 @@ export async function getInvitation(slug: string): Promise<InvitationRecord | nu
     data: parsed.data,
     pkg: data.package ?? null,
     addons: data.addons ?? {},
+    archived: archive.archived,
   };
 }
 

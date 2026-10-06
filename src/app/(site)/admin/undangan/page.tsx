@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { getSettingsFresh, PACKAGE_IDS, PACKAGE_NAMES, themeAvailable, visiblePackages } from "@/lib/settings";
+import { archiveFromDates, formatDateId, isDemo, type ArchiveInfo } from "@/lib/invitation/archive";
 import { THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../login-form";
 import { AdminFrame } from "../frame";
@@ -29,10 +30,26 @@ type Row = {
   rb: string | null;
   payment_status?: string;
   package?: string | null;
+  es: string | null;
+  ee: string | null;
+  archive_notified_at?: string | null;
 };
 
 const BASE_COLS =
-  "slug, theme, published, created_at, dg:data->couple->groom->>name, db:data->couple->bride->>name, rg:draft->couple->groom->>name, rb:draft->couple->bride->>name";
+  "slug, theme, published, created_at, dg:data->couple->groom->>name, db:data->couple->bride->>name, rg:draft->couple->groom->>name, rb:draft->couple->bride->>name, es:data->event->>start, ee:data->event->>end";
+
+// Status arsip satu undangan di daftar. Tujuh hari sebelum beku, klien perlu diberi tahu dari halaman RSVP.
+function ArchiveBadge({ slug, info, notified }: { slug: string; info: ArchiveInfo; notified: boolean }) {
+  if (!info.archiveAt) return null;
+  if (info.archived) return <p className="mt-1 text-[12px] text-ink-mute">Arsip sejak {formatDateId(info.archiveAt)}</p>;
+  if (!info.noticeDue) return null;
+  if (notified) return <p className="mt-1 text-[12px] text-ink-mute">Klien sudah diberi tahu, diarsipkan {formatDateId(info.archiveAt)}</p>;
+  return (
+    <Link href={`/admin/undangan/${slug}/respon`} prefetch={false} className="mt-1.5 inline-block rounded-full bg-wine px-2.5 py-0.5 text-[12px] text-white no-underline hover:bg-wine-dark">
+      Beri tahu klien, diarsipkan {formatDateId(info.archiveAt)}
+    </Link>
+  );
+}
 
 async function List() {
   if (!hasSupabase()) {
@@ -51,9 +68,9 @@ async function List() {
     );
 
   const sb = supabaseAdmin();
-  // Kolom payment_status (migrasi 0005) dan package (0006) bisa belum ada, jadi dicoba bertahap.
+  // Kolom payment_status (0005), package (0006), dan archive_notified_at (0008) bisa belum ada, jadi dicoba bertahap.
   let rows: Row[] = [];
-  for (const extra of [", payment_status, package", ", payment_status", ""]) {
+  for (const extra of [", payment_status, package, archive_notified_at", ", payment_status, package", ", payment_status", ""]) {
     const res = await sb.from("invitations").select(BASE_COLS + extra).order("created_at", { ascending: false });
     if (!res.error) {
       rows = (res.data ?? []) as unknown as Row[];
@@ -69,6 +86,8 @@ async function List() {
   });
   const couple = (r: Row) => [r.rg || r.dg, r.rb || r.db].filter(Boolean).join(" & ") || "Belum diisi";
   const unpaid = rows.filter((r) => r.payment_status === "belum_lunas").length;
+  const archive = (r: Row) => archiveFromDates(r.es, r.ee, undefined, isDemo(r.slug, r.theme));
+  const toNotify = rows.filter((r) => archive(r).noticeDue && !r.archive_notified_at).length;
 
   return (
     <AdminFrame email={admin.email ?? ""} current="/admin/undangan" title="Undangan">
@@ -78,6 +97,7 @@ async function List() {
         <h2 className="font-serif text-2xl">Daftar undangan</h2>
         <p className="text-[13px] text-ink-mute">
           {rows.length} undangan, {unpaid} belum lunas
+          {toNotify > 0 && <span className="text-wine">, {toNotify} perlu diberi tahu sebelum diarsipkan</span>}
         </p>
       </div>
 
@@ -100,6 +120,7 @@ async function List() {
                 sowanan.com/{r.slug} · tema {THEME_NAMES[r.theme] ?? r.theme}
                 {r.slug === r.theme && " · contoh"}
               </p>
+              <ArchiveBadge slug={r.slug} info={archive(r)} notified={Boolean(r.archive_notified_at)} />
             </div>
             <PackageSelect slug={r.slug} value={r.package ?? ""} />
             <span className="justify-self-end lg:justify-self-start">

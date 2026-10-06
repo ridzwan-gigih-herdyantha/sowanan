@@ -12,6 +12,13 @@ type GuestCtx = { guest: string; setGuest: (name: string) => void };
 const GuestContext = createContext<GuestCtx>({ guest: "", setGuest: () => {} });
 export const useGuest = () => useContext(GuestContext);
 
+// Undangan yang sudah dibekukan menjadi arsip: formulir RSVP dan ucapan ditutup, ucapan yang ada tetap tampil.
+const ArchivedContext = createContext(false);
+export const useArchived = () => useContext(ArchivedContext);
+export function Archived({ archived, children }: { archived: boolean; children: ReactNode }) {
+  return <ArchivedContext.Provider value={archived}>{children}</ArchivedContext.Provider>;
+}
+
 // Nama tamu dari tautan (?to=) hanya dipakai kalau paket undangan menyertakannya.
 const GuestNamesContext = createContext(true);
 export function GuestNames({ allowed, children }: { allowed: boolean; children: ReactNode }) {

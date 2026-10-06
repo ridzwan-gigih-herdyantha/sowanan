@@ -2,11 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { rsvpSheet } from "@/lib/export/rsvp-sheet";
+import { markArchiveNotified } from "../../actions";
 import { deleteResponse } from "./actions";
 
 type Rsvp = { id: number; name: string; attending: boolean; guests: number; created_at: string };
 type Wish = { id: number; name: string; message: string; created_at: string };
-type Props = { slug: string; rsvps: Rsvp[]; wishes: Wish[]; guestNames: string[]; exportLock?: string };
+// Pemberitahuan arsip ke klien, muncul sejak tujuh hari sebelum undangan dibekukan.
+export type ArchiveNotice = { archiveAt: string; archived: boolean; notifiedAt: string | null; couple: string };
+type Props = { slug: string; rsvps: Rsvp[]; wishes: Wish[]; guestNames: string[]; exportLock?: string; notice?: ArchiveNotice };
 
 const PAGE = 50;
 const field = "block w-full rounded-sm border border-line bg-white px-3 py-2.5 text-base outline-none focus:border-wine";
@@ -28,7 +31,7 @@ function Stat({ label, value, note }: { label: string; value: number | string; n
   );
 }
 
-export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, guestNames, exportLock }: Props) {
+export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, guestNames, exportLock, notice }: Props) {
   const [rsvps, setRsvps] = useState(initialRsvps);
   const [wishes, setWishes] = useState(initialWishes);
   const [tab, setTab] = useState<"rsvp" | "wish">("rsvp");
@@ -65,8 +68,8 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
     else setWishes((l) => l.filter((w) => w.id !== id));
   }
 
-  async function exportXlsx() {
-    if (tab === "rsvp") {
+  async function exportXlsx(which: "rsvp" | "wish" = tab) {
+    if (which === "rsvp") {
       const rows = unique.map((r) => ({ name: r.name, attending: r.attending, guests: r.guests, time: timeFmt.format(new Date(r.created_at)), invited: invited.has(key(r.name)) }));
       const { data, options } = rsvpSheet(rows);
       await saveXlsx(`rsvp-${slug}.xlsx`, data, options);
@@ -87,6 +90,7 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
 
   return (
     <div className="mt-8">
+      {notice && <ArchivePanel slug={slug} notice={notice} onExport={async () => (await exportXlsx("rsvp"), await exportXlsx("wish"))} />}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Hadir" value={people} note={`${yes.length} konfirmasi`} />
         <Stat label="Tidak hadir" value={unique.length - yes.length} note="konfirmasi" />
@@ -150,7 +154,7 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
         )}
         {list.length > 0 && exportLock && <span className="max-w-xs text-[12px] text-ink-mute">{exportLock}</span>}
         {list.length > 0 && !exportLock && (
-          <button type="button" onClick={exportXlsx} className="text-[14px] text-wine underline underline-offset-4">
+          <button type="button" onClick={() => exportXlsx()} className="text-[14px] text-wine underline underline-offset-4">
             Unduh Excel
           </button>
         )}
@@ -202,5 +206,56 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
         </button>
       )}
     </div>
+  );
+}
+
+function ArchivePanel({ slug, notice, onExport }: { slug: string; notice: ArchiveNotice; onExport: () => Promise<void> }) {
+  const [notifiedAt, setNotifiedAt] = useState(notice.notifiedAt);
+  const [status, setStatus] = useState("");
+  const message = [
+    `Halo ${notice.couple || "kakak"}, undangan pernikahan kalian di sowanan.com/${slug} akan menjadi arsip permanen pada ${notice.archiveAt}.`,
+    "Setelah itu undangan tetap bisa dibuka selamanya di alamat yang sama, tetapi konfirmasi kehadiran, ucapan baru, amplop digital, hitung mundur, dan tautan nama tamu berhenti.",
+    "Terlampir daftar tamu yang sudah konfirmasi dan rekap ucapan untuk kalian simpan. Terima kasih sudah memakai Sowanan.",
+  ].join("\n\n");
+
+  const mark = async (value: boolean) => {
+    const res = await markArchiveNotified(slug, value).catch(() => ({ ok: false as const, error: "Gagal menyimpan. Cek koneksi." }));
+    if (!res.ok) return setStatus(res.error);
+    setNotifiedAt(value ? res.at : null);
+    setStatus(value ? "Ditandai sudah dikirim." : "Tanda dibatalkan.");
+  };
+
+  return (
+    <section className={`mb-6 rounded-sm border p-4 text-[14px] ${notifiedAt ? "border-line bg-white" : "border-wine/40 bg-blush/60"}`}>
+      <p className="font-medium text-wine">{notice.archived ? `Undangan ini menjadi arsip sejak ${notice.archiveAt}` : `Undangan ini menjadi arsip pada ${notice.archiveAt}`}</p>
+      <p className="mt-1 text-ink-soft">
+        {notifiedAt
+          ? `Klien sudah diberi tahu pada ${new Date(notifiedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" })}.`
+          : "Kirim pemberitahuan ke klien beserta daftar tamu dan rekap ucapan, lalu tandai sudah dikirim."}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+        <button type="button" onClick={onExport} className="text-wine underline underline-offset-4">
+          Unduh daftar tamu dan rekap ucapan
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            await navigator.clipboard.writeText(message);
+            setStatus("Pesan disalin. Tempel di WhatsApp klien.");
+          }}
+          className="text-wine underline underline-offset-4"
+        >
+          Salin pesan untuk klien
+        </button>
+        <button type="button" onClick={() => mark(!notifiedAt)} className="text-ink-mute underline underline-offset-4 hover:text-wine">
+          {notifiedAt ? "Batalkan tanda sudah dikirim" : "Tandai sudah dikirim"}
+        </button>
+      </div>
+      {status && (
+        <p role="status" className="mt-2 text-[13px] text-ink-mute">
+          {status}
+        </p>
+      )}
+    </section>
   );
 }

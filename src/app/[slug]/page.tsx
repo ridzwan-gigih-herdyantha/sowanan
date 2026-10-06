@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { getInvitation, listPublishedSlugs } from "@/lib/invitation/load";
 import { toView } from "@/lib/invitation/view";
-import { GuestNames } from "@/components/invitation/shell";
+import { Archived, GuestNames } from "@/components/invitation/shell";
 import { Watermark } from "@/components/invitation/watermark";
 import { getSettings, packageRules } from "@/lib/settings";
 import { THEMES } from "@/themes";
@@ -16,7 +16,11 @@ async function load(slug: string) {
   const inv = await getInvitation(slug);
   if (!inv || !inv.published || !THEMES[inv.theme]) return null;
   const rules = packageRules(await getSettings(), inv.pkg ?? null, inv.addons);
-  return { theme: THEMES[inv.theme], paid: inv.paid, guestNames: !rules.locked.nama_tamu, view: toView(inv.slug, inv.data, inv.theme) };
+  const archived = Boolean(inv.archived);
+  const view = toView(inv.slug, inv.data, inv.theme);
+  // Arsip: hitung mundur, RSVP, dan amplop digital disembunyikan. Isi lain dan buku ucapan tetap tampil.
+  if (archived) view.on = { ...view.on, countdown: false, rsvp: false, gifts: false };
+  return { theme: THEMES[inv.theme], paid: inv.paid, archived, guestNames: !rules.locked.nama_tamu && !archived, view };
 }
 
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {
@@ -48,9 +52,11 @@ export default async function InvitationPage({ params }: PageProps<"/[slug]">) {
   const { Component } = found.theme;
   return (
     <>
-      <GuestNames allowed={found.guestNames}>
-        <Component inv={found.view} />
-      </GuestNames>
+      <Archived archived={found.archived}>
+        <GuestNames allowed={found.guestNames}>
+          <Component inv={found.view} />
+        </GuestNames>
+      </Archived>
       {!found.paid && <Watermark />}
     </>
   );

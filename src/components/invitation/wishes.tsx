@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { submitWish } from "@/app/[slug]/actions";
 import type { Wish } from "@/lib/guestbook";
-import { useGuest } from "./shell";
+import { useArchived, useGuest } from "./shell";
 import { sway } from "./sway";
 
 const FIRST = 4;
@@ -21,6 +21,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const doa = variant === "doa";
   const tagTone = ["bg-inv-wash", "bg-[var(--inv-note-a,#E6D8E4)]", "bg-[var(--inv-note-b,#DDE3D3)]"];
   const { guest, setGuest } = useGuest();
+  const archived = useArchived();
   const [mine, setMine] = useState<Wish[]>([]);
   const [shown, setShown] = useState(FIRST);
   const listTop = useRef<HTMLDivElement>(null);
@@ -46,6 +47,11 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
 
   return (
     <div className="lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+      {archived ? (
+        <p className="self-start rounded-sm border border-inv-line px-4 py-3.5 text-[14px] leading-relaxed text-inv-ink/75">
+          Undangan ini sudah menjadi arsip. Ucapan baru tidak lagi diterima, ucapan yang sudah masuk tetap tersimpan di sini.
+        </p>
+      ) : (
       <form action={send} className="self-start">
         <label className="block text-[12px] tracking-[0.14em] text-inv-ink/70">
           NAMAMU
@@ -79,6 +85,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
           {pending ? (lined || curator || tags ? "MENGIRIM..." : "MENEMPELKAN...") : tags ? "GANTUNGKAN UCAPAN" : curator ? "SIMPAN CATATAN" : lined ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
         </button>
       </form>
+      )}
 
       <div className="mt-12 lg:mt-0">
         <div ref={listTop} className="scroll-mt-24" />
