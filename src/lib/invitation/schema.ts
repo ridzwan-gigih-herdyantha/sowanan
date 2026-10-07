@@ -83,6 +83,8 @@ export const invitationDataSchema = z.object({
     .object({
       palette: str(),
       font: str(),
+      // Font skrip khusus nama mempelai. Kosong berarti sama dengan font judul.
+      nameFont: str(),
       custom: z.object({ paper: str(), accent: str(), ink: str() }).prefault({}),
     })
     .prefault({}),

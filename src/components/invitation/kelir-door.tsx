@@ -93,7 +93,7 @@ export function KelirDoor({ groom, bride, groomAksara, brideAksara, date, invite
 
         <header className="relative z-10 flex-none px-8 pt-[max(44px,7svh)] text-center">
           <p className="text-[12px] tracking-[0.32em] text-inv-accent">PAHARGYAN PAWIWAHAN</p>
-          <p className="mt-3 font-display text-[clamp(48px,13.5vw,108px)] leading-[0.95]">
+          <p className="mt-3 font-script text-[clamp(48px,13.5vw,108px)] leading-[0.95]">
             {groom}
             <span className="my-1 block text-[0.42em] text-inv-accent lg:mx-5 lg:my-0 lg:inline">&amp;</span>
             {bride}

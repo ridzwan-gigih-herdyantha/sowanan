@@ -120,11 +120,11 @@ export function PintuDoor({ groom, bride, date, hijri, invited, onOpen }: PintuP
                 </p>
                 <p className="mt-3 text-[11px] tracking-[0.32em] text-inv-wash/75">WALIMATUL &lsquo;URSY</p>
                 <div className="contents [@media(max-height:620px)]:hidden">
-                  <p className="mt-2 font-display text-[clamp(36px,10.5vw,56px)] leading-[1.02] [@media(max-height:700px)]:text-[clamp(30px,8vw,44px)]">{groom}</p>
+                  <p className="mt-2 font-script text-[clamp(36px,10.5vw,56px)] leading-[1.02] [@media(max-height:700px)]:text-[clamp(30px,8vw,44px)]">{groom}</p>
                   <Star className="my-1.5 size-5 text-inv-gold-light" />
-                  <p className="font-display text-[clamp(36px,10.5vw,56px)] leading-[1.02] [@media(max-height:700px)]:text-[clamp(30px,8vw,44px)]">{bride}</p>
+                  <p className="font-script text-[clamp(36px,10.5vw,56px)] leading-[1.02] [@media(max-height:700px)]:text-[clamp(30px,8vw,44px)]">{bride}</p>
                 </div>
-                <p className="mt-1 hidden font-display text-[34px] leading-tight [@media(max-height:620px)]:block">
+                <p className="mt-1 hidden font-script text-[34px] leading-tight [@media(max-height:620px)]:block">
                   {groom} <span className="text-inv-gold-light">&amp;</span> {bride}
                 </p>
                 <p className="mt-4 text-[14px] text-inv-wash/85 [@media(max-height:620px)]:mt-2">{date}</p>

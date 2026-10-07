@@ -117,6 +117,7 @@
   --color-pk-ukir: var(--pk-ukir);
   --color-pk-tex: var(--pk-tex);
   --font-display: var(--inv-display);
+  --font-script: var(--inv-script, var(--inv-display));
   --font-body: var(--inv-body);
   --font-jawa: var(--inv-jawa);
   --font-arab: var(--inv-arab);
@@ -125,6 +126,15 @@
   --color-sk-emas: var(--sk-emas);
   --color-sk-glow: var(--sk-glow);
   --color-sk-tex: var(--sk-tex);
+}
+
+/* Font skrip nama mempelai. Huruf bersambung putus kalau diberi jarak huruf atau dimiringkan paksa,
+   dan butuh ruang baris untuk kapital dan ekor huruf. Hanya aktif saat font nama dipilih,
+   jadi tampilan bawaan tema tidak berubah. */
+[style*="--inv-script"] .font-script {
+  letter-spacing: normal;
+  font-style: normal;
+  line-height: 1.15;
 }
 
 .inv-paper {

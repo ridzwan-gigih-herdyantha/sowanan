@@ -59,7 +59,7 @@ export function HeroStage({ photo, groom, bride, names, below }: { photo: ReactN
   const column = (p: Side, name: PuppetName, align: "l" | "r") => (
     <div className={`hidden min-w-0 flex-1 flex-col justify-end pb-2 lg:flex ${align === "l" ? "items-end text-right" : "items-start text-left"}`}>
       <motion.div {...show(1.1)}>
-        <p className="font-display text-[clamp(52px,5vw,88px)] leading-none text-inv-ink">{p.name}</p>
+        <p className="font-script text-[clamp(52px,5vw,88px)] leading-none text-inv-ink">{p.name}</p>
         {p.aksara && (
           <p lang="jv" className="mt-3 font-jawa text-[22px] text-inv-accent">
             {p.aksara}

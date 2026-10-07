@@ -69,8 +69,8 @@ function Hero({ inv }: { inv: InvitationView }) {
         <p {...enter(0.45)} className="inv-enter text-[11px] font-medium tracking-[0.24em] text-inv-gold">
           KAMI MENGUNDANGMU KE PERNIKAHAN
         </p>
-        <h1 {...enter(0.52)} className="inv-enter mt-4 font-display text-[clamp(52px,15vw,80px)] leading-[0.95] tracking-[-0.02em] lg:text-[clamp(96px,10.5vw,168px)]">
-          {inv.groom.name} <span className="italic">&amp;</span> {inv.bride.name}
+        <h1 {...enter(0.52)} className="inv-enter mt-4 font-script text-[clamp(52px,15vw,80px)] leading-[0.95] tracking-[-0.02em] lg:text-[clamp(96px,10.5vw,168px)]">
+          {inv.groom.name} <span className="font-display italic">&amp;</span> {inv.bride.name}
         </h1>
       </Wrap>
       <div {...enter(0.62)} className="inv-enter">
@@ -295,7 +295,7 @@ function Closing({ inv }: { inv: InvitationView }) {
         </p>
         <div className="mt-16 flex items-end justify-between border-t border-inv-line pt-6">
           <p className="font-display text-2xl">
-            {inv.groom.name} <span className="italic">&amp;</span> {inv.bride.name}
+            {inv.groom.name} <span className="font-display italic">&amp;</span> {inv.bride.name}
           </p>
           <p className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">{inv.dateShort.replace(/ /g, "")}</p>
         </div>

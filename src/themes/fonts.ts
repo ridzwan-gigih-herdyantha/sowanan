@@ -1,4 +1,22 @@
-import { Cinzel, Cormorant_Garamond, DM_Sans, DM_Serif_Display, EB_Garamond, Fraunces, Inter, Jost, Karla, Lora, Manrope, Playfair_Display, Work_Sans } from "next/font/google";
+import {
+  Cinzel,
+  Cormorant_Garamond,
+  DM_Sans,
+  DM_Serif_Display,
+  EB_Garamond,
+  Fraunces,
+  Great_Vibes,
+  Inter,
+  Jost,
+  Karla,
+  Lora,
+  Manrope,
+  Parisienne,
+  Pinyon_Script,
+  Playfair_Display,
+  Sacramento,
+  Work_Sans,
+} from "next/font/google";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { defaultFonts as andiRina } from "./andi-rina/fonts";
 import { defaultFonts as bagasSekar } from "./bagas-sekar/fonts";
@@ -22,9 +40,21 @@ const manrope = Manrope({ subsets: ["latin"], display: "swap", preload: false })
 const workSans = Work_Sans({ subsets: ["latin"], display: "swap", preload: false });
 const inter = Inter({ subsets: ["latin"], display: "swap", preload: false });
 const karla = Karla({ subsets: ["latin"], display: "swap", preload: false });
+const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400", display: "swap", preload: false });
+const pinyon = Pinyon_Script({ subsets: ["latin"], weight: "400", display: "swap", preload: false });
+const parisienne = Parisienne({ subsets: ["latin"], weight: "400", display: "swap", preload: false });
+const sacramento = Sacramento({ subsets: ["latin"], weight: "400", display: "swap", preload: false });
 
 type Font = { style: { fontFamily: string } };
 export type FontPreset = { id: string; name: string; display: Font; body: Font };
+
+// Font skrip untuk nama mempelai saja. Judul lain, angka, dan teks ucapan tetap memakai font judul supaya terbaca.
+export const NAME_FONTS: { id: string; name: string; font: Font }[] = [
+  { id: "klasik", name: "Great Vibes", font: greatVibes },
+  { id: "kaligrafi", name: "Pinyon Script", font: pinyon },
+  { id: "lembut", name: "Parisienne", font: parisienne },
+  { id: "modern", name: "Sacramento", font: sacramento },
+];
 
 const SERIF = "Georgia, serif";
 const SANS = "'Helvetica Neue', Arial, sans-serif";
@@ -65,8 +95,12 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
 export const fontStack = (f: Font, kind: "display" | "body") => `${f.style.fontFamily}, ${kind === "display" ? SERIF : SANS}`;
 
 // Font bawaan memakai pengaturan tema sendiri, jadi hanya pilihan lain yang menimpa variabel font.
+// --inv-script yang kosong membuat nama mempelai kembali ke font judul.
 export function resolveFonts(theme: string, style?: InvitationData["style"]): Record<string, string> {
   const preset = style?.font && FONT_PRESETS[theme]?.find((x) => x.id === style.font);
-  if (!preset) return {};
-  return { "--inv-display": fontStack(preset.display, "display"), "--inv-body": fontStack(preset.body, "body") };
+  const name = style?.nameFont && NAME_FONTS.find((x) => x.id === style.nameFont);
+  return {
+    ...(preset && { "--inv-display": fontStack(preset.display, "display"), "--inv-body": fontStack(preset.body, "body") }),
+    ...(name && { "--inv-script": fontStack(name.font, "display") }),
+  };
 }

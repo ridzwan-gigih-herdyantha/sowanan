@@ -110,7 +110,7 @@ function Hero({ inv }: { inv: InvitationView }) {
           groom={{ name: inv.groom.name, aksara: inv.groom.aksara }}
           bride={{ name: inv.bride.name, aksara: inv.bride.aksara }}
           names={
-            <p aria-hidden="true" className="font-display text-[clamp(38px,11vw,64px)] leading-[0.95] text-inv-wash">
+            <p aria-hidden="true" className="font-script text-[clamp(38px,11vw,64px)] leading-[0.95] text-inv-wash">
               {inv.groom.name}
               <span className="mx-1.5 text-[0.5em] text-inv-gold-light">&amp;</span>
               <br />
@@ -355,7 +355,7 @@ function Closing({ inv }: { inv: InvitationView }) {
               {inv.sesantiArti && <figcaption className="mt-1 text-[15px] text-inv-wash/75">{inv.sesantiArti}</figcaption>}
             </figure>
           )}
-          <p {...reveal(5)} className="mt-8 font-display text-[28px] text-inv-gold-light">
+          <p {...reveal(5)} className="mt-8 font-script text-[28px] text-inv-gold-light">
             {inv.groom.name} &amp; {inv.bride.name}
           </p>
         </div>

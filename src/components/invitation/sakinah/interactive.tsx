@@ -79,7 +79,7 @@ export function SakinahHero({ photo, top, groom, bride, info }: { photo: ReactNo
   });
   const side = (p: Person, align: "l" | "r", delay: number) => (
     <motion.div {...fade(delay)} className={`hidden lg:block ${align === "l" ? "text-right" : "text-left"}`}>
-      <p className="font-display text-[clamp(56px,5.4vw,100px)] leading-none text-inv-ink">{p.name}</p>
+      <p className="font-script text-[clamp(56px,5.4vw,100px)] leading-none text-inv-ink">{p.name}</p>
       {p.full && p.full !== p.name && <p className="mt-4 text-[13px] tracking-[0.24em] text-inv-accent">{p.full.toUpperCase()}</p>}
     </motion.div>
   );
@@ -136,9 +136,9 @@ export function SakinahHero({ photo, top, groom, bride, info }: { photo: ReactNo
       </div>
 
       <motion.div {...fade(1.1)} className="relative z-10 mt-9 text-center lg:hidden">
-        <p aria-hidden="true" className="font-display text-[clamp(44px,12.5vw,72px)] leading-[0.95] text-inv-ink">
+        <p aria-hidden="true" className="font-script text-[clamp(44px,12.5vw,72px)] leading-[0.95] text-inv-ink">
           {groom.name}
-          <span className="my-1 block font-display text-[0.42em] text-inv-accent">&amp;</span>
+          <span className="my-1 block text-[0.42em] text-inv-accent">&amp;</span>
           {bride.name}
         </p>
       </motion.div>

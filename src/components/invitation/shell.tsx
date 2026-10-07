@@ -247,10 +247,10 @@ export function InvitationShell({ door, music, synth, className, style, children
               aria-hidden={open}
             >
               <p className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">LEMBAR KOLEKSI {door.number}</p>
-              <p className="mt-4 font-display text-[clamp(52px,15vw,112px)] leading-[0.95] text-inv-accent">
+              <p className="mt-4 font-script text-[clamp(52px,15vw,112px)] leading-[0.95] text-inv-accent">
                 {door.groom}
                 <br />
-                <span className="italic">&amp;</span> {door.bride}
+                <span className="font-display italic">&amp;</span> {door.bride}
               </p>
               <div className="relative mt-8 w-full max-w-md -rotate-1 border border-inv-line bg-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.08)]">
                 <span className="inv-tape -top-2.5 left-10 -rotate-3" aria-hidden="true" />
@@ -310,7 +310,7 @@ export function InvitationShell({ door, music, synth, className, style, children
               aria-hidden={open}
             >
               <p className="text-[11px] tracking-[0.22em] text-inv-ink/70">PERNIKAHAN</p>
-              <p className="mt-3 mb-10 font-display text-[44px] leading-none text-inv-accent">{door.couple}</p>
+              <p className="mt-3 mb-10 font-script text-[44px] leading-none text-inv-accent">{door.couple}</p>
               <GuestField invited={invited} greeting="Kepada Yth." className="mb-2" />
               <button
                 type="button"
@@ -335,10 +335,10 @@ export function InvitationShell({ door, music, synth, className, style, children
           ) : (
             <div className="inv-door-walls fixed inset-0 z-50" aria-hidden={open}>
               <div className="inv-wall-l inv-paper absolute inset-y-0 left-0 w-1/2 border-r border-inv-line">
-                <p className="absolute top-[14%] left-5 font-display text-[clamp(52px,15vw,120px)] leading-none sm:left-10">{door.groom}</p>
+                <p className="absolute top-[14%] left-5 font-script text-[clamp(52px,15vw,120px)] leading-none sm:left-10">{door.groom}</p>
               </div>
               <div className="inv-wall-r inv-paper absolute inset-y-0 right-0 w-1/2">
-                <p className="absolute top-[26%] right-5 font-display text-[clamp(52px,15vw,120px)] leading-none italic sm:right-10">
+                <p className="absolute top-[26%] right-5 font-script text-[clamp(52px,15vw,120px)] leading-none italic sm:right-10">
                   {door.bride}
                 </p>
               </div>

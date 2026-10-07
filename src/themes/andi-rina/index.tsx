@@ -86,12 +86,12 @@ function Hero({ inv }: { inv: InvitationView }) {
         <Label className="text-inv-paper/80">
           <span {...enter(0.55)} className="inv-enter inline-block">PERNIKAHAN</span>
         </Label>
-        <h1 className="mt-2 font-display text-[clamp(84px,26vw,280px)] leading-[0.82] font-normal tracking-[-0.02em] lg:text-[clamp(120px,15vw,220px)]">
+        <h1 className="mt-2 font-script text-[clamp(84px,26vw,280px)] leading-[0.82] font-normal tracking-[-0.02em] lg:text-[clamp(120px,15vw,220px)]">
           <span {...enter(0.6)} className="inv-enter block">
             {inv.groom.name}
           </span>
           <span {...enter(0.68)} className="inv-enter block text-right lg:pl-[16vw] lg:text-left">
-            <span className="text-inv-gold-light italic">&amp;</span> {inv.bride.name}
+            <span className="font-display text-inv-gold-light italic">&amp;</span> {inv.bride.name}
           </span>
         </h1>
         <div {...enter(0.76)} className="inv-enter mt-6 flex flex-col gap-3 border-t border-inv-paper/30 pt-4 sm:flex-row sm:items-end sm:justify-between">
@@ -147,7 +147,7 @@ function Couple({ inv }: { inv: InvitationView }) {
     <section className="inv-paper torn-top relative -mt-3.5 overflow-hidden py-20 lg:py-28">
       <Wrap>
         <Label className="text-inv-gold">KEDUA MEMPELAI</Label>
-        <p className="mt-4 font-display text-[clamp(88px,28vw,240px)] leading-[0.82] tracking-[-0.02em] text-inv-accent">{inv.groom.name}</p>
+        <p className="mt-4 font-script text-[clamp(88px,28vw,240px)] leading-[0.82] tracking-[-0.02em] text-inv-accent">{inv.groom.name}</p>
         {parents(inv.groom, "mt-5 border-l border-inv-line pl-4")}
       </Wrap>
       <div className="relative mx-auto mt-10 max-w-[1280px] border-y-[10px] border-inv-night bg-inv-night lg:border-y-[16px]">
@@ -165,7 +165,7 @@ function Couple({ inv }: { inv: InvitationView }) {
         </span>
       </div>
       <Wrap className="mt-14 text-right">
-        <p className="font-display text-[clamp(88px,28vw,240px)] leading-[0.82] tracking-[-0.02em] text-inv-accent">{inv.bride.name}</p>
+        <p className="font-script text-[clamp(88px,28vw,240px)] leading-[0.82] tracking-[-0.02em] text-inv-accent">{inv.bride.name}</p>
         {parents(inv.bride, "mt-5 ml-auto w-fit border-r border-inv-line pr-4")}
       </Wrap>
     </section>
@@ -184,7 +184,7 @@ function Collage({ inv }: { inv: InvitationView }) {
         <div>
           <p className="font-display text-[clamp(24px,6vw,34px)] leading-snug text-inv-accent italic">{inv.quote}</p>
           <div className="mt-6 h-px w-10 bg-inv-line" />
-          <p className="mt-4 font-display text-lg tracking-[0.2em] italic">
+          <p className="mt-4 font-script text-lg tracking-[0.2em] italic">
             {inv.groom.name} &amp; {inv.bride.name}
           </p>
         </div>
@@ -412,7 +412,7 @@ function Closing({ inv }: { inv: InvitationView }) {
         <div className="relative mt-12 aspect-[1/1.05] w-40 rotate-[-3deg] bg-inv-card p-2 pb-7">
           <Image src={inv.images.closing} alt="" width={144} height={151} sizes="160px" className="h-full w-full object-cover" />
         </div>
-        <p className="mt-10 font-display text-2xl tracking-[0.12em]">
+        <p className="mt-10 font-script text-2xl tracking-[0.12em]">
           {inv.groom.name} &amp; {inv.bride.name}
         </p>
         <p className="mt-1 text-[13px] tracking-[0.2em] text-inv-paper/70">{inv.dateShort}</p>

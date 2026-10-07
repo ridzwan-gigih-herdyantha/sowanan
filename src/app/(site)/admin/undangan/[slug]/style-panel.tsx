@@ -3,13 +3,15 @@
 import { useState } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { contrast, CUSTOM, isHex, MIN_CONTRAST, type Vars } from "@/themes/palette";
-import { FONT_PRESETS, fontStack } from "@/themes/fonts";
+import { FONT_PRESETS, fontStack, NAME_FONTS } from "@/themes/fonts";
 import { PALETTES, resolvePalette } from "@/themes/palettes";
 import { Spinner } from "./spinner";
 
 type Props = {
   theme: string;
   style: InvitationData["style"];
+  // Nama mempelai untuk contoh font nama, misalnya "Andi & Rina".
+  couple: string;
   // Alasan gaya tidak bisa diubah karena tidak termasuk paket.
   locked?: string;
   applying: string | null;
@@ -33,7 +35,7 @@ function Swatch({ vars, keys }: { vars: Vars; keys: string[] }) {
 }
 
 // Panel gaya: pilih palet jadi tema, buat palet kustom dari tiga warna dasar dengan cek kontras, dan pilih pasangan font.
-export function StylePanel({ theme, style, locked, applying, onChange }: Props) {
+export function StylePanel({ theme, style, couple, locked, applying, onChange }: Props) {
   const p = PALETTES[theme];
   const [open, setOpen] = useState(false);
   if (!p) return null;
@@ -44,7 +46,8 @@ export function StylePanel({ theme, style, locked, applying, onChange }: Props) 
   const base = custom && BASE_FIELDS.every((f) => isHex(style.custom[f.key])) ? style.custom : p.base(active);
   const fonts = FONT_PRESETS[theme] ?? [];
   const font = fonts.find((f) => f.id === style.font) ?? fonts[0];
-  const changed = current !== p.presets[0].id || Boolean(style.font);
+  const nameFont = NAME_FONTS.find((f) => f.id === style.nameFont);
+  const changed = current !== p.presets[0].id || Boolean(style.font) || Boolean(nameFont);
 
   const pick = (id: string) => onChange({ ...style, palette: id === p.presets[0].id ? "" : id });
   const startCustom = () => onChange({ ...style, palette: CUSTOM, custom: { ...p.base(active) } });
@@ -56,7 +59,7 @@ export function StylePanel({ theme, style, locked, applying, onChange }: Props) 
         <span className="font-serif text-xl">Gaya</span>
         <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-mute">
           {applying && <Spinner className="size-3.5 text-wine" />}
-          {applying ? "Menerapkan..." : `${custom ? "Palet kustom" : p.presets.find((x) => x.id === current)?.name}${font ? ` · ${font.name}` : ""}`}
+          {applying ? "Menerapkan..." : `${custom ? "Palet kustom" : p.presets.find((x) => x.id === current)?.name}${font ? ` · ${font.name}` : ""}${nameFont ? ` · ${nameFont.name}` : ""}`}
         </span>
         <span className="ml-auto w-24">
           <Swatch vars={active} keys={p.swatch} />
@@ -198,11 +201,43 @@ export function StylePanel({ theme, style, locked, applying, onChange }: Props) 
               </>
             )}
 
+            {font && (
+              <>
+                <p className="mt-6 text-[13px] text-ink-mute">Font nama mempelai</p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {[{ id: "", name: "Sama dengan font judul", font: font.display }, ...NAME_FONTS].map((f) => {
+                    const on = f.id === (nameFont?.id ?? "");
+                    const busy = applying === `nama:${f.id || "bawaan"}`;
+                    return (
+                      <button
+                        key={f.id || "bawaan"}
+                        type="button"
+                        onClick={() => onChange({ ...style, nameFont: f.id })}
+                        aria-pressed={on}
+                        aria-busy={busy || undefined}
+                        className={`relative rounded-sm border px-3 py-2 text-left transition-colors duration-150 ${on ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
+                      >
+                        <span className="block truncate py-0.5 text-[34px] leading-[1.3]" style={{ fontFamily: fontStack(f.font, "display") }}>
+                          {couple}
+                        </span>
+                        <span className="mt-1 flex items-center gap-2 text-[12px] text-ink-mute">
+                          {busy && <Spinner className="size-3.5 text-wine" />}
+                          {f.name}
+                          {!f.id && " (bawaan)"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-[12px] text-ink-mute">Hanya untuk nama mempelai. Judul lain, tanggal, jam, dan ucapan tamu tetap memakai font judul supaya mudah dibaca.</p>
+              </>
+            )}
+
             </>
           )}
 
           {changed && (
-            <button type="button" onClick={() => onChange({ palette: "", font: "", custom: { paper: "", accent: "", ink: "" } })} className="mt-4 text-[13px] text-wine underline underline-offset-4">
+            <button type="button" onClick={() => onChange({ palette: "", font: "", nameFont: "", custom: { paper: "", accent: "", ink: "" } })} className="mt-4 text-[13px] text-wine underline underline-offset-4">
               Kembali ke gaya bawaan
             </button>
           )}

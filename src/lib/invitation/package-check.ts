@@ -28,7 +28,7 @@ export function packageIssues(data: InvitationData, theme: string, rules: Packag
   if (rules.locked.cerita && has("story") && data.sections.story.enabled) {
     out.push({ path: "sections.story.items", group: "story", message: `${rules.locked.cerita} Matikan bagian Cerita.` });
   }
-  if (rules.locked.warna_tema && (data.style.palette || data.style.font)) {
+  if (rules.locked.warna_tema && (data.style.palette || data.style.font || data.style.nameFont)) {
     out.push({ path: "style", group: "gaya", message: `${rules.locked.warna_tema} Kembalikan ke palet dan font bawaan.` });
   }
   return out;

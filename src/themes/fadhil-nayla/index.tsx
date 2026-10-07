@@ -387,7 +387,7 @@ function Closing({ inv }: { inv: InvitationView }) {
           Wassalamu&rsquo;alaikum warahmatullahi wabarakatuh
         </p>
         <Pita className="mx-auto mt-8 h-4 w-56 text-sk-emas/70" />
-        <p {...reveal(4)} className="mt-6 font-display text-[clamp(30px,8vw,44px)] leading-tight">
+        <p {...reveal(4)} className="mt-6 font-script text-[clamp(30px,8vw,44px)] leading-tight">
           {inv.groom.name} &amp; {inv.bride.name}
         </p>
         <p className="mt-6 text-[13px] text-inv-wash/60">Ketuk lentera untuk menyalakan atau memadamkannya.</p>

@@ -328,11 +328,18 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
           <StylePanel
             theme={theme}
             style={data.style}
+            couple={[data.couple.groom.name, data.couple.bride.name].filter(Boolean).join(" & ") || "Andi & Rina"}
             locked={rules.locked.warna_tema}
             applying={applying}
             onChange={(style) => {
               if (JSON.stringify(style) === JSON.stringify(data.style)) return;
-              setApplying(style.font !== data.style.font ? `font:${style.font || "bawaan"}` : style.palette || "bawaan");
+              setApplying(
+                style.font !== data.style.font
+                  ? `font:${style.font || "bawaan"}`
+                  : style.nameFont !== data.style.nameFont
+                    ? `nama:${style.nameFont || "bawaan"}`
+                    : style.palette || "bawaan",
+              );
               setData((d) => ({ ...d, style }));
             }}
           />
@@ -413,7 +420,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
                 <div role="status" className="absolute inset-0 flex items-start justify-center rounded-sm bg-ivory/55 pt-6 backdrop-blur-[1px] animate-[inv-pop_.2s_ease-out]">
                   <span className="inline-flex items-center gap-2.5 rounded-full bg-ink px-4 py-2 text-[13px] text-white shadow-[0_8px_24px_rgba(0,0,0,.2)]">
                     <Spinner />
-                    {applying.startsWith("font:") ? "Menerapkan font..." : "Menerapkan palet..."}
+                    {applying.startsWith("font:") || applying.startsWith("nama:") ? "Menerapkan font..." : "Menerapkan palet..."}
                   </span>
                 </div>
               )}

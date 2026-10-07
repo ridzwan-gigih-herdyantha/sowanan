@@ -80,12 +80,12 @@ function Hero({ inv }: { inv: InvitationView }) {
         <p {...enter(0.5)} className="inv-enter text-[11px] font-medium tracking-[0.3em] text-inv-gold">
           UNDANGAN PERNIKAHAN
         </p>
-        <h1 className="mx-auto mt-6 font-display text-[clamp(60px,17vw,96px)] leading-[0.92] text-inv-accent md:text-[clamp(72px,9vw,136px)]">
+        <h1 className="mx-auto mt-6 font-script text-[clamp(60px,17vw,96px)] leading-[0.92] text-inv-accent md:text-[clamp(72px,9vw,136px)]">
           <span {...enter(0.56)} className="inv-enter inline-block">
             {inv.groom.name}
           </span>{" "}
           <span {...enter(0.64)} className="inv-enter inline-block">
-            <span className="italic">&amp;</span> {inv.bride.name}
+            <span className="font-display italic">&amp;</span> {inv.bride.name}
           </span>
         </h1>
         <div {...enter(0.72)} className="inv-enter">
@@ -351,8 +351,8 @@ function Closing({ inv }: { inv: InvitationView }) {
         <p className="mt-6 max-w-[18ch] font-display text-[clamp(34px,9vw,60px)] leading-[1.08]">
           Terima kasih telah menjadi bagian dari koleksi ini.
         </p>
-        <p className="mt-12 font-display text-2xl">
-          {inv.groom.name} <span className="italic">&amp;</span> {inv.bride.name}
+        <p className="mt-12 font-script text-2xl">
+          {inv.groom.name} <span className="font-display italic">&amp;</span> {inv.bride.name}
         </p>
         <p className="mt-2 text-[12px] tracking-[0.2em] text-inv-paper/70">{inv.dateShort}</p>
       </Wrap>
