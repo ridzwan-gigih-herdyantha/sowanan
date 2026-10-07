@@ -154,6 +154,8 @@ export async function setPackage(slug: string, pkg: string): Promise<Result> {
   if (themeIssue) return { ok: false, error: themeIssue };
   const { error } = await supabaseAdmin().from("invitations").update({ package: pkg }).eq("slug", slug);
   if (error) return { ok: false, error: "Gagal menyimpan paket. Pastikan migrasi 0006 sudah dijalankan." };
+  // Halaman publik membaca paket untuk nama tamu dan batas bagian tambahan.
+  refresh(slug);
   return { ok: true, at: new Date().toISOString() };
 }
 
@@ -168,6 +170,7 @@ export async function setAddons(slug: string, addons: Purchased): Promise<Result
   }
   const { error } = await supabaseAdmin().from("invitations").update({ addons: clean }).eq("slug", slug);
   if (error) return { ok: false, error: "Gagal menyimpan add-on. Pastikan migrasi 0007 sudah dijalankan." };
+  refresh(slug);
   return { ok: true, at: new Date().toISOString() };
 }
 
