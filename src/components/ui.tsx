@@ -20,7 +20,7 @@ export function SectionTitle({ className, ...props }: ComponentProps<"h2">) {
 }
 
 export function SectionSub({ className, ...props }: ComponentProps<"p">) {
-  return <p className={cx("mb-11 max-w-[62ch] text-[17px] text-ink-body", className)} {...props} />;
+  return <p className={cx("mb-11 max-w-[82ch] text-[17px] text-ink-body", className)} {...props} />;
 }
 
 const btnBase =
