@@ -13,6 +13,7 @@ import { RevealOnScroll } from "@/components/reveal-on-scroll";
 import { reveal } from "@/components/ui";
 import { googleCalendarUrl } from "@/lib/calendar";
 import { CalendarButton } from "@/components/invitation/calendar-button";
+import { QrisDownload } from "@/components/invitation/qris-download";
 import { getWishes } from "@/lib/guestbook";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { pasaran } from "@/lib/javanese";
@@ -302,7 +303,10 @@ function Gifts({ inv }: { inv: InvitationView }) {
         {inv.images.qris && (
           <div className="mx-auto mt-8 flex max-w-[360px] items-center gap-5 rounded-sm bg-inv-wash p-5">
             <Image src={inv.images.qris} alt="Kode QRIS" width={112} height={112} className="size-28" />
-            <p className="text-[15px] leading-relaxed">Pindai QRIS dari aplikasi bank atau e-wallet.</p>
+            <div>
+              <p className="text-[15px] leading-relaxed">Pindai QRIS dari aplikasi bank atau e-wallet.</p>
+              <QrisDownload src={inv.images.qris} slug={inv.slug} />
+            </div>
           </div>
         )}
         {inv.giftNote && <p className="mt-6 text-center text-[14px] text-inv-ink/70">{inv.giftNote}</p>}

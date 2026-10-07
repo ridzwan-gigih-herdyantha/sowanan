@@ -14,6 +14,7 @@ import { Story } from "@/components/invitation/story";
 import { Wishes } from "@/components/invitation/wishes";
 import { googleCalendarUrl } from "@/lib/calendar";
 import { CalendarButton } from "@/components/invitation/calendar-button";
+import { QrisDownload } from "@/components/invitation/qris-download";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { getWishes } from "@/lib/guestbook";
 import { themeFonts } from "./fonts";
@@ -376,6 +377,7 @@ function Gifts({ inv }: { inv: InvitationView }) {
               <div>
                 <p className="text-[11px] tracking-[0.22em] text-inv-ink/65">QRIS</p>
                 <p className="mt-2 text-[13px] leading-relaxed text-inv-ink/75">Pindai dari aplikasi bank atau e-wallet.</p>
+                <QrisDownload src={inv.images.qris} slug={inv.slug} />
               </div>
             </div>
           </div>

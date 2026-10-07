@@ -1,14 +1,13 @@
 "use client";
 
 import { useSyncExternalStore, type ReactNode } from "react";
+import { isAppleMobile } from "@/lib/device";
 
 const noop = () => () => {};
-// iPhone dan iPad membuka berkas .ics langsung di Kalender Apple. Perangkat lain memakai Google Calendar.
-// iPad modern mengaku Macintosh, jadi dikenali dari layar sentuhnya.
-const isApple = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 0);
 
+// iPhone dan iPad membuka berkas .ics langsung di Kalender Apple. Perangkat lain memakai Google Calendar.
 export function CalendarButton({ slug, google, className, children }: { slug: string; google: string; className?: string; children: ReactNode }) {
-  const apple = useSyncExternalStore(noop, isApple, () => false);
+  const apple = useSyncExternalStore(noop, isAppleMobile, () => false);
   return apple ? (
     <a href={`/${slug}/kalender`} className={className}>
       {children}
