@@ -208,7 +208,7 @@ export function BabakList({ items }: { items: Scene[] }) {
 // Hitung mundur sebagai saron tujuh bilah dalam laras slendro (6 rendah sampai 1 tinggi), makin ke kanan makin pendek
 // dan makin tinggi nadanya. Setiap bilah bisa ditabuh, dan ikut bergerak saat gending latar memainkan nadanya.
 const BAR_H = ["h-full", "h-[96%]", "h-[92%]", "h-[88%]", "h-[84%]", "h-[80%]", "h-[76%]"];
-const VALUE_BARS = { 2: ["days", "Dinten"], 3: ["hours", "Jam"], 4: ["minutes", "Menit"] } as const;
+const VALUE_BARS = { 2: ["days", "Hari"], 3: ["hours", "Jam"], 4: ["minutes", "Menit"] } as const;
 
 export function SaronCountdown({ target }: { target: string }) {
   const t = useTimeLeft(target);
@@ -293,6 +293,10 @@ const Chevron = ({ dir }: { dir: "l" | "r" }) => (
   </svg>
 );
 
+// Bergeser sendiri tiap AUTO_MS. Setelah tamu menggeser atau mengetuk, baru lanjut sendiri RESUME_MS kemudian.
+const AUTO_MS = 3000;
+const RESUME_MS = 5000;
+
 // Galeri simpingan: foto berdiri berjajar di atas gedebog seperti wayang yang disimping di tepi kelir.
 // Geser atau ketuk foto samping untuk memajukannya, ketuk foto depan untuk memperbesar.
 export function Simpingan({ photos }: { photos: Photo[] }) {
@@ -302,7 +306,33 @@ export function Simpingan({ photos }: { photos: Photo[] }) {
   const reduce = useReducedMotion();
   const lg = useLg();
   const panned = useRef(false);
-  const go = (i: number) => setActive(((i % n) + n) % n);
+  const wrap = useRef<HTMLDivElement>(null);
+  const inView = useInView(wrap, { amount: 0.4 });
+  // Ditahan saat kursor di atas galeri atau fokus keyboard ada di dalamnya.
+  const [hold, setHold] = useState(false);
+  // Naik tiap tamu menggeser atau mengetuk, supaya hitungan geser otomatis mulai dari awal.
+  const [bump, setBump] = useState(0);
+  const go = (i: number) => {
+    setBump((b) => b + 1);
+    setActive(((i % n) + n) % n);
+  };
+
+  useEffect(() => {
+    if (reduce || zoom || hold || !inView || n < 2) return;
+    let tick = 0;
+    const start = window.setTimeout(
+      () => {
+        tick = window.setInterval(() => {
+          if (!document.hidden) setActive((a) => (a + 1) % n);
+        }, AUTO_MS);
+      },
+      bump ? RESUME_MS - AUTO_MS : 0,
+    );
+    return () => {
+      window.clearTimeout(start);
+      window.clearInterval(tick);
+    };
+  }, [reduce, zoom, hold, inView, n, bump]);
   const rel = (i: number) => {
     let d = i - active;
     if (d > n / 2) d -= n;
@@ -317,7 +347,13 @@ export function Simpingan({ photos }: { photos: Photo[] }) {
   };
 
   return (
-    <div>
+    <div
+      ref={wrap}
+      onPointerEnter={(e) => e.pointerType === "mouse" && setHold(true)}
+      onPointerLeave={(e) => e.pointerType === "mouse" && setHold(false)}
+      onFocus={(e) => e.target.matches(":focus-visible") && setHold(true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setHold(false)}
+    >
       <motion.div
         role="region"
         aria-roledescription="carousel"
@@ -329,6 +365,7 @@ export function Simpingan({ photos }: { photos: Photo[] }) {
         }}
         onPanStart={() => {
           panned.current = true;
+          setBump((b) => b + 1);
         }}
         onPanEnd={(_, info) => {
           if (Math.abs(info.offset.x) > 40) go(active + (info.offset.x < 0 ? 1 : -1));
