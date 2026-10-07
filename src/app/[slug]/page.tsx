@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
+import { isDemo } from "@/lib/invitation/archive";
 import { getInvitation, listPublishedSlugs } from "@/lib/invitation/load";
 import { toView } from "@/lib/invitation/view";
 import { Archived, GuestNames, InvitationSlug } from "@/components/invitation/shell";
@@ -22,7 +23,7 @@ async function load(slug: string) {
   const view = toView(inv.slug, data, inv.theme);
   // Arsip: hitung mundur, RSVP, dan amplop digital disembunyikan. Isi lain dan buku ucapan tetap tampil.
   if (archived) view.on = { ...view.on, countdown: false, rsvp: false, gifts: false };
-  return { theme: THEMES[inv.theme], paid: inv.paid, archived, guestNames: !rules.locked.nama_tamu && !archived, view };
+  return { theme: THEMES[inv.theme], paid: inv.paid, archived, demo: isDemo(inv.slug, inv.theme), guestNames: !rules.locked.nama_tamu && !archived, view };
 }
 
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {
@@ -56,7 +57,7 @@ export default async function InvitationPage({ params }: PageProps<"/[slug]">) {
     <>
       <Archived archived={found.archived}>
         <GuestNames allowed={found.guestNames}>
-          <InvitationSlug slug={found.view.slug}>
+          <InvitationSlug slug={found.demo ? "" : found.view.slug}>
             <Component inv={found.view} />
           </InvitationSlug>
         </GuestNames>

@@ -19,7 +19,8 @@ export function Archived({ archived, children }: { archived: boolean; children: 
   return <ArchivedContext.Provider value={archived}>{children}</ArchivedContext.Provider>;
 }
 
-// Slug undangan untuk mengingat kode link pribadi tamu (?k=). Kosong di pratinjau admin, jadi tidak ada yang disimpan.
+// Slug undangan untuk mengingat tamu di HP-nya: nama dan kode link pribadi (?k=). Kosong di pratinjau admin
+// dan undangan contoh, jadi tidak ada yang dibaca maupun disimpan.
 const SlugContext = createContext("");
 export function InvitationSlug({ slug, children }: { slug: string; children: ReactNode }) {
   return <SlugContext.Provider value={slug}>{children}</SlugContext.Provider>;
@@ -145,7 +146,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   const guest = invited || typed || "";
   const setGuest = (name: string) => {
     setTyped(name);
-    storeGuest(name);
+    if (slug) storeGuest(name);
   };
 
   const player = !music && synth === "gending" ? gending : null;
@@ -218,7 +219,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   const media = useMemo<MediaCtx>(() => ({ claim: (id, stop) => handlers.current.claim(id, stop), release: (id) => handlers.current.release(id) }), []);
 
   const openInvitation = () => {
-    const name = guest || readStoredGuest();
+    const name = guest || (slug ? readStoredGuest() : "");
     if (name) setGuest(name);
     window.scrollTo(0, 0);
     setOpen(true);

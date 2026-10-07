@@ -11,9 +11,10 @@ const field = "block w-full rounded-sm border border-line bg-white px-4 py-3.5 t
 
 type Done = { status: "ok" | "already"; name: string; at: string };
 
-export function CheckinForm({ token, slug }: { token: string; slug: string }) {
-  const code = useSyncExternalStore(noop, () => recall(guestCodeKey(slug)), () => "");
-  const remembered = useSyncExternalStore(noop, () => recall(GUEST_KEY), () => "");
+// demo: undangan contoh tidak membaca maupun menyimpan nama dan kode tamu di HP.
+export function CheckinForm({ token, slug, demo }: { token: string; slug: string; demo: boolean }) {
+  const code = useSyncExternalStore(noop, () => (demo ? "" : recall(guestCodeKey(slug))), () => "");
+  const remembered = useSyncExternalStore(noop, () => (demo ? "" : recall(GUEST_KEY)), () => "");
   const [mode, setMode] = useState<"auto" | "name">("auto");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -22,8 +23,10 @@ export function CheckinForm({ token, slug }: { token: string; slug: string }) {
 
   const finish = (res: Awaited<ReturnType<typeof checkInName>>) => {
     if (res.status === "ok" || res.status === "already") {
-      if (res.k) remember(guestCodeKey(slug), res.k);
-      remember(GUEST_KEY, res.name);
+      if (!demo) {
+        if (res.k) remember(guestCodeKey(slug), res.k);
+        remember(GUEST_KEY, res.name);
+      }
       setDone(res);
     } else if (res.status === "unknown") {
       setMode("name");

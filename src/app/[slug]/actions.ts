@@ -2,8 +2,9 @@
 
 import { updateTag } from "next/cache";
 import { z } from "zod";
-import { getInvitationId, wishesTag, type Wish } from "@/lib/guestbook";
+import { wishesTag, type Wish } from "@/lib/guestbook";
 import { archiveInfo, isDemo } from "@/lib/invitation/archive";
+import { getInvitation } from "@/lib/invitation/load";
 import { invitationDataSchema } from "@/lib/invitation/schema";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -21,6 +22,12 @@ async function isArchived(slug: string): Promise<boolean> {
 }
 const demoMode = () => !hasSupabase() && process.env.NODE_ENV !== "production";
 
+// Undangan contoh di homepage hanya peragaan. Kiriman tamu dibalas berhasil tapi tidak disimpan.
+async function target(slug: string): Promise<{ id: string; demo: boolean } | null> {
+  const inv = await getInvitation(slug);
+  return inv?.id ? { id: inv.id, demo: isDemo(inv.slug, inv.theme) } : null;
+}
+
 const wishSchema = z.object({
   name: z.string().trim().min(1, "Nama wajib diisi.").max(80),
   message: z.string().trim().min(1, "Pesan wajib diisi.").max(500, "Pesan maksimal 500 karakter."),
@@ -32,13 +39,14 @@ export async function submitWish(slug: string, input: { name: string; message: s
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   if (demoMode()) return { ok: true, data: { id: crypto.randomUUID(), ...parsed.data } };
-  const id = await getInvitationId(slug);
-  if (!id) return { ok: false, error: NOT_READY };
+  const inv = await target(slug);
+  if (!inv) return { ok: false, error: NOT_READY };
+  if (inv.demo) return { ok: true, data: { id: crypto.randomUUID(), ...parsed.data } };
   if (await isArchived(slug)) return { ok: false, error: ARCHIVED };
 
   const { data, error } = await supabaseAdmin()
     .from("wishes")
-    .insert({ invitation_id: id, ...parsed.data })
+    .insert({ invitation_id: inv.id, ...parsed.data })
     .select("id")
     .single();
   if (error) return { ok: false, error: NOT_READY };
@@ -58,14 +66,15 @@ export async function submitRsvp(slug: string, input: z.infer<typeof rsvpSchema>
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   if (demoMode()) return { ok: true, data: null };
-  const id = await getInvitationId(slug);
-  if (!id) return { ok: false, error: NOT_READY };
+  const inv = await target(slug);
+  if (!inv) return { ok: false, error: NOT_READY };
+  if (inv.demo) return { ok: true, data: null };
   if (await isArchived(slug)) return { ok: false, error: ARCHIVED };
 
   const { name, attending, guests } = parsed.data;
   const { error } = await supabaseAdmin()
     .from("rsvps")
-    .insert({ invitation_id: id, name, attending, guests: attending ? Math.max(1, guests) : 0 });
+    .insert({ invitation_id: inv.id, name, attending, guests: attending ? Math.max(1, guests) : 0 });
   if (error) return { ok: false, error: NOT_READY };
 
   return { ok: true, data: null };
