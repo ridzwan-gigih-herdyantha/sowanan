@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import { submitWish } from "@/app/[slug]/actions";
+import { GUEST_NAME_MAX, WISH_MAX } from "@/lib/guest-input";
 import type { Wish } from "@/lib/guestbook";
 import { useArchived, useGuest } from "./shell";
 import { sway } from "./sway";
@@ -28,14 +29,25 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const [name, setName] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [invalid, setInvalid] = useState({ name: "", message: "" });
   const [pending, start] = useTransition();
+  const nameRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+  const ids = { name: useId(), message: useId(), count: useId() };
 
   const nameValue = name ?? guest;
   const known = new Set(initial.map((w) => w.id));
   const unsynced = mine.filter((w) => !known.has(w.id));
   const all = [...unsynced, ...initial];
+  const full = message.length >= WISH_MAX;
 
-  const send = (form: FormData) =>
+  const send = (form: FormData) => {
+    const missing = { name: nameValue.trim() ? "" : "Tulis namamu dulu.", message: message.trim() ? "" : "Tulis ucapanmu dulu." };
+    setInvalid(missing);
+    if (missing.name || missing.message) {
+      (missing.name ? nameRef : messageRef).current?.focus();
+      return;
+    }
     start(async () => {
       setError("");
       const res = await submitWish(slug, { name: nameValue, message, website: String(form.get("website") ?? "") });
@@ -44,6 +56,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
       setGuest(res.data.name);
       setMessage("");
     });
+  };
 
   return (
     <div className="lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
@@ -52,29 +65,57 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
           Undangan ini sudah menjadi arsip. Ucapan baru tidak lagi diterima, ucapan yang sudah masuk tetap tersimpan di sini.
         </p>
       ) : (
-      <form action={send} className="self-start">
+      <form action={send} noValidate className="self-start">
         <label className="block text-[12px] tracking-[0.14em] text-inv-ink/70">
           NAMAMU
           <input
+            ref={nameRef}
             required
-            maxLength={80}
+            maxLength={GUEST_NAME_MAX}
             value={nameValue}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              setInvalid((v) => ({ ...v, name: "" }));
+            }}
             autoComplete="name"
-            className="mt-2 block w-full rounded-sm border border-inv-line bg-transparent px-4 py-3 text-base tracking-normal text-inv-ink outline-none focus:border-inv-accent"
+            aria-invalid={invalid.name ? true : undefined}
+            aria-describedby={invalid.name ? ids.name : undefined}
+            className="mt-2 block w-full rounded-sm border border-inv-line bg-transparent px-4 py-3 text-base tracking-normal text-inv-ink outline-none focus:border-inv-accent aria-invalid:border-[#9b2c1f] aria-invalid:focus:ring-1 aria-invalid:focus:ring-[#9b2c1f]"
           />
         </label>
+        {invalid.name && (
+          <p id={ids.name} className="mt-2 animate-[inv-pop_.18s_ease-out] text-[13px] text-[#9b2c1f]">
+            {invalid.name}
+          </p>
+        )}
         <label className="mt-5 block text-[12px] tracking-[0.14em] text-inv-ink/70">
           PESAN UNTUK MEREKA
           <textarea
+            ref={messageRef}
             required
-            maxLength={500}
+            maxLength={WISH_MAX}
             rows={4}
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="mt-2 block w-full resize-none rounded-sm border border-inv-line bg-transparent px-4 py-3 text-base tracking-normal text-inv-ink outline-none focus:border-inv-accent"
+            onChange={(e) => {
+              setMessage(e.target.value);
+              setInvalid((v) => ({ ...v, message: "" }));
+            }}
+            aria-invalid={invalid.message ? true : undefined}
+            aria-describedby={invalid.message ? `${ids.message} ${ids.count}` : ids.count}
+            className="mt-2 block w-full resize-none rounded-sm border border-inv-line bg-transparent px-4 py-3 text-base tracking-normal text-inv-ink outline-none focus:border-inv-accent aria-invalid:border-[#9b2c1f] aria-invalid:focus:ring-1 aria-invalid:focus:ring-[#9b2c1f]"
           />
         </label>
+        <div className="mt-2 flex items-start gap-4 text-[13px]">
+          {invalid.message && (
+            <p id={ids.message} className="animate-[inv-pop_.18s_ease-out] text-[#9b2c1f]">
+              {invalid.message}
+            </p>
+          )}
+          <p id={ids.count} className={`ml-auto shrink-0 tabular-nums ${full ? "text-[#9b2c1f]" : "text-inv-ink/60"}`}>
+            {message.length}/{WISH_MAX}
+            {full && <span className="sr-only"> karakter, batas tercapai</span>}
+          </p>
+        </div>
         <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
         {error && <p className="mt-3 text-[13px] text-[#9b2c1f]">{error}</p>}
         <button

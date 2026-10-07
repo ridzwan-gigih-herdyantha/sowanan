@@ -3,6 +3,7 @@
 import { updateTag } from "next/cache";
 import { z } from "zod";
 import { wishesTag, type Wish } from "@/lib/guestbook";
+import { GUEST_NAME_MAX, WISH_MAX } from "@/lib/guest-input";
 import { archiveInfo, isDemo } from "@/lib/invitation/archive";
 import { getInvitation } from "@/lib/invitation/load";
 import { invitationDataSchema } from "@/lib/invitation/schema";
@@ -29,8 +30,8 @@ async function target(slug: string): Promise<{ id: string; demo: boolean } | nul
 }
 
 const wishSchema = z.object({
-  name: z.string().trim().min(1, "Nama wajib diisi.").max(80),
-  message: z.string().trim().min(1, "Pesan wajib diisi.").max(500, "Pesan maksimal 500 karakter."),
+  name: z.string().trim().min(1, "Nama wajib diisi.").max(GUEST_NAME_MAX, `Nama maksimal ${GUEST_NAME_MAX} karakter.`),
+  message: z.string().trim().min(1, "Pesan wajib diisi.").max(WISH_MAX, `Pesan maksimal ${WISH_MAX} karakter.`),
 });
 
 export async function submitWish(slug: string, input: { name: string; message: string; website?: string }): Promise<ActionResult<Wish>> {
@@ -56,7 +57,7 @@ export async function submitWish(slug: string, input: { name: string; message: s
 }
 
 const rsvpSchema = z.object({
-  name: z.string().trim().min(1, "Nama wajib diisi.").max(80),
+  name: z.string().trim().min(1, "Nama wajib diisi.").max(GUEST_NAME_MAX, `Nama maksimal ${GUEST_NAME_MAX} karakter.`),
   attending: z.boolean(),
   guests: z.number().int().min(0).max(2),
 });
