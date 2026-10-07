@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { fill, generalWaLink, getSettings, textVars } from "@/lib/settings";
 import { renderHtml } from "@/lib/settings/sanitize";
+import { OG_BASE } from "@/lib/site";
 import { TERMS_CSS } from "./terms-css";
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   description: "Syarat dan ketentuan layanan undangan pernikahan digital Sowanan: pemesanan, pembayaran, revisi, masa aktif, dan kebijakan data tamu.",
   alternates: { canonical: "/ketentuan" },
   robots: { index: true, follow: true },
-  openGraph: { title: "Syarat dan Ketentuan | Sowanan", url: "/ketentuan", images: [{ url: "/img/og.jpg", width: 1200, height: 630 }] },
+  openGraph: { ...OG_BASE, title: "Syarat dan Ketentuan | Sowanan", url: "/ketentuan", images: [{ url: "/img/og.jpg", width: 1200, height: 630 }] },
 };
 
 export default async function TermsPage() {

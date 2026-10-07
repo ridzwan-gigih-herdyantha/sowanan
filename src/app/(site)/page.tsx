@@ -9,7 +9,7 @@ import { Steps } from "@/components/home/steps";
 import { Themes } from "@/components/home/themes";
 import { plain } from "@/components/rich-text";
 import { fill, formatRupiah, generalWaLink, getSettings, highestPrice, lowestPrice, slaRange, textVars, type Settings } from "@/lib/settings";
-import { SITE_URL } from "@/lib/site";
+import { OG_BASE, SITE_URL } from "@/lib/site";
 import { RevealOnScroll } from "@/components/reveal-on-scroll";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: `Undangan pernikahan digital mulai ${price}, jadi dalam ${slaRange(s)}. Sudah termasuk RSVP, peta lokasi, buku ucapan, dan amplop digital.`,
     alternates: { canonical: "/" },
     openGraph: {
+      ...OG_BASE,
       title: "Sowanan | Undangan Pernikahan Digital",
       description: `Kabarnya sampai dulu, sebelum tamunya datang. Undangan pernikahan digital mulai ${price}.`,
       url: "/",
