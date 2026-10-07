@@ -15,7 +15,8 @@ export async function GET(_req: Request, ctx: RouteContext<"/[slug]/kalender">) 
   return new Response(icsFile(calendarEventOf(toView(slug, inv.data)), slug), {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${slug}.ics"`,
+      // inline supaya iPhone langsung menawarkan Tambah ke Kalender, bukan menyimpan berkas ke Files.
+      "Content-Disposition": `inline; filename="${slug}.ics"`,
     },
   });
 }

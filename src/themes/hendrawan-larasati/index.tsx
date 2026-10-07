@@ -13,6 +13,7 @@ import { InvitationShell } from "@/components/invitation/shell";
 import { Story } from "@/components/invitation/story";
 import { Wishes } from "@/components/invitation/wishes";
 import { googleCalendarUrl } from "@/lib/calendar";
+import { CalendarButton } from "@/components/invitation/calendar-button";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { getWishes } from "@/lib/guestbook";
 import { themeFonts } from "./fonts";
@@ -250,12 +251,9 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
           <TagCountdown target={inv.date} doneText="HARINYA TIBA." />
         </div>
         <div className="mt-14 flex flex-wrap justify-center gap-3">
-          <a href={`/${inv.slug}/kalender`} className={btn} download={`${inv.slug}.ics`}>
+          <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
             SIMPAN KE KALENDER
-          </a>
-          <a href={googleCalendarUrl(calendarEventOf(inv))} target="_blank" rel="noopener" className={btn}>
-            GOOGLE CALENDAR
-          </a>
+          </CalendarButton>
         </div>
       </Wrap>
     </section>

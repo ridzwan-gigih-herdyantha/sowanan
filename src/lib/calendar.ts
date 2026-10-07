@@ -3,6 +3,22 @@ type CalendarEvent = { title: string; start: string; end: string; location: stri
 const stamp = (iso: string) => new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 const escape = (s: string) => s.replace(/[\\,;]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
 
+// Baris iCalendar maksimal 75 byte. Sisanya dilanjutkan di baris baru yang diawali spasi, tanpa memotong huruf multibyte.
+const bytes = new TextEncoder();
+function fold(line: string) {
+  const out: string[] = [];
+  let cur = "";
+  for (const ch of line) {
+    if (bytes.encode(cur + ch).length > (out.length ? 74 : 75)) {
+      out.push(cur);
+      cur = "";
+    }
+    cur += ch;
+  }
+  out.push(cur);
+  return out.join("\r\n ");
+}
+
 export function googleCalendarUrl(e: CalendarEvent) {
   const q = new URLSearchParams({
     action: "TEMPLATE",
@@ -29,5 +45,7 @@ export function icsFile(e: CalendarEvent, uid: string) {
     `DESCRIPTION:${escape(e.details)}`,
     "END:VEVENT",
     "END:VCALENDAR",
-  ].join("\r\n");
+  ]
+    .map(fold)
+    .join("\r\n");
 }

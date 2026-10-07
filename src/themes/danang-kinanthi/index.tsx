@@ -12,6 +12,7 @@ import { Wishes } from "@/components/invitation/wishes";
 import { RevealOnScroll } from "@/components/reveal-on-scroll";
 import { reveal } from "@/components/ui";
 import { googleCalendarUrl } from "@/lib/calendar";
+import { CalendarButton } from "@/components/invitation/calendar-button";
 import { getWishes } from "@/lib/guestbook";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { pasaran } from "@/lib/javanese";
@@ -220,12 +221,9 @@ function EventDetails({ inv }: { inv: InvitationView }) {
             <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
               Buka peta
             </a>
-            <a href={`/${inv.slug}/kalender`} download={`${inv.slug}.ics`} className={btn}>
+            <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
               Simpan ke kalender
-            </a>
-            <a href={googleCalendarUrl(calendarEventOf(inv))} target="_blank" rel="noopener" className={btn}>
-              Google Calendar
-            </a>
+            </CalendarButton>
           </div>
         </div>
       </Wrap>
