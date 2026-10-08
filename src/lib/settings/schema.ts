@@ -109,8 +109,21 @@ export const settingsSchema = z
       .array(z.object({ id, on: z.boolean(), name: req("Nama fitur", 30), text: str("Keterangan fitur", 90), icon: z.enum(Object.keys(ICONS) as [IconId, ...IconId[]]), label: str("Label fitur", 30) }))
       .max(30, "Fitur maksimal 30."),
     steps: z.array(z.object({ id, title: req("Judul langkah", 24), text: str("Penjelasan langkah", 110) })).max(8, "Langkah maksimal 8."),
-    closing: z.object({ title: req("Judul penutup", 50), text: str("Kalimat penutup", 160), button: req("Label tombol penutup", 28) }),
-    footer: z.object({ line1: str("Baris footer", 80), line2: str("Baris kedua footer", 60) }),
+    closing: z.object({
+      title: req("Judul penutup", 50),
+      text: str("Kalimat penutup", 160),
+      button: req("Label tombol penutup", 28),
+      button2: str("Label tombol kedua", 28).default("Lihat pilihan tema"),
+      // Poin singkat di bawah tombol. Boleh memakai kata pengganti seperti {harga} dan {waktu}.
+      points: z.array(str("Poin penutup", 40)).max(3).default(["Mulai {harga}", "Jadi dalam {waktu}", "Tanpa batas jumlah tamu"]),
+    }),
+    footer: z.object({
+      line1: str("Baris footer", 80),
+      line2: str("Baris kedua footer", 60),
+      nav: str("Judul kolom tautan", 24).default("Jelajahi"),
+      demos: str("Judul kolom contoh undangan", 24).default("Contoh undangan"),
+      reach: str("Judul kolom kontak", 24).default("Hubungi"),
+    }),
     themes: z
       .array(
         z.object({

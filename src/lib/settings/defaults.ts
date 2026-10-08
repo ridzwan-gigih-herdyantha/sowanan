@@ -247,8 +247,10 @@ export const DEFAULT_SETTINGS: Settings = {
     title: "Tanggal acaranya kapan?",
     text: "Chat saja dulu, belum harus memesan. Kami balas dalam 1 jam di jam {jam}.",
     button: "Chat WhatsApp",
+    button2: "Lihat pilihan tema",
+    points: ["Mulai {harga}", "Jadi dalam {waktu}", "Tanpa batas jumlah tamu"],
   },
-  footer: { line1: "Undangan pernikahan digital · {kota}", line2: "" },
+  footer: { line1: "Undangan pernikahan digital · {kota}", line2: "", nav: "Jelajahi", demos: "Contoh undangan", reach: "Hubungi" },
   themes: [
     { id: "senja", on: true, name: "Senja Kota", slug: "andi-rina", demo: "/andi-rina", tier: "semua", style: "film / urban", image: "/img/tema-andi-rina.webp" },
     { id: "ruang", on: true, name: "Ruang", slug: "bagas-sekar", demo: "/bagas-sekar", tier: "semua", style: "monokrom / minimalis", image: "/img/tema-bagas-sekar.webp" },

@@ -128,9 +128,20 @@ export function BerandaPanel() {
           <Text path="closing.button" label="Label tombol" chip="view" max={28} help="Tujuannya WhatsApp, nomor dan pesan dari tab Kontak." />
         </Row>
         <Text path="closing.text" label="Kalimat penutup" chip="view" max={160} />
+        <Text path="closing.button2" label="Label tombol kedua" chip="view" max={28} help="Menuju bagian pilihan tema. Kosongkan untuk menyembunyikan tombol." />
+        <Row>
+          {[0, 1, 2].map((i) => (
+            <Text key={i} path={`closing.points.${i}`} label={`Poin ${i + 1}`} chip="view" max={40} help={i === 0 ? "Muncul di bawah tombol. Bisa memakai {harga} dan {waktu}." : undefined} />
+          ))}
+        </Row>
         <Row>
           <Text path="footer.line1" label="Baris footer" chip="view" max={80} help="Bisa memakai {kota}." />
           <Text path="footer.line2" label="Baris kedua footer" chip="view" max={60} />
+        </Row>
+        <Row>
+          <Text path="footer.nav" label="Judul kolom tautan" chip="view" max={24} />
+          <Text path="footer.demos" label="Judul kolom contoh undangan" chip="view" max={24} />
+          <Text path="footer.reach" label="Judul kolom kontak" chip="view" max={24} />
         </Row>
       </Card>
     </>
