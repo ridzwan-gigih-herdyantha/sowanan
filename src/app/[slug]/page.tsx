@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { isDemo } from "@/lib/invitation/archive";
 import { getInvitation, listPublishedSlugs } from "@/lib/invitation/load";
 import { toView } from "@/lib/invitation/view";
+import { DemoViewSwitch } from "@/components/invitation/demo-view-switch";
 import { Archived, GuestNames, InvitationSlug } from "@/components/invitation/shell";
 import { Watermark } from "@/components/invitation/watermark";
 import { getSettings, packageRules } from "@/lib/settings";
@@ -63,6 +64,7 @@ export default async function InvitationPage({ params }: PageProps<"/[slug]">) {
         </GuestNames>
       </Archived>
       {!found.paid && <Watermark />}
+      {found.demo && <DemoViewSwitch slug={found.view.slug} mode="desktop" />}
     </>
   );
 }

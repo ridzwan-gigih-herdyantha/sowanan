@@ -197,6 +197,14 @@
   }
 }
 
+/* Undangan contoh di dalam layar HP (/[slug]/hp): scrollbar disembunyikan seperti di ponsel sungguhan. */
+html[data-phone-frame] {
+  scrollbar-width: none;
+}
+html[data-phone-frame]::-webkit-scrollbar {
+  display: none;
+}
+
 /* Garis berjalan di tepi atas layar admin selama halaman tujuan dimuat. */
 @keyframes admin-progress {
   from {
