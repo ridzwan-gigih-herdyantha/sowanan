@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Pending } from "@/app/(site)/admin/pending";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { packageIssues } from "@/lib/invitation/package-check";
@@ -242,8 +243,9 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
       <div className="-mx-5 border-b border-line bg-ivory/95 px-5 py-3 backdrop-blur lg:sticky lg:top-0 lg:z-30">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <div className="min-w-0 flex-1 basis-full lg:basis-0">
-            <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine">
+            <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine has-[[data-pending]]:opacity-55">
               Semua undangan
+              <Pending />
             </Link>
             <h1 className="flex min-w-0 items-center gap-2 font-serif text-2xl leading-tight">
               <span className="truncate">{label}</span>

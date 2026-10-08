@@ -121,7 +121,7 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
                     {a.name}
                     {a.scope && <small className="mt-[3px] block text-[13px] text-mist">{a.scope}</small>}
                   </span>
-                  <span className="shrink-0 font-serif text-[24px] leading-none text-wine-soft">{formatRupiah(a.price)}</span>
+                  <span className="shrink-0 font-serif text-[24px] leading-none text-dusk-light">{formatRupiah(a.price)}</span>
                 </li>
               ))}
             </ul>

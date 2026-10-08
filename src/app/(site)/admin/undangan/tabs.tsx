@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Pending } from "@/app/(site)/admin/pending";
 
 const TABS = [
   { key: "edit", label: "Isi undangan", href: "" },
@@ -16,9 +17,10 @@ export function InvitationTabs({ slug, current }: { slug: string; current: strin
           href={`/admin/undangan/${slug}${t.href}`}
           prefetch={false}
           aria-current={t.key === current ? "page" : undefined}
-          className={`shrink-0 rounded-sm px-3 py-1.5 whitespace-nowrap no-underline ${t.key === current ? "bg-wine text-white" : "text-ink-soft hover:bg-blush"}`}
+          className={`shrink-0 rounded-sm px-3 py-1.5 whitespace-nowrap no-underline ${t.key === current ? "bg-wine text-white" : "text-ink-soft hover:bg-blush"} has-[[data-pending]]:opacity-55`}
         >
           {t.label}
+          <Pending />
         </Link>
       ))}
     </nav>

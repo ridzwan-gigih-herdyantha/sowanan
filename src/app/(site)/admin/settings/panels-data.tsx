@@ -319,8 +319,8 @@ export function KontakPanel() {
         </Row>
       </Card>
       <Card title="Template chat WhatsApp" hint="Teks yang sudah terisi di kolom pesan ketika pembeli menekan tombol WhatsApp.">
-        <Text path="wa.general" label="Pesan pembuka" chip="sys" max={200} rows={3} help="Dipakai semua tombol WhatsApp kecuali tombol di kartu harga." />
-        <Text path="wa.plan" label="Pesan pembuka dari kartu harga" chip="sys" max={200} rows={3} help="Tulis {paket} di tempat nama paket akan disisipkan otomatis." />
+        <Text path="wa.general" label="Pesan pembuka" chip="sys" max={200} rows={3} placeholder="Contoh: Halo Sowanan, saya mau tanya soal undangan pernikahan digital." help="Dipakai semua tombol WhatsApp kecuali tombol di kartu harga." />
+        <Text path="wa.plan" label="Pesan pembuka dari kartu harga" chip="sys" max={200} rows={3} placeholder="Contoh: Halo Sowanan, saya mau pesan paket {paket}. Acaranya tanggal ..." help="Tulis {paket} di tempat nama paket akan disisipkan otomatis." />
       </Card>
     </>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Pending } from "@/app/(site)/admin/pending";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
@@ -39,8 +40,9 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
     <>
       <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
         <div className="min-w-0">
-          <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine">
+          <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine has-[[data-pending]]:opacity-55">
             Semua undangan
+            <Pending />
           </Link>
           <h1 className="truncate font-serif text-3xl leading-tight">{invitationLabel(row.slug, row.theme)}</h1>
         </div>

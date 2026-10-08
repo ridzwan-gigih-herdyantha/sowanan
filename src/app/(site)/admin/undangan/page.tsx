@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Pending } from "@/app/(site)/admin/pending";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
@@ -48,8 +49,9 @@ function ArchiveBadge({ slug, info, notified }: { slug: string; info: ArchiveInf
   if (!info.noticeDue) return null;
   if (notified) return <p className="mt-1 text-[12px] text-ink-mute">Klien sudah diberi tahu, diarsipkan {formatDateId(info.archiveAt)}</p>;
   return (
-    <Link href={`/admin/undangan/${slug}/respon`} prefetch={false} className="mt-1.5 inline-block rounded-full bg-wine px-2.5 py-0.5 text-[12px] text-white no-underline hover:bg-wine-dark">
+    <Link href={`/admin/undangan/${slug}/respon`} prefetch={false} className="mt-1.5 inline-block rounded-full bg-wine px-2.5 py-0.5 text-[12px] text-white no-underline hover:bg-wine-dark has-[[data-pending]]:opacity-55">
       Beri tahu klien, diarsipkan {formatDateId(info.archiveAt)}
+      <Pending />
     </Link>
   );
 }
@@ -150,8 +152,9 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
         {shown.map((r) => (
           <li key={r.slug} className="grid grid-cols-2 items-center gap-x-4 gap-y-3 py-4 lg:grid-cols-[minmax(0,1fr)_140px_110px_80px_100px_150px]">
             <div className="col-span-2 min-w-0 lg:col-span-1">
-              <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="block truncate font-serif text-xl text-ink no-underline hover:text-wine">
+              <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="block truncate font-serif text-xl text-ink no-underline hover:text-wine has-[[data-pending]]:opacity-55">
                 {couple(r)}
+                <Pending />
               </Link>
               <p className="truncate text-[13px] text-ink-mute">
                 sowanan.com/{r.slug} · tema {THEME_NAMES[r.theme] ?? r.theme}
@@ -166,14 +169,17 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
             <span className={`w-fit rounded-full px-2.5 py-0.5 text-[12px] ${r.published ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>{r.published ? "Tayang" : "Draf"}</span>
             <span className="justify-self-end text-[13px] text-ink-soft lg:justify-self-start">{dateFmt.format(new Date(r.created_at))}</span>
             <span className="col-span-2 flex gap-4 text-[14px] lg:col-span-1 lg:justify-self-end">
-              <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="text-wine underline underline-offset-4">
+              <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="text-wine underline underline-offset-4 has-[[data-pending]]:opacity-55">
                 Edit
+                <Pending />
               </Link>
-              <Link href={`/admin/undangan/${r.slug}/tamu`} prefetch={false} className="text-wine underline underline-offset-4">
+              <Link href={`/admin/undangan/${r.slug}/tamu`} prefetch={false} className="text-wine underline underline-offset-4 has-[[data-pending]]:opacity-55">
                 Tamu
+                <Pending />
               </Link>
-              <Link href={`/admin/undangan/${r.slug}/respon`} prefetch={false} className="text-wine underline underline-offset-4">
+              <Link href={`/admin/undangan/${r.slug}/respon`} prefetch={false} className="text-wine underline underline-offset-4 has-[[data-pending]]:opacity-55">
                 RSVP
+                <Pending />
               </Link>
               {!isDemo(r.slug, r.theme) && <DeleteButton slug={r.slug} />}
             </span>
