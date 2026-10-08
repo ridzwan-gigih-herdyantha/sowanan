@@ -1,6 +1,38 @@
+import { WaIcon } from "@/components/home/closing";
 import { Inline } from "@/components/rich-text";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
 import { cellView, fill, formatRupiah, PACKAGE_NAMES, planWaLink, slaText, visiblePackages, type Settings } from "@/lib/settings";
+
+// Kartu panjang untuk kebutuhan di luar paket. Terang di atas latar gelap supaya menonjol sebagai tawaran terpisah,
+// dan tidak memakai wine supaya tidak bersaing dengan ajakan penutup halaman.
+function CustomCard({ card, vars }: { card: Settings["sections"]["harga"]["custom"]; vars: Record<string, string> }) {
+  const points = card.points.map((p) => fill(p, vars).trim()).filter(Boolean);
+  if (!card.title && !card.text) return null;
+  return (
+    <div className="mt-[54px] grid gap-7 rounded-[14px] bg-paper px-6 py-8 text-ink sm:px-9 sm:py-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12 lg:px-12" {...reveal()}>
+      <div>
+        {card.title && <h3 className="font-serif text-[clamp(26px,3vw,34px)] leading-[1.15] font-medium">{fill(card.title, vars)}</h3>}
+        {card.text && <p className="mt-3 max-w-[60ch] text-[16px] leading-relaxed text-ink-body">{fill(card.text, vars)}</p>}
+        {points.length > 0 && (
+          <ul className="mt-5 flex flex-col gap-1.5 text-[14px] text-ink-mute sm:flex-row sm:flex-wrap sm:gap-x-7">
+            {points.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+      {card.button && (
+        <a
+          href={vars.wa_link}
+          className="inline-flex items-center justify-center gap-2.5 rounded-sm bg-wine px-7 py-4 text-base text-white no-underline transition-[transform,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:bg-wine-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper motion-reduce:transform-none"
+        >
+          <WaIcon className="size-5 shrink-0" />
+          {card.button}
+        </a>
+      )}
+    </div>
+  );
+}
 
 type Feature = { label: string; note?: string; on: boolean };
 type Plan = { tier: string; badge: string; price: number; blurb: string; specs: [string, string][]; features: Feature[]; waHref: string };
@@ -128,14 +160,7 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
           </div>
         )}
 
-        {harga.foot && (
-          <div
-            className="mt-[54px] rounded-xl border border-night-line px-[26px] py-[22px] text-center text-[15.5px] leading-[1.7] text-mist [&_a]:border-b [&_a]:border-wine-soft/40 [&_a]:text-wine-soft [&_a]:no-underline [&_a]:transition-colors [&_a:hover]:border-paper [&_a:hover]:text-paper"
-            {...reveal()}
-          >
-            <Inline text={fill(harga.foot, vars)} />
-          </div>
-        )}
+        <CustomCard card={harga.custom} vars={vars} />
       </Container>
     </section>
   );

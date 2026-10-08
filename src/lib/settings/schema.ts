@@ -100,7 +100,24 @@ export const settingsSchema = z
     sections: z.object({
       tema: section("pilihan tema").extend({ foot: str("Kalimat di bawah daftar tema", 160) }),
       fitur: section("fitur"),
-      harga: section("harga").extend({ foot: str("Kalimat di bawah harga", 240).default("") }),
+      harga: section("harga").extend({
+        // Tidak tampil lagi sejak diganti kartu custom di bawah. Disimpan untuk data lama.
+        foot: str("Kalimat di bawah harga", 240).default(""),
+        // Kartu panjang di bawah daftar tambahan untuk kebutuhan di luar paket. Tombolnya menuju WhatsApp.
+        custom: z
+          .object({
+            title: str("Judul kartu kebutuhan khusus", 60),
+            text: str("Kalimat kartu kebutuhan khusus", 240),
+            button: str("Label tombol kartu kebutuhan khusus", 28),
+            points: z.array(str("Poin kartu kebutuhan khusus", 40)).max(3),
+          })
+          .default({
+            title: "Butuh yang di luar ketiga paket ini?",
+            text: "Misalnya fitur khusus atau rangkaian acara yang panjang. Ceritakan rencananya, kami buatkan penawaran tersendiri.",
+            button: "Ceritakan lewat WhatsApp",
+            points: ["Fitur khusus", "Rangkaian acara panjang", "Penawaran tersendiri"],
+          }),
+      }),
       addon: section("tambahan"),
       cara: section("cara pesan"),
       faq: section("tanya jawab"),

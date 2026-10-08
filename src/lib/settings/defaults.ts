@@ -219,7 +219,13 @@ export const DEFAULT_SETTINGS: Settings = {
     harga: {
       title: "Harga",
       sub: "Bayar sekali, tidak ada biaya bulanan dan tidak ada biaya perpanjangan. Undangan tidak punya masa aktif: setelah acara selesai ia tersimpan permanen dan tetap bisa dibuka di alamat yang sama.",
-      foot: "Butuh yang di luar ketiga paket ini, misalnya fitur khusus atau rangkaian acara yang panjang? [Ceritakan rencananya lewat WhatsApp]({wa_link}), kami buatkan penawaran tersendiri.",
+      foot: "",
+      custom: {
+        title: "Butuh yang di luar ketiga paket ini?",
+        text: "Misalnya fitur khusus atau rangkaian acara yang panjang. Ceritakan rencananya, kami buatkan penawaran tersendiri.",
+        button: "Ceritakan lewat WhatsApp",
+        points: ["Fitur khusus", "Rangkaian acara panjang", "Penawaran tersendiri"],
+      },
     },
     addon: { title: "Tambahan di luar paket", sub: "Bisa ditambahkan saat memesan. Sebutkan saja lewat WhatsApp." },
     cara: { title: "Cara pesan", sub: "" },

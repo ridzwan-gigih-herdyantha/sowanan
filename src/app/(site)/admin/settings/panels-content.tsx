@@ -82,7 +82,16 @@ export function BerandaPanel() {
           </Row>
         ))}
         <Text path="sections.tema.foot" label="Kalimat di bawah daftar tema" chip="view" max={160} help="Contoh tautan ke WhatsApp: [Kirim contohnya lewat WhatsApp]({wa_link})" />
-        <Text path="sections.harga.foot" label="Kalimat di bawah harga" chip="view" max={240} help="Tampil dalam kotak setelah daftar tambahan. Kosongkan untuk menyembunyikan." />
+        <Row>
+          <Text path="sections.harga.custom.title" label="Judul kartu kebutuhan khusus" chip="view" max={60} help="Kartu panjang setelah daftar tambahan. Kosongkan judul dan kalimat untuk menyembunyikan kartu." />
+          <Text path="sections.harga.custom.button" label="Label tombol kartu" chip="view" max={28} help="Tujuannya WhatsApp, nomor dan pesan dari tab Kontak." />
+        </Row>
+        <Text path="sections.harga.custom.text" label="Kalimat kartu kebutuhan khusus" chip="view" max={240} rows={2} />
+        <Row>
+          {[0, 1, 2].map((i) => (
+            <Text key={i} path={`sections.harga.custom.points.${i}`} label={`Poin kartu ${i + 1}`} chip="view" max={40} />
+          ))}
+        </Row>
       </Card>
 
       <Card title="Daftar fitur" hint="Urutan di sini sama dengan urutan di halaman. Yang dimatikan tetap tersimpan, hanya tidak ditampilkan.">
