@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useWorking } from "../use-working";
 import { deleteMedia, listMedia, type MediaFile } from "./actions";
 import { ACCEPT, formatBytes as kb, useUploader } from "./use-uploader";
 
@@ -16,6 +17,7 @@ export function MediaManager(props: { slugs: string[]; initialFiles: MediaFile[]
   const [files, setFiles] = useState<MediaFile[]>(props.initialFiles);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { working, run } = useWorking(setError);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [copied, setCopied] = useState("");
 
@@ -48,11 +50,13 @@ export function MediaManager(props: { slugs: string[]; initialFiles: MediaFile[]
     refresh(slug);
   }
 
-  async function remove(f: MediaFile) {
+  function remove(f: MediaFile) {
     if (!confirm(`Hapus ${f.name}? Undangan yang memakai file ini akan kehilangan gambarnya.`)) return;
-    const res = await deleteMedia(slug, f.name);
-    if (res.ok) setFiles((fs) => fs.filter((x) => x.name !== f.name));
-    else setError(res.error);
+    run(`hapus:${f.name}`, async () => {
+      const res = await deleteMedia(slug, f.name);
+      if (res.ok) setFiles((fs) => fs.filter((x) => x.name !== f.name));
+      else setError(res.error);
+    });
   }
 
   async function copy(path: string) {
@@ -163,8 +167,8 @@ export function MediaManager(props: { slugs: string[]; initialFiles: MediaFile[]
                     <button type="button" onClick={() => copy(f.path)} className="text-wine underline underline-offset-4">
                       {copied === f.path ? "Tersalin" : "Salin path"}
                     </button>
-                    <button type="button" onClick={() => remove(f)} className="text-ink-mute hover:text-wine">
-                      Hapus
+                    <button type="button" onClick={() => remove(f)} disabled={working !== null} className="text-ink-mute hover:text-wine disabled:opacity-60">
+                      {working === `hapus:${f.name}` ? "Menghapus..." : "Hapus"}
                     </button>
                   </div>
                 </div>

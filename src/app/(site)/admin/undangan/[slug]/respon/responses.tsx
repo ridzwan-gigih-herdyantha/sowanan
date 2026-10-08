@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { rsvpSheet } from "@/lib/export/rsvp-sheet";
+import { useWorking } from "../../../use-working";
 import { markArchiveNotified } from "../../actions";
 import { deleteResponse } from "./actions";
 
@@ -39,6 +40,7 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
   const [error, setError] = useState("");
+  const { working, run } = useWorking(setError);
 
   const invited = useMemo(() => new Set(guestNames.map(key)), [guestNames]);
 
@@ -59,13 +61,15 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
   const wishList = wishes.filter((w) => !q || key(w.name).includes(q) || w.message.toLowerCase().includes(q));
   const list = tab === "rsvp" ? rsvpList : wishList;
 
-  async function remove(kind: "rsvp" | "wish", id: number, name: string) {
+  function remove(kind: "rsvp" | "wish", id: number, name: string) {
     if (!confirm(kind === "wish" ? `Hapus ucapan dari ${name}? Ucapan juga hilang dari halaman undangan.` : `Hapus konfirmasi dari ${name}?`)) return;
-    const res = await deleteResponse(slug, kind, id);
-    if (!res.ok) return setError(res.error);
-    setError("");
-    if (kind === "rsvp") setRsvps((l) => l.filter((r) => r.id !== id));
-    else setWishes((l) => l.filter((w) => w.id !== id));
+    run(`hapus:${kind}:${id}`, async () => {
+      const res = await deleteResponse(slug, kind, id);
+      if (!res.ok) return setError(res.error);
+      setError("");
+      if (kind === "rsvp") setRsvps((l) => l.filter((r) => r.id !== id));
+      else setWishes((l) => l.filter((w) => w.id !== id));
+    });
   }
 
   async function exportXlsx(which: "rsvp" | "wish" = tab) {
@@ -90,7 +94,16 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
 
   return (
     <div className="mt-8">
-      {notice && <ArchivePanel slug={slug} notice={notice} onExport={async () => (await exportXlsx("rsvp"), await exportXlsx("wish"))} />}
+      {notice && (
+        <ArchivePanel
+          slug={slug}
+          notice={notice}
+          onExport={async () => {
+            await exportXlsx("rsvp");
+            await exportXlsx("wish");
+          }}
+        />
+      )}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Hadir" value={people} note={`${yes.length} konfirmasi`} />
         <Stat label="Tidak hadir" value={unique.length - yes.length} note="konfirmasi" />
@@ -154,8 +167,8 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
         )}
         {list.length > 0 && exportLock && <span className="max-w-xs text-[12px] text-ink-mute">{exportLock}</span>}
         {list.length > 0 && !exportLock && (
-          <button type="button" onClick={() => exportXlsx()} className="text-[14px] text-wine underline underline-offset-4">
-            Unduh Excel
+          <button type="button" onClick={() => run("excel", () => exportXlsx())} disabled={working !== null} className="text-[14px] text-wine underline underline-offset-4 disabled:opacity-60">
+            {working === "excel" ? "Menyiapkan Excel..." : "Unduh Excel"}
           </button>
         )}
       </div>
@@ -168,7 +181,7 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
           ? rsvpList.slice(0, limit).map((r) => {
               const stale = latest.get(key(r.name))?.id !== r.id;
               return (
-                <li key={r.id} className={`flex flex-wrap items-center gap-x-4 gap-y-1 py-3 ${stale ? "opacity-55" : ""}`}>
+                <li key={r.id} aria-busy={working === `hapus:rsvp:${r.id}` || undefined} className={`flex flex-wrap items-center gap-x-4 gap-y-1 py-3 transition-opacity duration-150 ${stale || working === `hapus:rsvp:${r.id}` ? "opacity-55" : ""}`}>
                   <div className="min-w-0 flex-1 basis-40">
                     <p className="truncate font-medium">{r.name}</p>
                     <p className="text-[13px] text-ink-mute">
@@ -180,18 +193,18 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
                   <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${r.attending ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>
                     {r.attending ? `Hadir, ${r.guests} orang` : "Tidak hadir"}
                   </span>
-                  <button type="button" onClick={() => remove("rsvp", r.id, r.name)} className="text-[14px] text-ink-mute hover:text-wine">
-                    Hapus
+                  <button type="button" onClick={() => remove("rsvp", r.id, r.name)} disabled={working !== null} className="text-[14px] text-ink-mute hover:text-wine disabled:opacity-60">
+                    {working === `hapus:rsvp:${r.id}` ? "Menghapus..." : "Hapus"}
                   </button>
                 </li>
               );
             })
           : wishList.slice(0, limit).map((w) => (
-              <li key={w.id} className="py-4">
+              <li key={w.id} aria-busy={working === `hapus:wish:${w.id}` || undefined} className={`py-4 transition-opacity duration-150 ${working === `hapus:wish:${w.id}` ? "opacity-55" : ""}`}>
                 <div className="flex items-baseline justify-between gap-4">
                   <p className="min-w-0 truncate font-medium">{w.name}</p>
-                  <button type="button" onClick={() => remove("wish", w.id, w.name)} className="shrink-0 text-[14px] text-ink-mute hover:text-wine">
-                    Hapus
+                  <button type="button" onClick={() => remove("wish", w.id, w.name)} disabled={working !== null} className="shrink-0 text-[14px] text-ink-mute hover:text-wine disabled:opacity-60">
+                    {working === `hapus:wish:${w.id}` ? "Menghapus..." : "Hapus"}
                   </button>
                 </div>
                 <p className="mt-1 text-[15px] whitespace-pre-line text-ink-soft">{w.message}</p>
@@ -212,18 +225,20 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
 function ArchivePanel({ slug, notice, onExport }: { slug: string; notice: ArchiveNotice; onExport: () => Promise<void> }) {
   const [notifiedAt, setNotifiedAt] = useState(notice.notifiedAt);
   const [status, setStatus] = useState("");
+  const { working, run } = useWorking(setStatus);
   const message = [
     `Halo ${notice.couple || "kakak"}, undangan pernikahan kalian di sowanan.com/${slug} akan menjadi arsip permanen pada ${notice.archiveAt}.`,
     "Setelah itu undangan tetap bisa dibuka selamanya di alamat yang sama, tetapi konfirmasi kehadiran, ucapan baru, amplop digital, hitung mundur, dan tautan nama tamu berhenti.",
     "Terlampir daftar tamu yang sudah konfirmasi dan rekap ucapan untuk kalian simpan. Terima kasih sudah memakai Sowanan.",
   ].join("\n\n");
 
-  const mark = async (value: boolean) => {
-    const res = await markArchiveNotified(slug, value).catch(() => ({ ok: false as const, error: "Gagal menyimpan. Cek koneksi." }));
-    if (!res.ok) return setStatus(res.error);
-    setNotifiedAt(value ? res.at : null);
-    setStatus(value ? "Ditandai sudah dikirim." : "Tanda dibatalkan.");
-  };
+  const mark = (value: boolean) =>
+    run("tandai", async () => {
+      const res = await markArchiveNotified(slug, value);
+      if (!res.ok) return setStatus(res.error);
+      setNotifiedAt(value ? res.at : null);
+      setStatus(value ? "Ditandai sudah dikirim." : "Tanda dibatalkan.");
+    });
 
   return (
     <section className={`mb-6 rounded-sm border p-4 text-[14px] ${notifiedAt ? "border-line bg-white" : "border-wine/40 bg-blush/60"}`}>
@@ -234,8 +249,8 @@ function ArchivePanel({ slug, notice, onExport }: { slug: string; notice: Archiv
           : "Kirim pemberitahuan ke klien beserta daftar tamu dan rekap ucapan, lalu tandai sudah dikirim."}
       </p>
       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-        <button type="button" onClick={onExport} className="text-wine underline underline-offset-4">
-          Unduh daftar tamu dan rekap ucapan
+        <button type="button" onClick={() => run("rekap", onExport)} disabled={working !== null} className="text-wine underline underline-offset-4 disabled:opacity-60">
+          {working === "rekap" ? "Menyiapkan file..." : "Unduh daftar tamu dan rekap ucapan"}
         </button>
         <button
           type="button"
@@ -247,8 +262,8 @@ function ArchivePanel({ slug, notice, onExport }: { slug: string; notice: Archiv
         >
           Salin pesan untuk klien
         </button>
-        <button type="button" onClick={() => mark(!notifiedAt)} className="text-ink-mute underline underline-offset-4 hover:text-wine">
-          {notifiedAt ? "Batalkan tanda sudah dikirim" : "Tandai sudah dikirim"}
+        <button type="button" onClick={() => mark(!notifiedAt)} disabled={working !== null} className="text-ink-mute underline underline-offset-4 hover:text-wine disabled:opacity-60">
+          {working === "tandai" ? "Menyimpan..." : notifiedAt ? "Batalkan tanda sudah dikirim" : "Tandai sudah dikirim"}
         </button>
       </div>
       {status && (

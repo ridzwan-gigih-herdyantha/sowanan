@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useWorking } from "../../../use-working";
 import { useMemo, useState } from "react";
 import { downloadQr, QrCode } from "@/components/qr-code";
 import { fillGuestMessage, guestLink, MAX_GUESTS, parseCsv, parseGuestRows, parseGuestText, type GuestInput } from "@/lib/guests";
@@ -32,7 +33,7 @@ const fullFmt = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short
 // QR milik mempelai. Dicetak dan dipasang di meja penerima tamu, tamu memindainya dengan HP sendiri.
 function AttendancePanel({ slug, origin, present, invited, walkIns, window: open }: { slug: string; origin: string; present: number; invited: number; walkIns: number; window: Props["window"] }) {
   const [token, setToken] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<"buka" | "jadwal" | "muat" | "ganti" | null>(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const router = useRouter();
@@ -40,9 +41,9 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
 
   async function setOpen(next: boolean) {
     if (next && !confirm("Buka absensi sekarang? Tamu yang memindai QR bisa langsung mencatat kehadiran, walaupun acara belum dimulai.")) return;
-    setBusy(true);
+    setBusy(next ? "buka" : "jadwal");
     const res = await openCheckinNow(slug, next).catch(() => ({ ok: false as const, error: "Gagal menyimpan. Cek koneksi." }));
-    setBusy(false);
+    setBusy(null);
     if (!res.ok) return setError(res.error);
     setError("");
     router.refresh();
@@ -50,9 +51,9 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
 
   async function load(regenerate = false) {
     if (regenerate && !confirm("Ganti QR kehadiran? QR yang sudah dicetak langsung tidak bisa dipakai lagi.")) return;
-    setBusy(true);
+    setBusy(regenerate ? "ganti" : "muat");
     const res = await checkinLink(slug, regenerate).catch(() => ({ ok: false as const, error: "Gagal memuat. Cek koneksi." }));
-    setBusy(false);
+    setBusy(null);
     if (!res.ok) return setError(res.error);
     setError("");
     setToken(res.data);
@@ -83,13 +84,13 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
             {open.from} sampai {open.until}.
           </span>
           {open.canOpen && open.state !== "open" && (
-            <button type="button" onClick={() => setOpen(true)} disabled={busy} className="rounded-sm bg-wine px-4 py-2 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-50">
-              Buka sekarang
+            <button type="button" onClick={() => setOpen(true)} disabled={busy !== null} className="rounded-sm bg-wine px-4 py-2 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-50">
+              {busy === "buka" ? "Membuka..." : "Buka sekarang"}
             </button>
           )}
           {open.manual && (
-            <button type="button" onClick={() => setOpen(false)} disabled={busy} className="text-[14px] text-ink-mute underline underline-offset-4 hover:text-wine disabled:opacity-50">
-              Kembalikan ke jadwal
+            <button type="button" onClick={() => setOpen(false)} disabled={busy !== null} className="text-[14px] text-ink-mute underline underline-offset-4 hover:text-wine disabled:opacity-50">
+              {busy === "jadwal" ? "Menyimpan..." : "Kembalikan ke jadwal"}
             </button>
           )}
           {!open.canOpen && open.state === "before" && <span className="w-full text-[12px] text-ink-mute">Jalankan migrasi 0010 untuk bisa membuka absensi lebih awal.</span>}
@@ -115,8 +116,8 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
               >
                 {copied ? "Tersalin" : "Salin link"}
               </button>
-              <button type="button" onClick={() => load(true)} disabled={busy} className="text-ink-mute hover:text-wine disabled:opacity-50">
-                Ganti QR
+              <button type="button" onClick={() => load(true)} disabled={busy !== null} className="text-ink-mute hover:text-wine disabled:opacity-50">
+                {busy === "ganti" ? "Mengganti..." : "Ganti QR"}
               </button>
             </div>
           </div>
@@ -125,7 +126,7 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
         <button
           type="button"
           onClick={() => load()}
-          disabled={busy}
+          disabled={busy !== null}
           className="mt-4 rounded-sm border border-wine px-4 py-2 text-[14px] text-wine transition-colors duration-150 hover:bg-wine hover:text-white disabled:opacity-50"
         >
           {busy ? "Memuat..." : "Tampilkan QR kehadiran"}
@@ -166,8 +167,9 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
   const [tab, setTab] = useState<"paste" | "excel">("paste");
   const [text, setText] = useState("");
   const [sheet, setSheet] = useState<{ name: string; list: GuestInput[] } | null>(null);
-  const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const { working, run } = useWorking((text) => setNotice({ tone: "error", text }));
+  const rowBusy = (id: number) => working?.endsWith(`:${id}`) ?? false;
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
   const [template, setTemplate] = useState(initialTemplate);
@@ -190,72 +192,79 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
   const link = (g: Guest) => guestLink(origin, slug, g.name, qr.on ? g.qr_token : null);
   const message = (g: Guest) => fillGuestMessage(template, { nama: g.name, link: link(g), mempelai: couple, tanggal: date });
 
-  async function readFile(file: File) {
-    setNotice(null);
-    try {
-      let rows: unknown[][];
-      if (/\.csv$/i.test(file.name) || file.type === "text/csv") rows = parseCsv(await file.text());
-      else {
-        const { readSheet } = await import("read-excel-file/browser");
-        rows = (await readSheet(file)) as unknown[][];
+  const readFile = (file: File) =>
+    run("file", async () => {
+      setNotice(null);
+      try {
+        let rows: unknown[][];
+        if (/\.csv$/i.test(file.name) || file.type === "text/csv") rows = parseCsv(await file.text());
+        else {
+          const { readSheet } = await import("read-excel-file/browser");
+          rows = (await readSheet(file)) as unknown[][];
+        }
+        const list = parseGuestRows(rows);
+        setSheet({ name: file.name, list });
+        if (!list.length) setNotice({ tone: "error", text: "Tidak ada nama yang terbaca. Pastikan kolom pertama atau kolom berjudul Nama berisi nama tamu." });
+      } catch {
+        setSheet(null);
+        setNotice({ tone: "error", text: "File tidak bisa dibaca. Gunakan .xlsx atau .csv." });
       }
-      const list = parseGuestRows(rows);
-      setSheet({ name: file.name, list });
-      if (!list.length) setNotice({ tone: "error", text: "Tidak ada nama yang terbaca. Pastikan kolom pertama atau kolom berjudul Nama berisi nama tamu." });
-    } catch {
-      setSheet(null);
-      setNotice({ tone: "error", text: "File tidak bisa dibaca. Gunakan .xlsx atau .csv." });
-    }
-  }
-
-  async function submit() {
-    if (!pending.length) return;
-    setBusy(true);
-    const res = await addGuests(slug, pending);
-    setBusy(false);
-    if (!res.ok) return setNotice({ tone: "error", text: res.error });
-    setGuests((g) => [...g, ...res.data.added]);
-    setNotice({
-      tone: "ok",
-      text: `${res.data.added.length} tamu ditambahkan${res.data.skipped ? `, ${res.data.skipped} dilewati karena sudah ada` : ""}.`,
     });
-    if (tab === "paste") setText("");
-    else setSheet(null);
-  }
 
-  async function remove(g: Guest) {
+  const submit = () =>
+    run("tambah", async () => {
+      if (!pending.length) return;
+      const res = await addGuests(slug, pending);
+      if (!res.ok) return setNotice({ tone: "error", text: res.error });
+      setGuests((g) => [...g, ...res.data.added]);
+      setNotice({
+        tone: "ok",
+        text: `${res.data.added.length} tamu ditambahkan${res.data.skipped ? `, ${res.data.skipped} dilewati karena sudah ada` : ""}.`,
+      });
+      if (tab === "paste") setText("");
+      else setSheet(null);
+    });
+
+  function remove(g: Guest) {
     if (!confirm(`Hapus ${g.name} dari daftar tamu?`)) return;
-    const res = await deleteGuests(slug, [g.id]);
-    if (res.ok) setGuests((list) => list.filter((x) => x.id !== g.id));
-    else setNotice({ tone: "error", text: res.error });
+    run(`hapus:${g.id}`, async () => {
+      const res = await deleteGuests(slug, [g.id]);
+      if (res.ok) setGuests((list) => list.filter((x) => x.id !== g.id));
+      else setNotice({ tone: "error", text: res.error });
+    });
   }
 
-  async function removeAll() {
+  function removeAll() {
     if (!confirm(`Hapus semua ${guests.length} tamu? Tindakan ini tidak bisa dibatalkan.`)) return;
-    const res = await deleteGuests(slug, "all");
-    if (res.ok) setGuests([]);
-    else setNotice({ tone: "error", text: res.error });
+    run("hapus-semua", async () => {
+      const res = await deleteGuests(slug, "all");
+      if (res.ok) setGuests([]);
+      else setNotice({ tone: "error", text: res.error });
+    });
   }
 
-  async function saveEdit() {
+  function saveEdit() {
     if (!editing) return;
-    const res = await updateGuest(slug, editing.id, editing.name, editing.phone);
-    if (!res.ok) return setNotice({ tone: "error", text: res.error });
-    setGuests((list) => list.map((g) => (g.id === res.data.id ? res.data : g)));
-    setEditing(null);
+    run(`ubah:${editing.id}`, async () => {
+      const res = await updateGuest(slug, editing.id, editing.name, editing.phone);
+      if (!res.ok) return setNotice({ tone: "error", text: res.error });
+      setGuests((list) => list.map((g) => (g.id === res.data.id ? res.data : g)));
+      setEditing(null);
+    });
   }
 
-  async function send(g: Guest) {
+  const setSent = (g: Guest, sent: boolean) =>
+    run(`terkirim:${g.id}`, async () => {
+      const res = await markSent(slug, g.id, sent);
+      if (res.ok) setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, sent_at: res.data } : x)));
+      else setNotice({ tone: "error", text: res.error });
+    });
+
+  // WhatsApp dibuka langsung, tanda terkirim menyusul di latar.
+  function send(g: Guest) {
     const url = `https://wa.me/${g.phone ?? ""}?text=${encodeURIComponent(message(g))}`;
     window.open(url, "_blank", "noopener");
-    if (g.sent_at) return;
-    const res = await markSent(slug, g.id, true);
-    if (res.ok) setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, sent_at: res.data } : x)));
-  }
-
-  async function toggleSent(g: Guest) {
-    const res = await markSent(slug, g.id, !g.sent_at);
-    if (res.ok) setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, sent_at: res.data } : x)));
+    if (!g.sent_at) setSent(g, true);
   }
 
   async function copy(g: Guest, what: "link" | "pesan") {
@@ -264,17 +273,20 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
     setTimeout(() => setCopied((c) => (c === g.id ? 0 : c)), 1500);
   }
 
-  async function storeTemplate() {
-    const res = await saveGuestMessage(slug, template);
-    if (!res.ok) return setNotice({ tone: "error", text: res.error });
-    setSavedTemplate(template);
-  }
+  const storeTemplate = () =>
+    run("template", async () => {
+      const res = await saveGuestMessage(slug, template);
+      if (!res.ok) return setNotice({ tone: "error", text: res.error });
+      setSavedTemplate(template);
+    });
 
-  async function togglePresent(g: Guest) {
+  function togglePresent(g: Guest) {
     if (g.checked_in_at && !confirm(`Batalkan tanda hadir ${g.name}?`)) return;
-    const res = await setGuestCheckin(slug, g.id, !g.checked_in_at);
-    if (!res.ok) return setNotice({ tone: "error", text: res.error });
-    setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, checked_in_at: res.data } : x)));
+    run(`hadir:${g.id}`, async () => {
+      const res = await setGuestCheckin(slug, g.id, !g.checked_in_at);
+      if (!res.ok) return setNotice({ tone: "error", text: res.error });
+      setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, checked_in_at: res.data } : x)));
+    });
   }
 
   async function exportXlsx() {
@@ -337,7 +349,7 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
         ) : (
           <div className="mt-4">
             <label className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-sm border border-dashed border-wine/40 bg-white px-5 py-8 text-center transition-colors duration-150 hover:border-wine focus-within:border-wine">
-              <span className="text-[15px] text-wine">{sheet ? sheet.name : "Pilih file Excel atau CSV"}</span>
+              <span className="text-[15px] text-wine">{working === "file" ? "Membaca file..." : sheet ? sheet.name : "Pilih file Excel atau CSV"}</span>
               <span className="text-[13px] text-ink-mute">Kolom Nama wajib, kolom No HP atau WhatsApp opsional. Tanpa judul kolom, kolom 1 dibaca nama dan kolom 2 nomor.</span>
               <input
                 type="file"
@@ -359,10 +371,10 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
           <button
             type="button"
             onClick={submit}
-            disabled={busy || !pending.length}
+            disabled={working !== null || !pending.length}
             className="rounded-sm bg-wine px-5 py-3 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-50"
           >
-            {busy ? "Menyimpan..." : pending.length ? `Tambahkan ${pending.length} tamu` : "Tambahkan tamu"}
+            {working === "tambah" ? "Menyimpan..." : pending.length ? `Tambahkan ${pending.length} tamu` : "Tambahkan tamu"}
           </button>
           <span className="text-[13px] text-ink-mute">
             {guests.length} dari {MAX_GUESTS} tamu
@@ -391,10 +403,10 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
           <button
             type="button"
             onClick={storeTemplate}
-            disabled={template === savedTemplate}
+            disabled={template === savedTemplate || working !== null}
             className="mt-3 rounded-sm border border-wine px-4 py-2 text-[14px] text-wine transition-colors duration-150 hover:bg-wine hover:text-white disabled:opacity-40"
           >
-            {template === savedTemplate ? "Tersimpan" : "Simpan template"}
+            {working === "template" ? "Menyimpan..." : template === savedTemplate ? "Tersimpan" : "Simpan template"}
           </button>
         </div>
       </details>
@@ -427,8 +439,8 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
             {excelLock ? (
               <span className="text-[13px] text-ink-mute">{excelLock}</span>
             ) : (
-              <button type="button" onClick={exportXlsx} className="text-[14px] text-wine underline underline-offset-4">
-                Unduh Excel
+              <button type="button" onClick={() => run("excel", exportXlsx)} disabled={working !== null} className="text-[14px] text-wine underline underline-offset-4 disabled:opacity-60">
+                {working === "excel" ? "Menyiapkan Excel..." : "Unduh Excel"}
               </button>
             )}
           </div>
@@ -438,14 +450,14 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
 
         <ul className="mt-4 divide-y divide-line border-y border-line">
           {filtered.slice(0, limit).map((g) => (
-            <li key={g.id} className="py-3">
+            <li key={g.id} aria-busy={rowBusy(g.id) || undefined} className={`py-3 transition-opacity duration-150 ${rowBusy(g.id) ? "opacity-60" : ""}`}>
               {editing?.id === g.id ? (
                 <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_200px_auto] sm:items-center">
                   <input value={editing.name} maxLength={80} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className={`${field} mt-0`} aria-label="Nama" />
                   <input value={editing.phone} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} placeholder="08..." inputMode="tel" className={`${field} mt-0`} aria-label="Nomor WhatsApp" />
                   <span className="flex gap-4 text-[14px]">
-                    <button type="button" onClick={saveEdit} className="text-wine underline underline-offset-4">
-                      Simpan
+                    <button type="button" onClick={saveEdit} disabled={working !== null} className="text-wine underline underline-offset-4 disabled:opacity-60">
+                      {rowBusy(g.id) ? "Menyimpan..." : "Simpan"}
                     </button>
                     <button type="button" onClick={() => setEditing(null)} className="text-ink-mute">
                       Batal
@@ -462,20 +474,20 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
                     <p className="text-[13px] text-ink-mute">
                       {g.phone ? prettyPhone(g.phone) : "Tanpa nomor"}
                       {g.sent_at && (
-                        <button type="button" onClick={() => toggleSent(g)} title="Klik untuk batal tandai" className="ml-2 rounded-full bg-ivory px-2 py-0.5 text-[11px] text-ink-soft">
-                          Terkirim {sentFmt.format(new Date(g.sent_at))}
+                        <button type="button" onClick={() => setSent(g, false)} disabled={working !== null} title="Klik untuk batal tandai" className="ml-2 rounded-full bg-ivory px-2 py-0.5 text-[11px] text-ink-soft disabled:opacity-60">
+                          {working === `terkirim:${g.id}` ? "Menyimpan..." : `Terkirim ${sentFmt.format(new Date(g.sent_at))}`}
                         </button>
                       )}
                       {qr.on && g.checked_in_at && (
-                        <button type="button" onClick={() => togglePresent(g)} title="Klik untuk batalkan" className="ml-2 rounded-full bg-wine px-2 py-0.5 text-[11px] text-white">
-                          Hadir {sentFmt.format(new Date(g.checked_in_at))}
+                        <button type="button" onClick={() => togglePresent(g)} disabled={working !== null} title="Klik untuk batalkan" className="ml-2 rounded-full bg-wine px-2 py-0.5 text-[11px] text-white disabled:opacity-60">
+                          {working === `hadir:${g.id}` ? "Menyimpan..." : `Hadir ${sentFmt.format(new Date(g.checked_in_at))}`}
                         </button>
                       )}
                     </p>
                   </div>
                   <span className="flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
                     <button type="button" onClick={() => send(g)} className="text-wine underline underline-offset-4">
-                      Kirim WA
+                      {working === `terkirim:${g.id}` ? "Menandai terkirim..." : "Kirim WA"}
                     </button>
                     <button type="button" onClick={() => copy(g, "link")} className="text-ink-soft hover:text-wine">
                       {copied === g.id ? "Tersalin" : "Salin link"}
@@ -484,15 +496,15 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
                       Salin pesan
                     </button>
                     {qr.on && !g.checked_in_at && (
-                      <button type="button" onClick={() => togglePresent(g)} className="text-ink-soft hover:text-wine">
-                        Tandai hadir
+                      <button type="button" onClick={() => togglePresent(g)} disabled={working !== null} className="text-ink-soft hover:text-wine disabled:opacity-60">
+                        {working === `hadir:${g.id}` ? "Menyimpan..." : "Tandai hadir"}
                       </button>
                     )}
                     <button type="button" onClick={() => setEditing({ id: g.id, name: g.name, phone: g.phone ?? "" })} className="text-ink-soft hover:text-wine">
                       Ubah
                     </button>
-                    <button type="button" onClick={() => remove(g)} className="text-ink-mute hover:text-wine">
-                      Hapus
+                    <button type="button" onClick={() => remove(g)} disabled={working !== null} className="text-ink-mute hover:text-wine disabled:opacity-60">
+                      {working === `hapus:${g.id}` ? "Menghapus..." : "Hapus"}
                     </button>
                   </span>
                 </div>
@@ -507,8 +519,8 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
           </button>
         )}
         {guests.length > 0 && (
-          <button type="button" onClick={removeAll} className="mt-8 block text-[13px] text-ink-mute hover:text-wine">
-            Hapus semua tamu
+          <button type="button" onClick={removeAll} disabled={working !== null} className="mt-8 block text-[13px] text-ink-mute hover:text-wine disabled:opacity-60">
+            {working === "hapus-semua" ? "Menghapus semua tamu..." : "Hapus semua tamu"}
           </button>
         )}
       </section>
