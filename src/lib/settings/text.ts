@@ -25,10 +25,10 @@ export function highestPrice(s: Settings): number {
   return Math.max(...visiblePackages(s).map((p) => s.packages[p].price));
 }
 
-const days = (min: number, max: number) => (min === max ? `${min} hari kerja` : `${min} sampai ${max} hari kerja`);
+const days = (min: number, max: number, sep = " sampai ") => (min === max ? `${min} hari kerja` : `${min} ${sep} ${max} hari kerja`);
 
-// Waktu pengerjaan satu paket. Contoh: "2 sampai 3 hari kerja"
-export const slaText = (pk: Settings["packages"][PackageId]) => days(pk.sla, pk.slaMax ?? pk.sla);
+// Waktu pengerjaan satu paket. Contoh: "2 sampai 3 hari kerja", atau "2–3 hari kerja" untuk kartu harga yang ringkas.
+export const slaText = (pk: Settings["packages"][PackageId], compact = false) => days(pk.sla, pk.slaMax ?? pk.sla, compact ? "–" : " sampai ");
 
 // Rentang semua paket yang tampil. Contoh: "1 sampai 7 hari kerja"
 export function slaRange(s: Settings): string {

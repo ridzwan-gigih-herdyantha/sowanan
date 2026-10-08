@@ -46,7 +46,7 @@ function plans(s: Settings): Plan[] {
       price: p.price,
       blurb: p.blurb,
       // Strip spesifikasi ada di posisi yang sama di semua kartu.
-      specs: [["Jadi dalam", slaText(p)], ...(p.revision ? ([["Revisi", p.revision]] as [string, string][]) : [])],
+      specs: [["Jadi dalam", slaText(p, true)], ...(p.revision ? ([["Revisi", p.revision]] as [string, string][]) : [])],
       features: s.matrix.map((row) => ({ label: row.label, ...cellView(s, row, id) })),
       waHref: planWaLink(s, id),
     };
