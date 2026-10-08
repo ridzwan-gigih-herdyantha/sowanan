@@ -247,7 +247,7 @@ export function InvitationShell({ door, music, synth, className, style, children
 
           {door.kind === "vellum" && (
             <div
-              className="inv-door-vellum fixed inset-0 z-50 flex flex-col justify-end px-6 pb-[8vh] backdrop-blur-md [background:color-mix(in_srgb,var(--inv-wash)_82%,transparent)] sm:px-10"
+              className="inv-door-vellum fixed inset-0 z-50 flex flex-col justify-center-safe px-6 pt-6 pb-[14vh] backdrop-blur-md sm:justify-end sm:pb-[8vh] [background:color-mix(in_srgb,var(--inv-wash)_82%,transparent)] sm:px-10"
               aria-hidden={open}
             >
               <p className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">LEMBAR KOLEKSI {door.number}</p>
