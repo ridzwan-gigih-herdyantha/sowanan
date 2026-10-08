@@ -15,7 +15,7 @@ function CustomCard({ card, vars }: { card: Settings["sections"]["harga"]["custo
         {points.length > 0 && (
           <ul className="mt-5 flex flex-col gap-1 text-[12px] text-paper sm:flex-row sm:flex-wrap sm:gap-x-5">
             {points.map((p) => (
-              <li className="border-[1.5px] rounded-full border-wine-soft px-2 py-1" key={p}>{p}</li>
+              <li className="border-[1.5px] rounded-full border-wine-soft px-5 py-1" key={p}>{p}</li>
             ))}
           </ul>
         )}
