@@ -3,20 +3,19 @@ import { Inline } from "@/components/rich-text";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
 import { cellView, fill, formatRupiah, PACKAGE_NAMES, planWaLink, slaText, visiblePackages, type Settings } from "@/lib/settings";
 
-// Kartu panjang untuk kebutuhan di luar paket. Terang di atas latar gelap supaya menonjol sebagai tawaran terpisah,
-// dan tidak memakai wine supaya tidak bersaing dengan ajakan penutup halaman.
+// Kartu panjang untuk kebutuhan di luar paket, berlatar wine supaya menonjol sebagai tawaran terpisah di atas latar gelap.
 function CustomCard({ card, vars }: { card: Settings["sections"]["harga"]["custom"]; vars: Record<string, string> }) {
   const points = card.points.map((p) => fill(p, vars).trim()).filter(Boolean);
   if (!card.title && !card.text) return null;
   return (
-    <div className="mt-[54px] grid gap-7 rounded-[14px] bg-paper px-6 py-8 text-ink sm:px-9 sm:py-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12 lg:px-12" {...reveal()}>
+    <div className="mt-[54px] grid gap-7 rounded-[14px] bg-wine px-6 py-4 text-paper sm:px-9 sm:py-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12 lg:px-12" {...reveal()}>
       <div>
-        {card.title && <h3 className="font-serif text-[clamp(26px,3vw,34px)] leading-[1.15] font-medium">{fill(card.title, vars)}</h3>}
-        {card.text && <p className="mt-3 max-w-[60ch] text-[16px] leading-relaxed text-ink-body">{fill(card.text, vars)}</p>}
+        {card.title && <h3 className="font-serif text-[clamp(26px,3vw,32px)] leading-[1.15] font-medium">{fill(card.title, vars)}</h3>}
+        {card.text && <p className="mt-3 max-w-[60ch] text-[16px] leading-relaxed text-[#f2dfe2]">{fill(card.text, vars)}</p>}
         {points.length > 0 && (
-          <ul className="mt-5 flex flex-col gap-1.5 text-[14px] text-ink-mute sm:flex-row sm:flex-wrap sm:gap-x-7">
+          <ul className="mt-5 flex flex-col gap-1 text-[12px] text-paper sm:flex-row sm:flex-wrap sm:gap-x-5">
             {points.map((p) => (
-              <li key={p}>{p}</li>
+              <li className="border-[1.5px] rounded-full border-wine-soft px-2 py-1" key={p}>{p}</li>
             ))}
           </ul>
         )}
@@ -24,7 +23,7 @@ function CustomCard({ card, vars }: { card: Settings["sections"]["harga"]["custo
       {card.button && (
         <a
           href={vars.wa_link}
-          className="inline-flex items-center justify-center gap-2.5 rounded-sm bg-wine px-7 py-4 text-base text-white no-underline transition-[transform,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:bg-wine-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper motion-reduce:transform-none"
+          className="inline-flex items-center justify-center gap-2.5 rounded-lg bg-paper px-7 py-4 text-base text-wine-dark no-underline transition-[transform,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper motion-reduce:transform-none"
         >
           <WaIcon className="size-5 shrink-0" />
           {card.button}
@@ -64,10 +63,11 @@ function Mark({ on }: { on: boolean }) {
 
 // Kartu berubah ke warna tombol saat disorot atau saat isinya mendapat fokus (variant lit di globals.css).
 function PlanCard({ p }: { p: Plan }) {
+  // Paket rekomendasi dibedakan lewat garis tepi kartu saat diam. Tombolnya sama dengan paket lain.
   const rec = !!p.badge;
   const fade = "transition-colors duration-200";
   return (
-    <article className="plan relative flex h-full flex-col rounded-[14px] border border-night-line bg-night px-[22px] pt-7 pb-[26px] transition-[background-color,border-color,transform] duration-200 lit:border-wine-soft lit:bg-wine-soft sm:px-7 sm:pt-[34px] sm:pb-[30px] [@media(hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none">
+    <article className={cx("plan relative flex h-full flex-col rounded-[14px] border bg-night px-[22px] pt-7 pb-[26px] transition-[background-color,border-color,transform] duration-200 lit:border-wine-soft lit:bg-wine-soft sm:px-7 sm:pt-[34px] sm:pb-[30px] [@media(hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none", rec ? "border-wine-soft border-2" : "border-night-line")}>
       {p.badge && (
         <span className={cx("absolute top-[26px] right-[22px] rounded-full border border-wine-soft/50 bg-wine-soft/28 px-[11px] py-[5px] text-[11px] font-medium tracking-[.15em] text-paper uppercase lit:border-ink/30 lit:bg-ink/14 lit:text-ink sm:top-[30px] sm:right-[26px]", fade)}>
           {p.badge}
@@ -105,7 +105,10 @@ function PlanCard({ p }: { p: Plan }) {
         aria-label={`Pesan paket ${p.tier}`}
         className={cx(
           "block rounded-lg border px-[18px] py-3.5 text-center text-[15px] tracking-[.04em] no-underline transition-colors duration-200 lit:border-ink lit:bg-ink lit:text-paper focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-paper",
-          rec ? "border-wine-soft bg-wine-soft text-ink" : "border-wine-soft text-paper",
+          rec
+            ? "border-2"
+            : "",
+          "border-wine-soft text-paper",
         )}
       >
         Pesan paket ini
