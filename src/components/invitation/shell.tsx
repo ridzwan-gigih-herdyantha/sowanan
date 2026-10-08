@@ -4,6 +4,7 @@ import Image from "next/image";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
+import { GUEST_NAME_MAX } from "@/lib/guest-input";
 import { GUEST_KEY, guestCodeKey, recall, remember } from "@/lib/guest-memory";
 import { PintuDoor, type PintuProps } from "./sakinah/door";
 
@@ -68,7 +69,7 @@ function ramp({ ctx, gain }: Fader, to: number, seconds: number) {
 const noop = () => () => {};
 function readGuestParam() {
   const to = new URLSearchParams(window.location.search).get("to");
-  return to ? to.trim().slice(0, 40) : "";
+  return to ? to.trim().slice(0, GUEST_NAME_MAX) : "";
 }
 
 const readStoredGuest = () => recall(GUEST_KEY);
@@ -113,11 +114,14 @@ export function InvitationShell({ door, music, synth, className, style, children
   const invited = namesAllowed ? fromLink : "";
   const slug = useContext(SlugContext);
 
-  // Kode link pribadi diingat di HP tamu, supaya saat memindai QR mempelai di lokasi tamu langsung dikenali.
+  // Kode link pribadi dan nama tamu diingat di HP tamu begitu halaman dibuka, supaya saat memindai QR mempelai
+  // di lokasi tamu langsung dikenali.
   useEffect(() => {
     if (!slug || !namesAllowed) return;
     const k = new URLSearchParams(window.location.search).get("k");
     if (k && /^[a-z0-9]{8,32}$/i.test(k)) remember(guestCodeKey(slug), k);
+    const to = readGuestParam();
+    if (to) remember(GUEST_KEY, to);
   }, [slug, namesAllowed]);
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(false);

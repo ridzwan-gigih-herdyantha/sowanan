@@ -7,6 +7,7 @@ import type { Wish } from "@/lib/guestbook";
 import { useArchived, useGuest } from "./shell";
 import { sway } from "./sway";
 
+const OFFLINE = "Gagal terhubung. Periksa internet lalu coba lagi.";
 const FIRST = 4;
 const STEP = 6;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
@@ -50,7 +51,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
     }
     start(async () => {
       setError("");
-      const res = await submitWish(slug, { name: nameValue, message, website: String(form.get("website") ?? "") });
+      const res = await submitWish(slug, { name: nameValue, message, website: String(form.get("website") ?? "") }).catch(() => ({ ok: false as const, error: OFFLINE }));
       if (!res.ok) return setError(res.error);
       setMine((m) => [res.data, ...m]);
       setGuest(res.data.name);

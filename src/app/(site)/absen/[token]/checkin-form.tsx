@@ -37,7 +37,8 @@ export function CheckinForm({ token, slug, demo }: { token: string; slug: string
   async function self() {
     setBusy(true);
     setError("");
-    const res = await checkInSelf(token, code).catch(() => ({ status: "closed" as const, reason: "Gagal terhubung. Periksa internet lalu coba lagi." }));
+    // Kode link pribadi paling pasti. Tanpa kode, dipakai nama yang tersimpan saat tamu membuka undangan atau mengisi RSVP.
+    const res = await (code ? checkInSelf(token, code) : checkInName(token, remembered)).catch(() => ({ status: "closed" as const, reason: "Gagal terhubung. Periksa internet lalu coba lagi." }));
     setBusy(false);
     finish(res);
   }
@@ -72,7 +73,7 @@ export function CheckinForm({ token, slug, demo }: { token: string; slug: string
     );
   }
 
-  if (code && mode === "auto") {
+  if ((code || remembered) && mode === "auto") {
     return (
       <div className="mt-8 text-center">
         <p className="text-[16px] text-ink-soft">Selamat datang{remembered ? "," : "."}</p>

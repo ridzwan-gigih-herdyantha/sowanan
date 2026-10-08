@@ -7,6 +7,8 @@ import { useArchived, useGuest } from "./shell";
 
 type Step = "attend" | "count" | "name" | "done";
 
+const OFFLINE = "Gagal terhubung. Periksa internet lalu coba lagi.";
+
 const choice =
   "rounded-sm border border-inv-line px-3 py-4 text-[13px] tracking-[0.1em] transition-colors duration-150 hover:border-inv-accent hover:bg-inv-accent hover:text-inv-paper";
 
@@ -28,7 +30,7 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
   const send = () =>
     start(async () => {
       setError("");
-      const res = await submitRsvp(slug, { name: value, attending, guests: attending ? guests : 0 });
+      const res = await submitRsvp(slug, { name: value, attending, guests: attending ? guests : 0 }).catch(() => ({ ok: false as const, error: OFFLINE }));
       if (!res.ok) return setError(res.error);
       setGuest(value.trim());
       setStep("done");

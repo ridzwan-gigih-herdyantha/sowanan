@@ -94,9 +94,13 @@ Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan m
 Terima kasih.
 {mempelai}`;
 
+// Karakter yang dibiarkan encodeURIComponent ikut di-encode. Di WhatsApp, * _ ~ menjadi format teks,
+// sedangkan tanda kurung, kutip, dan titik di ujung bisa memotong link. Contoh: "Pak Joko (RT 05)".
+const strictEncode = (s: string) => encodeURIComponent(s).replace(/[!'()*~_.]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+
 // k adalah kode QR kehadiran tamu, hanya ikut kalau undangan memakai QR absensi.
 export function guestLink(origin: string, slug: string, name: string, k?: string | null) {
-  return `${origin}/${slug}?to=${encodeURIComponent(name).replace(/%20/g, "+")}${k ? `&k=${k}` : ""}`;
+  return `${origin}/${slug}?to=${strictEncode(name).replace(/%20/g, "+")}${k ? `&k=${k}` : ""}`;
 }
 
 export function fillGuestMessage(template: string, vars: { nama: string; link: string; mempelai: string; tanggal: string }) {
