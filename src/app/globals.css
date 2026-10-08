@@ -197,11 +197,11 @@
   }
 }
 
-/* Undangan contoh di dalam layar HP (/[slug]/hp): scrollbar disembunyikan seperti di ponsel sungguhan. */
-html[data-phone-frame] {
+/* Undangan contoh di dalam layar HP atau tablet (/[slug]/hp, /[slug]/tablet): scrollbar disembunyikan seperti di perangkat sungguhan. */
+html[data-device-frame] {
   scrollbar-width: none;
 }
-html[data-phone-frame]::-webkit-scrollbar {
+html[data-device-frame]::-webkit-scrollbar {
   display: none;
 }
 

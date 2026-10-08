@@ -247,7 +247,7 @@ export function InvitationShell({ door, music, synth, className, style, children
 
           {door.kind === "vellum" && (
             <div
-              className="inv-door-vellum fixed inset-0 z-50 flex flex-col justify-center-safe px-6 pt-6 pb-[14vh] backdrop-blur-md sm:justify-end sm:pb-[8vh] [background:color-mix(in_srgb,var(--inv-wash)_82%,transparent)] sm:px-10"
+              className="inv-door-vellum fixed inset-0 z-50 flex flex-col justify-center-safe px-6 pt-6 pb-[14vh] backdrop-blur-md lg:justify-end lg:pb-[8vh] [background:color-mix(in_srgb,var(--inv-wash)_82%,transparent)] sm:px-10"
               aria-hidden={open}
             >
               <p className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">LEMBAR KOLEKSI {door.number}</p>
@@ -256,7 +256,7 @@ export function InvitationShell({ door, music, synth, className, style, children
                 <br />
                 <span className="font-display italic">&amp;</span> {door.bride}
               </p>
-              <div className="relative mt-8 w-full max-w-md -rotate-1 border border-inv-line bg-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.08)]">
+              <div className="relative mt-8 w-full max-w-md -rotate-1 sm:max-w-none lg:max-w-md border border-inv-line bg-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.08)]">
                 <span className="inv-tape -top-2.5 left-10 -rotate-3" aria-hidden="true" />
                 <div className="flex items-center justify-between border-b border-inv-line px-5 py-2.5 text-[10px] font-medium tracking-[0.2em] text-inv-gold">
                   <span>HERBARIUM SOWANAN</span>
@@ -287,7 +287,7 @@ export function InvitationShell({ door, music, synth, className, style, children
               <button
                 type="button"
                 onClick={openInvitation}
-                className="inv-cta mt-8 flex w-full max-w-md items-center justify-between rounded-sm bg-inv-accent px-7 py-5 text-[13px] font-medium tracking-[0.2em] text-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+                className="inv-cta mt-8 flex w-full max-w-md items-center sm:max-w-none lg:max-w-md justify-between rounded-sm bg-inv-accent px-7 py-5 text-[13px] font-medium tracking-[0.2em] text-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
               >
                 BUKA LEMBARNYA
                 {arrow}
