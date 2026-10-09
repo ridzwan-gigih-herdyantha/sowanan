@@ -52,7 +52,11 @@ function CoverFan({ covers, label }: { covers: Settings["themes"]; label: string
 export function ClosingCta({ settings, vars, waHref }: { settings: Settings; vars: Record<string, string>; waHref: string }) {
   const c = settings.closing;
   const points = c.points.map((p) => fill(p, vars).trim()).filter(Boolean);
-  const covers = settings.themes.filter((t) => t.on && t.image).slice(0, 3);
+  // Sampul sesuai pilihan di Pengaturan. Tema yang dimatikan atau tanpa gambar dilewati, dan kalau tidak ada yang
+  // tersisa dipakai tiga tema aktif pertama.
+  const usable = settings.themes.filter((t) => t.on && t.image);
+  const picked = c.covers.flatMap((slug) => usable.filter((t) => t.slug === slug).slice(0, 1));
+  const covers = picked.length ? picked : usable.slice(0, 3);
   return (
     <section className="overflow-hidden bg-wine text-paper">
       <Container className="grid items-center gap-10 py-16 md:grid-cols-[minmax(0,1fr)_330px] md:gap-12 md:py-[88px] lg:grid-cols-[minmax(0,1fr)_420px]">

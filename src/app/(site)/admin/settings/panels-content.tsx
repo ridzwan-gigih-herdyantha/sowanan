@@ -139,6 +139,18 @@ export function BerandaPanel() {
         <Text path="closing.text" label="Kalimat penutup" chip="view" max={160} />
         <Text path="closing.button2" label="Label tombol kedua" chip="view" max={28} help="Menuju bagian pilihan tema. Kosongkan untuk menyembunyikan tombol." />
         <Row>
+          {["Sampul kiri", "Sampul tengah (paling depan)", "Sampul kanan"].map((label, i) => (
+            <Select
+              key={label}
+              path={`closing.covers.${i}`}
+              label={label}
+              chip="view"
+              help={i === 0 ? "Tumpukan sampul tema di samping ajakan penutup. Tema yang dimatikan dilewati." : undefined}
+              options={[["", "Tidak ditampilkan"], ...s.themes.map((t): [string, string] => [t.slug, t.name])]}
+            />
+          ))}
+        </Row>
+        <Row>
           {[0, 1, 2].map((i) => (
             <Text key={i} path={`closing.points.${i}`} label={`Poin ${i + 1}`} chip="view" max={40} help={i === 0 ? "Muncul di bawah tombol. Bisa memakai {harga} dan {waktu}." : undefined} />
           ))}

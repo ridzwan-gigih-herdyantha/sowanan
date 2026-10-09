@@ -255,6 +255,7 @@ export const DEFAULT_SETTINGS: Settings = {
     button: "Chat WhatsApp",
     button2: "Lihat pilihan tema",
     points: ["Mulai {harga}", "Jadi dalam {waktu}", "Tanpa batas jumlah tamu"],
+    covers: ["andi-rina", "danang-kinanthi", "hendrawan-larasati"],
   },
   footer: { line1: "Undangan pernikahan digital · {kota}", line2: "", nav: "Jelajahi", demos: "Contoh undangan", reach: "Hubungi" },
   themes: [

@@ -133,6 +133,8 @@ export const settingsSchema = z
       button2: str("Label tombol kedua", 28).default("Lihat pilihan tema"),
       // Poin singkat di bawah tombol. Boleh memakai kata pengganti seperti {harga} dan {waktu}.
       points: z.array(str("Poin penutup", 40)).max(3).default(["Mulai {harga}", "Jadi dalam {waktu}", "Tanpa batas jumlah tamu"]),
+      // Slug tema untuk tumpukan sampul: kiri, tengah di depan, kanan. Kosong berarti tiga tema aktif pertama.
+      covers: z.array(z.string().max(60)).max(3).default(["andi-rina", "danang-kinanthi", "hendrawan-larasati"]),
     }),
     footer: z.object({
       line1: str("Baris footer", 80),
