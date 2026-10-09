@@ -115,7 +115,7 @@ export const settingsSchema = z
             title: "Butuh yang di luar ketiga paket ini?",
             text: "Misalnya fitur khusus atau rangkaian acara yang panjang. Ceritakan rencananya, kami buatkan penawaran tersendiri.",
             button: "Ceritakan lewat WhatsApp",
-            points: ["Fitur khusus", "Rangkaian acara panjang", "Penawaran tersendiri"],
+            points: ["Fitur khusus", "Acara panjang", "Harga khusus"],
           }),
       }),
       addon: section("tambahan"),
