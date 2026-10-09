@@ -68,6 +68,17 @@ const time = (label: string) => z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, `$
 
 const section = (label: string) => z.object({ title: req(`Judul ${label}`, 40), sub: str(`Penjelas ${label}`, 240) });
 
+// Kartu ajakan berlatar wine. Default dipakai untuk data lama yang belum punya kartu ini.
+const offerCardShape = (label: string) =>
+  z.object({
+    title: str(`Judul ${label}`, 60),
+    text: str(`Kalimat ${label}`, 240),
+    button: str(`Label tombol ${label}`, 28),
+    points: z.array(str(`Poin ${label}`, 40)).max(3),
+  });
+export type OfferCardData = z.infer<ReturnType<typeof offerCardShape>>;
+const offerCard = (label: string, fallback: OfferCardData) => offerCardShape(label).default(fallback);
+
 const cell = z.object({ on: z.boolean(), n: count("Jumlah", 0, 9999).nullable() });
 
 const pkg = (name: string) =>
@@ -98,25 +109,28 @@ export const settingsSchema = z
       note: str("Catatan di bawah tombol", 120),
     }),
     sections: z.object({
-      tema: section("pilihan tema").extend({ foot: str("Kalimat di bawah daftar tema", 160) }),
+      tema: section("pilihan tema").extend({
+        // Tidak tampil lagi sejak diganti kartu custom di bawah. Disimpan untuk data lama.
+        foot: str("Kalimat di bawah daftar tema", 160).default(""),
+        // Kartu panjang di bawah daftar tema untuk gaya yang belum ada. Tombolnya menuju WhatsApp.
+        custom: offerCard("kartu tema khusus", {
+          title: "Mau gaya yang belum ada di sini?",
+          text: "Kirim contoh undangan atau desain yang kalian suka. Kami buatkan tema dengan warna dan suasana yang sesuai acara kalian.",
+          button: "Kirim contoh lewat WhatsApp",
+          points: ["Sesuai contoh", "Warna bebas", "Nuansa adat"],
+        }),
+      }),
       fitur: section("fitur"),
       harga: section("harga").extend({
         // Tidak tampil lagi sejak diganti kartu custom di bawah. Disimpan untuk data lama.
         foot: str("Kalimat di bawah harga", 240).default(""),
         // Kartu panjang di bawah daftar tambahan untuk kebutuhan di luar paket. Tombolnya menuju WhatsApp.
-        custom: z
-          .object({
-            title: str("Judul kartu kebutuhan khusus", 60),
-            text: str("Kalimat kartu kebutuhan khusus", 240),
-            button: str("Label tombol kartu kebutuhan khusus", 28),
-            points: z.array(str("Poin kartu kebutuhan khusus", 40)).max(3),
-          })
-          .default({
-            title: "Butuh yang di luar ketiga paket ini?",
-            text: "Misalnya fitur khusus atau rangkaian acara yang panjang. Ceritakan rencananya, kami buatkan penawaran tersendiri.",
-            button: "Ceritakan lewat WhatsApp",
-            points: ["Fitur khusus", "Acara panjang", "Harga khusus"],
-          }),
+        custom: offerCard("kartu kebutuhan khusus", {
+          title: "Butuh yang di luar ketiga paket ini?",
+          text: "Misalnya fitur khusus atau rangkaian acara yang panjang. Ceritakan rencananya, kami buatkan penawaran tersendiri.",
+          button: "Ceritakan lewat WhatsApp",
+          points: ["Fitur khusus", "Acara panjang", "Harga khusus"],
+        }),
       }),
       addon: section("tambahan"),
       cara: section("cara pesan"),

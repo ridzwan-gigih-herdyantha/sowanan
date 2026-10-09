@@ -1,41 +1,8 @@
-import { WaIcon } from "@/components/home/closing";
+import { OfferCard } from "@/components/home/offer-card";
 import { PlanSlider } from "@/components/home/plan-slider";
 import { Inline } from "@/components/rich-text";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
 import { cellView, fill, formatRupiah, PACKAGE_NAMES, planWaLink, slaText, visiblePackages, type Settings } from "@/lib/settings";
-
-// Kartu panjang untuk kebutuhan di luar paket, berlatar wine supaya menonjol sebagai tawaran terpisah di atas latar gelap.
-function CustomCard({ card, vars }: { card: Settings["sections"]["harga"]["custom"]; vars: Record<string, string> }) {
-  const points = card.points.map((p) => fill(p, vars).trim()).filter(Boolean);
-  if (!card.title && !card.text) return null;
-  return (
-    <div className="mt-[54px] grid grid-cols-1 gap-7 rounded-[14px] bg-wine px-6 py-8 text-paper sm:px-9 sm:py-9 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12 lg:px-12" {...reveal()}>
-      <div>
-        {card.title && <h3 className="font-serif text-[clamp(26px,3vw,32px)] leading-[1.15] font-medium text-balance">{fill(card.title, vars)}</h3>}
-        {card.text && <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[#f2dfe2] sm:text-[16px]">{fill(card.text, vars)}</p>}
-        {points.length > 0 && (
-          // Di HP pil selalu satu baris, dan bisa digeser ke samping kalau layar terlalu sempit. Di sm ke atas boleh membungkus.
-          <ul className="mt-5 flex gap-1.5 overflow-x-auto text-[11px] text-paper [scrollbar-width:none] sm:flex-wrap sm:gap-2 sm:overflow-visible sm:text-[13px] [&::-webkit-scrollbar]:hidden">
-            {points.map((p) => (
-              <li key={p} className="shrink-0 rounded-full border border-wine-soft/80 px-2.5 py-1 whitespace-nowrap sm:px-3.5">
-                {p}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      {card.button && (
-        <a
-          href={vars.wa_link}
-          className="inline-flex items-center justify-center gap-2.5 rounded-lg bg-paper px-4 py-4 text-center text-[14px] leading-snug text-wine-dark sm:px-7 sm:text-base no-underline transition-[transform,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper motion-reduce:transform-none"
-        >
-          <WaIcon className="size-5 shrink-0" />
-          {card.button}
-        </a>
-      )}
-    </div>
-  );
-}
 
 type Feature = { label: string; note?: string; on: boolean };
 type Plan = { tier: string; badge: string; price: number; blurb: string; specs: [string, string][]; features: Feature[]; waHref: string };
@@ -175,7 +142,7 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
           </div>
         )}
 
-        <CustomCard card={harga.custom} vars={vars} />
+        <OfferCard card={harga.custom} vars={vars} className="mt-[54px]" />
       </Container>
     </section>
   );

@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { Inline } from "@/components/rich-text";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
 import { demoHref, demoPackages, TOP_PACKAGE } from "@/lib/invitation/demo-packages";
 import { fill, type Settings, type ThemeEntry } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
+import { OfferCard } from "./offer-card";
 import { ThemeDemoPicker } from "./theme-demo-picker";
 
 // Warna latar kartu mengikuti nuansa tiap tema.
@@ -86,11 +86,7 @@ export function Themes({ settings, vars, waHref }: { settings: Settings; vars: R
               <Card key={t.id} theme={t} index={i} waHref={waHref} settings={settings} />
             ))}
         </div>
-        {sec.foot && (
-          <p className="mt-9 text-base text-ink-body" {...reveal()}>
-            <Inline text={fill(sec.foot, vars)} />
-          </p>
-        )}
+        <OfferCard card={sec.custom} vars={vars} className="mt-12" />
       </Container>
     </section>
   );

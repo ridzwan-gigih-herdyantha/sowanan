@@ -45,6 +45,11 @@ const SECTIONS: [keyof Settings["sections"], string][] = [
   ["faq", "Tanya jawab"],
 ];
 
+const OFFER_CARDS = [
+  ["tema", "Kartu tema khusus", "di bawah daftar tema"],
+  ["harga", "Kartu kebutuhan khusus", "setelah daftar tambahan"],
+] as const;
+
 const ANCHORS = "#tema, #fitur, #harga, #cara, atau #tanya";
 
 export function BerandaPanel() {
@@ -81,18 +86,22 @@ export function BerandaPanel() {
             <Text path={`sections.${key}.sub`} label={`Penjelas ${label.toLowerCase()}`} chip="view" max={240} />
           </Row>
         ))}
-        <Text path="sections.tema.foot" label="Kalimat di bawah daftar tema" chip="view" max={160} help="Contoh tautan ke WhatsApp: [Kirim contohnya lewat WhatsApp]({wa_link})" />
-        <Row>
-          <Text path="sections.harga.custom.title" label="Judul kartu kebutuhan khusus" chip="view" max={60} help="Kartu panjang setelah daftar tambahan. Kosongkan judul dan kalimat untuk menyembunyikan kartu." />
-          <Text path="sections.harga.custom.button" label="Label tombol kartu" chip="view" max={28} help="Tujuannya WhatsApp, nomor dan pesan dari tab Kontak." />
-        </Row>
-        <Text path="sections.harga.custom.text" label="Kalimat kartu kebutuhan khusus" chip="view" max={240} rows={2} />
-        <Row>
-          {[0, 1, 2].map((i) => (
-            <Text key={i} path={`sections.harga.custom.points.${i}`} label={`Poin kartu ${i + 1}`} chip="view" max={40} />
-          ))}
-        </Row>
       </Card>
+
+      {OFFER_CARDS.map(([key, title, where]) => (
+        <Card key={key} title={title} hint={`Kartu panjang berlatar wine ${where}. Kosongkan judul dan kalimat untuk menyembunyikan kartu.`}>
+          <Row>
+            <Text path={`sections.${key}.custom.title`} label="Judul kartu" chip="view" max={60} />
+            <Text path={`sections.${key}.custom.button`} label="Label tombol kartu" chip="view" max={28} help="Tujuannya WhatsApp, nomor dan pesan dari tab Kontak." />
+          </Row>
+          <Text path={`sections.${key}.custom.text`} label="Kalimat kartu" chip="view" max={240} rows={2} />
+          <Row>
+            {[0, 1, 2].map((i) => (
+              <Text key={i} path={`sections.${key}.custom.points.${i}`} label={`Poin kartu ${i + 1}`} chip="view" max={40} />
+            ))}
+          </Row>
+        </Card>
+      ))}
 
       <Card title="Daftar fitur" hint="Urutan di sini sama dengan urutan di halaman. Yang dimatikan tetap tersimpan, hanya tidak ditampilkan.">
         <RepList
