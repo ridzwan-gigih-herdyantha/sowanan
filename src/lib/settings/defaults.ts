@@ -42,13 +42,33 @@ Seluruh isi paket Dasar, dengan warna tema disesuaikan palet acara Anda. Galeri 
 
 ### Istimewa (Rp499.000)
 
-Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Pada paket ini Anda dapat meminta hingga 2 bagian tambahan yang belum ada di tema, atau meminta tema baru yang kami rancang khusus untuk Anda.
+Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Paket ini ditujukan untuk acara dengan jumlah tamu banyak. Pada paket ini Anda juga dapat meminta hingga 2 bagian tambahan yang belum ada di tema.
 
-Bagian tambahan yang dimaksud adalah bagian yang menampilkan isi, misalnya denah lokasi, susunan acara, profil keluarga, atau informasi akomodasi. Permintaan yang memerlukan sistem baru, misalnya pemilihan kursi, undian, atau metode pembayaran di luar yang kami sediakan, tidak termasuk dalam paket ini dan akan kami tawarkan sebagai pekerjaan tersendiri.
+Bagian tambahan dipilih dari daftar berikut, maksimal dua:
 
-Tema baru yang kami rancang untuk paket Istimewa dapat kami tambahkan ke katalog tema Sowanan setelah acara Anda selesai, dengan seluruh nama, foto, dan data acara Anda dihapus lebih dulu.
+- Susunan acara, rundown jam per jam dari akad sampai selesai resepsi
+- Denah lokasi dan parkir, berupa gambar denah yang Anda kirimkan
+- Dress code, warna yang diminta beserta contoh paletnya
+- Profil keluarga, nama lengkap keluarga besar kedua pihak
+- Imbauan untuk tamu, misalnya tidak merekam saat akad
+- Siaran langsung, tautan siaran yang kami tanam di halaman undangan
 
-Harga di atas berlaku sekali bayar. Tidak ada biaya bulanan dan tidak ada biaya perpanjangan.
+Permintaan bagian di luar daftar ini, atau lebih dari dua bagian, tidak termasuk paket Istimewa dan akan kami tawarkan melalui Paket Khusus. Permintaan yang memerlukan sistem baru, misalnya pemilihan kursi, undian, atau metode pembayaran di luar yang kami sediakan, tidak termasuk dalam paket ini.
+
+Harga ketiga paket di atas berlaku sekali bayar. Tidak ada biaya bulanan dan tidak ada biaya perpanjangan.
+
+### Paket Khusus (harga menyesuaikan)
+
+Di luar ketiga paket di atas, kami menerima permintaan yang tidak tercakup oleh paket mana pun: fitur yang memerlukan sistem baru, rangkaian acara yang panjang, dan tema yang dirancang baru dari nol khusus untuk Anda.
+
+Harga, lingkup, dan waktu pengerjaan Paket Khusus ditentukan setelah kami menerima penjelasan kebutuhan Anda, lalu dituangkan dalam penawaran tertulis sebelum pekerjaan dimulai. Sebagai gambaran waktu pengerjaannya berkisar 5 sampai 10 hari kerja, dan angka pastinya disepakati bersama di penawaran tersebut.
+
+Ketentuan Paket Khusus:
+
+- Seluruh isi paket Istimewa termasuk di dalamnya, beserta arsip permanen
+- Uang muka {dp} persen, sama seperti paket Lengkap dan Istimewa
+- Rancangan desain mendapat 2 putaran revisi. Kami kirim satu konsep lebih dulu, dan Anda dapat memintanya diubah dua kali sebelum kami lanjutkan ke pengerjaan
+- Tema yang kami rancang untuk Anda dapat kami tambahkan ke katalog tema Sowanan setelah acara Anda selesai, dengan seluruh nama, foto, dan data acara Anda dihapus lebih dulu. Apabila Anda menghendaki tema tersebut tidak dipakai ulang, sampaikan sejak awal dan akan kami hitung tersendiri di penawaran
 `,
   ),
   article(
@@ -77,6 +97,7 @@ Waktu pengerjaan per paket:
 - Dasar: 1 hari kerja
 - Lengkap: 2 sampai 3 hari kerja
 - Istimewa: 3 sampai 5 hari kerja
+- Paket Khusus: sesuai penawaran, berkisar 5 sampai 10 hari kerja
 
 Permintaan revisi setelah undangan kami kirim dikerjakan berurutan juga, dan tidak termasuk dalam waktu pengerjaan di atas.
 `,
@@ -89,7 +110,9 @@ Permintaan revisi setelah undangan kami kirim dikerjakan berurutan juga, dan tid
 
 **Lengkap** mendapat revisi bebas sampai undangan Anda sebar.
 
-**Istimewa** mendapat revisi bebas sampai undangan Anda sebar, ditambah 2 putaran revisi atas rancangan desain. Pada paket ini kami mengirim satu konsep desain lebih dulu, dan Anda dapat memintanya diubah dua kali sebelum kami lanjutkan ke pengerjaan.
+**Istimewa** mendapat revisi bebas sampai undangan Anda sebar, ditambah 2 putaran revisi atas rancangan bagian tambahan. Kami kirim satu rancangan lebih dulu, dan Anda dapat memintanya diubah dua kali sebelum kami lanjutkan ke pengerjaan.
+
+**Paket Khusus** mendapat revisi bebas sampai undangan Anda sebar, ditambah 2 putaran revisi atas rancangan desain, dengan cara yang sama.
 
 Penggantian tema dapat dilakukan sebelum pengerjaan dimulai. Setelah pengerjaan dimulai, penggantian tema dihitung sebagai revisi.
 
@@ -285,7 +308,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "bayar", on: true, q: "Cara bayarnya?", a: "Sekali bayar, mulai {harga}, tanpa biaya bulanan. Paket Dasar dibayar lunas di muka, sedangkan paket Lengkap dan Istimewa dengan uang muka {dp} persen dan sisanya dilunasi sebelum undangan dilepas tanpa watermark. Pembayaran lewat transfer bank atau QRIS." },
   ],
   terms: {
-    date: "5 Oktober 2026",
+    date: "09 Oktober 2026",
     title: "Syarat dan Ketentuan",
     intro:
       "Dokumen ini menjelaskan bagaimana layanan Sowanan bekerja: apa yang kami kerjakan, apa yang menjadi tanggung jawab Anda, dan apa yang terjadi bila ada perubahan. Dengan memesan undangan di Sowanan, Anda dianggap telah membaca dan menyetujui ketentuan di halaman ini.",
