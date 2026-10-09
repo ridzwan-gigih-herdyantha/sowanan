@@ -5,6 +5,7 @@ import { Watermark } from "@/components/invitation/watermark";
 import { isDemo } from "@/lib/invitation/archive";
 import { applyPackage, demoHref, demoPackages, TOP_PACKAGE, type DemoDevice, type DemoPackage } from "@/lib/invitation/demo-packages";
 import { getInvitation } from "@/lib/invitation/load";
+import { limitExtras } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
 import { getSettings, packageRules, type PackageId } from "@/lib/settings";
 import { THEMES } from "@/themes";
@@ -25,7 +26,7 @@ export async function loadInvitationPage(slug: string, demoPkg?: PackageId) {
   const archived = Boolean(inv.archived);
   // Undangan contoh disesuaikan seluruh aturan paket. Undangan klien sudah dijaga editor, jadi di sini
   // hanya bagian tambahan yang melebihi paket yang tidak ditampilkan.
-  const data = demo ? applyPackage(inv.data, rules) : rules.extras ? { ...inv.data, extras: inv.data.extras.slice(0, rules.extras.max) } : inv.data;
+  const data = demo ? applyPackage(inv.data, rules) : rules.extras ? { ...inv.data, extras: limitExtras(inv.data.extras, rules.extras.max) } : inv.data;
   const view = toView(inv.slug, data, inv.theme);
   // Arsip: hitung mundur, RSVP, dan amplop digital disembunyikan. Isi lain dan buku ucapan tetap tampil.
   if (archived) view.on = { ...view.on, countdown: false, rsvp: false, gifts: false };

@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { TIMEZONES } from "@/lib/invitation/schema";
-import { extraAnchors, forTheme, getIn, setIn, type Field } from "@/lib/invitation/spec";
+import { extraAnchors, forTheme, getIn, itemFields, setIn, variantFor, type Field } from "@/lib/invitation/spec";
 import { mediaUrl, PURPOSES } from "@/lib/storage/media";
 import { ACCEPT, useUploader, type UploadResult } from "../../media/use-uploader";
 
@@ -123,11 +123,15 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
   const items = (getIn(data, path) as Record<string, unknown>[] | undefined) ?? [];
   const [open, setOpen] = useState<Set<number>>(() => new Set(items.length === 1 ? [0] : []));
   const [bulk, setBulk] = useState("");
+  const [picking, setPicking] = useState(false);
   const fields = forTheme(f.fields, theme);
   const first = fields[0];
-  const bulkMedia = first?.kind === "media" && PURPOSES[first.purpose].kind === "image" ? first : null;
+  const bulkMedia = !f.variants && first?.kind === "media" && PURPOSES[first.purpose].kind === "image" ? first : null;
   const titleField = fields.find((x) => x.kind === "text");
-  const full = max !== undefined && items.length >= max;
+  // Daftar berjenis: batas paket hanya untuk jenis yang dihitung, batas jumlah item tetap dari spec.
+  const used = f.variants ? items.filter((x) => variantFor(f, x)?.counted !== false).length : items.length;
+  const full = f.variants ? f.max !== undefined && items.length >= f.max : max !== undefined && items.length >= max;
+  const capped = cap !== undefined && used >= cap.max;
   const err = errors[path];
 
   const toggle = (i: number) =>
@@ -163,6 +167,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
           const isOpen = open.has(i) || focus.startsWith(prefix);
           const thumb = bulkMedia ? String(item[bulkMedia.path] ?? "") : "";
           const title = titleField ? String(getIn(item, titleField.path) ?? "") : "";
+          const variant = variantFor(f, item);
           return (
             <li key={i} className={`rounded-sm border ${bad ? "border-wine" : "border-line"} bg-ivory/40`}>
               <div className="flex items-center gap-2 px-3 py-2">
@@ -175,6 +180,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
                     <span className="font-medium">
                       {f.item} {i + 1}
                     </span>
+                    {variant && <span className="text-ink-mute"> ({variant.label})</span>}
                     {title && <span className="text-ink-mute">: {title}</span>}
                   </span>
                   {bad && <span className="size-2 shrink-0 rounded-full bg-wine" aria-label="ada isian bermasalah" />}
@@ -198,7 +204,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
               </div>
               {isOpen && (
                 <div className="grid gap-4 border-t border-line bg-white p-3 sm:grid-cols-2">
-                  {fields.map((x) => (
+                  {itemFields(f, item, theme).map((x) => (
                     <FieldInput key={x.path} f={x} path={prefix + x.path} />
                   ))}
                 </div>
@@ -211,8 +217,10 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
       <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
         <button
           type="button"
-          disabled={full}
+          disabled={full || (!f.variants && capped)}
+          aria-expanded={f.variants ? picking : undefined}
           onClick={() => {
+            if (f.variants) return setPicking((p) => !p);
             setOpen((s) => new Set(s).add(items.length));
             add(structuredClone(f.blank));
           }}
@@ -251,12 +259,36 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
         )}
         {bulk && <span className="text-[13px] text-ink-mute">{bulk}</span>}
         {cap && (
-          <span className={items.length > cap.max ? "text-wine" : "text-ink-mute"}>
+          <span className={used > cap.max ? "text-wine" : "text-ink-mute"}>
             {cap.note}
-            {items.length > cap.max && (cap.max ? `, sekarang ${items.length}. Hapus ${items.length - cap.max} supaya sesuai paket.` : " Hapus semuanya supaya sesuai paket.")}
+            {used > cap.max && (cap.max ? `, sekarang ${used}. Hapus ${used - cap.max} supaya sesuai paket.` : " Hapus semuanya supaya sesuai paket.")}
           </span>
         )}
       </div>
+      {f.variants && picking && !full && (
+        <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
+          {f.variants.options.map((o) => {
+            const off = o.counted && capped;
+            return (
+              <li key={o.value}>
+                <button
+                  type="button"
+                  disabled={off}
+                  onClick={() => {
+                    setPicking(false);
+                    setOpen((s) => new Set(s).add(items.length));
+                    add(structuredClone(o.blank));
+                  }}
+                  className="w-full rounded-sm border border-line bg-white px-3 py-2 text-left hover:border-wine disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-line"
+                >
+                  <span className="block text-[14px] font-medium">{o.label}</span>
+                  <span className="block text-[12px] text-ink-mute">{off ? "Batas paket sudah terpakai." : o.hint}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

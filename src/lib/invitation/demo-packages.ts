@@ -1,6 +1,6 @@
 import { PACKAGE_IDS, PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
 import { themeAvailable, type PackageRules } from "@/lib/settings/text";
-import type { InvitationData } from "./schema";
+import { limitExtras, type InvitationData } from "./schema";
 
 // Undangan contoh bisa dilihat per paket. Paket tertinggi tampil di alamat demo biasa (/slug), paket lain di
 // /slug/paket/<id>. Tampilan tablet dan HP menambahkan /tablet atau /hp di belakangnya.
@@ -37,7 +37,7 @@ export function applyPackage(d: InvitationData, rules: PackageRules): Invitation
     const gallery = out.sections.gallery;
     out = { ...out, sections: { ...out.sections, gallery: { ...gallery, enabled: gallery.enabled && max > 0, photos: gallery.photos.slice(0, max) } } };
   }
-  if (rules.extras) out = { ...out, extras: out.extras.slice(0, rules.extras.max) };
+  if (rules.extras) out = { ...out, extras: limitExtras(out.extras, rules.extras.max) };
   if (rules.locked.musik_sendiri) out = { ...out, media: { ...out.media, music: "" } };
   if (rules.locked.warna_tema) out = { ...out, style: { ...out.style, palette: "", font: "", nameFont: "" } };
   return out;

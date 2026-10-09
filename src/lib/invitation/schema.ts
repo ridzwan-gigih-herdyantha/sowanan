@@ -44,6 +44,18 @@ export type ExtraAnchor = (typeof EXTRA_ANCHORS)[number];
 // Warna latar bagian tambahan, semuanya diambil dari palet tema yang aktif.
 export const EXTRA_TONES = { paper: "Latar utama tema", wash: "Latar kedua tema", accent: "Warna aksen tema", ink: "Gelap, warna teks tema" } as const;
 export type ExtraTone = keyof typeof EXTRA_TONES;
+// Jenis bagian tambahan. Blok bebas untuk Paket Khusus, jenis lain adalah pilihan siap pakai paket Istimewa.
+// Data lama tanpa jenis dianggap blok bebas.
+export const EXTRA_KINDS = { rundown: "Susunan acara", bebas: "Blok bebas" } as const;
+export type ExtraKind = keyof typeof EXTRA_KINDS;
+// Hanya jenis siap pakai yang dihitung dalam batas bagian tambahan paket.
+export const countsAsExtra = (e: { kind: ExtraKind }) => e.kind !== "bebas";
+
+// Bagian tambahan yang melebihi batas paket dibuang dari belakang. Blok bebas selalu dipertahankan.
+export function limitExtras<T extends { kind: ExtraKind }>(extras: T[], max: number): T[] {
+  let left = max;
+  return extras.filter((e) => !countsAsExtra(e) || left-- > 0);
+}
 
 export const TIMEZONES = { WIB: "+07:00", WITA: "+08:00", WIT: "+09:00" } as const;
 
@@ -109,7 +121,9 @@ export const invitationDataSchema = z.object({
     .prefault({}),
   extras: list(
     z.object({
+      kind: z.enum(Object.keys(EXTRA_KINDS) as [ExtraKind, ...ExtraKind[]]).catch("bebas"),
       title: str(),
+      rundown: list(z.object({ time: str(), name: str(), note: str() })),
       body: str(),
       photos: list(z.object({ src: str(), w: num(), h: num() })),
       videos: list(z.object({ src: str(), poster: str() })),

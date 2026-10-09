@@ -1,5 +1,5 @@
 import type { PackageRules } from "@/lib/settings/text";
-import type { InvitationData } from "./schema";
+import { countsAsExtra, type InvitationData } from "./schema";
 import { forTheme, GROUPS, type Issue } from "./spec";
 
 // Isian yang melebihi paket ditambah add-on. Dipakai editor dan diperiksa ulang di server saat simpan final dan tayang.
@@ -17,10 +17,10 @@ export function packageIssues(data: InvitationData, theme: string, rules: Packag
         : `${rules.photos.note} Hapus semua foto atau matikan bagian Galeri.`,
     });
   }
-  const extras = data.extras.length;
+  const extras = data.extras.filter(countsAsExtra).length;
   if (rules.extras && extras > rules.extras.max) {
     const { max, note } = rules.extras;
-    out.push({ path: "extras", group: "extras", message: max ? `${note}, sekarang ${extras}. Hapus ${extras - max} bagian.` : `${note} Hapus semua bagian tambahan.` });
+    out.push({ path: "extras", group: "extras", message: max ? `${note}, sekarang ${extras}. Hapus ${extras - max} bagian siap pakai.` : `${note} Hapus semua bagian siap pakai.` });
   }
   if (rules.locked.musik_sendiri && data.media.music) {
     out.push({ path: "media.music", group: "hero", message: `${rules.locked.musik_sendiri} Hapus musik yang diunggah.` });

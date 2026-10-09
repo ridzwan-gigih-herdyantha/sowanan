@@ -2,7 +2,7 @@ import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
 import { resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
-import type { ExtraAnchor, ExtraTone, InvitationData, SectionKey } from "./schema";
+import type { ExtraAnchor, ExtraKind, ExtraTone, InvitationData, SectionKey } from "./schema";
 import { extraAnchors } from "./spec";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
@@ -23,7 +23,9 @@ function parts(iso: string, tz: keyof typeof ZONES) {
 }
 
 export type ExtraView = {
+  kind: ExtraKind;
   title: string;
+  rundown: { time: string; name: string; note: string }[];
   body: string;
   tone: ExtraTone;
   photos: { src: string; w: number; h: number; alt: string }[];
@@ -39,9 +41,11 @@ function groupExtras(d: InvitationData, theme: string) {
     const photos = e.photos.filter((p) => p.src).map((p, i) => ({ src: u(p.src), w: p.w || 1600, h: p.h || 1200, alt: `${e.title || "Foto"} ${i + 1}` }));
     const videos = e.videos.filter((v) => v.src).map((v) => ({ src: u(v.src), poster: u(v.poster) }));
     const tracks = e.tracks.filter((t) => t.src).map((t, i) => ({ src: u(t.src), cover: u(t.cover), title: t.title || `Lagu ${i + 1}`, artist: t.artist }));
-    if (!e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length) continue;
+    const rundown = e.kind === "rundown" ? e.rundown.filter((r) => r.time.trim() || r.name.trim()) : [];
+    // Jenis siap pakai tampil kalau isinya ada. Blok bebas cukup salah satu isiannya terisi.
+    if (e.kind === "rundown" ? !rundown.length : !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length) continue;
     const at = known.has(e.after) ? e.after : "wishes";
-    (out[at] ??= []).push({ title: e.title, body: e.body, tone: e.tone, photos, videos, tracks });
+    (out[at] ??= []).push({ kind: e.kind, title: e.title, body: e.kind === "bebas" ? e.body : "", rundown, tone: e.tone, photos, videos, tracks });
   }
   return out;
 }

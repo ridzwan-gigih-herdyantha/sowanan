@@ -1,5 +1,5 @@
 import type { Purpose } from "@/lib/storage/media";
-import { EXTRA_TONES, type ExtraAnchor, type InvitationData, type SectionKey } from "./schema";
+import { EXTRA_KINDS, EXTRA_TONES, type ExtraAnchor, type ExtraKind, type InvitationData, type SectionKey } from "./schema";
 
 const A = "andi-rina";
 const B = "bagas-sekar";
@@ -7,7 +7,11 @@ const H = "hendrawan-larasati";
 const J = "danang-kinanthi";
 const S = "fadhil-nayla";
 
-type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean };
+// when: isian di dalam item daftar yang hanya tampil dan diperiksa untuk jenis item tertentu (lihat Variants).
+type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean; when?: string[] };
+// Daftar yang itemnya punya jenis. Jenis dipilih saat menambah item dan tidak berubah sesudahnya.
+// Jenis dengan counted false tidak dihitung dalam batas paket.
+export type Variants = { path: string; options: { value: string; label: string; hint: string; counted: boolean; blank: Record<string, unknown> }[] };
 export type Field =
   | (Base & { kind: "text" | "textarea"; max: number; format?: "url" | "time"; placeholder?: string })
   | (Base & { kind: "media"; purpose: Purpose; dims?: boolean })
@@ -16,7 +20,7 @@ export type Field =
   | (Base & { kind: "number"; min: number; max: number })
   | (Base & { kind: "anchor" })
   | (Base & { kind: "heading" })
-  | (Base & { kind: "list"; item: string; fields: Field[]; blank: Record<string, unknown>; min?: number; max?: number });
+  | (Base & { kind: "list"; item: string; fields: Field[]; blank: Record<string, unknown>; min?: number; max?: number; variants?: Variants });
 
 export type Group = { key: string; title: string; section?: SectionKey; themes?: string[]; note?: string; fields: Field[] };
 
@@ -38,6 +42,19 @@ const media = (path: string, label: string, purpose: Purpose, extra: Partial<Bas
   ...extra,
 });
 const optional = { required: false };
+
+// Isi awal bagian tambahan baru. Semua kolom ikut supaya bentuk datanya sama di semua jenis.
+const extraBlank = (kind: ExtraKind, title = "") => ({
+  kind,
+  title,
+  body: "",
+  rundown: kind === "rundown" ? [{ time: "", name: "", note: "" }] : [],
+  photos: [],
+  videos: [],
+  tracks: [],
+  tone: "paper",
+  after: "event",
+});
 
 const person = (key: "groom" | "bride", title: string): Field[] => [
   { kind: "heading", path: `couple.${key}`, label: title },
@@ -244,18 +261,42 @@ export const GROUPS: Group[] = [
         label: "Bagian tambahan",
         item: "Bagian",
         max: 6,
-        blank: { title: "", body: "", photos: [], videos: [], tracks: [], tone: "paper", after: "event" },
+        blank: extraBlank("bebas"),
+        variants: {
+          path: "kind",
+          options: [
+            { value: "rundown", label: EXTRA_KINDS.rundown, hint: "Jam dan nama acara, dari akad sampai selesai resepsi.", counted: true, blank: extraBlank("rundown", "Susunan Acara") },
+            { value: "bebas", label: `${EXTRA_KINDS.bebas} (Paket Khusus)`, hint: "Judul, teks, foto, video, dan lagu bebas. Tidak dihitung dalam batas paket.", counted: false, blank: extraBlank("bebas") },
+          ],
+        },
         fields: [
           text("title", "Judul", 60, { placeholder: "Informasi Akomodasi" }),
           { kind: "anchor", path: "after", label: "Tampil setelah" },
           { kind: "select", path: "tone", label: "Warna latar", options: Object.keys(EXTRA_TONES), labels: EXTRA_TONES, hint: "Mengikuti palet tema yang aktif." },
-          area("body", "Isi", 1200, { placeholder: "Tulis isinya di sini. Baris baru tetap terbawa." }),
+          area("body", "Isi", 1200, { placeholder: "Tulis isinya di sini. Baris baru tetap terbawa.", when: ["bebas"] }),
+          {
+            kind: "list",
+            path: "rundown",
+            label: "Susunan acara",
+            item: "Acara",
+            hint: "Urut dari yang paling awal.",
+            min: 1,
+            max: 20,
+            when: ["rundown"],
+            blank: { time: "", name: "", note: "" },
+            fields: [
+              text("time", "Jam", 5, { format: "time", placeholder: "08.00" }),
+              text("name", "Nama acara", 60, { placeholder: "Akad nikah" }),
+              text("note", "Keterangan", 120, { ...optional, placeholder: "Khusus keluarga inti" }),
+            ],
+          },
           {
             kind: "list",
             path: "photos",
             label: "Foto",
             item: "Foto",
             hint: "Opsional, tanpa batas jumlah.",
+            when: ["bebas"],
             blank: { src: "", w: 0, h: 0 },
             fields: [media("src", "Foto", "extra", { dims: true })],
           },
@@ -265,6 +306,7 @@ export const GROUPS: Group[] = [
             label: "Video",
             item: "Video",
             hint: "Opsional. Musik latar tema meredup otomatis saat video diputar.",
+            when: ["bebas"],
             blank: { src: "", poster: "" },
             fields: [media("src", "Video", "video"), media("poster", "Poster video", "poster", { ...optional, hint: "Gambar sebelum video diputar." })],
           },
@@ -274,6 +316,7 @@ export const GROUPS: Group[] = [
             label: "Lagu",
             item: "Lagu",
             hint: "Opsional. Musik latar tema meredup otomatis saat lagu diputar.",
+            when: ["bebas"],
             blank: { src: "", cover: "", title: "", artist: "" },
             fields: [
               text("title", "Judul lagu", 80),
@@ -300,6 +343,18 @@ export const GROUPS: Group[] = [
 ];
 
 export const forTheme = <T extends { themes?: string[] }>(items: T[], theme: string) => items.filter((i) => !i.themes || i.themes.includes(theme));
+
+type ListField = Extract<Field, { kind: "list" }>;
+const variantOf = (f: ListField, item: unknown) => (f.variants ? String(getIn(item, f.variants.path) ?? "") : "");
+
+// Isian satu item daftar sesuai tema dan jenis item.
+export function itemFields(f: ListField, item: unknown, theme: string): Field[] {
+  const v = variantOf(f, item);
+  return forTheme(f.fields, theme).filter((x) => !x.when || x.when.includes(v));
+}
+
+// Pilihan jenis untuk satu item, dipakai untuk label dan hitungan batas paket.
+export const variantFor = (f: ListField, item: unknown) => f.variants?.options.find((o) => o.value === variantOf(f, item));
 
 // Posisi bagian tambahan yang ada di tema ini, berurutan seperti di undangan.
 export function extraAnchors(theme: string): { value: ExtraAnchor; label: string }[] {
@@ -334,7 +389,7 @@ function checkFields(data: unknown, fields: Field[], theme: string, prefix: stri
       const items = Array.isArray(value) ? value : [];
       if (f.min && items.length < f.min) push(`${name} minimal ${f.min}.`);
       if (f.max && items.length > f.max) push(`${name} maksimal ${f.max}.`);
-      items.forEach((_, i) => checkFields(data, f.fields, theme, `${path}.${i}.`, group, `${f.item} ${i + 1}: `, out));
+      items.forEach((item, i) => checkFields(data, itemFields(f, item, theme), theme, `${path}.${i}.`, group, `${f.item} ${i + 1}: `, out));
       continue;
     }
     if (f.kind === "heading" || f.kind === "select" || f.kind === "number" || f.kind === "anchor") continue;
