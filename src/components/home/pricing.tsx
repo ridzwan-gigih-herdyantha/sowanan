@@ -59,7 +59,7 @@ function plans(s: Settings): Plan[] {
 
 function Mark({ on }: { on: boolean }) {
   return (
-    <svg viewBox="0 0 16 16" aria-hidden="true" className={cx("absolute top-[0.27em] left-0 size-3.5 fill-none stroke-[1.7]", on ? "stroke-wine-soft lit:stroke-ink" : "stroke-ink-mute lit:stroke-ink/45")}>
+    <svg viewBox="0 0 16 16" aria-hidden="true" className={cx("absolute top-[0.27em] left-0 size-3.5 fill-none stroke-[1.7]", on ? "stroke-wine-soft lit:stroke-paper" : "stroke-ink-mute lit:stroke-paper/70")}>
       {on ? <path d="M2 8.5l4 4 8-9" /> : <path d="M3 3l10 10M13 3L3 13" />}
     </svg>
   );
@@ -71,21 +71,21 @@ function PlanCard({ p }: { p: Plan }) {
   const rec = !!p.badge;
   const fade = "transition-colors duration-200";
   return (
-    <article className={cx("plan relative flex h-full flex-col rounded-[14px] border bg-night px-[22px] pt-7 pb-[26px] transition-[background-color,border-color,transform] duration-200 lit:border-wine-soft lit:bg-wine-soft sm:px-7 sm:pt-[34px] sm:pb-[30px] [@media(hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none", rec ? "border-wine-soft border-2" : "border-night-line")}>
+    <article className={cx("plan relative flex h-full flex-col rounded-[14px] border bg-night px-[22px] pt-7 pb-[26px] transition-[background-color,border-color,transform] duration-200 lit:border-wine lit:bg-wine sm:px-7 sm:pt-[34px] sm:pb-[30px] [@media(hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none", rec ? "border-wine-soft border-2" : "border-night-line")}>
       {p.badge && (
-        <span className={cx("absolute top-[26px] right-[22px] rounded-full border border-wine-soft/50 bg-wine-soft/28 px-[11px] py-[5px] text-[11px] font-medium tracking-[.15em] text-paper uppercase lit:border-ink/30 lit:bg-ink/14 lit:text-ink sm:top-[30px] sm:right-[26px]", fade)}>
+        <span className={cx("absolute top-[26px] right-[22px] rounded-full border border-wine-soft/50 bg-wine-soft/28 px-[11px] py-[5px] text-[11px] font-medium tracking-[.15em] text-paper uppercase lit:border-paper/40 lit:bg-paper/15 lit:text-paper sm:top-[30px] sm:right-[26px]", fade)}>
           {p.badge}
         </span>
       )}
-      <h3 className={cx("mb-4 text-[12px] font-medium tracking-[.24em] text-mist uppercase lit:text-ink/70", fade)}>{p.tier}</h3>
-      <p className={cx("mb-2.5 font-serif text-[38px] leading-none font-medium text-paper lit:text-ink sm:text-[42px]", fade)}>{formatRupiah(p.price)}</p>
-      <p className={cx("mb-[22px] text-[15px] leading-normal text-mist lit:text-ink/70 lg:min-h-[46px]", fade)}>{p.blurb}</p>
+      <h3 className={cx("mb-4 text-[12px] font-medium tracking-[.24em] text-mist uppercase lit:text-[#f2dfe2]", fade)}>{p.tier}</h3>
+      <p className={cx("mb-2.5 font-serif text-[38px] leading-none font-medium text-paper sm:text-[42px]", fade)}>{formatRupiah(p.price)}</p>
+      <p className={cx("mb-[22px] text-[15px] leading-normal text-mist lit:text-[#f2dfe2] lg:min-h-[46px]", fade)}>{p.blurb}</p>
 
-      <dl className={cx("mb-[22px] border-y border-night-line lit:border-ink/20", fade)}>
+      <dl className={cx("mb-[22px] border-y border-night-line lit:border-paper/20", fade)}>
         {p.specs.map(([lab, val], i) => (
-          <div key={lab} className={cx("flex items-baseline justify-between gap-3.5 py-[11px]", i > 0 && "border-t border-night-line lit:border-ink/20", fade)}>
-            <dt className={cx("flex-none text-[11px] tracking-[.12em] text-mist uppercase lit:text-ink/70 sm:tracking-[.15em]", fade)}>{lab}</dt>
-            <dd className={cx("text-right font-serif text-[18px] leading-tight text-paper lit:text-ink sm:text-[19px]", fade)}>{val}</dd>
+          <div key={lab} className={cx("flex items-baseline justify-between gap-3.5 py-[11px]", i > 0 && "border-t border-night-line lit:border-paper/20", fade)}>
+            <dt className={cx("flex-none text-[11px] tracking-[.12em] text-mist uppercase lit:text-[#f2dfe2] sm:tracking-[.15em]", fade)}>{lab}</dt>
+            <dd className={cx("text-right font-serif text-[18px] leading-tight text-paper sm:text-[19px]", fade)}>{val}</dd>
           </div>
         ))}
       </dl>
@@ -94,12 +94,12 @@ function PlanCard({ p }: { p: Plan }) {
         {p.features.map((f) => (
           <li
             key={f.label}
-            className={cx("relative mb-2.5 pl-[26px] text-[15px] leading-[1.45]", f.on ? "text-dusk-light lit:text-ink" : "text-ink-mute opacity-75 lit:text-ink/45 lit:opacity-100", fade)}
+            className={cx("relative mb-2.5 pl-[26px] text-[15px] leading-[1.45]", f.on ? "text-dusk-light lit:text-paper" : "text-ink-mute opacity-75 lit:text-paper/70 lit:opacity-100", fade)}
           >
             <Mark on={f.on} />
             <span className="sr-only">{f.on ? "Termasuk: " : "Tidak termasuk: "}</span>
             {f.label}
-            {f.note && <span className={cx("text-wine-soft lit:text-ink/66", fade)}> {f.note}</span>}
+            {f.note && <span className={cx("text-wine-soft lit:text-[#f2dfe2]", fade)}> {f.note}</span>}
           </li>
         ))}
       </ul>
@@ -108,7 +108,7 @@ function PlanCard({ p }: { p: Plan }) {
         href={p.waHref}
         aria-label={`Pesan paket ${p.tier}`}
         className={cx(
-          "block rounded-lg border px-[18px] py-3.5 text-center text-[15px] tracking-[.04em] no-underline transition-colors duration-200 lit:border-ink lit:bg-ink lit:text-paper focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-paper",
+          "block rounded-lg border px-[18px] py-3.5 text-center text-[15px] tracking-[.04em] no-underline transition-colors duration-200 lit:border-paper lit:bg-paper lit:text-wine-dark focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-paper",
           rec
             ? "border-2"
             : "",
