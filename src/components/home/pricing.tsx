@@ -1,4 +1,5 @@
 import { WaIcon } from "@/components/home/closing";
+import { PlanSlider } from "@/components/home/plan-slider";
 import { Inline } from "@/components/rich-text";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
 import { cellView, fill, formatRupiah, PACKAGE_NAMES, planWaLink, slaText, visiblePackages, type Settings } from "@/lib/settings";
@@ -132,13 +133,21 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
             {fill(harga.sub, vars)}
           </SectionSub>
         )}
-        <div className={cx("grid grid-cols-1 gap-[18px] lg:gap-[22px]", list.length === 3 ? "lg:grid-cols-3" : list.length === 2 ? "lg:grid-cols-2" : "mx-auto max-w-[420px]")}>
-          {list.map((p, i) => (
-            <div key={p.tier} {...reveal(i)}>
-              <PlanCard p={p} />
-            </div>
-          ))}
-        </div>
+        {list.length > 1 ? (
+          // Animasi masuk dipasang di seluruh slider, bukan per kartu. Kartu yang hanya mengintip di tepi layar
+          // tidak pernah dianggap terlihat, jadi akan tetap transparan kalau dianimasikan sendiri-sendiri.
+          <div {...reveal()}>
+            <PlanSlider labels={list.map((p) => p.tier)} columns={list.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-2"}>
+              {list.map((p) => (
+                <div key={p.tier} className="h-full">
+                  <PlanCard p={p} />
+                </div>
+              ))}
+            </PlanSlider>
+          </div>
+        ) : (
+          <div className="mx-auto max-w-[420px]">{list[0] && <PlanCard p={list[0]} />}</div>
+        )}
         {settings.payment.note && (
           <p className="mx-auto mt-[26px] max-w-[62ch] text-center text-[14.5px] leading-[1.7] text-mist [&_strong]:font-normal [&_strong]:text-dusk-light" {...reveal()}>
             <Inline text={fill(settings.payment.note, vars)} />
