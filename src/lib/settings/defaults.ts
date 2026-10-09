@@ -235,7 +235,11 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     addon: { title: "Tambahan di luar paket", sub: "Bisa ditambahkan saat memesan. Sebutkan saja lewat WhatsApp." },
     cara: { title: "Cara pesan", sub: "" },
-    faq: { title: "Yang sering ditanyakan", sub: "Jawaban seputar harga, waktu pengerjaan, dan fitur undangan pernikahan digital Sowanan." },
+    faq: {
+      title: "Yang sering ditanyakan",
+      sub: "Jawaban seputar harga, waktu pengerjaan, dan fitur undangan pernikahan digital Sowanan.",
+      cta: "Belum terjawab? Tanya lewat WhatsApp",
+    },
   },
   features: [
     { id: "rsvp", on: true, name: "Konfirmasi kehadiran", text: "Tamu klik hadir atau tidak, dan kalian bisa lihat daftarnya kapan saja.", icon: "centang", label: "" },

@@ -242,6 +242,7 @@ export function TanyaPanel() {
     <>
       <VarsNote keys={["harga", "harga_dasar", "harga_lengkap", "harga_istimewa", "pengerjaan", "dp", "kota", "jam", "wa_link"]} />
       <Card title="Tanya jawab" hint="Urutkan dari yang paling sering ditanya. Jawaban soal waktu pengerjaan, masa aktif, dan cara bayar sebaiknya memakai kata pengganti, bukan diketik ulang di sini.">
+        <Text path="sections.faq.cta" label="Label tautan WhatsApp" chip="view" max={40} help="Tampil di bawah judul tanya jawab. Kosongkan untuk menyembunyikan." />
         <RepList
           path="faq"
           noun="pertanyaan"

@@ -49,7 +49,7 @@ export function Themes({ settings, vars, waHref }: { settings: Settings; vars: R
             <>
               <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
               {sec.sub && (
-                <SectionSub className="mb-0" {...reveal()}>
+                <SectionSub className="mb-0!" {...reveal()}>
                   {fill(sec.sub, vars)}
                 </SectionSub>
               )}

@@ -134,7 +134,8 @@ export const settingsSchema = z
       }),
       addon: section("tambahan"),
       cara: section("cara pesan"),
-      faq: section("tanya jawab"),
+      // Tautan WhatsApp di bawah judul tanya jawab. Kosong berarti disembunyikan.
+      faq: section("tanya jawab").extend({ cta: str("Label tautan WhatsApp tanya jawab", 40).default("Belum terjawab? Tanya lewat WhatsApp") }),
     }),
     features: z
       .array(z.object({ id, on: z.boolean(), name: req("Nama fitur", 30), text: str("Keterangan fitur", 90), icon: z.enum(Object.keys(ICONS) as [IconId, ...IconId[]]), label: str("Label fitur", 30) }))
