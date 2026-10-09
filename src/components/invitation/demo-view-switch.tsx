@@ -44,7 +44,7 @@ export type DemoView = keyof typeof DEVICES;
 type PackageLink = { id: string; name: string; href: string; on: boolean; available: boolean; note?: string };
 type DeviceLink = { id: DemoView; href: string; on: boolean };
 
-const item = "flex size-10 flex-col items-center justify-center gap-0.5 rounded-full text-[9px] no-underline transition-colors duration-150 lg:size-12 lg:text-[10px]";
+const item = "flex size-10 flex-col items-center justify-center gap-0.5 rounded-lg text-[9px] no-underline transition-colors duration-150 lg:size-12 lg:text-[10px]";
 const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 const tone = (on: boolean) => (on ? "bg-paper text-night" : "text-white/75 hover:bg-white/10 hover:text-white");
 
@@ -69,7 +69,7 @@ export function DemoViewSwitch({ packages = [], devices, attached }: { packages?
   return (
     <nav
       aria-label="Contoh undangan"
-      className={`${attached ? "" : "fixed top-1/2 right-2 z-70 -translate-y-1/2 lg:right-4"} ${withPackages ? "flex" : "hidden lg:flex"} flex-col gap-0.5 rounded-4xl bg-night/90 p-1 font-sans opacity-80 shadow-[0_8px_24px_rgba(0,0,0,.25)] backdrop-blur`}
+      className={`${attached ? "" : "fixed top-1/2 right-2 z-70 -translate-y-1/2 lg:right-4"} ${withPackages ? "flex" : "hidden lg:flex"} flex-col gap-0.5 rounded-xl bg-night/90 p-1 font-sans opacity-80 shadow-[0_8px_24px_rgba(0,0,0,.25)] backdrop-blur`}
     >
       {withPackages && (
         <>
