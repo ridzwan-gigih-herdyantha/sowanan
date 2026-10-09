@@ -76,7 +76,7 @@ Waktu pengerjaan per paket:
 
 - Dasar: 1 hari kerja
 - Lengkap: 2 sampai 3 hari kerja
-- Istimewa: 3 sampai 7 hari kerja
+- Istimewa: 3 sampai 5 hari kerja
 
 Permintaan revisi setelah undangan kami kirim dikerjakan berurutan juga, dan tidak termasuk dalam waktu pengerjaan di atas.
 `,
@@ -230,7 +230,7 @@ export const DEFAULT_SETTINGS: Settings = {
         title: "Butuh yang di luar ketiga paket ini?",
         text: "Misalnya fitur khusus atau rangkaian acara yang panjang. Ceritakan rencananya, kami buatkan penawaran tersendiri.",
         button: "Ceritakan lewat WhatsApp",
-        points: ["Fitur khusus", "Acara panjang", "Harga khusus"],
+        points: ["Fitur khusus", "Acara panjang", "Tema baru"],
       },
     },
     addon: { title: "Tambahan di luar paket", sub: "Bisa ditambahkan saat memesan. Sebutkan saja lewat WhatsApp." },
@@ -294,7 +294,7 @@ export const DEFAULT_SETTINGS: Settings = {
   packages: {
     dasar: { on: true, price: 49000, badge: "", blurb: "Yang penting undangan cepat tersebar", sla: 1, revision: "1 putaran", active: 3 },
     lengkap: { on: true, price: 199000, badge: "Rekomendasi kami", blurb: "Disesuaikan dengan tema acara kalian", sla: 2, slaMax: 3, revision: "Bebas", active: 12 },
-    istimewa: { on: true, price: 499000, badge: "", blurb: "Dirancang mengikuti permintaan kalian", sla: 3, slaMax: 7, revision: "Bebas", active: 12 },
+    istimewa: { on: true, price: 499000, badge: "", blurb: "Dirancang mengikuti permintaan kalian", sla: 3, slaMax: 5, revision: "Bebas", active: 12 },
   },
   matrix: [
     { id: "katalog", label: "Bebas pilih satu tema dari katalog", kind: "check", unit: "", key: "", cells: all },
@@ -304,7 +304,7 @@ export const DEFAULT_SETTINGS: Settings = {
       id: "bagian",
       label: "Bagian tambahan di luar tema",
       kind: "count",
-      unit: "sampai {n} bagian",
+      unit: "pilih {n} dari 6",
       key: "bagian_tambahan",
       cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: true, n: 2 } },
     },
