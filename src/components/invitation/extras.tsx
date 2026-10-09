@@ -31,6 +31,31 @@ function Rundown({ items, tone }: { items: ExtraView["rundown"]; tone: Tone }) {
   );
 }
 
+// Denah dibuka dalam ukuran penuh di tab baru supaya tamu bisa memperbesarnya dengan jari.
+function Plan({ plan, note }: { plan: NonNullable<ExtraView["plan"]>; note: string }) {
+  return (
+    <>
+      <a
+        href={plan.src}
+        target="_blank"
+        rel="noopener"
+        className="group mt-10 block text-inherit no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
+      >
+        <span className="block overflow-hidden rounded-[2px] border border-current/15">
+          <Image src={plan.src} alt={plan.alt} width={plan.w} height={plan.h} quality={85} sizes="(min-width: 720px) 680px, 100vw" className="h-auto w-full" />
+        </span>
+        <span className="mt-3 flex items-center justify-center gap-1.5 text-[13px] opacity-70 transition-opacity group-hover:opacity-100">
+          Buka denah ukuran penuh
+          <svg viewBox="0 0 16 16" aria-hidden="true" className="size-3 fill-none stroke-current stroke-[1.6]">
+            <path d="M6 3h7v7M13 3 4 12" />
+          </svg>
+        </span>
+      </a>
+      {note && <p className="mx-auto mt-7 max-w-[56ch] text-center text-[16px] leading-[1.75] whitespace-pre-line text-pretty">{note}</p>}
+    </>
+  );
+}
+
 // Blok bebas: teks, foto, video, dan lagu sesuai isian.
 function Free({ e }: { e: ExtraView }) {
   const [one] = e.photos;
@@ -71,7 +96,7 @@ export function Extras({ inv, at }: { inv: InvitationView; at: ExtraAnchor }) {
         <div className={`mx-auto ${e.kind === "bebas" && e.photos.length > 2 ? "max-w-[960px]" : "max-w-[680px]"}`}>
           <span aria-hidden="true" className={`mx-auto block h-px w-12 ${tone.line}`} />
           {e.title && <h2 className="mt-6 text-center font-display text-[clamp(30px,7vw,48px)] leading-[1.1] text-balance">{e.title}</h2>}
-          {e.kind === "rundown" ? <Rundown items={e.rundown} tone={tone} /> : <Free e={e} />}
+          {e.kind === "rundown" ? <Rundown items={e.rundown} tone={tone} /> : e.kind === "denah" && e.plan ? <Plan plan={e.plan} note={e.note} /> : <Free e={e} />}
         </div>
       </section>
     );

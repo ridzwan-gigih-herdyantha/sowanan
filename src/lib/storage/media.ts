@@ -28,6 +28,8 @@ export const PURPOSES = {
   story: img("Foto cerita", 1400),
   gallery: img("Foto galeri", 1800),
   extra: img("Foto bagian tambahan", 1600),
+  // Denah dibuat lebih tajam supaya tulisan kecil tetap terbaca saat diperbesar.
+  plan: img("Gambar denah", 2400, { quality: 90 }),
   thumb: img("Sampul lagu", 800),
   polaroid: img("Foto polaroid", 900),
   specimen: img("Foto spesimen", 700),

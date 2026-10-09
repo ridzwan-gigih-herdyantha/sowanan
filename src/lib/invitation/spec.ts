@@ -49,6 +49,8 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
   title,
   body: "",
   rundown: kind === "rundown" ? [{ time: "", name: "", note: "" }] : [],
+  plan: { src: "", w: 0, h: 0 },
+  note: "",
   photos: [],
   videos: [],
   tracks: [],
@@ -266,6 +268,7 @@ export const GROUPS: Group[] = [
           path: "kind",
           options: [
             { value: "rundown", label: EXTRA_KINDS.rundown, hint: "Jam dan nama acara, dari akad sampai selesai resepsi.", counted: true, blank: extraBlank("rundown", "Susunan Acara") },
+            { value: "denah", label: EXTRA_KINDS.denah, hint: "Gambar denah gedung, pintu masuk, dan area parkir.", counted: true, blank: extraBlank("denah", "Denah Lokasi") },
             { value: "bebas", label: `${EXTRA_KINDS.bebas} (Paket Khusus)`, hint: "Judul, teks, foto, video, dan lagu bebas. Tidak dihitung dalam batas paket.", counted: false, blank: extraBlank("bebas") },
           ],
         },
@@ -290,6 +293,8 @@ export const GROUPS: Group[] = [
               text("note", "Keterangan", 120, { ...optional, placeholder: "Khusus keluarga inti" }),
             ],
           },
+          media("plan.src", "Gambar denah", "plan", { dims: true, when: ["denah"], hint: "Disimpan lebih tajam dari foto biasa. Tamu bisa membukanya dalam ukuran penuh." }),
+          area("note", "Keterangan", 400, { ...optional, when: ["denah"], placeholder: "Parkir mobil di basement. Pintu masuk tamu lewat lobi timur." }),
           {
             kind: "list",
             path: "photos",

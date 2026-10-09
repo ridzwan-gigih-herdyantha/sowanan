@@ -46,7 +46,7 @@ export const EXTRA_TONES = { paper: "Latar utama tema", wash: "Latar kedua tema"
 export type ExtraTone = keyof typeof EXTRA_TONES;
 // Jenis bagian tambahan. Blok bebas untuk Paket Khusus, jenis lain adalah pilihan siap pakai paket Istimewa.
 // Data lama tanpa jenis dianggap blok bebas.
-export const EXTRA_KINDS = { rundown: "Susunan acara", bebas: "Blok bebas" } as const;
+export const EXTRA_KINDS = { rundown: "Susunan acara", denah: "Denah lokasi dan parkir", bebas: "Blok bebas" } as const;
 export type ExtraKind = keyof typeof EXTRA_KINDS;
 // Hanya jenis siap pakai yang dihitung dalam batas bagian tambahan paket.
 export const countsAsExtra = (e: { kind: ExtraKind }) => e.kind !== "bebas";
@@ -124,6 +124,9 @@ export const invitationDataSchema = z.object({
       kind: z.enum(Object.keys(EXTRA_KINDS) as [ExtraKind, ...ExtraKind[]]).catch("bebas"),
       title: str(),
       rundown: list(z.object({ time: str(), name: str(), note: str() })),
+      plan: z.object({ src: str(), w: num(), h: num() }).prefault({}),
+      // Keterangan singkat untuk jenis siap pakai, misalnya di bawah denah.
+      note: str(),
       body: str(),
       photos: list(z.object({ src: str(), w: num(), h: num() })),
       videos: list(z.object({ src: str(), poster: str() })),

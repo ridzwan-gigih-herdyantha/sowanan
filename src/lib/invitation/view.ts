@@ -26,6 +26,8 @@ export type ExtraView = {
   kind: ExtraKind;
   title: string;
   rundown: { time: string; name: string; note: string }[];
+  plan: { src: string; w: number; h: number; alt: string } | null;
+  note: string;
   body: string;
   tone: ExtraTone;
   photos: { src: string; w: number; h: number; alt: string }[];
@@ -42,10 +44,24 @@ function groupExtras(d: InvitationData, theme: string) {
     const videos = e.videos.filter((v) => v.src).map((v) => ({ src: u(v.src), poster: u(v.poster) }));
     const tracks = e.tracks.filter((t) => t.src).map((t, i) => ({ src: u(t.src), cover: u(t.cover), title: t.title || `Lagu ${i + 1}`, artist: t.artist }));
     const rundown = e.kind === "rundown" ? e.rundown.filter((r) => r.time.trim() || r.name.trim()) : [];
-    // Jenis siap pakai tampil kalau isinya ada. Blok bebas cukup salah satu isiannya terisi.
-    if (e.kind === "rundown" ? !rundown.length : !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length) continue;
+    const plan = e.kind === "denah" && e.plan.src ? { src: u(e.plan.src), w: e.plan.w || 1600, h: e.plan.h || 1200, alt: e.title || "Denah lokasi" } : null;
+    // Jenis siap pakai tampil kalau isi utamanya ada. Blok bebas cukup salah satu isiannya terisi.
+    const empty = { rundown: !rundown.length, denah: !plan, bebas: !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length };
+    if (empty[e.kind]) continue;
     const at = known.has(e.after) ? e.after : "wishes";
-    (out[at] ??= []).push({ kind: e.kind, title: e.title, body: e.kind === "bebas" ? e.body : "", rundown, tone: e.tone, photos, videos, tracks });
+    const bebas = e.kind === "bebas";
+    (out[at] ??= []).push({
+      kind: e.kind,
+      title: e.title,
+      body: bebas ? e.body : "",
+      rundown,
+      plan,
+      note: bebas ? "" : e.note.trim(),
+      tone: e.tone,
+      photos: bebas ? photos : [],
+      videos: bebas ? videos : [],
+      tracks: bebas ? tracks : [],
+    });
   }
   return out;
 }

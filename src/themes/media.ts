@@ -1,6 +1,6 @@
 import type { Purpose } from "@/lib/storage/media";
 
-const BASE: Purpose[] = ["hero", "herowide", "og", "venue", "story", "video", "poster", "gallery", "qris", "music", "extra", "thumb"];
+const BASE: Purpose[] = ["hero", "herowide", "og", "venue", "story", "video", "poster", "gallery", "qris", "music", "extra", "plan", "thumb"];
 
 export const THEME_MEDIA: Record<string, Purpose[]> = {
   "andi-rina": [...BASE, "couple", "polaroid", "closing"],
