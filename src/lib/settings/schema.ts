@@ -117,7 +117,7 @@ export const settingsSchema = z
           title: "Mau gaya yang belum ada di sini?",
           text: "Kirim contoh undangan atau desain yang kalian suka. Kami buatkan tema dengan warna dan suasana yang sesuai acara kalian.",
           button: "Kirim contoh lewat WhatsApp",
-          points: ["Sesuai contoh", "Warna bebas", "Nuansa adat"],
+          points: ["", "", ""],
         }),
       }),
       fitur: section("fitur"),
