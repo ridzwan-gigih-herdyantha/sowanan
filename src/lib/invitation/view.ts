@@ -3,7 +3,7 @@ import { THEME_MUSIC } from "@/themes/media";
 import { resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
 import type { ExtraAnchor, ExtraKind, ExtraTone, InvitationData, SectionKey } from "./schema";
-import { extraAnchors } from "./spec";
+import { extraAnchors, HEX } from "./spec";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
 
@@ -27,6 +27,7 @@ export type ExtraView = {
   title: string;
   rundown: { time: string; name: string; note: string }[];
   plan: { src: string; w: number; h: number; alt: string } | null;
+  colors: { name: string; hex: string }[];
   note: string;
   body: string;
   tone: ExtraTone;
@@ -45,8 +46,9 @@ function groupExtras(d: InvitationData, theme: string) {
     const tracks = e.tracks.filter((t) => t.src).map((t, i) => ({ src: u(t.src), cover: u(t.cover), title: t.title || `Lagu ${i + 1}`, artist: t.artist }));
     const rundown = e.kind === "rundown" ? e.rundown.filter((r) => r.time.trim() || r.name.trim()) : [];
     const plan = e.kind === "denah" && e.plan.src ? { src: u(e.plan.src), w: e.plan.w || 1600, h: e.plan.h || 1200, alt: e.title || "Denah lokasi" } : null;
+    const colors = e.kind === "dresscode" ? e.colors.filter((c) => HEX.test(c.hex.trim())).map((c) => ({ name: c.name.trim(), hex: c.hex.trim() })) : [];
     // Jenis siap pakai tampil kalau isi utamanya ada. Blok bebas cukup salah satu isiannya terisi.
-    const empty = { rundown: !rundown.length, denah: !plan, bebas: !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length };
+    const empty = { rundown: !rundown.length, denah: !plan, dresscode: !colors.length, bebas: !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length };
     if (empty[e.kind]) continue;
     const at = known.has(e.after) ? e.after : "wishes";
     const bebas = e.kind === "bebas";
@@ -56,6 +58,7 @@ function groupExtras(d: InvitationData, theme: string) {
       body: bebas ? e.body : "",
       rundown,
       plan,
+      colors,
       note: bebas ? "" : e.note.trim(),
       tone: e.tone,
       photos: bebas ? photos : [],
@@ -74,6 +77,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
 
   return {
     slug,
+    // Dipakai komponen bersama, misalnya bagian tambahan, untuk menyesuaikan gaya dengan tema.
+    theme,
     monogram: d.monogram,
     groom: { ...d.couple.groom, photo: u(d.couple.groom.photo || d.media.hero) },
     bride: { ...d.couple.bride, photo: u(d.couple.bride.photo || d.media.hero) },

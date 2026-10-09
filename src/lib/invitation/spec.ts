@@ -13,7 +13,7 @@ type Base = { path: string; label: string; themes?: string[]; hint?: string; req
 // Jenis dengan counted false tidak dihitung dalam batas paket.
 export type Variants = { path: string; options: { value: string; label: string; hint: string; counted: boolean; blank: Record<string, unknown> }[] };
 export type Field =
-  | (Base & { kind: "text" | "textarea"; max: number; format?: "url" | "time"; placeholder?: string })
+  | (Base & { kind: "text" | "textarea"; max: number; format?: "url" | "time" | "color"; placeholder?: string })
   | (Base & { kind: "media"; purpose: Purpose; dims?: boolean })
   | (Base & { kind: "datetime" })
   | (Base & { kind: "select"; options: string[]; labels?: Record<string, string> })
@@ -24,7 +24,7 @@ export type Field =
 
 export type Group = { key: string; title: string; section?: SectionKey; themes?: string[]; note?: string; fields: Field[] };
 
-const text = (path: string, label: string, max: number, extra: Partial<Base & { format: "url" | "time"; placeholder: string }> = {}): Field => ({
+const text = (path: string, label: string, max: number, extra: Partial<Base & { format: "url" | "time" | "color"; placeholder: string }> = {}): Field => ({
   kind: "text",
   path,
   label,
@@ -50,6 +50,7 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
   body: "",
   rundown: kind === "rundown" ? [{ time: "", name: "", note: "" }] : [],
   plan: { src: "", w: 0, h: 0 },
+  colors: kind === "dresscode" ? [{ name: "", hex: "" }] : [],
   note: "",
   photos: [],
   videos: [],
@@ -269,6 +270,7 @@ export const GROUPS: Group[] = [
           options: [
             { value: "rundown", label: EXTRA_KINDS.rundown, hint: "Jam dan nama acara, dari akad sampai selesai resepsi.", counted: true, blank: extraBlank("rundown", "Susunan Acara") },
             { value: "denah", label: EXTRA_KINDS.denah, hint: "Gambar denah gedung, pintu masuk, dan area parkir.", counted: true, blank: extraBlank("denah", "Denah Lokasi") },
+            { value: "dresscode", label: EXTRA_KINDS.dresscode, hint: "Warna pakaian yang diminta, tampil sebagai contoh palet.", counted: true, blank: extraBlank("dresscode", "Dress Code") },
             { value: "bebas", label: `${EXTRA_KINDS.bebas} (Paket Khusus)`, hint: "Judul, teks, foto, video, dan lagu bebas. Tidak dihitung dalam batas paket.", counted: false, blank: extraBlank("bebas") },
           ],
         },
@@ -295,6 +297,19 @@ export const GROUPS: Group[] = [
           },
           media("plan.src", "Gambar denah", "plan", { dims: true, when: ["denah"], hint: "Disimpan lebih tajam dari foto biasa. Tamu bisa membukanya dalam ukuran penuh." }),
           area("note", "Keterangan", 400, { ...optional, when: ["denah"], placeholder: "Parkir mobil di basement. Pintu masuk tamu lewat lobi timur." }),
+          {
+            kind: "list",
+            path: "colors",
+            label: "Warna",
+            item: "Warna",
+            hint: "Urut dari warna utama. Nama warna dari pembeli diterjemahkan ke kode warna.",
+            min: 1,
+            max: 8,
+            when: ["dresscode"],
+            blank: { name: "", hex: "" },
+            fields: [text("name", "Nama warna", 30, { ...optional, placeholder: "Sage" }), text("hex", "Kode warna", 7, { format: "color", placeholder: "#A3B18A" })],
+          },
+          area("note", "Catatan", 300, { ...optional, when: ["dresscode"], placeholder: "Hindari warna putih. Keluarga inti memakai batik." }),
           {
             kind: "list",
             path: "photos",
@@ -382,6 +397,7 @@ export function setIn<T>(obj: T, path: string, value: unknown): T {
 export type Issue = { path: string; group: string; message: string };
 
 const TIME = /^\d{2}\.\d{2}$/;
+export const HEX = /^#[0-9a-f]{6}$/i;
 
 function checkFields(data: unknown, fields: Field[], theme: string, prefix: string, group: string, label: string, out: Issue[]) {
   for (const f of forTheme(fields, theme)) {
@@ -409,6 +425,7 @@ function checkFields(data: unknown, fields: Field[], theme: string, prefix: stri
       if (v.length > f.max) push(`${name} maksimal ${f.max} karakter.`);
       if (f.format === "time" && !TIME.test(v)) push(`${name} pakai format 08.00.`);
       if (f.format === "url" && !/^https?:\/\/\S+\.\S+/.test(v)) push(`${name} harus diawali https://`);
+      if (f.format === "color" && !HEX.test(v)) push(`${name} pakai kode warna seperti #A3B18A.`);
     }
     if (f.kind === "media" && f.dims) {
       const base = path.slice(0, path.lastIndexOf("."));

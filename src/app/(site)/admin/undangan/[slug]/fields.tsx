@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { TIMEZONES } from "@/lib/invitation/schema";
-import { extraAnchors, forTheme, getIn, itemFields, setIn, variantFor, type Field } from "@/lib/invitation/spec";
+import { extraAnchors, forTheme, getIn, HEX, itemFields, setIn, variantFor, type Field } from "@/lib/invitation/spec";
 import { mediaUrl, PURPOSES } from "@/lib/storage/media";
 import { ACCEPT, useUploader, type UploadResult } from "../../media/use-uploader";
 
@@ -339,6 +339,24 @@ export function FieldInput({ f, path }: { f: Field; path: string }) {
         </div>
       );
     case "text":
+      if (f.format === "color") {
+        const v = String(value ?? "");
+        return (
+          <Label f={f} path={path} err={err}>
+            {/* Isian teks lebih dulu supaya label mengarah ke sana, bukan ke pemilih warna. */}
+            <span className="flex items-center gap-2">
+              <input type="text" maxLength={f.max} placeholder={f.placeholder} value={v} onChange={(e) => set(e.target.value)} className={`${input(err)} uppercase`} />
+              <input
+                type="color"
+                value={HEX.test(v) ? v : "#000000"}
+                onChange={(e) => set(e.target.value.toUpperCase())}
+                className="mt-2 h-11.5 w-12 shrink-0 cursor-pointer rounded-sm border border-line bg-white p-1"
+                aria-label={`Pilih ${f.label.toLowerCase()}`}
+              />
+            </span>
+          </Label>
+        );
+      }
       return (
         <Label f={f} path={path} err={err}>
           <input
