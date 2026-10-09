@@ -1,10 +1,9 @@
-import Image from "next/image";
-import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
+import { Container, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
 import { demoHref, demoPackages, TOP_PACKAGE } from "@/lib/invitation/demo-packages";
-import { fill, type Settings, type ThemeEntry } from "@/lib/settings";
+import { fill, PACKAGE_IDS, PACKAGE_NAMES, type Settings, type ThemeEntry } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { OfferCard } from "./offer-card";
-import { ThemeDemoPicker } from "./theme-demo-picker";
+import { ThemeGallery, type GalleryTheme } from "./theme-gallery";
 
 // Warna latar kartu mengikuti nuansa tiap tema.
 const CARD_BG: Record<string, string> = {
@@ -15,77 +14,51 @@ const CARD_BG: Record<string, string> = {
   "fadhil-nayla": "bg-[#e3e0cc]",
 };
 
-// Satu tautan per kartu, yaitu tombolnya. Area klik tombol diperluas menutupi seluruh kartu lewat after:inset-0.
-function Card({ theme, index, waHref, settings }: { theme: ThemeEntry; index: number; waHref: string; settings: Settings }) {
-  const demo = Boolean(theme.demo);
-  // Demo bawaan (/slug) bisa dilihat per paket. Tautan demo lain, misalnya ke luar situs, tetap satu tombol.
-  const perPackage = theme.demo === `/${theme.slug}`;
-  const options = perPackage ? demoPackages(settings, theme.slug).map((p) => ({ ...p, href: demoHref(theme.slug, p.id) })) : [];
-  return (
-    <div className="group relative" {...reveal(index)}>
-      <div
-        className={cx(
-          "relative flex h-80 items-center justify-center overflow-hidden rounded-sm border border-line text-sm tracking-[1px] text-wine transition-colors duration-200 group-hover:border-wine sm:h-[400px]",
-          CARD_BG[theme.slug] ?? "bg-blush",
-        )}
-      >
-        {theme.image ? (
-          <div className="aspect-[390/844] h-[88%] rounded-[22px] bg-ink p-[5px] shadow-[0_14px_30px_rgba(31,26,23,.22)] transition-transform duration-300 group-hover:-translate-y-1 motion-reduce:transform-none">
-            <div className="relative size-full overflow-hidden rounded-[17px]">
-              <Image
-                src={mediaUrl(theme.image)}
-                alt={`Contoh undangan tema ${theme.name}`}
-                fill
-                loading="eager"
-                sizes="(min-width: 640px) 170px, 50vw"
-                className="object-cover object-top"
-              />
-            </div>
-          </div>
-        ) : (
-          <span>{theme.name}</span>
-        )}
-      </div>
-      {perPackage ? (
-        <div className="mt-3.5">
-          <p className="font-serif text-2xl transition-colors duration-200 group-hover:text-wine">{theme.name}</p>
-          {theme.style && <p className="mt-[3px] text-[15px] text-ink-mute">{theme.style}</p>}
-          <ThemeDemoPicker name={theme.name} options={options} initial={TOP_PACKAGE} />
-        </div>
-      ) : (
-      /* Di ponsel nama dan tombol bersampingan, di layar lebar tombol di bawah nama. */
-      <div className="mt-3.5 flex items-center justify-between gap-3 sm:block">
-        <div className="min-w-0">
-          <p className="font-serif text-2xl transition-colors duration-200 group-hover:text-wine">{theme.name}</p>
-          {theme.style && <p className="mt-[3px] text-[15px] text-ink-mute">{theme.style}</p>}
-        </div>
-        <a
-          href={theme.demo || waHref}
-          aria-label={demo ? `Lihat demo tema ${theme.name}` : `Tanya tema ${theme.name} lewat WhatsApp`}
-          className="inline-flex flex-none items-center rounded-sm border border-wine px-4 py-2 text-[15px] text-wine no-underline transition-colors duration-200 group-hover:bg-wine group-hover:text-white after:absolute after:inset-0 after:z-10 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wine motion-reduce:transition-none sm:mt-4"
-        >
-          {demo ? "Lihat demo" : "Tanya di WhatsApp"}
-        </a>
-      </div>
-      )}
-    </div>
-  );
+// Demo bawaan (/slug) bisa dilihat per paket. Kalau tema belum tersedia di paket yang dipilih, kartu menuju paket
+// terendah yang memuatnya. Tautan demo lain, misalnya ke luar situs, tetap satu tautan.
+function galleryTheme(s: Settings, t: ThemeEntry, waHref: string): GalleryTheme {
+  const links: GalleryTheme["links"] = {};
+  if (t.demo === `/${t.slug}`) {
+    const pkgs = demoPackages(s, t.slug);
+    const first = pkgs.find((p) => p.available);
+    for (const p of pkgs) {
+      if (p.available) links[p.id] = { href: demoHref(t.slug, p.id) };
+      else if (first) links[p.id] = { href: demoHref(t.slug, first.id), note: `Mulai paket ${first.name}` };
+    }
+  }
+  return {
+    id: t.id,
+    name: t.name,
+    style: t.style,
+    image: t.image ? mediaUrl(t.image) : "",
+    bg: CARD_BG[t.slug] ?? "bg-blush",
+    label: t.demo ? `Lihat demo tema ${t.name}` : `Tanya tema ${t.name} lewat WhatsApp`,
+    links,
+    href: t.demo || waHref,
+  };
 }
 
 export function Themes({ settings, vars, waHref }: { settings: Settings; vars: Record<string, string>; waHref: string }) {
   const sec = settings.sections.tema;
+  const packages = PACKAGE_IDS.filter((id) => settings.packages[id].on).map((id) => ({ id, name: PACKAGE_NAMES[id] }));
   return (
     <section id="tema" className="border-y border-line bg-blush">
       <Container className={sectionPad}>
-        <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
-        {sec.sub && <SectionSub {...reveal()}>{fill(sec.sub, vars)}</SectionSub>}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 md:gap-5 lg:grid-cols-5">
-          {settings.themes
-            .filter((t) => t.on)
-            .map((t, i) => (
-              <Card key={t.id} theme={t} index={i} waHref={waHref} settings={settings} />
-            ))}
-        </div>
+        <ThemeGallery
+          header={
+            <>
+              <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
+              {sec.sub && (
+                <SectionSub className="mb-0" {...reveal()}>
+                  {fill(sec.sub, vars)}
+                </SectionSub>
+              )}
+            </>
+          }
+          themes={settings.themes.filter((t) => t.on).map((t) => galleryTheme(settings, t, waHref))}
+          packages={packages}
+          initial={packages.some((p) => p.id === TOP_PACKAGE) ? TOP_PACKAGE : (packages.at(-1)?.id ?? TOP_PACKAGE)}
+        />
         <OfferCard card={sec.custom} vars={vars} className="mt-12" />
       </Container>
     </section>
