@@ -16,6 +16,21 @@ export function WaIcon({ className }: { className?: string }) {
   );
 }
 
+// Poin singkat berbentuk pil di atas latar wine. Di HP selalu satu baris dan bisa digeser ke samping kalau layar
+// terlalu sempit. Di sm ke atas boleh membungkus.
+export function PointPills({ points, className }: { points: string[]; className?: string }) {
+  if (!points.length) return null;
+  return (
+    <ul className={cx("flex gap-1.5 overflow-x-auto text-[11px] text-paper [scrollbar-width:none] sm:flex-wrap sm:gap-2 sm:overflow-visible sm:text-[13px] [&::-webkit-scrollbar]:hidden", className)}>
+      {points.map((p) => (
+        <li key={p} className="shrink-0 rounded-full border border-wine-soft/80 px-2.5 py-1 whitespace-nowrap sm:px-3.5">
+          {p}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 const focus = "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper";
 
 // Posisi sampul dalam kipas: kiri, tengah lebih besar di depan, kanan. Saat kursor di atas atau fokus keyboard,
@@ -59,7 +74,7 @@ export function ClosingCta({ settings, vars, waHref }: { settings: Settings; var
   const covers = picked.length ? picked : usable.slice(0, 3);
   return (
     <section className="overflow-hidden bg-wine text-paper">
-      <Container className="grid items-center gap-10 py-16 md:grid-cols-[minmax(0,1fr)_330px] md:gap-12 md:py-[88px] lg:grid-cols-[minmax(0,1fr)_420px]">
+      <Container className="grid grid-cols-1 items-center gap-10 py-16 md:grid-cols-[minmax(0,1fr)_330px] md:gap-12 md:py-[88px] lg:grid-cols-[minmax(0,1fr)_420px]">
         <div {...reveal()}>
           <h2 className="font-serif text-[clamp(36px,5vw,56px)] leading-[1.08] font-medium text-paper">{c.title}</h2>
           {c.text && <p className="mt-4 max-w-[52ch] text-[17px] leading-relaxed text-[#f2dfe2]">{fill(c.text, vars)}</p>}
@@ -83,13 +98,7 @@ export function ClosingCta({ settings, vars, waHref }: { settings: Settings; var
               </a>
             )}
           </div>
-          {points.length > 0 && (
-            <ul className="mt-9 flex flex-col gap-2 border-t border-paper/20 pt-6 text-[15px] text-[#f2dfe2] sm:flex-row sm:flex-wrap sm:gap-x-8">
-              {points.map((p) => (
-                <li key={p}>{p}</li>
-              ))}
-            </ul>
-          )}
+          <PointPills points={points} className="mt-7 flex-wrap" />
         </div>
         {covers.length > 0 && <CoverFan covers={covers} label={c.button2 || settings.sections.tema.title} />}
       </Container>

@@ -1,4 +1,4 @@
-import { WaIcon } from "@/components/home/closing";
+import { PointPills, WaIcon } from "@/components/home/closing";
 import { cx, reveal } from "@/components/ui";
 import { fill, type OfferCardData } from "@/lib/settings";
 
@@ -11,16 +11,7 @@ export function OfferCard({ card, vars, className }: { card: OfferCardData; vars
       <div>
         {card.title && <h3 className="font-serif text-[clamp(26px,3vw,32px)] leading-[1.15] font-medium text-balance">{fill(card.title, vars)}</h3>}
         {card.text && <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[#f2dfe2] sm:text-[16px]">{fill(card.text, vars)}</p>}
-        {points.length > 0 && (
-          // Di HP pil selalu satu baris, dan bisa digeser ke samping kalau layar terlalu sempit. Di sm ke atas boleh membungkus.
-          <ul className="mt-5 flex gap-1.5 overflow-x-auto text-[11px] text-paper [scrollbar-width:none] sm:flex-wrap sm:gap-2 sm:overflow-visible sm:text-[13px] [&::-webkit-scrollbar]:hidden">
-            {points.map((p) => (
-              <li key={p} className="shrink-0 rounded-full border border-wine-soft/80 px-2.5 py-1 whitespace-nowrap sm:px-3.5">
-                {p}
-              </li>
-            ))}
-          </ul>
-        )}
+        <PointPills points={points} className="mt-5" />
       </div>
       {card.button && (
         <a
