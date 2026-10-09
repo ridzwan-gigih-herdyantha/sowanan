@@ -1,8 +1,10 @@
 import Image from "next/image";
 import { Inline } from "@/components/rich-text";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
+import { demoHref, demoPackages, TOP_PACKAGE } from "@/lib/invitation/demo-packages";
 import { fill, type Settings, type ThemeEntry } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
+import { ThemeDemoPicker } from "./theme-demo-picker";
 
 // Warna latar kartu mengikuti nuansa tiap tema.
 const CARD_BG: Record<string, string> = {
@@ -14,8 +16,11 @@ const CARD_BG: Record<string, string> = {
 };
 
 // Satu tautan per kartu, yaitu tombolnya. Area klik tombol diperluas menutupi seluruh kartu lewat after:inset-0.
-function Card({ theme, index, waHref }: { theme: ThemeEntry; index: number; waHref: string }) {
+function Card({ theme, index, waHref, settings }: { theme: ThemeEntry; index: number; waHref: string; settings: Settings }) {
   const demo = Boolean(theme.demo);
+  // Demo bawaan (/slug) bisa dilihat per paket. Tautan demo lain, misalnya ke luar situs, tetap satu tombol.
+  const perPackage = theme.demo === `/${theme.slug}`;
+  const options = perPackage ? demoPackages(settings, theme.slug).map((p) => ({ ...p, href: demoHref(theme.slug, p.id) })) : [];
   return (
     <div className="group relative" {...reveal(index)}>
       <div
@@ -41,7 +46,14 @@ function Card({ theme, index, waHref }: { theme: ThemeEntry; index: number; waHr
           <span>{theme.name}</span>
         )}
       </div>
-      {/* Di ponsel nama dan tombol bersampingan, di layar lebar tombol di bawah nama. */}
+      {perPackage ? (
+        <div className="mt-3.5">
+          <p className="font-serif text-2xl transition-colors duration-200 group-hover:text-wine">{theme.name}</p>
+          {theme.style && <p className="mt-[3px] text-[15px] text-ink-mute">{theme.style}</p>}
+          <ThemeDemoPicker name={theme.name} options={options} initial={TOP_PACKAGE} />
+        </div>
+      ) : (
+      /* Di ponsel nama dan tombol bersampingan, di layar lebar tombol di bawah nama. */
       <div className="mt-3.5 flex items-center justify-between gap-3 sm:block">
         <div className="min-w-0">
           <p className="font-serif text-2xl transition-colors duration-200 group-hover:text-wine">{theme.name}</p>
@@ -55,6 +67,7 @@ function Card({ theme, index, waHref }: { theme: ThemeEntry; index: number; waHr
           {demo ? "Lihat demo" : "Tanya di WhatsApp"}
         </a>
       </div>
+      )}
     </div>
   );
 }
@@ -70,7 +83,7 @@ export function Themes({ settings, vars, waHref }: { settings: Settings; vars: R
           {settings.themes
             .filter((t) => t.on)
             .map((t, i) => (
-              <Card key={t.id} theme={t} index={i} waHref={waHref} />
+              <Card key={t.id} theme={t} index={i} waHref={waHref} settings={settings} />
             ))}
         </div>
         {sec.foot && (
