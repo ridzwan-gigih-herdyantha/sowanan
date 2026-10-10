@@ -1,6 +1,8 @@
 import "server-only";
 import { randomBytes, randomInt } from "node:crypto";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { createClient } from "@supabase/supabase-js";
+import { isDemo } from "@/lib/invitation/archive";
+import { supabaseAdmin, supabaseUrl } from "@/lib/supabase/admin";
 
 // Akun mempelai untuk dashboard. Login memakai slug undangan sebagai username, jadi email di Supabase Auth
 // hanya alamat internal yang tidak pernah dipakai mengirim surat. Akun dicari lewat invitation_members,
@@ -52,7 +54,7 @@ export async function createCoupleAccount(invitationId: string, slug: string): P
   return { ok: true, password };
 }
 
-// Password baru sekaligus mencatat waktunya, supaya sesi yang dibuat sebelum itu ditolak dashboard.
+// Password baru, lalu semua sesi akun itu dicabut supaya perangkat yang sudah masuk keluar.
 export async function resetCouplePassword(invitationId: string): Promise<AccountResult> {
   const account = await getCoupleAccount(invitationId);
   if (!account) return { ok: false, error: "Undangan ini belum punya akun mempelai." };
@@ -64,7 +66,25 @@ export async function resetCouplePassword(invitationId: string): Promise<Account
     app_metadata: { ...data.user?.app_metadata, role: "mempelai", password_set_at: new Date().toISOString() },
   });
   if (error) return { ok: false, error: "Gagal mengganti password." };
+  await signOutEverywhere(account.email, password);
   return { ok: true, password };
+}
+
+// Supabase mencabut sesi lewat token milik pengguna itu, jadi masuk sekali dengan password baru lalu keluar
+// dari semua perangkat. Sesi sementara ini ikut tercabut.
+async function signOutEverywhere(email: string, password: string) {
+  const temp = createClient(supabaseUrl(), process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data } = await temp.auth.signInWithPassword({ email, password });
+  if (data.session) await supabaseAdmin().auth.admin.signOut(data.session.access_token, "global");
+}
+
+// Email login untuk username (slug undangan). Undangan contoh dan undangan tanpa akun tidak punya email.
+export async function coupleEmailForSlug(slug: string): Promise<string | null> {
+  const sb = supabaseAdmin();
+  const { data: inv } = await sb.from("invitations").select("id, slug, theme").eq("slug", slug).maybeSingle();
+  if (!inv || isDemo(inv.slug, inv.theme)) return null;
+  const account = await getCoupleAccount(inv.id);
+  return account?.email ?? null;
 }
 
 // Menghapus akun juga menghapus baris invitation_members lewat on delete cascade.

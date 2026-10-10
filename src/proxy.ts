@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Menyegarkan token sesi Supabase di /admin supaya login tidak kedaluwarsa diam-diam.
+// Menyegarkan token sesi Supabase di /admin dan /dashboard supaya login tidak kedaluwarsa diam-diam.
 export async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -23,5 +23,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*"],
+  matcher: ["/admin", "/admin/:path*", "/dashboard", "/dashboard/:path*"],
 };

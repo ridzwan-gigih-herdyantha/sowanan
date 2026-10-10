@@ -1,11 +1,11 @@
 "use server";
 
 import { updateTag } from "next/cache";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSettingsFresh, SETTINGS_TAG, settingsSchema, type Settings } from "@/lib/settings";
 import { currentAdmin, isAdminUser } from "@/lib/admin-auth";
+import { clearAttempts, clientIp, countAttempts, recordAttempt } from "@/lib/login-attempts";
 import { cleanHtml } from "@/lib/settings/sanitize";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -14,11 +14,6 @@ export type FormState = { ok: boolean; message: string; errors?: Record<string, 
 
 const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 60_000;
-
-async function clientIp() {
-  const h = await headers();
-  return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
-}
 
 const loginSchema = z.object({
   email: z.email("Email tidak valid."),
@@ -32,18 +27,16 @@ export async function login(_prev: FormState, form: FormData): Promise<FormState
   if (!parsed.success) return { ok: false, message: parsed.error.issues[0].message };
 
   const ip = await clientIp();
-  const db = supabaseAdmin();
-  const since = new Date(Date.now() - WINDOW_MS).toISOString();
-  const { count } = await db.from("login_attempts").select("id", { count: "exact", head: true }).eq("ip", ip).gte("created_at", since);
-  if ((count ?? 0) >= MAX_ATTEMPTS) {
+  const count = await countAttempts("admin", WINDOW_MS, ip);
+  if (count >= MAX_ATTEMPTS) {
     return { ok: false, message: "Terlalu banyak percobaan. Tunggu 1 menit lalu coba lagi." };
   }
-  await db.from("login_attempts").insert({ ip });
+  await recordAttempt("admin", ip);
 
   const supabase = await supabaseServer();
   const { data: signed, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
-    const left = MAX_ATTEMPTS - (count ?? 0) - 1;
+    const left = MAX_ATTEMPTS - count - 1;
     return { ok: false, message: left > 0 ? `Email atau password salah. Sisa ${left} percobaan.` : "Email atau password salah. Tunggu 1 menit lalu coba lagi." };
   }
 
@@ -53,7 +46,7 @@ export async function login(_prev: FormState, form: FormData): Promise<FormState
     return { ok: false, message: "Akun ini tidak punya akses admin." };
   }
 
-  await db.from("login_attempts").delete().eq("ip", ip);
+  await clearAttempts("admin", ip);
   redirect("/admin");
 }
 
