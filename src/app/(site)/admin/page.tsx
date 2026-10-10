@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { LogoMark } from "@/components/logo";
 import { getSettingsFresh } from "@/lib/settings";
+import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase } from "@/lib/supabase/admin";
-import { supabaseServer } from "@/lib/supabase/server";
 import { LoginForm } from "./login-form";
 import { SettingsForm } from "./settings/settings-form";
 import { button } from "./settings/styles";
@@ -35,9 +35,8 @@ async function AdminGate() {
       </Login>
     );
   }
-  const supabase = await supabaseServer();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) {
+  const admin = await currentAdmin();
+  if (!admin) {
     return (
       <Login>
         <LoginForm />
@@ -48,7 +47,7 @@ async function AdminGate() {
   const settings = await getSettingsFresh();
   return (
     <>
-      <AdminTopBar email={data.user.email ?? ""} current="/admin" />
+      <AdminTopBar email={admin.email ?? ""} current="/admin" />
       <main className="mx-auto max-w-[1180px] px-4 pt-6 pb-40 sm:px-7 sm:pt-[34px]">
         <div className="mb-[22px] flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:gap-6">
           <div>

@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSettingsFresh, SETTINGS_TAG, settingsSchema, type Settings } from "@/lib/settings";
+import { currentAdmin, isAdminUser } from "@/lib/admin-auth";
 import { cleanHtml } from "@/lib/settings/sanitize";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -40,10 +41,16 @@ export async function login(_prev: FormState, form: FormData): Promise<FormState
   await db.from("login_attempts").insert({ ip });
 
   const supabase = await supabaseServer();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data: signed, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
     const left = MAX_ATTEMPTS - (count ?? 0) - 1;
     return { ok: false, message: left > 0 ? `Email atau password salah. Sisa ${left} percobaan.` : "Email atau password salah. Tunggu 1 menit lalu coba lagi." };
+  }
+
+  // Akun mempelai tidak boleh masuk ke admin walau password-nya benar.
+  if (!isAdminUser(signed.user)) {
+    await supabase.auth.signOut();
+    return { ok: false, message: "Akun ini tidak punya akses admin." };
   }
 
   await db.from("login_attempts").delete().eq("ip", ip);
@@ -57,9 +64,7 @@ export async function logout() {
 }
 
 export async function saveSettings(json: string): Promise<FormState> {
-  const supabase = await supabaseServer();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) return { ok: false, message: "Sesi berakhir. Silakan masuk lagi." };
+  if (!(await currentAdmin())) return { ok: false, message: "Sesi berakhir. Silakan masuk lagi." };
 
   let raw: unknown;
   try {
@@ -94,9 +99,7 @@ export async function saveSettings(json: string): Promise<FormState> {
 // Ambil pengaturan terbaru dari database dan perbarui cache halaman publik. Dipakai setelah database
 // diubah di luar aplikasi, misalnya lewat SQL editor Supabase, supaya homepage dan ketentuan ikut berubah.
 export async function reloadSettings(): Promise<{ ok: true; settings: Settings } | { ok: false; message: string }> {
-  const supabase = await supabaseServer();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) return { ok: false, message: "Sesi berakhir. Silakan masuk lagi." };
+  if (!(await currentAdmin())) return { ok: false, message: "Sesi berakhir. Silakan masuk lagi." };
   const settings = await getSettingsFresh();
   updateTag(SETTINGS_TAG);
   return { ok: true, settings };
