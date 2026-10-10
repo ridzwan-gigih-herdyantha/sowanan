@@ -3,8 +3,11 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { coupleEmailForSlug } from "@/lib/couple-account";
+import { coupleInvitation } from "@/lib/couple-auth";
 import { clearAttempts, clientIp, countAttempts, recordAttempt } from "@/lib/login-attempts";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
+import { setWishHidden, type HideResult } from "@/lib/wishes";
 
 export type LoginState = { message: string; username?: string };
 
@@ -43,6 +46,16 @@ export async function coupleLogin(_prev: LoginState, form: FormData): Promise<Lo
 
   await Promise.all([clearAttempts("mempelai", ip), clearAttempts(accountScope)]);
   redirect(`/dashboard/user/${parsed.data.username}`);
+}
+
+// Mempelai boleh menyembunyikan dan menampilkan lagi ucapan di undangannya sendiri, kecuali yang disembunyikan admin.
+export async function coupleHideWish(slug: string, wishId: number, hidden: boolean): Promise<HideResult> {
+  const found = await coupleInvitation(slug);
+  if (!found) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
+  const { data: wish } = await supabaseAdmin().from("wishes").select("hidden_by").eq("id", wishId).eq("invitation_id", found.invitation.id).maybeSingle();
+  if (!wish) return { ok: false, error: "Ucapan tidak ditemukan." };
+  if (wish.hidden_by === "admin") return { ok: false, error: "Ucapan ini disembunyikan tim Sowanan. Hubungi kami kalau ingin ditampilkan lagi." };
+  return setWishHidden(slug, found.invitation.id, wishId, hidden, "mempelai");
 }
 
 // Keluar dari perangkat ini saja. Perangkat lain tetap masuk sampai password diganti admin.
