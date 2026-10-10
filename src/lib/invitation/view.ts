@@ -4,6 +4,7 @@ import { resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
 import { RULE_ICONS, type ExtraAnchor, type ExtraKind, type ExtraTone, type InvitationData, type RuleIcon, type SectionKey } from "./schema";
 import { extraAnchors, HEX } from "./spec";
+import { streamOf } from "./stream";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
 
@@ -29,6 +30,8 @@ export type ExtraView = {
   plan: { src: string; w: number; h: number; alt: string } | null;
   colors: { name: string; hex: string }[];
   rules: { text: string; icon: RuleIcon }[];
+  // youtube berisi id video kalau tautannya bisa diputar di halaman. platform kosong berarti tidak dikenali.
+  stream: { url: string; youtube: string; platform: string; time: string } | null;
   note: string;
   body: string;
   tone: ExtraTone;
@@ -49,9 +52,10 @@ function groupExtras(d: InvitationData, theme: string) {
     const plan = e.kind === "denah" && e.plan.src ? { src: u(e.plan.src), w: e.plan.w || 1600, h: e.plan.h || 1200, alt: e.title || "Denah lokasi" } : null;
     const rules =
       e.kind === "imbauan" ? e.rules.filter((r) => r.text.trim()).map((r) => ({ text: r.text.trim(), icon: (r.icon in RULE_ICONS ? r.icon : "umum") as RuleIcon })) : [];
+    const stream = e.kind === "siaran" ? streamOf(e.stream.url.trim(), e.stream.time.trim(), d.event.timezone) : null;
     const colors = e.kind === "dresscode" ? e.colors.filter((c) => HEX.test(c.hex.trim())).map((c) => ({ name: c.name.trim(), hex: c.hex.trim() })) : [];
     // Jenis siap pakai tampil kalau isi utamanya ada. Blok bebas cukup salah satu isiannya terisi.
-    const empty = { rundown: !rundown.length, denah: !plan, dresscode: !colors.length, imbauan: !rules.length, bebas: !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length };
+    const empty = { rundown: !rundown.length, denah: !plan, dresscode: !colors.length, imbauan: !rules.length, siaran: !stream, bebas: !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length };
     if (empty[e.kind]) continue;
     const at = known.has(e.after) ? e.after : "wishes";
     const bebas = e.kind === "bebas";
@@ -63,6 +67,7 @@ function groupExtras(d: InvitationData, theme: string) {
       plan,
       colors,
       rules,
+      stream,
       note: bebas ? "" : e.note.trim(),
       tone: e.tone,
       photos: bebas ? photos : [],

@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { CSSProperties, ReactNode } from "react";
 import type { ExtraAnchor, ExtraKind, ExtraTone } from "@/lib/invitation/schema";
 import type { ExtraView, InvitationView } from "@/lib/invitation/view";
-import { ExtraTracks, ExtraVideos } from "./extras-media";
+import { ExtraTracks, ExtraVideos, YoutubeStream } from "./extras-media";
 import { Gallery } from "./gallery";
 import { Lung, Motif, texture } from "./pakeliran-ornaments";
 import { rows } from "./rows";
@@ -32,7 +32,7 @@ const SKINS: Record<string, Skin> = {
 const isLeft = (skin?: Skin) => skin === "film" || skin === "ruang" || skin === "herbarium";
 
 // Teks kecil di atas judul, mengikuti pola judul section di tiap tema.
-const EYEBROW: Record<ExtraKind, string> = { rundown: "Jalannya acara", denah: "Menuju lokasi", dresscode: "Busana tamu", imbauan: "Untuk tamu", bebas: "" };
+const EYEBROW: Record<ExtraKind, string> = { rundown: "Jalannya acara", denah: "Menuju lokasi", dresscode: "Busana tamu", imbauan: "Untuk tamu", siaran: "Dari jauh", bebas: "" };
 
 function Heading({ skin, eyebrow, title, tone }: { skin?: Skin; eyebrow: string; title: string; tone: Tone }) {
   if (skin === "pakeliran") {
@@ -393,7 +393,63 @@ function Rules({ rules, skin, tone }: { rules: ExtraView["rules"]; skin?: Skin; 
   );
 }
 
+// Bingkai video siaran per tema. Bingkai emas memakai celah warna latar supaya tampak lepas dari video.
+const STREAM_FRAME: Record<Skin | "plain", { className: string; shadow?: string }> = {
+  film: { className: "bg-inv-card p-2 shadow-[0_8px_22px_rgba(28,25,22,.2)]" },
+  ruang: { className: "border border-current/20" },
+  herbarium: { className: "relative border border-inv-line bg-inv-paper p-2.5 shadow-[0_10px_24px_rgba(0,0,0,.07)]" },
+  pakeliran: { className: "rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--pk-emas)" },
+  sakinah: { className: "rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--sk-emas), 0 0 0 9px var(--extra-bg), 0 0 0 10px color-mix(in srgb, var(--sk-emas) 45%, transparent)" },
+  plain: { className: "overflow-hidden rounded-[2px]" },
+};
+
+// Tombol mengikuti tema: tema editorial memakai garis dan huruf kapital berjarak, tema berornamen memakai tombol isi.
+function streamButton(skin: Skin | undefined, tone: Tone) {
+  const base = "inline-flex items-center gap-2 no-underline transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current";
+  if (isLeft(skin)) return `${base} border border-current px-6 py-3 text-[13px] tracking-[0.2em] text-inherit uppercase hover:bg-current/10`;
+  return `${base} rounded-sm px-6 py-3 text-[15px] ${tone.dark ? "bg-inv-paper text-inv-ink" : "bg-inv-accent text-inv-paper"} hover:opacity-90`;
+}
+
+const External = () => (
+  <svg viewBox="0 0 16 16" aria-hidden="true" className="size-3 fill-none stroke-current stroke-[1.6]">
+    <path d="M6 3h7v7M13 3 4 12" />
+  </svg>
+);
+
+// Siaran langsung. YouTube diputar di halaman, platform lain dibuka lewat tombol di tab baru.
+function Stream({ stream, title, note, skin, tone, left }: { stream: NonNullable<ExtraView["stream"]>; title: string; note: string; skin?: Skin; tone: Tone; left: boolean }) {
+  const frame = STREAM_FRAME[skin ?? "plain"];
+  const meta = [stream.time && `Mulai pukul ${stream.time}`, stream.platform && `lewat ${stream.platform}`].filter(Boolean).join(", ");
+  const vars = { "--extra-bg": tone.bg } as CSSProperties;
+  return (
+    <div className={left ? "" : "text-center"} style={vars}>
+      {stream.youtube && (
+        <div className={`mt-10 ${frame.className}`} style={frame.shadow ? { boxShadow: frame.shadow } : undefined}>
+          {skin === "herbarium" && <span aria-hidden="true" className="inv-tape -top-3 left-[calc(50%-38px)] z-10 -rotate-2" />}
+          <YoutubeStream id={stream.youtube} title={title || "Siaran langsung"} />
+        </div>
+      )}
+      {meta && <p className={`text-[15px] opacity-80 ${stream.youtube ? "mt-5" : "mt-8"}`}>{meta.charAt(0).toUpperCase() + meta.slice(1)}</p>}
+      <div className={stream.youtube ? "mt-4" : "mt-6"}>
+        {stream.youtube ? (
+          <a href={stream.url} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-[13px] text-inherit opacity-70 transition-opacity hover:opacity-100">
+            Buka di YouTube
+            <External />
+          </a>
+        ) : (
+          <a href={stream.url} target="_blank" rel="noopener" className={streamButton(skin, tone)}>
+            Tonton siaran
+            <External />
+          </a>
+        )}
+      </div>
+      <Note text={note} left={left} />
+    </div>
+  );
+}
+
 function Body({ e, skin, tone, left }: { e: ExtraView; skin?: Skin; tone: Tone; left: boolean }): ReactNode {
+  if (e.kind === "siaran" && e.stream) return <Stream stream={e.stream} title={e.title} note={e.note} skin={skin} tone={tone} left={left} />;
   if (e.kind === "imbauan") {
     return (
       <>

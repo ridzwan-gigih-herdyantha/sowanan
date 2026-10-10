@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useRef, useState, type CSSProperties, type SyntheticEvent } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties, type SyntheticEvent } from "react";
 import type { ExtraView } from "@/lib/invitation/view";
 import { useInvitationMedia } from "./shell";
 
@@ -34,6 +34,76 @@ function Video({ src, poster }: ExtraView["videos"][number]) {
       onPause={release}
       onEnded={release}
       className="max-h-[80svh] w-full rounded-[2px] bg-black"
+    />
+  );
+}
+
+// Siaran YouTube. Iframe baru dimuat setelah diketuk supaya undangan tetap ringan. Status pemutar dibaca lewat
+// postMessage: saat diputar musik latar meredup, saat dijeda atau selesai musik kembali, dan media lain yang
+// diputar akan menjeda siaran ini.
+export function YoutubeStream({ id, title }: { id: string; title: string }) {
+  const media = useInvitationMedia();
+  const key = useId();
+  const frame = useRef<HTMLIFrameElement>(null);
+  const [on, setOn] = useState(false);
+
+  useEffect(() => {
+    if (!on) return;
+    const send = (msg: object) => frame.current?.contentWindow?.postMessage(JSON.stringify(msg), "*");
+    const pause = () => send({ event: "command", func: "pauseVideo", args: [] });
+    const onMessage = (e: MessageEvent) => {
+      if (e.source !== frame.current?.contentWindow || typeof e.data !== "string") return;
+      let data: { event?: string; info?: unknown };
+      try {
+        data = JSON.parse(e.data);
+      } catch {
+        return;
+      }
+      const state = data.event === "onStateChange" ? data.info : data.event === "infoDelivery" ? (data.info as { playerState?: number } | null)?.playerState : undefined;
+      if (state === 1) media.claim(key, pause);
+      else if (state === 0 || state === 2) media.release(key);
+    };
+    window.addEventListener("message", onMessage);
+    return () => {
+      window.removeEventListener("message", onMessage);
+      media.release(key);
+    };
+  }, [on, media, key]);
+
+  if (!on) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          // Langsung diputar setelah diketuk, jadi musik latar diredam tanpa menunggu kabar dari pemutar.
+          media.claim(key, () => setOn(false));
+          setOn(true);
+        }}
+        className="group relative block aspect-video w-full overflow-hidden bg-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
+        aria-label={`Putar ${title}`}
+      >
+        {/* Gambar dari YouTube, tidak lewat optimasi gambar Next supaya tidak perlu mengizinkan domain tambahan. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" loading="lazy" className="size-full object-cover opacity-85 transition-opacity group-hover:opacity-100" />
+        <span className="absolute inset-0 grid place-items-center">
+          <span className="grid size-16 place-items-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-transform group-hover:scale-105">
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="ml-1 size-7 fill-current">
+              <path d="M8 5.5v13l10.5-6.5z" />
+            </svg>
+          </span>
+        </span>
+      </button>
+    );
+  }
+  return (
+    <iframe
+      ref={frame}
+      src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1&enablejsapi=1`}
+      title={title}
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      allowFullScreen
+      onLoad={() => frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: key }), "*")}
+      className="block aspect-video w-full bg-black"
     />
   );
 }

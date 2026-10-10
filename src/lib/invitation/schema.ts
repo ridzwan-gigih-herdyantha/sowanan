@@ -46,7 +46,7 @@ export const EXTRA_TONES = { paper: "Latar utama tema", wash: "Latar kedua tema"
 export type ExtraTone = keyof typeof EXTRA_TONES;
 // Jenis bagian tambahan. Blok bebas untuk Paket Khusus, jenis lain adalah pilihan siap pakai paket Istimewa.
 // Data lama tanpa jenis dianggap blok bebas.
-export const EXTRA_KINDS = { rundown: "Susunan acara", denah: "Denah lokasi dan parkir", dresscode: "Dress code", imbauan: "Imbauan untuk tamu", bebas: "Blok bebas" } as const;
+export const EXTRA_KINDS = { rundown: "Susunan acara", denah: "Denah lokasi dan parkir", dresscode: "Dress code", imbauan: "Imbauan untuk tamu", siaran: "Siaran langsung", bebas: "Blok bebas" } as const;
 export type ExtraKind = keyof typeof EXTRA_KINDS;
 // Ikon untuk tiap imbauan. Nilai yang tidak dikenal tampil sebagai ikon umum.
 export const RULE_ICONS = {
@@ -139,6 +139,7 @@ export const invitationDataSchema = z.object({
       plan: z.object({ src: str(), w: num(), h: num() }).prefault({}),
       colors: list(z.object({ name: str(), hex: str() })),
       rules: list(z.object({ text: str(), icon: str() })),
+      stream: z.object({ url: str(), time: str() }).prefault({}),
       // Keterangan singkat untuk jenis siap pakai, misalnya di bawah denah.
       note: str(),
       body: str(),
