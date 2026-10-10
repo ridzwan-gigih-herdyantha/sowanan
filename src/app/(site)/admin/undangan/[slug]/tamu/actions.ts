@@ -50,12 +50,9 @@ export async function addGuests(slug: string, input: unknown): Promise<Result<{ 
   if (!fresh.length) return { ok: true, data: { added: [], skipped: parsed.data.length } };
 
   const rows = fresh.map((g) => ({ invitation_id: id, name: g.name, phone: g.phone ? normalizePhone(g.phone) : null }));
-  // Insert dan select satu pernyataan, jadi kalau kolom belum ada barisnya ikut batal dan aman diulang.
-  for (const cols of GUEST_COLS) {
-    const { data, error } = await sb.from("guests").insert(rows).select(cols);
-    if (!error) return { ok: true, data: { added: data as unknown as Guest[], skipped: parsed.data.length - fresh.length } };
-  }
-  return { ok: false, error: "Gagal menyimpan daftar tamu." };
+  const { data, error } = await sb.from("guests").insert(rows).select(GUEST_COLS);
+  if (error) return { ok: false, error: "Gagal menyimpan daftar tamu." };
+  return { ok: true, data: { added: data as unknown as Guest[], skipped: parsed.data.length - fresh.length } };
 }
 
 export async function updateGuest(slug: string, guestId: number, name: string, phone: string): Promise<Result<Guest>> {
@@ -67,11 +64,9 @@ export async function updateGuest(slug: string, guestId: number, name: string, p
   if (phone.trim() && !normalized) return { ok: false, error: "Nomor WhatsApp tidak valid." };
   const { error } = await supabaseAdmin().from("guests").update({ name: clean, phone: normalized }).eq("id", guestId).eq("invitation_id", id);
   if (error) return { ok: false, error: "Gagal menyimpan." };
-  for (const cols of GUEST_COLS) {
-    const { data } = await supabaseAdmin().from("guests").select(cols).eq("id", guestId).eq("invitation_id", id).maybeSingle();
-    if (data) return { ok: true, data: data as unknown as Guest };
-  }
-  return { ok: false, error: "Gagal memuat ulang tamu." };
+  const { data } = await supabaseAdmin().from("guests").select(GUEST_COLS).eq("id", guestId).eq("invitation_id", id).maybeSingle();
+  if (!data) return { ok: false, error: "Gagal memuat ulang tamu." };
+  return { ok: true, data: data as unknown as Guest };
 }
 
 export async function deleteGuests(slug: string, ids: number[] | "all"): Promise<Result<null>> {
@@ -108,7 +103,7 @@ export async function setGuestCheckin(slug: string, guestId: number, present: bo
   const id = await invitationId(slug);
   if (!id) return { ok: false, error: SESSION_ENDED };
   const guest = await setCheckedIn(id, guestId, present);
-  if (!guest) return { ok: false, error: "Gagal menyimpan. Pastikan migrasi 0009 sudah dijalankan." };
+  if (!guest) return { ok: false, error: "Gagal menyimpan." };
   return { ok: true, data: guest.checked_in_at };
 }
 
@@ -119,7 +114,7 @@ export async function openCheckinNow(slug: string, open: boolean): Promise<Resul
     .from("invitations")
     .update({ checkin_opened_at: open ? new Date().toISOString() : null })
     .eq("slug", slug);
-  if (error) return { ok: false, error: "Gagal menyimpan. Pastikan migrasi 0010 sudah dijalankan." };
+  if (error) return { ok: false, error: "Gagal menyimpan." };
   return { ok: true, data: null };
 }
 
@@ -128,7 +123,7 @@ export async function checkinLink(slug: string, regenerate = false): Promise<Res
   if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
   const sb = supabaseAdmin();
   const { data: row, error } = await sb.from("invitations").select("checkin_token").eq("slug", slug).maybeSingle();
-  if (error) return { ok: false, error: "Kolom absensi belum ada. Jalankan migrasi 0009." };
+  if (error) return { ok: false, error: "Gagal memuat QR kehadiran." };
   if (row?.checkin_token && !regenerate) return { ok: true, data: row.checkin_token };
   const token = newCheckinToken();
   const { error: e } = await sb.from("invitations").update({ checkin_token: token }).eq("slug", slug);

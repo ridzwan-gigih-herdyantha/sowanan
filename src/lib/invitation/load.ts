@@ -63,7 +63,6 @@ export async function getInvitation(slug: string): Promise<InvitationRecord | nu
   if (untilArchive > 0) cacheLife({ stale: Math.min(300, untilArchive), revalidate: untilArchive, expire: untilArchive + 3600 });
   else cacheLife("max");
 
-  // Kalau kolom payment_status belum ada (migrasi 0005 belum jalan), anggap lunas supaya halaman tidak rusak.
   return {
     id: data.id,
     slug: data.slug,

@@ -83,7 +83,7 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
             {open.manual ? "Dibuka manual " : "Dibuka "}
             {open.from} sampai {open.until}.
           </span>
-          {open.canOpen && open.state !== "open" && (
+          {open.state !== "open" && (
             <button type="button" onClick={() => setOpen(true)} disabled={busy !== null} className="rounded-sm bg-wine px-4 py-2 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-50">
               {busy === "buka" ? "Membuka..." : "Buka sekarang"}
             </button>
@@ -93,7 +93,6 @@ function AttendancePanel({ slug, origin, present, invited, walkIns, window: open
               {busy === "jadwal" ? "Menyimpan..." : "Kembalikan ke jadwal"}
             </button>
           )}
-          {!open.canOpen && open.state === "before" && <span className="w-full text-[12px] text-ink-mute">Jalankan migrasi 0010 untuk bisa membuka absensi lebih awal.</span>}
         </div>
       )}
       {token ? (

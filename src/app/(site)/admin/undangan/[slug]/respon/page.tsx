@@ -27,19 +27,18 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   const { slug } = await params;
   const sb = supabaseAdmin();
-  const { data: row } = await sb.from("invitations").select("id, slug, theme, data").eq("slug", slug).maybeSingle();
+  const { data: row } = await sb.from("invitations").select("id, slug, theme, data, archive_notified_at").eq("slug", slug).maybeSingle();
   if (!row || !THEME_NAMES[row.theme]) notFound();
 
-  // Pemberitahuan arsip muncul sejak tujuh hari sebelum beku. Kolom archive_notified_at (migrasi 0008) bisa belum ada.
+  // Pemberitahuan arsip muncul sejak tujuh hari sebelum beku.
   const parsed = invitationDataSchema.safeParse(row.data);
   const info = parsed.success ? archiveInfo(parsed.data, undefined, isDemo(row.slug, row.theme)) : null;
-  const notified = await sb.from("invitations").select("archive_notified_at").eq("slug", slug).maybeSingle();
   const notice: ArchiveNotice | undefined =
     info?.archiveAt && (info.noticeDue || info.archived) && parsed.success
       ? {
           archiveAt: formatDateId(info.archiveAt),
           archived: info.archived,
-          notifiedAt: (notified.data as { archive_notified_at?: string | null } | null)?.archive_notified_at ?? null,
+          notifiedAt: row.archive_notified_at ?? null,
           couple: [parsed.data.couple.groom.name, parsed.data.couple.bride.name].filter(Boolean).join(" & "),
         }
       : undefined;

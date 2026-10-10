@@ -29,7 +29,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const draft = row.draft ? invitationDataSchema.parse(row.draft) : live;
   // Aturan paket dihitung di editor dari isi paket dan add-on di pengaturan, supaya langsung berubah saat add-on dicentang.
   const { matrix, addons, packages, payment } = await getSettingsFresh();
-  // Arsip dihitung dari versi yang tayang. Kolom unlocked_until (migrasi 0008) kosong berarti tidak sedang dibuka.
+  // Arsip dihitung dari versi yang tayang. unlocked_until kosong berarti tidak sedang dibuka.
   const info = archiveInfo(live, undefined, isDemo(row.slug, row.theme));
   const unlockedUntil = info.archived ? activeUnlock(row.unlocked_until) : null;
   const archive = info.archiveAt

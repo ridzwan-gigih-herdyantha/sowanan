@@ -30,19 +30,13 @@ async function themeOf(slug: string): Promise<string | null> {
   return data?.theme ?? null;
 }
 
-// Undangan beku tidak bisa diubah kecuali admin membukanya sementara. Kolom unlocked_until (migrasi 0008)
-// bisa belum ada, jadi dicoba bertahap.
+// Undangan beku tidak bisa diubah kecuali admin membukanya sementara.
 async function frozen(slug: string): Promise<boolean> {
-  for (const cols of ["slug, theme, data, unlocked_until", "slug, theme, data"]) {
-    const { data, error } = await supabaseAdmin().from("invitations").select(cols).eq("slug", slug).maybeSingle();
-    if (error) continue;
-    if (!data) return false;
-    const row = data as unknown as { slug: string; theme: string; data: unknown; unlocked_until?: string | null };
-    const parsed = invitationDataSchema.safeParse(row.data);
-    if (!parsed.success) return false;
-    return editLocked(archiveInfo(parsed.data, Date.now(), isDemo(row.slug, row.theme)), row.unlocked_until);
-  }
-  return false;
+  const { data } = await supabaseAdmin().from("invitations").select("slug, theme, data, unlocked_until").eq("slug", slug).maybeSingle();
+  if (!data) return false;
+  const parsed = invitationDataSchema.safeParse(data.data);
+  if (!parsed.success) return false;
+  return editLocked(archiveInfo(parsed.data, Date.now(), isDemo(data.slug, data.theme)), data.unlocked_until);
 }
 
 const FROZEN = "Undangan ini sudah menjadi arsip dan tidak bisa diubah. Buka kunci sementara kalau perlu koreksi.";
@@ -140,7 +134,7 @@ export async function setPaymentStatus(slug: string, paid: boolean): Promise<Res
     .from("invitations")
     .update({ payment_status: paid ? "lunas" : "belum_lunas" })
     .eq("slug", slug);
-  if (error) return { ok: false, error: "Gagal mengubah status pembayaran. Pastikan migrasi 0005 sudah dijalankan." };
+  if (error) return { ok: false, error: "Gagal mengubah status pembayaran." };
   refresh(slug);
   return { ok: true, at: new Date().toISOString() };
 }
@@ -153,7 +147,7 @@ export async function setPackage(slug: string, pkg: string): Promise<Result> {
   const themeIssue = themeError(await getSettingsFresh(), theme, pkg as PackageId);
   if (themeIssue) return { ok: false, error: themeIssue };
   const { error } = await supabaseAdmin().from("invitations").update({ package: pkg }).eq("slug", slug);
-  if (error) return { ok: false, error: "Gagal menyimpan paket. Pastikan migrasi 0006 sudah dijalankan." };
+  if (error) return { ok: false, error: "Gagal menyimpan paket." };
   // Halaman publik membaca paket untuk nama tamu dan batas bagian tambahan.
   refresh(slug);
   return { ok: true, at: new Date().toISOString() };
@@ -169,7 +163,7 @@ export async function setAddons(slug: string, addons: Purchased): Promise<Result
     if (known.has(id) && units > 0) clean[id] = Math.min(units, 20);
   }
   const { error } = await supabaseAdmin().from("invitations").update({ addons: clean }).eq("slug", slug);
-  if (error) return { ok: false, error: "Gagal menyimpan add-on. Pastikan migrasi 0007 sudah dijalankan." };
+  if (error) return { ok: false, error: "Gagal menyimpan add-on." };
   refresh(slug);
   return { ok: true, at: new Date().toISOString() };
 }
@@ -179,7 +173,7 @@ export async function unlockArchive(slug: string): Promise<Result> {
   if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
   const until = new Date(Date.now() + 86_400_000).toISOString();
   const { error } = await supabaseAdmin().from("invitations").update({ unlocked_until: until }).eq("slug", slug);
-  if (error) return { ok: false, error: "Gagal membuka kunci. Pastikan migrasi 0008 sudah dijalankan." };
+  if (error) return { ok: false, error: "Gagal membuka kunci." };
   return { ok: true, at: until };
 }
 
@@ -188,7 +182,7 @@ export async function markArchiveNotified(slug: string, notified: boolean): Prom
   if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
   const at = notified ? new Date().toISOString() : null;
   const { error } = await supabaseAdmin().from("invitations").update({ archive_notified_at: at }).eq("slug", slug);
-  if (error) return { ok: false, error: "Gagal menyimpan. Pastikan migrasi 0008 sudah dijalankan." };
+  if (error) return { ok: false, error: "Gagal menyimpan." };
   return { ok: true, at: at ?? "" };
 }
 

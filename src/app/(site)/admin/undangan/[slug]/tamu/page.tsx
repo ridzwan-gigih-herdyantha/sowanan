@@ -52,22 +52,14 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
     );
   }
 
-  let guests: Guest[] | null = null;
-  for (const cols of GUEST_COLS) {
-    const res = await sb.from("guests").select(cols).eq("invitation_id", row.id).order("created_at", { ascending: true }).order("id", { ascending: true }).limit(MAX_GUESTS);
-    if (!res.error) {
-      guests = res.data as unknown as Guest[];
-      break;
-    }
-  }
-  if (!guests) return <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Tabel tamu belum ada. Jalankan supabase/migrations/0004_guests.sql.</p>;
+  const res = await sb.from("guests").select(GUEST_COLS).eq("invitation_id", row.id).order("created_at", { ascending: true }).order("id", { ascending: true }).limit(MAX_GUESTS);
+  if (res.error) return <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Gagal memuat daftar tamu. Muat ulang halaman.</p>;
+  const guests = res.data as unknown as Guest[];
 
   const d = invitationDataSchema.parse(row.draft ?? row.data ?? {});
   const couple = [d.couple.groom.name, d.couple.bride.name].filter(Boolean).join(" & ");
   const date = Date.parse(d.event.start) ? toView(slug, d).dateLong : "";
-  // QR absensi butuh kolom dari migrasi 0009. Tanpa itu fitur dianggap belum siap.
   const qr = await qrEnabled(slug);
-  const columns = guests.length ? "qr_token" in guests[0] : !(await sb.from("guests").select("qr_token").limit(1)).error;
 
   return (
     <>
@@ -93,7 +85,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         date={date}
         excelLock={rules?.locked.ekspor_excel ?? null}
         window={qr.enabled ? await windowForSlug(slug) : null}
-        qr={qr.enabled ? (columns ? { on: true } : { on: false, reason: "Terjadi kesalahan pada server" }) : { on: false, reason: qr.reason ?? null }}
+        qr={qr.enabled ? { on: true } : { on: false, reason: qr.reason ?? null }}
       />
     </>
   );

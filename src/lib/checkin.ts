@@ -14,10 +14,9 @@ export type CheckinResult =
   | { status: "unknown" }
   | { status: "closed"; reason: string };
 
-type InvitationRow = { id: string; slug: string; theme: string; data: unknown; package?: string | null; addons?: Purchased; checkin_opened_at?: string | null };
+type InvitationRow = { id: string; slug: string; theme: string; data: unknown; package: string | null; addons: Purchased | null; checkin_opened_at: string | null };
 
-// Kolom checkin_opened_at (migrasi 0010) dan package, addons (0006, 0007) bisa belum ada, jadi dicoba bertahap.
-const ROW_COLS = ["id, slug, theme, data, package, addons, checkin_opened_at", "id, slug, theme, data, package, addons", "id, slug, theme, data"];
+const ROW_COLS = "id, slug, theme, data, package, addons, checkin_opened_at";
 
 const HOUR = 3_600_000;
 // Absensi dibuka 3 jam sebelum acara sampai 3 jam setelah selesai, supaya foto QR yang tersebar tidak bisa dipakai dari rumah.
@@ -50,11 +49,8 @@ async function rulesLock(row: InvitationRow): Promise<string | null> {
 }
 
 async function bySlug(slug: string): Promise<InvitationRow | null> {
-  for (const cols of ROW_COLS) {
-    const { data, error } = await supabaseAdmin().from("invitations").select(cols).eq("slug", slug).maybeSingle();
-    if (!error) return (data as unknown as InvitationRow) ?? null;
-  }
-  return null;
+  const { data } = await supabaseAdmin().from("invitations").select(ROW_COLS).eq("slug", slug).maybeSingle();
+  return (data as unknown as InvitationRow) ?? null;
 }
 
 // Untuk halaman admin: apakah paket menyertakan QR absensi.
@@ -70,18 +66,12 @@ export type CheckinPage = { row: InvitationRow; couple: string; open: true } | {
 // Halaman yang terbuka setelah tamu memindai QR mempelai. Kode yang salah berarti halaman tidak ditemukan.
 export async function checkinPage(token: string, now = Date.now()): Promise<CheckinPage | null> {
   if (!/^[A-Za-z0-9_-]{20,40}$/.test(token)) return null;
-  let row: InvitationRow | null = null;
-  for (const cols of ROW_COLS) {
-    const res = await supabaseAdmin().from("invitations").select(cols).eq("checkin_token", token).maybeSingle();
-    if (!res.error) {
-      row = (res.data as unknown as InvitationRow) ?? null;
-      break;
-    }
-  }
+  const { data } = await supabaseAdmin().from("invitations").select(ROW_COLS).eq("checkin_token", token).maybeSingle();
+  const row = (data as unknown as InvitationRow) ?? null;
   if (!row) return null;
   const parsed = invitationDataSchema.safeParse(row.data);
   const couple = parsed.success ? [parsed.data.couple.groom.name, parsed.data.couple.bride.name].filter(Boolean).join(" & ") : row.slug;
-  const closed = (reason: string): CheckinPage => ({ row: row!, couple, open: false, reason });
+  const closed = (reason: string): CheckinPage => ({ row, couple, open: false, reason });
 
   const lock = await rulesLock(row);
   if (lock) return closed("Absensi untuk undangan ini belum tersedia.");
@@ -149,9 +139,9 @@ export async function setCheckedIn(invitationId: string, guestId: number, presen
   return data ?? null;
 }
 
-export type CheckinSchedule = { from: string; until: string; state: "before" | "open" | "after"; manual: boolean; canOpen: boolean };
+export type CheckinSchedule = { from: string; until: string; state: "before" | "open" | "after"; manual: boolean };
 
-// Untuk panel admin: jam buka dan tutup absensi, statusnya sekarang, dan apakah tombol Buka sekarang bisa dipakai.
+// Untuk panel admin: jam buka dan tutup absensi dan statusnya sekarang.
 export async function windowForSlug(slug: string, now = Date.now()): Promise<CheckinSchedule | null> {
   const row = await bySlug(slug);
   const parsed = row && invitationDataSchema.safeParse(row.data);
@@ -159,5 +149,5 @@ export async function windowForSlug(slug: string, now = Date.now()): Promise<Che
   const w = checkinWindow(parsed.data, row.checkin_opened_at);
   if (!w) return null;
   const state = now < w.from.getTime() ? "before" : now > w.until.getTime() ? "after" : "open";
-  return { from: formatWhen(w.from), until: formatWhen(w.until), state, manual: w.manual, canOpen: "checkin_opened_at" in row };
+  return { from: formatWhen(w.from), until: formatWhen(w.until), state, manual: w.manual };
 }

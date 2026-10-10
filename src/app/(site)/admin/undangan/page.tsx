@@ -89,15 +89,8 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
     );
 
   const sb = supabaseAdmin();
-  // Kolom payment_status (0005), package (0006), dan archive_notified_at (0008) bisa belum ada, jadi dicoba bertahap.
-  let rows: Row[] = [];
-  for (const extra of [", payment_status, package, archive_notified_at", ", payment_status, package", ", payment_status", ""]) {
-    const res = await sb.from("invitations").select(BASE_COLS + extra).order("created_at", { ascending: false });
-    if (!res.error) {
-      rows = (res.data ?? []) as unknown as Row[];
-      break;
-    }
-  }
+  const res = await sb.from("invitations").select(`${BASE_COLS}, payment_status, package, archive_notified_at`).order("created_at", { ascending: false });
+  const rows = (res.data ?? []) as unknown as Row[];
   // Tema mengikuti kolom Tersedia di paket pada pengaturan, sama dengan validasi di server.
   const settings = await getSettingsFresh();
   const packages = visiblePackages(settings).map((id) => ({ id, name: PACKAGE_NAMES[id] }));
