@@ -15,7 +15,8 @@ if (password.length < 12) {
 }
 
 const supabase = createClient(new URL(rawUrl).origin, serviceKey, { auth: { persistSession: false } });
-const { data, error } = await supabase.auth.admin.createUser({ email, password, email_confirm: true });
+// Peran admin wajib, karena akun mempelai juga login lewat Supabase Auth.
+const { data, error } = await supabase.auth.admin.createUser({ email, password, email_confirm: true, app_metadata: { role: "admin" } });
 
 if (error) {
   console.error("Gagal membuat admin:", error.message);
