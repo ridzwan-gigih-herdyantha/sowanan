@@ -10,11 +10,11 @@ import { THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../login-form";
 import { AdminFrame } from "../frame";
 import { CreateForm } from "./create-form";
-import { DeleteButton } from "./delete-button";
 import { FILTERS, type FilterKey } from "./filter-options";
 import { Filters } from "./filters";
 import { PackageSelect } from "./package-select";
 import { PaymentToggle } from "./payment-toggle";
+import { RowMenu } from "./row-menu";
 
 export const metadata: Metadata = {
   title: "Undangan",
@@ -132,7 +132,7 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
 
       <Filters shown={shown.length} total={rows.length} />
 
-      <div className="mt-3 hidden grid-cols-[minmax(0,1fr)_140px_110px_80px_100px_150px] gap-4 border-b border-line pb-2 text-[12px] tracking-[1px] text-ink-mute uppercase lg:grid">
+      <div className="mt-3 hidden grid-cols-[minmax(0,1fr)_140px_140px_80px_100px_110px] gap-4 border-b border-line pb-2 text-[12px] tracking-[1px] text-ink-mute uppercase lg:grid">
         <span>Pasangan</span>
         <span>Paket</span>
         <span>Pembayaran</span>
@@ -143,7 +143,7 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
       <ul className="divide-y divide-line border-b border-line">
         {shown.length === 0 && <li className="py-10 text-center text-[15px] text-ink-mute">{rows.length ? "Tidak ada undangan yang cocok dengan filter." : "Belum ada undangan."}</li>}
         {shown.map((r) => (
-          <li key={r.slug} className="grid grid-cols-2 items-center gap-x-4 gap-y-3 py-4 lg:grid-cols-[minmax(0,1fr)_140px_110px_80px_100px_150px]">
+          <li key={r.slug} className="grid grid-cols-2 items-center gap-x-4 gap-y-3 py-4 lg:grid-cols-[minmax(0,1fr)_140px_140px_80px_100px_110px]">
             <div className="col-span-2 min-w-0 lg:col-span-1">
               <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="block truncate font-serif text-xl text-ink no-underline hover:text-wine has-[[data-pending]]:opacity-55">
                 {couple(r)}
@@ -156,25 +156,11 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
               <ArchiveBadge slug={r.slug} info={archive(r)} notified={Boolean(r.archive_notified_at)} />
             </div>
             <PackageSelect slug={r.slug} value={r.package ?? ""} />
-            <span className="justify-self-end lg:justify-self-start">
-              <PaymentToggle slug={r.slug} paid={r.payment_status !== "belum_lunas"} />
-            </span>
+            <PaymentToggle slug={r.slug} paid={r.payment_status !== "belum_lunas"} />
             <span className={`w-fit rounded-full px-2.5 py-0.5 text-[12px] ${r.published ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>{r.published ? "Tayang" : "Draf"}</span>
             <span className="justify-self-end text-[13px] text-ink-soft lg:justify-self-start">{dateFmt.format(new Date(r.created_at))}</span>
-            <span className="col-span-2 flex gap-4 text-[14px] lg:col-span-1 lg:justify-self-end">
-              <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="text-wine underline underline-offset-4 has-[[data-pending]]:opacity-55">
-                Edit
-                <Pending />
-              </Link>
-              <Link href={`/admin/undangan/${r.slug}/tamu`} prefetch={false} className="text-wine underline underline-offset-4 has-[[data-pending]]:opacity-55">
-                Tamu
-                <Pending />
-              </Link>
-              <Link href={`/admin/undangan/${r.slug}/respon`} prefetch={false} className="text-wine underline underline-offset-4 has-[[data-pending]]:opacity-55">
-                RSVP
-                <Pending />
-              </Link>
-              {!isDemo(r.slug, r.theme) && <DeleteButton slug={r.slug} />}
+            <span className="col-span-2 lg:col-span-1 lg:justify-self-end">
+              <RowMenu slug={r.slug} demo={isDemo(r.slug, r.theme)} />
             </span>
           </li>
         ))}

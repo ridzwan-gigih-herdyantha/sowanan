@@ -1,39 +1,44 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Dropdown } from "../dropdown";
+import { OFFLINE } from "../use-working";
 import { setPaymentStatus } from "./actions";
 
+const OPTIONS = [
+  { value: "lunas", label: "Lunas" },
+  { value: "belum", label: "Belum lunas" },
+];
+
+// Bentuknya sama dengan pilihan paket supaya jelas bisa diubah. Belum lunas diberi warna kuning karena perlu ditagih.
 export function PaymentToggle({ slug, paid: initial }: { slug: string; paid: boolean }) {
   const [paid, setPaid] = useState(initial);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
 
-  const toggle = () => {
-    const next = !paid;
-    if (!confirm(next ? `Tandai ${slug} sudah lunas? Watermark SOWANAN.COM akan hilang.` : `Kembalikan ${slug} ke belum lunas? Watermark akan tampil lagi.`)) return;
-    start(async () => {
-      const res = await setPaymentStatus(slug, next);
-      if (res.ok) {
-        setPaid(next);
-        setError("");
-      } else setError(res.error);
-    });
-  };
-
   return (
-    <span className="inline-flex flex-col items-end">
-      <button
-        type="button"
-        onClick={toggle}
+    <span className="inline-flex flex-col">
+      <Dropdown
+        value={paid ? "lunas" : "belum"}
         disabled={pending}
-        title={paid ? "Klik untuk kembalikan ke belum lunas" : "Klik untuk tandai lunas"}
-        className={`rounded-full px-2.5 py-0.5 text-[12px] transition-colors duration-150 disabled:opacity-50 ${
-          paid ? "bg-ivory text-ink-soft ring-1 ring-line hover:ring-wine" : "bg-amber-100 text-amber-900 ring-1 ring-amber-300 hover:ring-amber-500"
-        }`}
-      >
-        {pending ? "Menyimpan..." : paid ? "Lunas" : "Belum lunas"}
-      </button>
-      {error && <span className="mt-1 max-w-48 text-right text-[11px] text-wine">{error}</span>}
+        label={`Pembayaran ${slug}`}
+        size="sm"
+        tone={paid ? "default" : "warn"}
+        options={OPTIONS}
+        onChange={(next) => {
+          const toPaid = next === "lunas";
+          if (!confirm(toPaid ? `Tandai ${slug} sudah lunas? Watermark SOWANAN.COM akan hilang.` : `Kembalikan ${slug} ke belum lunas? Watermark akan tampil lagi.`)) return;
+          start(async () => {
+            const res = await setPaymentStatus(slug, toPaid).catch(() => ({ ok: false as const, error: OFFLINE }));
+            if (res.ok) {
+              setPaid(toPaid);
+              setError("");
+            } else setError(res.error);
+          });
+        }}
+      />
+      {pending && <span className="mt-1 text-[11px] text-ink-mute">Menyimpan...</span>}
+      {error && <span className="mt-1 max-w-48 text-[11px] text-wine">{error}</span>}
     </span>
   );
 }

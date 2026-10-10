@@ -15,8 +15,8 @@ type Props = {
   // Untuk form biasa, nilai ikut terkirim lewat input tersembunyi.
   name?: string;
   disabled?: boolean;
-  // Garis putus-putus saat belum dipilih, garis merah saat filter aktif.
-  tone?: "default" | "empty" | "active";
+  // Garis putus-putus saat belum dipilih, garis merah saat filter aktif, kuning untuk yang perlu ditindaklanjuti.
+  tone?: "default" | "empty" | "active" | "warn";
   size?: "md" | "sm";
   className?: string;
 };
@@ -97,7 +97,7 @@ export function Dropdown({ value, options, onChange, label, prefix, placeholder 
 
   const pad = size === "sm" ? "px-2.5 py-1.5 text-[14px]" : "px-3 py-2.5 text-[15px]";
   const border =
-    tone === "active" ? "border-wine bg-blush/50" : tone === "empty" ? "border-dashed border-ink-mute text-ink-mute" : "border-line hover:border-ink-mute";
+    tone === "active" ? "border-wine bg-blush/50" : tone === "warn" ? "border-amber-300 bg-amber-50! text-amber-900 hover:border-amber-500" : tone === "empty" ? "border-dashed border-ink-mute text-ink-mute" : "border-line hover:border-ink-mute";
 
   return (
     <div ref={root} className={`relative ${className}`}>

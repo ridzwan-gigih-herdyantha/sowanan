@@ -1,24 +1,31 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { deleteInvitation, deleteSummary } from "./actions";
 
 type Summary = { couple: string; rsvps: number; wishes: number; guests: number; files: number };
 
-export function DeleteButton({ slug }: { slug: string }) {
+// Dialog hapus undangan. Pemicunya dari luar lewat children, misalnya item di menu Kelola, supaya dialog
+// tetap terpasang walau menunya sudah tertutup.
+export function DeleteButton({ slug, children }: { slug: string; children: (open: () => void) => ReactNode }) {
   const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [typed, setTyped] = useState("");
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
+  // Dialog dibuka lewat effect, supaya fungsi open bisa diberikan ke pemicu di luar tanpa menyentuh ref saat render.
+  const [opened, setOpened] = useState(0);
+  useEffect(() => {
+    if (opened) dialog.current?.showModal();
+  }, [opened]);
 
   const open = () => {
     setTyped("");
     setError("");
     setSummary(null);
-    dialog.current?.showModal();
+    setOpened((n) => n + 1);
     start(async () => {
       const res = await deleteSummary(slug).catch(() => ({ ok: false as const, error: "Gagal memuat data. Cek koneksi." }));
       if (res.ok) setSummary(res.data);
@@ -39,9 +46,7 @@ export function DeleteButton({ slug }: { slug: string }) {
 
   return (
     <>
-      <button type="button" onClick={open} className="text-ink-mute underline underline-offset-4 hover:text-wine">
-        Hapus
-      </button>
+      {children(open)}
       <dialog
         ref={dialog}
         aria-labelledby={`hapus-${slug}`}
