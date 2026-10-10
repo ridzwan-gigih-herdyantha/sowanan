@@ -4,6 +4,7 @@ import { updateTag } from "next/cache";
 import { currentAdmin } from "@/lib/admin-auth";
 import { wishesTag } from "@/lib/guestbook";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { setWishHidden, type HideResult } from "@/lib/wishes";
 
 type Result = { ok: true } | { ok: false; error: string };
 
@@ -11,6 +12,12 @@ async function invitationId(slug: string): Promise<string | null> {
   if (!(await currentAdmin())) return null;
   const { data } = await supabaseAdmin().from("invitations").select("id").eq("slug", slug).maybeSingle();
   return data?.id ?? null;
+}
+
+export async function hideWish(slug: string, id: number, hidden: boolean): Promise<HideResult> {
+  const invitation = await invitationId(slug);
+  if (!invitation) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
+  return setWishHidden(slug, invitation, id, hidden, "admin");
 }
 
 export async function deleteResponse(slug: string, kind: "rsvp" | "wish", id: number): Promise<Result> {

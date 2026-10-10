@@ -4,10 +4,10 @@ import { useMemo, useState } from "react";
 import { rsvpSheet } from "@/lib/export/rsvp-sheet";
 import { useWorking } from "../../../use-working";
 import { markArchiveNotified } from "../../actions";
-import { deleteResponse } from "./actions";
+import { deleteResponse, hideWish } from "./actions";
 
 type Rsvp = { id: number; name: string; attending: boolean; guests: number; created_at: string };
-type Wish = { id: number; name: string; message: string; created_at: string };
+type Wish = { id: number; name: string; message: string; created_at: string; hidden_at: string | null; hidden_by: "admin" | "mempelai" | null };
 // Pemberitahuan arsip ke klien, muncul sejak tujuh hari sebelum undangan dibekukan.
 export type ArchiveNotice = { archiveAt: string; archived: boolean; notifiedAt: string | null; couple: string };
 type Props = { slug: string; rsvps: Rsvp[]; wishes: Wish[]; guestNames: string[]; exportLock?: string; notice?: ArchiveNotice };
@@ -72,6 +72,18 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
     });
   }
 
+  // Ucapan yang disembunyikan tetap tersimpan, hanya tidak tampil di undangan.
+  function toggleHidden(w: Wish) {
+    const hide = !w.hidden_at;
+    run(`sembunyi:${w.id}`, async () => {
+      const res = await hideWish(slug, w.id, hide);
+      if (!res.ok) return setError(res.error);
+      setError("");
+      setWishes((l) => l.map((x) => (x.id === w.id ? { ...x, hidden_at: res.hiddenAt, hidden_by: hide ? "admin" : null } : x)));
+    });
+  }
+  const hiddenCount = wishes.filter((w) => w.hidden_at).length;
+
   async function exportXlsx(which: "rsvp" | "wish" = tab) {
     if (which === "rsvp") {
       const rows = unique.map((r) => ({ name: r.name, attending: r.attending, guests: r.guests, time: timeFmt.format(new Date(r.created_at)), invited: invited.has(key(r.name)) }));
@@ -81,8 +93,11 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
       const head = (value: string) => ({ value, fontWeight: "bold" as const, backgroundColor: "#F2F2F2" });
       await saveXlsx(
         `ucapan-${slug}.xlsx`,
-        [[head("Nama"), head("Ucapan"), head("Waktu")], ...wishes.map((w) => [w.name, { value: w.message, wrap: true, alignVertical: "top" as const }, timeFmt.format(new Date(w.created_at))])],
-        { sheet: "Ucapan", columns: [{ width: 24 }, { width: 70 }, { width: 20 }], stickyRowsCount: 1 },
+        [
+          [head("Nama"), head("Ucapan"), head("Waktu"), head("Status")],
+          ...wishes.map((w) => [w.name, { value: w.message, wrap: true, alignVertical: "top" as const }, timeFmt.format(new Date(w.created_at)), w.hidden_at ? "Disembunyikan" : "Tampil"]),
+        ],
+        { sheet: "Ucapan", columns: [{ width: 24 }, { width: 70 }, { width: 20 }, { width: 16 }], stickyRowsCount: 1 },
       );
     }
   }
@@ -112,7 +127,7 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
           value={guestNames.length ? `${answeredInvited}/${guestNames.length}` : unique.length}
           note={guestNames.length ? "dicocokkan dari nama" : "belum ada daftar tamu"}
         />
-        <Stat label="Ucapan" value={wishes.length} />
+        <Stat label="Ucapan" value={wishes.length} note={hiddenCount ? `${hiddenCount} disembunyikan` : undefined} />
       </div>
       {duplicates > 0 && <p className="mt-3 text-[13px] text-ink-mute">{duplicates} konfirmasi ganda dari nama yang sama. Angka di atas memakai konfirmasi terbaru.</p>}
 
@@ -199,18 +214,33 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
                 </li>
               );
             })
-          : wishList.slice(0, limit).map((w) => (
-              <li key={w.id} aria-busy={working === `hapus:wish:${w.id}` || undefined} className={`py-4 transition-opacity duration-150 ${working === `hapus:wish:${w.id}` ? "opacity-55" : ""}`}>
-                <div className="flex items-baseline justify-between gap-4">
-                  <p className="min-w-0 truncate font-medium">{w.name}</p>
-                  <button type="button" onClick={() => remove("wish", w.id, w.name)} disabled={working !== null} className="shrink-0 text-[14px] text-ink-mute hover:text-wine disabled:opacity-60">
-                    {working === `hapus:wish:${w.id}` ? "Menghapus..." : "Hapus"}
-                  </button>
-                </div>
-                <p className="mt-1 text-[15px] whitespace-pre-line text-ink-soft">{w.message}</p>
-                <p className="mt-1 text-[12px] text-ink-mute">{timeFmt.format(new Date(w.created_at))}</p>
-              </li>
-            ))}
+          : wishList.slice(0, limit).map((w) => {
+              const busy = working === `hapus:wish:${w.id}` || working === `sembunyi:${w.id}`;
+              return (
+                <li key={w.id} aria-busy={busy || undefined} className={`py-4 transition-opacity duration-150 ${busy ? "opacity-55" : ""}`}>
+                  <div className="flex items-baseline justify-between gap-4">
+                    <p className={`min-w-0 truncate font-medium ${w.hidden_at ? "text-ink-mute" : ""}`}>
+                      {w.name}
+                      {w.hidden_at && (
+                        <span className="ml-2 rounded-full bg-blush px-2 py-0.5 text-[11px] font-normal text-ink-soft">
+                          Disembunyikan {w.hidden_by === "mempelai" ? "mempelai" : "admin"}
+                        </span>
+                      )}
+                    </p>
+                    <span className="flex shrink-0 gap-4 text-[14px]">
+                      <button type="button" onClick={() => toggleHidden(w)} disabled={working !== null} className="text-ink-mute hover:text-wine disabled:opacity-60">
+                        {working === `sembunyi:${w.id}` ? "Menyimpan..." : w.hidden_at ? "Tampilkan" : "Sembunyikan"}
+                      </button>
+                      <button type="button" onClick={() => remove("wish", w.id, w.name)} disabled={working !== null} className="text-ink-mute hover:text-wine disabled:opacity-60">
+                        {working === `hapus:wish:${w.id}` ? "Menghapus..." : "Hapus"}
+                      </button>
+                    </span>
+                  </div>
+                  <p className={`mt-1 text-[15px] whitespace-pre-line ${w.hidden_at ? "text-ink-mute" : "text-ink-soft"}`}>{w.message}</p>
+                  <p className="mt-1 text-[12px] text-ink-mute">{timeFmt.format(new Date(w.created_at))}</p>
+                </li>
+              );
+            })}
       </ul>
 
       {list.length > limit && (

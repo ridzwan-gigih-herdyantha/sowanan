@@ -19,13 +19,12 @@ export async function getWishes(slug: string): Promise<Wish[]> {
     cacheLife("minutes");
     return [];
   }
-  const { data, error } = await supabaseAdmin()
-    .from("wishes")
-    .select("id, name, message")
-    .eq("invitation_id", id)
-    .order("created_at", { ascending: false })
-    .limit(30);
-  if (error) {
+  // Ucapan yang disembunyikan admin atau mempelai tidak tampil. Kalau kolomnya belum ada (migrasi 0011),
+  // semua ucapan tetap tampil seperti sebelumnya.
+  const query = () => supabaseAdmin().from("wishes").select("id, name, message").eq("invitation_id", id).order("created_at", { ascending: false }).limit(30);
+  let { data, error } = await query().is("hidden_at", null);
+  if (error && (error.code === "42703" || /hidden_at/.test(error.message))) ({ data, error } = await query());
+  if (error || !data) {
     cacheLife("minutes");
     return [];
   }
