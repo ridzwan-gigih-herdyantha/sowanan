@@ -5,6 +5,8 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.
 const nextConfig: NextConfig = {
   cacheComponents: true,
   poweredByHeader: false,
+  // Hanya untuk dev: izinkan membuka dev server lewat tunnel ngrok, misalnya untuk mencoba undangan di HP.
+  allowedDevOrigins: ["*.ngrok-free.app", "*.ngrok.app"],
   images: {
     formats: ["image/avif", "image/webp"],
     qualities: [75, 85],
