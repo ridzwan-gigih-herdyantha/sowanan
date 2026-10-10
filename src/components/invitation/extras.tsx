@@ -6,6 +6,7 @@ import { ExtraTracks, ExtraVideos } from "./extras-media";
 import { Gallery } from "./gallery";
 import { Lung, Motif, texture } from "./pakeliran-ornaments";
 import { rows } from "./rows";
+import { RuleIconSvg } from "./rule-icons";
 import { Pita, Star } from "./sakinah/ornaments";
 
 // Warna latar mengikuti palet tema yang aktif, termasuk palet kustom dari tab Palet.
@@ -31,7 +32,7 @@ const SKINS: Record<string, Skin> = {
 const isLeft = (skin?: Skin) => skin === "film" || skin === "ruang" || skin === "herbarium";
 
 // Teks kecil di atas judul, mengikuti pola judul section di tiap tema.
-const EYEBROW: Record<ExtraKind, string> = { rundown: "Jalannya acara", denah: "Menuju lokasi", dresscode: "Busana tamu", bebas: "" };
+const EYEBROW: Record<ExtraKind, string> = { rundown: "Jalannya acara", denah: "Menuju lokasi", dresscode: "Busana tamu", imbauan: "Untuk tamu", bebas: "" };
 
 function Heading({ skin, eyebrow, title, tone }: { skin?: Skin; eyebrow: string; title: string; tone: Tone }) {
   if (skin === "pakeliran") {
@@ -293,7 +294,114 @@ function Free({ e, left }: { e: ExtraView; left: boolean }) {
   );
 }
 
+const no = (i: number) => String(i + 1).padStart(2, "0");
+const ruleText = "text-[16px] leading-snug text-pretty sm:text-[17px]";
+
+// Imbauan untuk tamu sebagai daftar baris supaya kalimat panjang tetap enak dibaca.
+// Wadah ikon dan pemisah barisnya mengikuti tema.
+function Rules({ rules, skin, tone }: { rules: ExtraView["rules"]; skin?: Skin; tone: Tone }) {
+  // Senja Kota: garis putus-putus seperti sobekan tiket.
+  if (skin === "film") {
+    return (
+      <ul className="mt-10 border-t border-dashed border-current/30">
+        {rules.map((r, i) => (
+          <li key={i} className="flex items-center gap-4 border-b border-dashed border-current/30 py-4">
+            <span className={`grid size-10 shrink-0 place-items-center rounded-full border border-current/25 ${tone.dark ? "" : "text-inv-gold"}`}>
+              <RuleIconSvg name={r.icon} />
+            </span>
+            <p className={ruleText}>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  // Ruang: garis tipis bernomor, ikon kecil di kanan, tanpa hiasan.
+  if (skin === "ruang") {
+    return (
+      <ol className="mt-10 border-t border-current/20">
+        {rules.map((r, i) => (
+          <li key={i} className="grid grid-cols-[28px_1fr_auto] items-center gap-4 border-b border-current/20 py-5">
+            <span className="text-[11px] tracking-[0.2em] tabular-nums opacity-60">{no(i)}</span>
+            <p className={ruleText}>{r.text}</p>
+            <RuleIconSvg name={r.icon} className="size-5 opacity-70" />
+          </li>
+        ))}
+      </ol>
+    );
+  }
+  // Herbarium: tabel label spesimen, kolom kiri berisi ikon dan nomor.
+  if (skin === "herbarium") {
+    return (
+      <div className="mt-10 border border-inv-line bg-inv-wash text-inv-ink">
+        <p className="border-b border-inv-line px-4 py-2 text-[10px] font-medium tracking-[0.2em] text-inv-gold">LABEL IMBAUAN</p>
+        <ol>
+          {rules.map((r, i) => (
+            <li key={i} className="grid grid-cols-[56px_1fr] border-b border-inv-line last:border-b-0">
+              <span className="flex flex-col items-center justify-center gap-1 border-r border-inv-line py-3 text-inv-gold">
+                <RuleIconSvg name={r.icon} />
+                <span className="text-[9px] font-medium tracking-[0.15em] tabular-nums">{no(i)}</span>
+              </span>
+              <p className="px-4 py-3.5 text-[15px] leading-snug text-pretty sm:text-[16px]">{r.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    );
+  }
+  // Pakeliran: ikon di dalam wajik emas, pemisah garis emas tipis.
+  if (skin === "pakeliran") {
+    return (
+      <ul className="mx-auto mt-10 max-w-[520px]">
+        {rules.map((r, i) => (
+          <li key={i} className="flex items-center gap-5 border-b border-pk-emas/30 py-4 last:border-b-0">
+            <span className={`relative grid size-11 shrink-0 place-items-center ${tone.dark ? "text-inv-gold-light" : "text-pk-ukir"}`}>
+              <span aria-hidden="true" className="absolute inset-[6px] rotate-45 border border-pk-emas" />
+              <RuleIconSvg name={r.icon} className="relative size-[18px]" />
+            </span>
+            <p className={ruleText}>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  // Sakinah: ikon di dalam lengkung mihrab berbingkai emas.
+  if (skin === "sakinah") {
+    return (
+      <ul className="mx-auto mt-10 max-w-[520px]">
+        {rules.map((r, i) => (
+          <li key={i} className="flex items-center gap-5 border-b border-sk-emas/30 py-4 last:border-b-0">
+            <span className={`grid h-12 w-10 shrink-0 place-items-center rounded-t-full border border-sk-emas pt-1 ${tone.dark ? "text-inv-gold-light" : "text-sk-emas"}`}>
+              <RuleIconSvg name={r.icon} className="size-[18px]" />
+            </span>
+            <p className={ruleText}>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <ul className="mx-auto mt-10 max-w-[520px]">
+      {rules.map((r, i) => (
+        <li key={i} className="flex items-center gap-4 border-b border-current/15 py-4 last:border-b-0">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full border border-current/25">
+            <RuleIconSvg name={r.icon} />
+          </span>
+          <p className={ruleText}>{r.text}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Body({ e, skin, tone, left }: { e: ExtraView; skin?: Skin; tone: Tone; left: boolean }): ReactNode {
+  if (e.kind === "imbauan") {
+    return (
+      <>
+        <Rules rules={e.rules} skin={skin} tone={tone} />
+        <Note text={e.note} left={left} />
+      </>
+    );
+  }
   if (e.kind === "rundown") return <Rundown items={e.rundown} tone={tone} left={left} />;
   if (e.kind === "denah" && e.plan) return <Plan plan={e.plan} note={e.note} left={left} />;
   if (e.kind === "dresscode") {

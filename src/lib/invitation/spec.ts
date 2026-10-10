@@ -1,5 +1,5 @@
 import type { Purpose } from "@/lib/storage/media";
-import { EXTRA_KINDS, EXTRA_TONES, type ExtraAnchor, type ExtraKind, type InvitationData, type SectionKey } from "./schema";
+import { EXTRA_KINDS, EXTRA_TONES, RULE_ICONS, type ExtraAnchor, type ExtraKind, type InvitationData, type SectionKey } from "./schema";
 
 const A = "andi-rina";
 const B = "bagas-sekar";
@@ -51,6 +51,7 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
   rundown: kind === "rundown" ? [{ time: "", name: "", note: "" }] : [],
   plan: { src: "", w: 0, h: 0 },
   colors: kind === "dresscode" ? [{ name: "", hex: "" }] : [],
+  rules: kind === "imbauan" ? [{ text: "", icon: "umum" }] : [],
   note: "",
   photos: [],
   videos: [],
@@ -271,6 +272,7 @@ export const GROUPS: Group[] = [
             { value: "rundown", label: EXTRA_KINDS.rundown, hint: "Jam dan nama acara, dari akad sampai selesai resepsi.", counted: true, blank: extraBlank("rundown", "Susunan Acara") },
             { value: "denah", label: EXTRA_KINDS.denah, hint: "Gambar denah gedung, pintu masuk, dan area parkir.", counted: true, blank: extraBlank("denah", "Denah Lokasi") },
             { value: "dresscode", label: EXTRA_KINDS.dresscode, hint: "Warna pakaian yang diminta, tampil sebagai contoh palet.", counted: true, blank: extraBlank("dresscode", "Dress Code") },
+            { value: "imbauan", label: EXTRA_KINDS.imbauan, hint: "Hal yang perlu diperhatikan tamu, misalnya tidak merekam saat akad.", counted: true, blank: extraBlank("imbauan", "Imbauan untuk Tamu") },
             { value: "bebas", label: `${EXTRA_KINDS.bebas} (Paket Khusus)`, hint: "Judul, teks, foto, video, dan lagu bebas. Tidak dihitung dalam batas paket.", counted: false, blank: extraBlank("bebas") },
           ],
         },
@@ -310,6 +312,22 @@ export const GROUPS: Group[] = [
             fields: [text("name", "Nama warna", 30, { ...optional, placeholder: "Sage" }), text("hex", "Kode warna", 7, { format: "color", placeholder: "#A3B18A" })],
           },
           area("note", "Catatan", 300, { ...optional, when: ["dresscode"], placeholder: "Hindari warna putih. Keluarga inti memakai batik." }),
+          {
+            kind: "list",
+            path: "rules",
+            label: "Imbauan",
+            item: "Imbauan",
+            hint: "Satu hal per imbauan, ditulis singkat.",
+            min: 1,
+            max: 8,
+            when: ["imbauan"],
+            blank: { text: "", icon: "umum" },
+            fields: [
+              text("text", "Isi imbauan", 140, { placeholder: "Mohon tidak merekam selama akad berlangsung" }),
+              { kind: "select", path: "icon", label: "Ikon", options: Object.keys(RULE_ICONS), labels: RULE_ICONS },
+            ],
+          },
+          area("note", "Penutup", 200, { ...optional, when: ["imbauan"], placeholder: "Terima kasih atas pengertiannya." }),
           {
             kind: "list",
             path: "photos",
