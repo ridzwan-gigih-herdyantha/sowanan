@@ -72,27 +72,31 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
 
 function Hero({ inv }: { inv: InvitationView }) {
   return (
-    <section className="inv-paper relative overflow-hidden pt-14 pb-20 lg:pt-20 lg:pb-28">
+    <section className="inv-paper relative overflow-hidden pt-10 pb-20 lg:pt-20 lg:pb-28">
       <Pattern opacity={0.06} />
-      <Wrap className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
-        <div className="text-center">
-          <div {...enter(0.35)}>
-            <Monogram inv={inv} className="mx-auto w-32 sm:w-36" />
+      {/* Di HP nama, foto, lalu keterangan, supaya foto sudah terlihat di layar pertama. Di desktop nama dan
+          keterangan di kolom kiri, foto di kolom kanan. */}
+      <Wrap className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-16 lg:gap-y-0">
+        <div className="text-center lg:self-end">
+          <div {...enter(0.35)} className="inv-enter hidden lg:block">
+            <Monogram inv={inv} className="mx-auto mb-6 w-36" />
           </div>
-          <Label className="mt-6">Undangan Pernikahan</Label>
-          <h1 {...enter(0.5)} className="inv-enter mt-4 font-script text-[clamp(60px,16vw,108px)] leading-[1] text-inv-accent">
+          <Label>Undangan Pernikahan</Label>
+          <h1 {...enter(0.5)} className="inv-enter mt-3 font-script text-[clamp(48px,13.5vw,68px)] leading-none text-inv-accent lg:mt-4 lg:text-[clamp(72px,8vw,108px)]">
             {inv.groom.name}
             <span className="my-1 block font-display text-[0.32em] text-inv-gold italic">&amp;</span>
             {inv.bride.name}
           </h1>
-          <Flourish className="mt-7" />
+        </div>
+        <div className="text-center lg:col-start-1 lg:row-start-2 lg:self-start">
+          <Flourish className="lg:mt-7" />
           <p className="mt-6 font-display text-[13px] tracking-[0.26em] uppercase">{inv.dateLong}</p>
           <p className="mt-2 text-[16px] text-inv-ink/75 italic">
             {inv.venue.name}, {inv.cityShort}
           </p>
           <Greeting className="mt-6 text-[14px] text-inv-gold" />
         </div>
-        <div {...enter(0.6)} className="inv-enter relative mx-auto w-full max-w-[460px] pt-8 lg:max-w-none">
+        <div {...enter(0.6)} className="inv-enter relative row-start-2 mx-auto w-full max-w-[460px] pt-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:max-w-none">
           <Bow className="absolute top-0 left-1/2 z-10 w-24 -translate-x-1/2 drop-shadow-[0_4px_6px_rgba(60,45,25,.25)] sm:w-28" />
           <OrnateFrame corners={false} className={card} inner="p-3 sm:p-4">
             <div className="relative aspect-[4/5] overflow-hidden">
