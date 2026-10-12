@@ -9,6 +9,7 @@ export const THEME_MEDIA: Record<string, Purpose[]> = {
   "danang-kinanthi": [...BASE, "groom", "bride"],
   "fadhil-nayla": [...BASE, "groom", "bride"],
   "arya-kirana": [...BASE, "groom", "bride", "closing"],
+  "bima-nadia": [...BASE, "groom", "bride", "closing"],
 };
 
 export const THEME_NAMES: Record<string, string> = {
@@ -18,6 +19,7 @@ export const THEME_NAMES: Record<string, string> = {
   "danang-kinanthi": "Pakeliran",
   "fadhil-nayla": "Sakinah",
   "arya-kirana": "Sutra",
+  "bima-nadia": "Rembulan",
 };
 
 // Lagu bawaan tema, dipakai kalau undangan tidak mengunggah musik sendiri.
@@ -27,6 +29,7 @@ export const THEME_MUSIC: Record<string, string> = {
   "hendrawan-larasati": "hendrawan-larasati/music_1.mp3?v=mui04xmy",
   "fadhil-nayla": "fadhil-nayla/music_1.mp3?v=mupcmw7s",
   "arya-kirana": "arya-kirana/music_1.mp3?v=mv4z7a8w",
+  "bima-nadia": "bima-nadia/music_1.mp3?v=mv50biaj",
 };
 
 export function invitationLabel(slug: string, theme: string): string {

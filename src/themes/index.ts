@@ -3,6 +3,7 @@ import type { InvitationView } from "@/lib/invitation/view";
 import { AndiRina } from "./andi-rina";
 import { AryaKirana } from "./arya-kirana";
 import { BagasSekar } from "./bagas-sekar";
+import { BimaNadia } from "./bima-nadia";
 import { DanangKinanthi } from "./danang-kinanthi";
 import { FadhilNayla } from "./fadhil-nayla";
 import { HendrawanLarasati } from "./hendrawan-larasati";
@@ -17,4 +18,5 @@ export const THEMES: Record<string, Theme> = {
   "danang-kinanthi": { name: THEME_NAMES["danang-kinanthi"], Component: DanangKinanthi, themeColor: "#F5F1E8" },
   "fadhil-nayla": { name: THEME_NAMES["fadhil-nayla"], Component: FadhilNayla, themeColor: "#F5F1E6" },
   "arya-kirana": { name: THEME_NAMES["arya-kirana"], Component: AryaKirana, themeColor: "#FBF8F2" },
+  "bima-nadia": { name: THEME_NAMES["bima-nadia"], Component: BimaNadia, themeColor: "#0B0F1C" },
 };

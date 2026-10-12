@@ -5,6 +5,7 @@ import { submitWish } from "@/app/[slug]/actions";
 import { GUEST_NAME_MAX, WISH_MAX } from "@/lib/guest-input";
 import type { Wish } from "@/lib/guestbook";
 import { useArchived, useGuest } from "./shell";
+import { WishSky } from "./rembulan/wish-sky";
 import { sway } from "./sway";
 
 const OFFLINE = "Gagal terhubung. Periksa internet lalu coba lagi.";
@@ -12,10 +13,12 @@ const FIRST = 4;
 const STEP = 6;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
-type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" | "doa" };
+type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" | "doa" | "langit" };
 
 export function Wishes({ slug, initial, variant = "notes" }: Props) {
-  const lined = variant === "lined";
+  // Langit memakai daftar bergaris yang sama, dengan langit bintang ucapan di atasnya.
+  const langit = variant === "langit";
+  const lined = variant === "lined" || langit;
   const curator = variant === "curator";
   const tags = variant === "tags";
   const lontar = variant === "lontar";
@@ -131,6 +134,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
 
       <div className="mt-12 lg:mt-0">
         <div ref={listTop} className="scroll-mt-24" />
+        {langit && <WishSky wishes={all} fresh={new Set(unsynced.map((w) => w.id))} />}
         <ul className={serat || doa ? "columns-1 gap-4 sm:columns-2" : lontar ? "inv-lontar-list relative flex flex-col gap-3" : lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
           {all.slice(0, shown).map((w, i) =>
             tags ? (

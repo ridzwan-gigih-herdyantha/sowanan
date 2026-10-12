@@ -5,6 +5,7 @@ import type { ExtraView, InvitationView } from "@/lib/invitation/view";
 import { ExtraTracks, ExtraVideos, YoutubeStream } from "./extras-media";
 import { Gallery } from "./gallery";
 import { Lung, Motif, texture } from "./pakeliran-ornaments";
+import { MoonDisc } from "./rembulan/moon-disc";
 import { rows } from "./rows";
 import { RuleIconSvg } from "./rule-icons";
 import { Pita, Star } from "./sakinah/ornaments";
@@ -21,7 +22,7 @@ const TONES: Record<ExtraTone, { section: string; line: string; dot: string; bg:
 type Tone = (typeof TONES)[ExtraTone];
 
 // Gaya per tema. Tema tanpa skin memakai tampilan umum yang rata tengah.
-type Skin = "film" | "ruang" | "herbarium" | "pakeliran" | "sakinah" | "sutra";
+type Skin = "film" | "ruang" | "herbarium" | "pakeliran" | "sakinah" | "sutra" | "rembulan";
 const SKINS: Record<string, Skin> = {
   "andi-rina": "film",
   "bagas-sekar": "ruang",
@@ -29,6 +30,7 @@ const SKINS: Record<string, Skin> = {
   "danang-kinanthi": "pakeliran",
   "fadhil-nayla": "sakinah",
   "arya-kirana": "sutra",
+  "bima-nadia": "rembulan",
 };
 // Tema editorial meratakan judul dan isi ke kiri, tema berornamen ke tengah.
 const isLeft = (skin?: Skin) => skin === "film" || skin === "ruang" || skin === "herbarium";
@@ -64,6 +66,19 @@ function Heading({ skin, eyebrow, title, tone }: { skin?: Skin; eyebrow: string;
         )}
         {title && <h2 className="mt-3 font-display text-[clamp(34px,8.6vw,54px)] leading-[1.05] text-balance">{title}</h2>}
         <Pita className={`mt-4 h-4 w-48 sm:w-60 ${tone.dark ? "text-sk-emas/80" : "text-sk-emas"}`} />
+      </div>
+    );
+  }
+  if (skin === "rembulan") {
+    return (
+      <div className="text-center">
+        {eyebrow && <p className={`rb-label text-[11px] tracking-[0.32em] ${tone.dark ? "opacity-70" : "text-inv-gold"}`}>{eyebrow}</p>}
+        {title && <h2 className="mt-4 font-display text-[clamp(34px,8vw,54px)] leading-[1.05] text-balance">{title}</h2>}
+        <div aria-hidden="true" className="mt-6 flex items-center justify-center gap-3">
+          {[0.12, 0.27, 0.5, 0.73, 0.88].map((a, i) => (
+            <MoonDisc key={a} id={`rb-extra-${eyebrow.replace(/\W+/g, "-")}-${i}`} age={a} glow={false} small className={a === 0.5 ? "size-4" : "size-3"} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -255,6 +270,23 @@ const LOOKS: Record<Skin | "plain", Look> = {
       </li>
     ),
   },
+  // Rembulan: bulatan warna bercincin perak dengan pendar cahaya bulan, seperti bulan kecil.
+  rembulan: {
+    cap: { mobile: 4, desktop: 4 },
+    center: true,
+    gap: { mobile: "gap-x-3", desktop: "gap-x-8" },
+    rowGap: "gap-y-9",
+    item: (c, i, _per, desktop) => (
+      <li key={i} className={`flex flex-col items-center text-center ${desktop ? "w-32" : "w-[72px]"}`}>
+        <span
+          aria-hidden="true"
+          className={`block rounded-full ${desktop ? "size-20" : "size-13"}`}
+          style={{ ...fill(c), boxShadow: "0 0 0 3px var(--extra-bg), 0 0 0 4px var(--inv-gold-light), 0 0 22px 2px color-mix(in srgb, var(--inv-accent) 20%, transparent)" }}
+        />
+        <span className={`font-display leading-tight ${desktop ? "mt-5 text-[19px]" : "mt-4 text-[16px]"}`}>{label(c)}</span>
+      </li>
+    ),
+  },
   plain: {
     cap: { mobile: 4, desktop: 4 },
     center: true,
@@ -407,6 +439,21 @@ function Rules({ rules, skin, tone }: { rules: ExtraView["rules"]; skin?: Skin; 
       </ul>
     );
   }
+  // Rembulan: ikon di dalam lingkaran perak, pemisah garis tipis.
+  if (skin === "rembulan") {
+    return (
+      <ul className="mx-auto mt-10 max-w-[520px]">
+        {rules.map((r, i) => (
+          <li key={i} className="flex items-center gap-5 border-b border-inv-line py-4 last:border-b-0">
+            <span className={`grid size-11 shrink-0 place-items-center rounded-full border border-inv-gold-light shadow-[0_0_14px_-2px_color-mix(in_srgb,var(--inv-accent)_30%,transparent)] ${tone.dark ? "text-inv-gold-light" : "text-inv-accent"}`}>
+              <RuleIconSvg name={r.icon} className="size-[18px]" />
+            </span>
+            <p className={ruleText}>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   // Sutra: ikon di dalam medali bercincin ganda, seperti medali monogram di pembuka.
   if (skin === "sutra") {
     return (
@@ -445,6 +492,7 @@ const STREAM_FRAME: Record<Skin | "plain", { className: string; shadow?: string 
   pakeliran: { className: "rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--pk-emas)" },
   sakinah: { className: "rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--sk-emas), 0 0 0 9px var(--extra-bg), 0 0 0 10px color-mix(in srgb, var(--sk-emas) 45%, transparent)" },
   sutra: { className: "rounded-[1px]", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--inv-gold), 0 0 0 9px var(--extra-bg), 0 0 0 10px var(--inv-gold-light)" },
+  rembulan: { className: "overflow-hidden rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--inv-gold-light), 0 0 40px -4px color-mix(in srgb, var(--inv-accent) 30%, transparent)" },
   plain: { className: "overflow-hidden rounded-[2px]" },
 };
 

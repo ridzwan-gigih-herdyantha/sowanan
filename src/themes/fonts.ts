@@ -21,6 +21,7 @@ import type { InvitationData } from "@/lib/invitation/schema";
 import { defaultFonts as andiRina } from "./andi-rina/fonts";
 import { defaultFonts as aryaKirana } from "./arya-kirana/fonts";
 import { defaultFonts as bagasSekar } from "./bagas-sekar/fonts";
+import { defaultFonts as bimaNadia } from "./bima-nadia/fonts";
 import { defaultFonts as danangKinanthi } from "./danang-kinanthi/fonts";
 import { defaultFonts as fadhilNayla } from "./fadhil-nayla/fonts";
 import { defaultFonts as hendrawanLarasati } from "./hendrawan-larasati/fonts";
@@ -93,6 +94,12 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
   ],
   "arya-kirana": [
     { id: "", name: "Gilda & Lora", ...aryaKirana },
+    { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
+    { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
+    { id: "lembut", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
+  ],
+  "bima-nadia": [
+    { id: "", name: "Italiana & Newsreader", ...bimaNadia },
     { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
     { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
     { id: "lembut", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
