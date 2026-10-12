@@ -26,6 +26,7 @@ export const THEME_MUSIC: Record<string, string> = {
   "bagas-sekar": "bagas-sekar/music_1.mp3?v=mui04hdd",
   "hendrawan-larasati": "hendrawan-larasati/music_1.mp3?v=mui04xmy",
   "fadhil-nayla": "fadhil-nayla/music_1.mp3?v=mupcmw7s",
+  "arya-kirana": "arya-kirana/music_1.mp3?v=mv4z7a8w",
 };
 
 export function invitationLabel(slug: string, theme: string): string {
