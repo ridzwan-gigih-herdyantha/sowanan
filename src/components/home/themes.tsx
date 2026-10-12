@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
-import { fill, type Settings, type ThemeEntry } from "@/lib/settings";
+import { fill, THEME_CATEGORIES, type Settings, type ThemeEntry } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { OfferCard } from "./offer-card";
+import { ThemeFilter } from "./theme-filter";
 
 // Warna latar kartu mengikuti nuansa tiap tema.
 const CARD_BG: Record<string, string> = {
@@ -54,14 +55,18 @@ export function Themes({ settings, vars, waHref }: { settings: Settings; vars: R
     <section id="tema" className="border-y border-line bg-blush">
       <Container className={sectionPad}>
         <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
-        {sec.sub && <SectionSub {...reveal()}>{fill(sec.sub, vars)}</SectionSub>}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-5">
-          {settings.themes
+        {sec.sub && (
+          <SectionSub className="mb-7!" {...reveal()}>
+            {fill(sec.sub, vars)}
+          </SectionSub>
+        )}
+        <ThemeFilter
+          categories={Object.entries(THEME_CATEGORIES)}
+          waHref={vars.wa_link}
+          items={settings.themes
             .filter((t) => t.on)
-            .map((t, i) => (
-              <Card key={t.id} theme={t} index={i} waHref={waHref} />
-            ))}
-        </div>
+            .map((t, i) => ({ id: t.id, category: t.category, node: <Card theme={t} index={i} waHref={waHref} /> }))}
+        />
         <OfferCard card={sec.custom} vars={vars} className="mt-12" />
       </Container>
     </section>

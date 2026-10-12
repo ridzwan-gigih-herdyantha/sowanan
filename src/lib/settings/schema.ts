@@ -23,6 +23,18 @@ export type IconId = keyof typeof ICONS;
 // Paket paling rendah yang boleh memakai sebuah tema.
 export const THEME_TIERS = { semua: "Semua paket", lengkap: "Lengkap dan Istimewa", istimewa: "Istimewa" } as const;
 export type ThemeTier = keyof typeof THEME_TIERS;
+// Kategori untuk filter di section Tema. Urutan di sini adalah urutan chip di homepage.
+export const THEME_CATEGORIES = {
+  minimalis: "Minimalis",
+  elegan: "Elegan",
+  floral: "Floral",
+  islami: "Islami",
+  adat: "Adat",
+  game: "Game",
+  vintage: "Vintage/Retro",
+  gelap: "Dark/Moody",
+} as const;
+export type ThemeCategory = keyof typeof THEME_CATEGORIES;
 
 // Kunci sistem di isi paket. Hanya kunci ini yang dibaca aplikasi.
 export const SYSTEM_KEYS = {
@@ -167,6 +179,7 @@ export const settingsSchema = z
           slug: z.enum(THEME_SLUGS, "Slug tema tidak dikenal."),
           demo: href("Tautan demo"),
           tier: z.enum(Object.keys(THEME_TIERS) as [ThemeTier, ...ThemeTier[]]),
+          category: z.enum(Object.keys(THEME_CATEGORIES) as [ThemeCategory, ...ThemeCategory[]]).default("minimalis"),
           style: str("Deskripsi tema", 90),
           image: str("Gambar sampul", 300),
         }),

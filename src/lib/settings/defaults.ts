@@ -292,11 +292,11 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   footer: { line1: "Undangan pernikahan digital · {kota}", line2: "", nav: "Jelajahi", demos: "Contoh undangan", reach: "Hubungi" },
   themes: [
-    { id: "senja", on: true, name: "Senja Kota", slug: "andi-rina", demo: "/andi-rina", tier: "semua", style: "film / urban", image: "/img/tema-andi-rina.webp" },
-    { id: "ruang", on: true, name: "Ruang", slug: "bagas-sekar", demo: "/bagas-sekar", tier: "semua", style: "monokrom / minimalis", image: "/img/tema-bagas-sekar.webp" },
-    { id: "herba", on: true, name: "Herbarium", slug: "hendrawan-larasati", demo: "/hendrawan-larasati", tier: "lengkap", style: "bunga / botani", image: "/img/tema-hendrawan-larasati.webp" },
-    { id: "kelir", on: true, name: "Pakeliran", slug: "danang-kinanthi", demo: "/danang-kinanthi", tier: "lengkap", style: "jawa / wayang", image: "/img/tema-danang-kinanthi.webp" },
-    { id: "sakinah", on: true, name: "Sakinah", slug: "fadhil-nayla", demo: "/fadhil-nayla", tier: "lengkap", style: "islami / geometri", image: "/img/tema-fadhil-nayla.webp" },
+    { id: "senja", on: true, name: "Senja Kota", slug: "andi-rina", demo: "/andi-rina", tier: "semua", category: "vintage", style: "film / urban", image: "/img/tema-andi-rina.webp" },
+    { id: "ruang", on: true, name: "Ruang", slug: "bagas-sekar", demo: "/bagas-sekar", tier: "semua", category: "minimalis", style: "monokrom / minimalis", image: "/img/tema-bagas-sekar.webp" },
+    { id: "herba", on: true, name: "Herbarium", slug: "hendrawan-larasati", demo: "/hendrawan-larasati", tier: "lengkap", category: "floral", style: "bunga / botani", image: "/img/tema-hendrawan-larasati.webp" },
+    { id: "kelir", on: true, name: "Pakeliran", slug: "danang-kinanthi", demo: "/danang-kinanthi", tier: "lengkap", category: "adat", style: "jawa / wayang", image: "/img/tema-danang-kinanthi.webp" },
+    { id: "sakinah", on: true, name: "Sakinah", slug: "fadhil-nayla", demo: "/fadhil-nayla", tier: "lengkap", category: "islami", style: "islami / geometri", image: "/img/tema-fadhil-nayla.webp" },
   ],
   faq: [
     { id: "lama", on: true, q: "Berapa lama jadinya?", a: "Undangan pernikahan digital Sowanan jadi dalam {waktu}, tergantung paket: {pengerjaan}. Waktu pengerjaan dihitung setelah data lengkap dan pembayaran masuk, dan pesanan yang masuk setelah pukul 15.00 dihitung mulai hari kerja berikutnya. Perbandingan lengkap tiap paket ada di [bagian harga](#harga)." },

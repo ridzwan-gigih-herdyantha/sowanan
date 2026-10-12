@@ -1,6 +1,6 @@
 "use client";
 
-import { ICONS, newId, PACKAGE_IDS, PACKAGE_NAMES, THEME_TIERS, type Settings } from "@/lib/settings/schema";
+import { ICONS, newId, PACKAGE_IDS, PACKAGE_NAMES, THEME_CATEGORIES, THEME_TIERS, type Settings } from "@/lib/settings/schema";
 import { generalWaLink, themeCount, themesLimited, VARIABLES } from "@/lib/settings/text";
 import { THEME_NAMES } from "@/themes/media";
 import { useSettings } from "./form-context";
@@ -208,7 +208,7 @@ export function TemaPanel() {
         blank={() => {
           const used = new Set(s.themes.map((t) => t.slug));
           const slug = SLUG_OPTIONS.find(([k]) => !used.has(k))?.[0] ?? SLUG_OPTIONS[0][0];
-          return { id: newId(), on: true, name: THEME_NAMES[slug] ?? "", slug, demo: `/${slug}`, tier: "lengkap" as const, style: "", image: "" };
+          return { id: newId(), on: true, name: THEME_NAMES[slug] ?? "", slug, demo: `/${slug}`, tier: "lengkap" as const, category: "minimalis" as const, style: "", image: "" };
         }}
         render={(_, __, base) => (
           <>
@@ -227,6 +227,7 @@ export function TemaPanel() {
               />
             </Row>
             <Row>
+              <Select path={`${base}.category`} label="Kategori" chip="view" className={width.md} options={Object.entries(THEME_CATEGORIES)} help="Untuk filter di section Tema." />
               <Text path={`${base}.style`} label="Deskripsi satu baris" max={90} placeholder="film / urban" />
               <ImagePicker path={`${base}.image`} label="Gambar sampul" purpose="cover" className={width.md} tall help="Tangkapan layar ponsel, rasio 390 x 844." />
             </Row>
