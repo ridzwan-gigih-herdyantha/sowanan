@@ -22,7 +22,7 @@ export const PURPOSES = {
   photo: img("Foto slider pasangan", 1600),
   groom: img("Foto mempelai pria", 1000),
   bride: img("Foto mempelai wanita", 1000),
-  closing: img("Foto penutup", 900),
+  closing: img("Foto penutup", 1800),
   detail: img("Foto detail", 900),
   rsvp: img("Foto RSVP", 2000),
   story: img("Foto cerita", 1400),

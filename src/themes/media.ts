@@ -8,7 +8,7 @@ export const THEME_MEDIA: Record<string, Purpose[]> = {
   "hendrawan-larasati": [...BASE, "groom", "bride", "specimen"],
   "danang-kinanthi": [...BASE, "groom", "bride"],
   "fadhil-nayla": [...BASE, "groom", "bride"],
-  "arya-kirana": [...BASE, "groom", "bride"],
+  "arya-kirana": [...BASE, "groom", "bride", "closing"],
 };
 
 export const THEME_NAMES: Record<string, string> = {

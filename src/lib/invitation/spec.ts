@@ -251,7 +251,7 @@ export const GROUPS: Group[] = [
     title: "Penutup",
     section: "closing",
     fields: [
-      media("media.closing", "Foto penutup", "closing", { themes: [A], ...optional, hint: "Kosong berarti memakai foto hero." }),
+      media("media.closing", "Foto penutup", "closing", { themes: [A, E], ...optional, hint: "Kosong berarti memakai foto hero." }),
       text("copy.sesanti", "Sesanti (pepatah Jawa)", 120, { themes: [J], ...optional, placeholder: "Witing tresna jalaran saka kulina" }),
       text("copy.sesantiArti", "Arti sesanti", 160, { themes: [J], ...optional, placeholder: "Cinta tumbuh karena terbiasa bersama" }),
     ],

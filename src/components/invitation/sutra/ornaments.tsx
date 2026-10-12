@@ -40,8 +40,8 @@ export function OrnateFrame({ children, className = "", inner = "", corners = tr
 }
 
 // Pembatas garis dengan ulir di tengah.
-export function Flourish({ className = "" }: { className?: string }) {
-  return <div aria-hidden="true" className={`mx-auto aspect-[2611/262] w-56 text-inv-gold sm:w-72 ${className}`} style={masked("divider.svg")} />;
+export function Flourish({ className = "", color = "text-inv-gold" }: { className?: string; color?: string }) {
+  return <div aria-hidden="true" className={`mx-auto aspect-[2611/262] w-56 sm:w-72 ${color} ${className}`} style={masked("divider.svg")} />;
 }
 
 // Motif quatrefoil samar untuk latar, dipakai lewat mask supaya warnanya mengikuti palet.

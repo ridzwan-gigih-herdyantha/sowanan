@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { PURPOSES } from "@/lib/storage/media";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
+import { isDemo } from "@/lib/invitation/archive";
 import { invitationLabel, themeMedia } from "@/themes/media";
 import { LoginForm } from "../login-form";
 import { AdminFrame } from "../frame";
@@ -30,7 +31,9 @@ async function MediaGate() {
       </AdminFrame>
     );
 
-  const { data } = await supabaseAdmin().from("invitations").select("slug, theme").order("slug");
+  // Hanya undangan contoh. Foto undangan pelanggan diunggah dari editor masing-masing.
+  const { data: rows } = await supabaseAdmin().from("invitations").select("slug, theme").order("slug");
+  const data = (rows ?? []).filter((r) => isDemo(r.slug as string, r.theme as string));
   const slugs = (data ?? []).map((r) => r.slug as string);
   const labels = Object.fromEntries((data ?? []).map((r) => [r.slug as string, invitationLabel(r.slug, r.theme)]));
   const allowed = Object.fromEntries((data ?? []).map((r) => [r.slug as string, themeMedia(r.theme as string) as string[]]));

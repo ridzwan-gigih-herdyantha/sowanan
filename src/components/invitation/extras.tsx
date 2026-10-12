@@ -8,6 +8,7 @@ import { Lung, Motif, texture } from "./pakeliran-ornaments";
 import { rows } from "./rows";
 import { RuleIconSvg } from "./rule-icons";
 import { Pita, Star } from "./sakinah/ornaments";
+import { Flourish } from "./sutra/ornaments";
 
 // Warna latar mengikuti palet tema yang aktif, termasuk palet kustom dari tab Palet.
 // bg dipakai sebagai celah antara isi dan bingkai emas supaya bingkainya tampak lepas dari isi.
@@ -20,13 +21,14 @@ const TONES: Record<ExtraTone, { section: string; line: string; dot: string; bg:
 type Tone = (typeof TONES)[ExtraTone];
 
 // Gaya per tema. Tema tanpa skin memakai tampilan umum yang rata tengah.
-type Skin = "film" | "ruang" | "herbarium" | "pakeliran" | "sakinah";
+type Skin = "film" | "ruang" | "herbarium" | "pakeliran" | "sakinah" | "sutra";
 const SKINS: Record<string, Skin> = {
   "andi-rina": "film",
   "bagas-sekar": "ruang",
   "hendrawan-larasati": "herbarium",
   "danang-kinanthi": "pakeliran",
   "fadhil-nayla": "sakinah",
+  "arya-kirana": "sutra",
 };
 // Tema editorial meratakan judul dan isi ke kiri, tema berornamen ke tengah.
 const isLeft = (skin?: Skin) => skin === "film" || skin === "ruang" || skin === "herbarium";
@@ -62,6 +64,15 @@ function Heading({ skin, eyebrow, title, tone }: { skin?: Skin; eyebrow: string;
         )}
         {title && <h2 className="mt-3 font-display text-[clamp(34px,8.6vw,54px)] leading-[1.05] text-balance">{title}</h2>}
         <Pita className={`mt-4 h-4 w-48 sm:w-60 ${tone.dark ? "text-sk-emas/80" : "text-sk-emas"}`} />
+      </div>
+    );
+  }
+  if (skin === "sutra") {
+    return (
+      <div className="text-center">
+        {eyebrow && <p className={`font-display text-[11px] tracking-[0.34em] uppercase ${tone.dark ? "text-inv-gold-light" : "text-inv-gold"}`}>{eyebrow}</p>}
+        {title && <h2 className="mt-4 font-display text-[clamp(32px,7.4vw,50px)] leading-[1.1] text-balance">{title}</h2>}
+        <Flourish className="mt-6" color={tone.dark ? "text-inv-gold-light" : "text-inv-gold"} />
       </div>
     );
   }
@@ -227,6 +238,23 @@ const LOOKS: Record<Skin | "plain", Look> = {
       </li>
     ),
   },
+  // Sutra: oval cameo bercincin emas ganda, seperti bingkai foto mempelai.
+  sutra: {
+    cap: { mobile: 4, desktop: 4 },
+    center: true,
+    gap: { mobile: "gap-x-3", desktop: "gap-x-8" },
+    rowGap: "gap-y-9",
+    item: (c, i, _per, desktop) => (
+      <li key={i} className={`flex flex-col items-center text-center ${desktop ? "w-32" : "w-[72px]"}`}>
+        <span
+          aria-hidden="true"
+          className={`block rounded-[50%] ${desktop ? "h-[116px] w-[88px]" : "h-[72px] w-[54px]"}`}
+          style={{ ...fill(c), boxShadow: "0 0 0 3px var(--extra-bg), 0 0 0 4px var(--inv-gold), 0 0 0 7px var(--extra-bg), 0 0 0 8px var(--inv-gold-light)" }}
+        />
+        <span className={`font-display leading-tight italic ${desktop ? "mt-5 text-[18px]" : "mt-4 text-[15px]"}`}>{label(c)}</span>
+      </li>
+    ),
+  },
   plain: {
     cap: { mobile: 4, desktop: 4 },
     center: true,
@@ -379,6 +407,22 @@ function Rules({ rules, skin, tone }: { rules: ExtraView["rules"]; skin?: Skin; 
       </ul>
     );
   }
+  // Sutra: ikon di dalam medali bercincin ganda, seperti medali monogram di pembuka.
+  if (skin === "sutra") {
+    return (
+      <ul className="mx-auto mt-10 max-w-[520px]">
+        {rules.map((r, i) => (
+          <li key={i} className="flex items-center gap-5 border-b border-inv-gold/30 py-4 last:border-b-0">
+            <span className={`relative grid size-11 shrink-0 place-items-center rounded-full border border-inv-gold ${tone.dark ? "text-inv-gold-light" : "text-inv-accent"}`}>
+              <span aria-hidden="true" className="absolute -inset-1 rounded-full border border-inv-gold-light/70" />
+              <RuleIconSvg name={r.icon} className="size-[18px]" />
+            </span>
+            <p className={ruleText}>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   return (
     <ul className="mx-auto mt-10 max-w-[520px]">
       {rules.map((r, i) => (
@@ -400,6 +444,7 @@ const STREAM_FRAME: Record<Skin | "plain", { className: string; shadow?: string 
   herbarium: { className: "relative border border-inv-line bg-inv-paper p-2.5 shadow-[0_10px_24px_rgba(0,0,0,.07)]" },
   pakeliran: { className: "rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--pk-emas)" },
   sakinah: { className: "rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--sk-emas), 0 0 0 9px var(--extra-bg), 0 0 0 10px color-mix(in srgb, var(--sk-emas) 45%, transparent)" },
+  sutra: { className: "rounded-[1px]", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--inv-gold), 0 0 0 9px var(--extra-bg), 0 0 0 10px var(--inv-gold-light)" },
   plain: { className: "overflow-hidden rounded-[2px]" },
 };
 
