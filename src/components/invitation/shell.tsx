@@ -7,6 +7,7 @@ import { gending } from "./pakeliran/gamelan";
 import { GUEST_NAME_MAX } from "@/lib/guest-input";
 import { GUEST_KEY, guestCodeKey, recall, remember } from "@/lib/guest-memory";
 import { PintuDoor, type PintuProps } from "./sakinah/door";
+import { MedaliDoor, type MedaliProps } from "./sutra/door";
 
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
@@ -80,7 +81,8 @@ type Door =
   | { kind: "walls"; groom: string; bride: string; date: string }
   | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string }
   | ({ kind: "kelir" } & Omit<KelirProps, "invited" | "onOpen">)
-  | ({ kind: "pintu" } & Omit<PintuProps, "invited" | "onOpen">);
+  | ({ kind: "pintu" } & Omit<PintuProps, "invited" | "onOpen">)
+  | ({ kind: "medali" } & Omit<MedaliProps, "invited" | "onOpen">);
 
 type Props = {
   door: Door;
@@ -242,7 +244,7 @@ export function InvitationShell({ door, music, synth, className, style, children
       <MediaContext.Provider value={media}>
         <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
           <noscript>
-            <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+            <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
           </noscript>
 
           {door.kind === "vellum" && (
@@ -307,8 +309,11 @@ export function InvitationShell({ door, music, synth, className, style, children
             />
           )}
           {door.kind === "pintu" && <PintuDoor groom={door.groom} bride={door.bride} date={door.date} hijri={door.hijri} invited={invited} onOpen={openInvitation} />}
+          {door.kind === "medali" && (
+            <MedaliDoor groom={door.groom} bride={door.bride} monogram={door.monogram} date={door.date} place={door.place} invited={invited} onOpen={openInvitation} />
+          )}
 
-          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" ? null : door.kind === "seal" ? (
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" ? null : door.kind === "seal" ? (
             <div
               className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
               aria-hidden={open}

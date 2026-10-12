@@ -6,6 +6,7 @@ const B = "bagas-sekar";
 const H = "hendrawan-larasati";
 const J = "danang-kinanthi";
 const S = "fadhil-nayla";
+const E = "arya-kirana";
 
 // when: isian di dalam item daftar yang hanya tampil dan diperiksa untuk jenis item tertentu (lihat Variants).
 type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean; when?: string[] };
@@ -63,10 +64,10 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
 
 const person = (key: "groom" | "bride", title: string): Field[] => [
   { kind: "heading", path: `couple.${key}`, label: title },
-  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S] }),
+  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S, E] }),
   text(`couple.${key}.role`, "Keterangan", 40, { placeholder: key === "groom" ? "Putra dari" : "Putri dari" }),
   area(`couple.${key}.parents`, "Nama orang tua", 160, { placeholder: "Bapak ... & Ibu ..." }),
-  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S], ...optional, hint: "Kosong berarti memakai foto hero." }),
+  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S, E], ...optional, hint: "Kosong berarti memakai foto hero." }),
   text(`couple.${key}.flower`, "Bunga", 60, { themes: [H], ...optional }),
   text(`couple.${key}.latin`, "Nama latin bunga", 80, { themes: [H], ...optional }),
   text(`couple.${key}.aksara`, "Nama dalam aksara Jawa", 80, { themes: [J], ...optional, hint: "Diketik manual dan dicek klien. Tidak diterjemahkan otomatis." }),
@@ -85,7 +86,7 @@ export const GROUPS: Group[] = [
       { kind: "datetime", path: "event.end", label: "Selesai acara", required: true },
       { kind: "select", path: "event.timezone", label: "Zona waktu", options: ["WIB", "WITA", "WIT"] },
       text("event.city", "Kota", 60, { placeholder: "Bandung, Jawa Barat" }),
-      text("copy.tagline", "Tagline", 120, { themes: [A, B], ...optional }),
+      text("copy.tagline", "Tagline", 120, { themes: [A, B, E], ...optional }),
       text("copy.latinPair", "Pasangan nama latin", 80, { themes: [H], ...optional }),
       text("copy.collection", "Nomor koleksi", 20, { themes: [H], ...optional, placeholder: "No. 0508" }),
       media("media.hero", "Foto hero (potret)", "hero"),

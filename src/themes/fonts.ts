@@ -19,6 +19,7 @@ import {
 } from "next/font/google";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { defaultFonts as andiRina } from "./andi-rina/fonts";
+import { defaultFonts as aryaKirana } from "./arya-kirana/fonts";
 import { defaultFonts as bagasSekar } from "./bagas-sekar/fonts";
 import { defaultFonts as danangKinanthi } from "./danang-kinanthi/fonts";
 import { defaultFonts as fadhilNayla } from "./fadhil-nayla/fonts";
@@ -89,6 +90,12 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
     { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
     { id: "lembut", name: "Cormorant & Jost", display: cormorant, body: jost },
     { id: "klasik", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
+  ],
+  "arya-kirana": [
+    { id: "", name: "Gilda & Lora", ...aryaKirana },
+    { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
+    { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
+    { id: "lembut", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
   ],
 };
 

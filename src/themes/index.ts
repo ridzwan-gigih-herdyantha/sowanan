@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import type { InvitationView } from "@/lib/invitation/view";
 import { AndiRina } from "./andi-rina";
+import { AryaKirana } from "./arya-kirana";
 import { BagasSekar } from "./bagas-sekar";
 import { DanangKinanthi } from "./danang-kinanthi";
 import { FadhilNayla } from "./fadhil-nayla";
@@ -15,4 +16,5 @@ export const THEMES: Record<string, Theme> = {
   "hendrawan-larasati": { name: THEME_NAMES["hendrawan-larasati"], Component: HendrawanLarasati, themeColor: "#F4EFE6" },
   "danang-kinanthi": { name: THEME_NAMES["danang-kinanthi"], Component: DanangKinanthi, themeColor: "#F5F1E8" },
   "fadhil-nayla": { name: THEME_NAMES["fadhil-nayla"], Component: FadhilNayla, themeColor: "#F5F1E6" },
+  "arya-kirana": { name: THEME_NAMES["arya-kirana"], Component: AryaKirana, themeColor: "#FBF8F2" },
 };

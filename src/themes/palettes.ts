@@ -1,5 +1,6 @@
 import type { InvitationData } from "@/lib/invitation/schema";
 import { palette as andiRina } from "./andi-rina/palette";
+import { palette as aryaKirana } from "./arya-kirana/palette";
 import { palette as bagasSekar } from "./bagas-sekar/palette";
 import { palette as danangKinanthi } from "./danang-kinanthi/palette";
 import { palette as fadhilNayla } from "./fadhil-nayla/palette";
@@ -12,6 +13,7 @@ export const PALETTES: Record<string, ThemePalette> = {
   "hendrawan-larasati": hendrawanLarasati,
   "danang-kinanthi": danangKinanthi,
   "fadhil-nayla": fadhilNayla,
+  "arya-kirana": aryaKirana,
 };
 
 // Palet yang dipakai undangan: kustom bila ketiga warnanya sah, preset yang dipilih, atau preset pertama sebagai bawaan.
