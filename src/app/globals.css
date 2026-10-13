@@ -244,6 +244,41 @@
   }
 }
 
+/* Lensa: judul naik dari balik garis, garis tergambar dari kiri, foto terbuka dari bawah seperti tirai. */
+@media (prefers-reduced-motion: no-preference) {
+  .lr-js [data-lr="rise"] {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(35%);
+    transition:
+      clip-path 1s cubic-bezier(0.65, 0, 0.35, 1),
+      transform 1s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .lr-js [data-lr="line"] {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1) 0.2s;
+  }
+  .lr-js [data-lr="photo"] {
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .lr-js [data-lr="photo"] img {
+    transform: scale(1.12);
+    transition: transform 1.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .lr-js [data-lr][data-lr-in] {
+    clip-path: inset(0 0 0 0);
+    transform: none;
+  }
+  .lr-js [data-lr="photo"][data-lr-in] img {
+    transform: none;
+  }
+  .lr-js [data-lr="photo"][data-lr-in]:hover img {
+    transform: scale(1.04);
+    transition-duration: 0.8s;
+  }
+}
+
 /* Halaman undangan tanpa scrollbar, supaya lebar halaman tidak berubah saat undangan dibuka dan kunci gulir dilepas. */
 html[data-invitation] {
   scrollbar-width: none;

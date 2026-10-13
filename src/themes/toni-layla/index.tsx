@@ -9,7 +9,9 @@ import { LensaCountdown } from "@/components/invitation/lensa/countdown";
 import { FitText } from "@/components/invitation/lensa/fit";
 import { LensaPhoto, SCRIM } from "@/components/invitation/lensa/photo";
 import { QrisDownload } from "@/components/invitation/qris-download";
+import { Parallax } from "@/components/invitation/rembulan/parallax";
 import { Rsvp } from "@/components/invitation/rsvp";
+import { ScrollReveal } from "@/components/invitation/scroll-reveal";
 import { InvitationShell } from "@/components/invitation/shell";
 import { Wishes } from "@/components/invitation/wishes";
 import { googleCalendarUrl } from "@/lib/calendar";
@@ -39,9 +41,12 @@ function Label({ children, className = "" }: { children: ReactNode; className?: 
 // Judul section: label kecil di atas, judul besar rata kiri, garis tipis selebar isi di bawahnya.
 function Heading({ label, children, className = "" }: { label: string; children: ReactNode; className?: string }) {
   return (
-    <div className={`border-b border-inv-line pb-6 ${className}`}>
+    <div className={`relative pb-6 ${className}`}>
       <Label>{label}</Label>
-      <h2 className={`${big} mt-4 text-[clamp(44px,10vw,124px)] text-balance`}>{children}</h2>
+      <h2 data-lr="rise" className={`${big} mt-4 text-[clamp(44px,10vw,124px)] text-balance`}>
+        {children}
+      </h2>
+      <span aria-hidden="true" data-lr="line" className="absolute inset-x-0 bottom-0 h-px bg-inv-line" />
     </div>
   );
 }
@@ -51,7 +56,11 @@ function Heading({ label, children, className = "" }: { label: string; children:
 function Hero({ inv }: { inv: InvitationView }) {
   return (
     <section className="relative h-svh min-h-[560px] overflow-hidden bg-inv-night text-white">
-      <LensaPhoto portrait={inv.images.hero} wide={inv.images.heroWide} alt={`${inv.groom.name} dan ${inv.bride.name}`} priority />
+      {/* Foto bergeser lebih lambat dari halaman saat digulir. Di posisi teratas geserannya nol, jadi tetap sama
+          persis dengan foto di pembuka. */}
+      <Parallax speed={0.3} max={2000} className="absolute inset-0">
+        <LensaPhoto portrait={inv.images.hero} wide={inv.images.heroWide} alt={`${inv.groom.name} dan ${inv.bride.name}`} priority />
+      </Parallax>
       <div aria-hidden="true" className="absolute inset-0" style={{ background: SCRIM }} />
       <div className="relative flex h-full flex-col justify-between px-6 pt-[max(28px,5vh)] pb-[max(96px,10vh)] sm:px-[6vw] sm:pb-[max(104px,12vh)]">
         <div className="flex items-start justify-between gap-6">
@@ -99,7 +108,7 @@ function Intro({ inv }: { inv: InvitationView }) {
 function Person({ p, alt, label }: { p: InvitationView["groom"]; alt: string; label: string }) {
   return (
     <figure>
-      <div className="relative aspect-[4/5] overflow-hidden bg-inv-wash">
+      <div data-lr="photo" className="relative aspect-[4/5] overflow-hidden bg-inv-wash">
         <Image src={p.photo} alt={alt} fill sizes="(min-width: 768px) 45vw, 90vw" className="object-cover object-[50%_25%]" />
       </div>
       <figcaption className="mt-6">
@@ -147,7 +156,7 @@ function StorySection({ inv }: { inv: InvitationView }) {
                 <h3 className="mt-3 text-[clamp(26px,3.4vw,36px)] leading-tight">{s.title}</h3>
                 <p className="mt-4 text-[16px] leading-relaxed text-inv-ink/75">{s.short}</p>
               </div>
-              <div className="relative aspect-[3/2] overflow-hidden bg-inv-paper">
+              <div data-lr="photo" className="relative aspect-[3/2] overflow-hidden bg-inv-paper">
                 <Image src={s.image} alt={s.title} fill sizes="(min-width: 768px) 40vw, 90vw" className="object-cover" />
               </div>
             </li>
@@ -186,7 +195,7 @@ function Details({ inv }: { inv: InvitationView }) {
         </ul>
 
         <div className="mt-14 grid gap-8 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:items-end md:gap-10">
-          <div className="relative aspect-[3/2] overflow-hidden bg-inv-wash">
+          <div data-lr="photo" className="relative aspect-[3/2] overflow-hidden bg-inv-wash">
             <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 55vw, 90vw" className="object-cover" />
           </div>
           <div>
@@ -363,6 +372,7 @@ export function ToniLayla({ inv }: { inv: InvitationView }) {
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
+      <ScrollReveal attr="lr" flag="lr-js" />
       <main>
         <Hero inv={inv} />
         <Intro inv={inv} />

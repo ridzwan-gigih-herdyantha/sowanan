@@ -8,11 +8,11 @@ import { Gallery } from "@/components/invitation/gallery";
 import { Greeting } from "@/components/invitation/greeting";
 import { QrisDownload } from "@/components/invitation/qris-download";
 import { Rsvp } from "@/components/invitation/rsvp";
+import { ScrollReveal } from "@/components/invitation/scroll-reveal";
 import { InvitationShell } from "@/components/invitation/shell";
 import { SutraCountdown } from "@/components/invitation/sutra/countdown";
 import { Bow, Flourish, OrnateFrame, Pattern, PhotoCorners, Wreath } from "@/components/invitation/sutra/ornaments";
 import { Parallax } from "@/components/invitation/rembulan/parallax";
-import { SutraMotion } from "@/components/invitation/sutra/motion";
 import { Wishes } from "@/components/invitation/wishes";
 import { googleCalendarUrl } from "@/lib/calendar";
 import { getWishes } from "@/lib/guestbook";
@@ -426,7 +426,7 @@ export function AryaKirana({ inv }: { inv: InvitationView }) {
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
-      <SutraMotion />
+      <ScrollReveal attr="su" flag="su-js" />
       <main>
         <Hero inv={inv} />
         <Extras inv={inv} at="hero" />
