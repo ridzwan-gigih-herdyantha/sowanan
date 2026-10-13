@@ -14,7 +14,7 @@ function masked(src: string): CSSProperties {
 export function Wreath({ children, className = "" }: { children?: ReactNode; className?: string }) {
   return (
     <div className={`relative aspect-square ${className}`}>
-      <div aria-hidden="true" className="absolute inset-0" style={masked("wreath.svg")} />
+      <div aria-hidden="true" data-su="wreath" className="absolute inset-0" style={masked("wreath.svg")} />
       {children && <div className="absolute inset-0 flex items-center justify-center">{children}</div>}
     </div>
   );
@@ -22,18 +22,25 @@ export function Wreath({ children, className = "" }: { children?: ReactNode; cla
 
 // Hiasan sudut bingkai berupa ulir daun. Gambar aslinya sudut kanan atas, sudut lain dicerminkan.
 const CORNERS = { tl: "top-0 left-0 -scale-x-100", tr: "top-0 right-0", bl: "bottom-0 left-0 -scale-100", br: "right-0 bottom-0 -scale-y-100" } as const;
-export function Corner({ at, className = "", size = "size-14 sm:size-20" }: { at: keyof typeof CORNERS; className?: string; size?: string }) {
-  return <div aria-hidden="true" className={`pointer-events-none absolute ${size} ${CORNERS[at]} ${className}`} style={masked("corner.svg")} />;
+export function Corner({ at, className = "", size = "size-14 sm:size-20", order = 0 }: { at: keyof typeof CORNERS; className?: string; size?: string; order?: number }) {
+  return (
+    <div
+      aria-hidden="true"
+      data-su-corner
+      className={`pointer-events-none absolute ${size} ${CORNERS[at]} ${className}`}
+      style={{ ...masked("corner.svg"), transitionDelay: `${0.15 + order * 0.12}s` }}
+    />
+  );
 }
 
 // Bingkai berhias: garis ganda sampanye dengan hiasan di keempat sudut.
 // Bingkai foto memakai corners false supaya hiasan sudut tidak menutupi foto.
 export function OrnateFrame({ children, className = "", inner = "", corners = true }: { children: ReactNode; className?: string; inner?: string; corners?: boolean }) {
   return (
-    <div className={`relative border border-inv-gold p-1.5 ${className}`}>
+    <div data-su="frame" className={`relative border border-inv-gold p-1.5 ${className}`}>
       <div className={`relative h-full border border-inv-gold-light ${inner}`}>
         {children}
-        {corners && (["tl", "tr", "bl", "br"] as const).map((c) => <Corner key={c} at={c} className="m-1.5 text-inv-gold" />)}
+        {corners && (["tl", "tr", "br", "bl"] as const).map((c, i) => <Corner key={c} at={c} order={i} className="m-1.5 text-inv-gold" />)}
       </div>
     </div>
   );
@@ -41,7 +48,7 @@ export function OrnateFrame({ children, className = "", inner = "", corners = tr
 
 // Pembatas garis dengan ulir di tengah.
 export function Flourish({ className = "", color = "text-inv-gold" }: { className?: string; color?: string }) {
-  return <div aria-hidden="true" className={`mx-auto aspect-[2611/262] w-56 sm:w-72 ${color} ${className}`} style={masked("divider.svg")} />;
+  return <div aria-hidden="true" data-su="draw" className={`mx-auto aspect-[2611/262] w-56 sm:w-72 ${color} ${className}`} style={masked("divider.svg")} />;
 }
 
 // Motif quatrefoil samar untuk latar, dipakai lewat mask supaya warnanya mengikuti palet.

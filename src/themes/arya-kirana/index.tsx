@@ -11,6 +11,8 @@ import { Rsvp } from "@/components/invitation/rsvp";
 import { InvitationShell } from "@/components/invitation/shell";
 import { SutraCountdown } from "@/components/invitation/sutra/countdown";
 import { Bow, Flourish, OrnateFrame, Pattern, PhotoCorners, Wreath } from "@/components/invitation/sutra/ornaments";
+import { Parallax } from "@/components/invitation/rembulan/parallax";
+import { SutraMotion } from "@/components/invitation/sutra/motion";
 import { Wishes } from "@/components/invitation/wishes";
 import { googleCalendarUrl } from "@/lib/calendar";
 import { getWishes } from "@/lib/guestbook";
@@ -41,7 +43,7 @@ function Label({ children, className = "" }: { children: ReactNode; className?: 
 
 function Heading({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="text-center">
+    <div data-su="rise" className="text-center">
       <Label>{label}</Label>
       <h2 className="mt-4 font-display text-[clamp(32px,7.4vw,50px)] leading-[1.1] text-balance">{children}</h2>
       <Flourish className="mt-6" />
@@ -99,8 +101,11 @@ function Hero({ inv }: { inv: InvitationView }) {
         <div {...enter(0.6)} className="inv-enter relative row-start-2 mx-auto w-full max-w-[460px] pt-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:max-w-none">
           <Bow className="absolute top-0 left-1/2 z-10 w-24 -translate-x-1/2 drop-shadow-[0_4px_6px_rgba(60,45,25,.25)] sm:w-28" />
           <OrnateFrame corners={false} className={card} inner="p-3 sm:p-4">
+            {/* Foto sedikit lebih besar dari bingkainya dan bergeser pelan saat digulir, seperti dilihat dari balik bingkai. */}
             <div className="relative aspect-[4/5] overflow-hidden">
-              <HeroPhoto inv={inv} />
+              <Parallax speed={0.08} max={22} className="absolute -inset-[6%]">
+                <HeroPhoto inv={inv} />
+              </Parallax>
             </div>
           </OrnateFrame>
         </div>
@@ -202,7 +207,7 @@ function Details({ inv }: { inv: InvitationView }) {
 
         <div className="mx-auto mt-14 grid max-w-[860px] gap-8 sm:grid-cols-2">
           {inv.events.map((e, i) => (
-            <OrnateFrame key={e.name} className={`${card} ${i % 2 ? "sm:rotate-[1deg]" : "sm:-rotate-[1deg]"}`}>
+            <OrnateFrame key={e.name} className={`${card} su-lift ${i % 2 ? "sm:rotate-[1deg]" : "sm:-rotate-[1deg]"}`}>
               <div className="px-6 py-12 text-center">
                 <Label>{e.name}</Label>
                 <p className="mt-5 font-display text-[clamp(30px,6.4vw,40px)] leading-tight tabular-nums">
@@ -321,7 +326,7 @@ function Gifts({ inv }: { inv: InvitationView }) {
         </div>
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {inv.gifts.map((g) => (
-            <OrnateFrame key={g.number} className={card}>
+            <OrnateFrame key={g.number} className={`${card} su-lift`}>
               <div className="px-6 py-10 text-center">
                 <Label>{g.bank}</Label>
                 <p className="mt-4 font-display text-[26px] leading-none tabular-nums">{g.number}</p>
@@ -421,6 +426,7 @@ export function AryaKirana({ inv }: { inv: InvitationView }) {
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
+      <SutraMotion />
       <main>
         <Hero inv={inv} />
         <Extras inv={inv} at="hero" />
