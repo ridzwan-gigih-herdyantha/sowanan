@@ -108,6 +108,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     events: d.event.schedule.map((e) => ({ ...e, until: e.until || undefined })),
     rsvpDeadline: d.event.rsvpDeadline,
     tagline: d.copy.tagline,
+    headline: d.copy.headline.trim() || d.event.city.split(",")[0].trim(),
     quote: d.copy.quote,
     honor: d.copy.honor,
     heroQuote: d.copy.heroQuote,

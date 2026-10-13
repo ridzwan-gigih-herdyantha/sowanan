@@ -88,6 +88,8 @@ export const invitationDataSchema = z.object({
   copy: z
     .object({
       tagline: str(),
+      // Judul besar tema Lensa. Kosong berarti nama kota.
+      headline: str(),
       quote: str(),
       honor: str(),
       heroQuote: str(),

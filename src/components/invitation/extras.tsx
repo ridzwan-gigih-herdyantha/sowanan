@@ -31,6 +31,8 @@ const SKINS: Record<string, Skin> = {
   "fadhil-nayla": "sakinah",
   "arya-kirana": "sutra",
   "bima-nadia": "rembulan",
+  // Lensa memakai gaya editorial hitam putih yang sama dengan Ruang.
+  "toni-layla": "ruang",
 };
 // Tema editorial meratakan judul dan isi ke kiri, tema berornamen ke tengah.
 const isLeft = (skin?: Skin) => skin === "film" || skin === "ruang" || skin === "herbarium";

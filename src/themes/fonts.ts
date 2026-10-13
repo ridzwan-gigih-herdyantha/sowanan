@@ -22,6 +22,7 @@ import { defaultFonts as andiRina } from "./andi-rina/fonts";
 import { defaultFonts as aryaKirana } from "./arya-kirana/fonts";
 import { defaultFonts as bagasSekar } from "./bagas-sekar/fonts";
 import { defaultFonts as bimaNadia } from "./bima-nadia/fonts";
+import { defaultFonts as toniLayla } from "./toni-layla/fonts";
 import { defaultFonts as danangKinanthi } from "./danang-kinanthi/fonts";
 import { defaultFonts as fadhilNayla } from "./fadhil-nayla/fonts";
 import { defaultFonts as hendrawanLarasati } from "./hendrawan-larasati/fonts";
@@ -97,6 +98,12 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
     { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
     { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
     { id: "lembut", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
+  ],
+  "toni-layla": [
+    { id: "", name: "Archivo & Instrument Sans", ...toniLayla },
+    { id: "modern", name: "DM Serif & DM Sans", display: dmSerif, body: dmSans },
+    { id: "bersih", name: "Fraunces & Manrope", display: fraunces, body: manrope },
+    { id: "tegas", name: "Playfair & Work Sans", display: playfair, body: workSans },
   ],
   "bima-nadia": [
     { id: "", name: "Italiana & Newsreader", ...bimaNadia },

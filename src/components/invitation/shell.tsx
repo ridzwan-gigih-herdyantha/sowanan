@@ -7,6 +7,7 @@ import { gending } from "./pakeliran/gamelan";
 import { GUEST_NAME_MAX } from "@/lib/guest-input";
 import { GUEST_KEY, guestCodeKey, recall, remember } from "@/lib/guest-memory";
 import { PintuDoor, type PintuProps } from "./sakinah/door";
+import { LensaDoor, type LensaProps } from "./lensa/door";
 import { BulanDoor, type BulanProps } from "./rembulan/door";
 import { MedaliDoor, type MedaliProps } from "./sutra/door";
 
@@ -84,7 +85,8 @@ type Door =
   | ({ kind: "kelir" } & Omit<KelirProps, "invited" | "onOpen">)
   | ({ kind: "pintu" } & Omit<PintuProps, "invited" | "onOpen">)
   | ({ kind: "medali" } & Omit<MedaliProps, "invited" | "onOpen">)
-  | ({ kind: "bulan" } & Omit<BulanProps, "invited" | "onOpen">);
+  | ({ kind: "bulan" } & Omit<BulanProps, "invited" | "onOpen">)
+  | ({ kind: "lensa" } & Omit<LensaProps, "invited" | "onOpen">);
 
 type Props = {
   door: Door;
@@ -148,6 +150,14 @@ export function InvitationShell({ door, music, synth, className, style, children
       root.style.overflow = "";
     };
   }, [open]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.invitation = "";
+    return () => {
+      delete root.dataset.invitation;
+    };
+  }, []);
 
   useEffect(() => () => gending.pause(), []);
 
@@ -246,7 +256,7 @@ export function InvitationShell({ door, music, synth, className, style, children
       <MediaContext.Provider value={media}>
         <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
           <noscript>
-            <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+            <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
           </noscript>
 
           {door.kind === "vellum" && (
@@ -319,7 +329,21 @@ export function InvitationShell({ door, music, synth, className, style, children
             <BulanDoor groom={door.groom} bride={door.bride} date={door.date} place={door.place} moon={door.moon} invited={invited} onOpen={openInvitation} />
           )}
 
-          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" ? null : door.kind === "seal" ? (
+          {door.kind === "lensa" && (
+            <LensaDoor
+              headline={door.headline}
+              groom={door.groom}
+              bride={door.bride}
+              monogram={door.monogram}
+              date={door.date}
+              portrait={door.portrait}
+              wide={door.wide}
+              invited={invited}
+              onOpen={openInvitation}
+            />
+          )}
+
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" ? null : door.kind === "seal" ? (
             <div
               className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
               aria-hidden={open}

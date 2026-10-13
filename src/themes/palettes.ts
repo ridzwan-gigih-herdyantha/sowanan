@@ -3,6 +3,7 @@ import { palette as andiRina } from "./andi-rina/palette";
 import { palette as aryaKirana } from "./arya-kirana/palette";
 import { palette as bagasSekar } from "./bagas-sekar/palette";
 import { palette as bimaNadia } from "./bima-nadia/palette";
+import { palette as toniLayla } from "./toni-layla/palette";
 import { palette as danangKinanthi } from "./danang-kinanthi/palette";
 import { palette as fadhilNayla } from "./fadhil-nayla/palette";
 import { palette as hendrawanLarasati } from "./hendrawan-larasati/palette";
@@ -16,6 +17,7 @@ export const PALETTES: Record<string, ThemePalette> = {
   "fadhil-nayla": fadhilNayla,
   "arya-kirana": aryaKirana,
   "bima-nadia": bimaNadia,
+  "toni-layla": toniLayla,
 };
 
 // Palet yang dipakai undangan: kustom bila ketiga warnanya sah, preset yang dipilih, atau preset pertama sebagai bawaan.

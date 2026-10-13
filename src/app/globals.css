@@ -197,6 +197,14 @@
   }
 }
 
+/* Halaman undangan tanpa scrollbar, supaya lebar halaman tidak berubah saat undangan dibuka dan kunci gulir dilepas. */
+html[data-invitation] {
+  scrollbar-width: none;
+}
+html[data-invitation]::-webkit-scrollbar {
+  display: none;
+}
+
 /* Undangan contoh di dalam layar HP atau tablet (/[slug]/hp, /[slug]/tablet): scrollbar disembunyikan seperti di perangkat sungguhan. */
 html[data-device-frame] {
   scrollbar-width: none;

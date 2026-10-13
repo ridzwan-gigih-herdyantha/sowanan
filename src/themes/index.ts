@@ -4,6 +4,7 @@ import { AndiRina } from "./andi-rina";
 import { AryaKirana } from "./arya-kirana";
 import { BagasSekar } from "./bagas-sekar";
 import { BimaNadia } from "./bima-nadia";
+import { ToniLayla } from "./toni-layla";
 import { DanangKinanthi } from "./danang-kinanthi";
 import { FadhilNayla } from "./fadhil-nayla";
 import { HendrawanLarasati } from "./hendrawan-larasati";
@@ -19,4 +20,5 @@ export const THEMES: Record<string, Theme> = {
   "fadhil-nayla": { name: THEME_NAMES["fadhil-nayla"], Component: FadhilNayla, themeColor: "#F5F1E6" },
   "arya-kirana": { name: THEME_NAMES["arya-kirana"], Component: AryaKirana, themeColor: "#FBF8F2" },
   "bima-nadia": { name: THEME_NAMES["bima-nadia"], Component: BimaNadia, themeColor: "#0B0F1C" },
+  "toni-layla": { name: THEME_NAMES["toni-layla"], Component: ToniLayla, themeColor: "#171615" },
 };
