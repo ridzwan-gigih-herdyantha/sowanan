@@ -1,0 +1,304 @@
+{
+  "slug": "arya-kirana",
+  "theme": "arya-kirana",
+  "published": true,
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "",
+      "credit": "Foto oleh Ricky S di Pexels",
+      "sesanti": "",
+      "tagline": "Dua nama, satu janji yang kami jaga sepanjang usia.",
+      "ayatArti": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-02-14T21:00:00+07:00",
+      "city": "Yogyakarta",
+      "start": "2027-02-14T08:00:00+07:00",
+      "venue": {
+        "name": "Hotel Tentrem",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Hotel+Tentrem+Yogyakarta",
+        "address": "Jl. P. Mangkubumi No. 72A, Yogyakarta"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "08.00",
+          "until": "09.30"
+        },
+        {
+          "name": "Resepsi",
+          "time": "19.00",
+          "until": "21.00"
+        }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "31 Januari 2027"
+    },
+    "media": {
+      "og": "arya-kirana/og_1.jpg?v=mv4xd2tz",
+      "hero": "arya-kirana/hero_1.webp?v=mv4xjwqs",
+      "rsvp": "",
+      "music": "",
+      "venue": "arya-kirana/venue_1.webp?v=mv4xd3h1",
+      "couple": "",
+      "detail": "",
+      "closing": "arya-kirana/closing_1.webp?v=mv4xr76j",
+      "heroWide": "arya-kirana/herowide_1.webp?v=mv4xd2iv"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Arya & Kirana di Yogyakarta.",
+      "ogDescription": "Undangan pernikahan Arya & Kirana, Sabtu 14 Februari 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Kirana Paramitha",
+        "name": "Kirana",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "arya-kirana/bride_1.webp?v=mv4xjxti",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Bambang Sudarmo & Ibu Endang Widowati"
+      },
+      "groom": {
+        "full": "Arya Pradipta",
+        "name": "Arya",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "arya-kirana/groom_1.webp?v=mv4xjx6y",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Hartono Wibowo & Ibu Sri Rahayu"
+      }
+    },
+    "extras": [
+      {
+        "body": "",
+        "kind": "dresscode",
+        "note": "Tolong ya guys",
+        "plan": {
+          "h": 0,
+          "w": 0,
+          "src": ""
+        },
+        "tone": "paper",
+        "after": "gallery",
+        "rules": [],
+        "title": "Dress Code",
+        "colors": [
+          {
+            "hex": "#FBF8F2",
+            "name": "Sage"
+          },
+          {
+            "hex": "#B49A6A",
+            "name": "Sage Tua"
+          }
+        ],
+        "photos": [],
+        "stream": {
+          "url": "",
+          "time": ""
+        },
+        "tracks": [],
+        "videos": [],
+        "rundown": []
+      }
+    ],
+    "monogram": "A & K",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
+        "qris": "arya-kirana/qris_1.webp?v=mv4xdcz4",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Arya Pradipta",
+            "number": "0000 1402 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Kirana Paramitha",
+            "number": "2222 1402 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "09.11.2019",
+            "long": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
+            "image": "arya-kirana/story_1.webp?v=mv4xd55j",
+            "place": "",
+            "short": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
+            "title": "Pertama Bertemu"
+          },
+          {
+            "no": "",
+            "date": "17.03.2021",
+            "long": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
+            "image": "arya-kirana/story_2.webp?v=mv4xd5lx",
+            "place": "",
+            "short": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
+            "title": "Saling Mengenal"
+          },
+          {
+            "no": "",
+            "date": "06.12.2025",
+            "long": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
+            "image": "arya-kirana/story_3.webp?v=mv4xd6dq",
+            "place": "",
+            "short": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
+            "title": "Lamaran"
+          },
+          {
+            "no": "",
+            "date": "14.02.2027",
+            "long": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
+            "image": "arya-kirana/story_4.webp?v=mv4xd6xh",
+            "place": "",
+            "short": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
+            "title": "Hari Pernikahan"
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "h": 1800,
+            "w": 1800,
+            "no": "102",
+            "alt": "Arya dan Kirana berjalan berdampingan di hutan pinus",
+            "src": "arya-kirana/gallery_1.webp?v=mv4xjyo5",
+            "caption": "berdampingan"
+          },
+          {
+            "h": 2700,
+            "w": 1800,
+            "no": "108",
+            "alt": "Arya dan Kirana bergandengan tangan di hutan",
+            "src": "arya-kirana/gallery_2.webp?v=mv4xd9f6",
+            "caption": "bergandengan"
+          },
+          {
+            "h": 2400,
+            "w": 1800,
+            "no": "115",
+            "alt": "Arya dan Kirana berdiri di jalan setapak hutan",
+            "src": "arya-kirana/gallery_3.webp?v=mv4xdaj7",
+            "caption": "jalan setapak"
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "121",
+            "alt": "Arya dan Kirana berjalan di mulut gua",
+            "src": "arya-kirana/gallery_4.webp?v=mv4xdb7g",
+            "caption": "di mulut gua"
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "129",
+            "alt": "Arya bersandar di batang pohon, Kirana di belakang",
+            "src": "arya-kirana/gallery_5.webp?v=mv4xdbyv",
+            "caption": "menunggu"
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "134",
+            "alt": "Langkah Arya dan Kirana di rerumputan",
+            "src": "arya-kirana/gallery_6.webp?v=mv4xdcrd",
+            "caption": "langkah kecil"
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [
+          {
+            "h": 589,
+            "w": 600,
+            "no": "042",
+            "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
+            "latin": "Rosa chinensis",
+            "local": "mawar"
+          },
+          {
+            "h": 600,
+            "w": 600,
+            "no": "057",
+            "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek bulan"
+          },
+          {
+            "h": 675,
+            "w": 600,
+            "no": "063",
+            "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
+            "latin": "Rosa & Phalaenopsis",
+            "local": "buket pengantin"
+          },
+          {
+            "h": 436,
+            "w": 600,
+            "no": "071",
+            "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek putih"
+          }
+        ],
+        "enabled": true
+      }
+    }
+  }
+}

@@ -1,0 +1,313 @@
+{
+  "slug": "toni-layla",
+  "theme": "toni-layla",
+  "published": true,
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "",
+      "credit": "Foto oleh Arvi Refo di Pexels",
+      "sesanti": "",
+      "tagline": "Kota ini yang mempertemukan kami. Di kota ini juga kami memulai.",
+      "ayatArti": "",
+      "headline": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-03-20T14:00:00+07:00",
+      "city": "Yogyakarta",
+      "start": "2027-03-20T09:00:00+07:00",
+      "venue": {
+        "name": "Ndalem Natan",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Kotagede+Yogyakarta",
+        "address": "Jl. Kemasan No. 22, Kotagede, Yogyakarta"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "09.00",
+          "until": "10.00"
+        },
+        {
+          "name": "Resepsi",
+          "time": "11.00",
+          "until": "14.00"
+        }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "6 Maret 2027"
+    },
+    "media": {
+      "og": "toni-layla/og_1.jpg?v=mv62k860",
+      "hero": "toni-layla/hero_1.webp?v=mv62k65j",
+      "rsvp": "",
+      "music": "",
+      "venue": "toni-layla/venue_1.webp?v=mv62k96g",
+      "couple": "",
+      "detail": "",
+      "closing": "toni-layla/closing_1.webp?v=mv62ka0s",
+      "heroWide": "toni-layla/herowide_1.webp?v=mv62k7nd"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Arya & Kirana di Yogyakarta.",
+      "ogDescription": "Undangan pernikahan Arya & Kirana, Sabtu 14 Februari 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "terakota",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Layla Khairunnisa",
+        "name": "Layla",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "toni-layla/bride_1.webp?v=mv62kaih",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Ahmad Fauzi & Ibu Siti Rahmawati"
+      },
+      "groom": {
+        "full": "Toni Wicaksono",
+        "name": "Toni",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "toni-layla/groom_1.webp?v=mv62kazb",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Sugeng Riyadi & Ibu Murni Astuti"
+      }
+    },
+    "extras": [
+      {
+        "body": "",
+        "kind": "dresscode",
+        "note": "",
+        "plan": {
+          "h": 0,
+          "w": 0,
+          "src": ""
+        },
+        "tone": "paper",
+        "after": "wishes",
+        "rules": [],
+        "title": "Dress Code",
+        "colors": [
+          {
+            "hex": "#50403C",
+            "name": "Terakota"
+          },
+          {
+            "hex": "#F6F0EA",
+            "name": "Bone"
+          },
+          {
+            "hex": "#F2C791",
+            "name": "Sand"
+          },
+          {
+            "hex": "#1E1E1D",
+            "name": "Black Tercot"
+          }
+        ],
+        "photos": [],
+        "stream": {
+          "url": "",
+          "time": ""
+        },
+        "tracks": [],
+        "videos": [],
+        "rundown": []
+      }
+    ],
+    "monogram": "T & L",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
+        "qris": "toni-layla/qris_1.webp?v=mv62kl8d",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Toni Wicaksono",
+            "number": "0000 2003 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Layla Khairunnisa",
+            "number": "2222 2003 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "12.08.2019",
+            "long": "Sore di Malioboro, menunggu hujan reda di emper toko yang sama.",
+            "image": "toni-layla/story_1.webp?v=mv62kbjn",
+            "place": "",
+            "short": "Sore di Malioboro, menunggu hujan reda di emper toko yang sama.",
+            "title": "Pertama Bertemu"
+          },
+          {
+            "no": "",
+            "date": "03.05.2021",
+            "long": "Kopi di Prawirotaman, dan percakapan yang selalu berakhir terlalu cepat.",
+            "image": "toni-layla/story_2.webp?v=mv62kc9d",
+            "place": "",
+            "short": "Kopi di Prawirotaman, dan percakapan yang selalu berakhir terlalu cepat.",
+            "title": "Saling Mengenal"
+          },
+          {
+            "no": "",
+            "date": "17.11.2025",
+            "long": "Di rumah Kotagede, dua keluarga duduk bersama dan semuanya terasa sederhana.",
+            "image": "toni-layla/story_3.webp?v=mv62kd9d",
+            "place": "",
+            "short": "Di rumah Kotagede, dua keluarga duduk bersama dan semuanya terasa sederhana.",
+            "title": "Lamaran"
+          },
+          {
+            "no": "",
+            "date": "20.03.2027",
+            "long": "Kembali ke kota yang sama, kali ini untuk seterusnya.",
+            "image": "toni-layla/story_4.webp?v=mv62ke8r",
+            "place": "",
+            "short": "Kembali ke kota yang sama, kali ini untuk seterusnya.",
+            "title": "Hari Pernikahan"
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "h": 2700,
+            "w": 1800,
+            "no": "",
+            "alt": "Toni dan Layla duduk di depan tembok tua",
+            "src": "toni-layla/gallery_1.webp?v=mv62kfo7",
+            "caption": ""
+          },
+          {
+            "h": 2700,
+            "w": 1800,
+            "no": "",
+            "alt": "Siluet Toni dan Layla di bawah atap",
+            "src": "toni-layla/gallery_2.webp?v=mv62kgt1",
+            "caption": ""
+          },
+          {
+            "h": 2700,
+            "w": 1800,
+            "no": "",
+            "alt": "Toni dan Layla duduk di depan pintu hijau",
+            "src": "toni-layla/gallery_3.webp?v=mv62kif0",
+            "caption": ""
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "",
+            "alt": "Toni dan Layla berjalan di depan bangunan tua",
+            "src": "toni-layla/gallery_4.webp?v=mv62kj2i",
+            "caption": ""
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "",
+            "alt": "Toni dan Layla duduk berdampingan",
+            "src": "toni-layla/gallery_5.webp?v=mv62kk2x",
+            "caption": ""
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "",
+            "alt": "Toni dan Layla tertawa di jembatan",
+            "src": "toni-layla/gallery_6.webp?v=mv62kkwh",
+            "caption": ""
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [
+          {
+            "h": 589,
+            "w": 600,
+            "no": "042",
+            "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
+            "latin": "Rosa chinensis",
+            "local": "mawar"
+          },
+          {
+            "h": 600,
+            "w": 600,
+            "no": "057",
+            "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek bulan"
+          },
+          {
+            "h": 675,
+            "w": 600,
+            "no": "063",
+            "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
+            "latin": "Rosa & Phalaenopsis",
+            "local": "buket pengantin"
+          },
+          {
+            "h": 436,
+            "w": 600,
+            "no": "071",
+            "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek putih"
+          }
+        ],
+        "enabled": true
+      }
+    }
+  }
+}

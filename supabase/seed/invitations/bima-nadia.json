@@ -1,0 +1,271 @@
+{
+  "slug": "bima-nadia",
+  "theme": "bima-nadia",
+  "published": true,
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "",
+      "credit": "Foto oleh Dhimas Aditya di Pexels",
+      "sesanti": "",
+      "tagline": "Kami memilih malam purnama, supaya setiap kali bulan penuh, kami ingat hari ini.",
+      "ayatArti": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-06-19T21:30:00+07:00",
+      "city": "Jakarta Pusat",
+      "start": "2027-06-19T10:00:00+07:00",
+      "venue": {
+        "name": "Plataran Menteng",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Plataran+Menteng+Jakarta",
+        "address": "Jl. HOS Cokroaminoto No. 42, Menteng, Jakarta Pusat"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "10.00",
+          "until": "11.30"
+        },
+        {
+          "name": "Resepsi",
+          "time": "19.00",
+          "until": "21.30"
+        }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "5 Juni 2027"
+    },
+    "media": {
+      "og": "arya-kirana/og_1.jpg?v=mv4xd2tz",
+      "hero": "arya-kirana/hero_1.webp?v=mv4xjwqs",
+      "rsvp": "",
+      "music": "",
+      "venue": "arya-kirana/venue_1.webp?v=mv4xd3h1",
+      "couple": "",
+      "detail": "",
+      "closing": "arya-kirana/closing_1.webp?v=mv4xr76j",
+      "heroWide": "arya-kirana/herowide_1.webp?v=mv4xd2iv"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Arya & Kirana di Yogyakarta.",
+      "ogDescription": "Undangan pernikahan Arya & Kirana, Sabtu 14 Februari 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Nadia Kusumawardani",
+        "name": "Nadia",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "arya-kirana/bride_1.webp?v=mv4xjxti",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Agus Wibisono & Ibu Dewi Lestari"
+      },
+      "groom": {
+        "full": "Bima Aditya Prakoso",
+        "name": "Bima",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "arya-kirana/groom_1.webp?v=mv4xjx6y",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Hendro Prakoso & Ibu Ratna Sari"
+      }
+    },
+    "extras": [],
+    "monogram": "B & N",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
+        "qris": "arya-kirana/qris_1.webp?v=mv4xdcz4",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Bima Aditya Prakoso",
+            "number": "0000 1906 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Nadia Kusumawardani",
+            "number": "2222 1906 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "14.02.2019",
+            "long": "Pameran foto di Kota Tua. Kami berdiri di depan karya yang sama terlalu lama.",
+            "image": "arya-kirana/story_1.webp?v=mv4xd55j",
+            "place": "",
+            "short": "Pameran foto di Kota Tua. Kami berdiri di depan karya yang sama terlalu lama.",
+            "title": "Pertama Bertemu"
+          },
+          {
+            "no": "",
+            "date": "21.09.2021",
+            "long": "Jalan kaki pulang lewat tengah malam, dan obrolan yang tidak pernah benar-benar selesai.",
+            "image": "arya-kirana/story_2.webp?v=mv4xd5lx",
+            "place": "",
+            "short": "Jalan kaki pulang lewat tengah malam, dan obrolan yang tidak pernah benar-benar selesai.",
+            "title": "Saling Mengenal"
+          },
+          {
+            "no": "",
+            "date": "16.10.2024",
+            "long": "Di teras rumah, di bawah bulan yang hampir penuh, dua keluarga berkata iya.",
+            "image": "arya-kirana/story_3.webp?v=mv4xd6dq",
+            "place": "",
+            "short": "Di teras rumah, di bawah bulan yang hampir penuh, dua keluarga berkata iya.",
+            "title": "Lamaran"
+          },
+          {
+            "no": "",
+            "date": "19.06.2027",
+            "long": "Purnama yang kami pilih, bersama orang-orang yang kami sayangi.",
+            "image": "arya-kirana/story_4.webp?v=mv4xd6xh",
+            "place": "",
+            "short": "Purnama yang kami pilih, bersama orang-orang yang kami sayangi.",
+            "title": "Malam Pernikahan"
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "h": 1800,
+            "w": 1800,
+            "no": "102",
+            "alt": "Bima dan Nadia berjalan berdampingan di hutan pinus",
+            "src": "arya-kirana/gallery_1.webp?v=mv4xjyo5",
+            "caption": "berdampingan"
+          },
+          {
+            "h": 2700,
+            "w": 1800,
+            "no": "108",
+            "alt": "Bima dan Nadia bergandengan tangan di hutan",
+            "src": "arya-kirana/gallery_2.webp?v=mv4xd9f6",
+            "caption": "bergandengan"
+          },
+          {
+            "h": 2400,
+            "w": 1800,
+            "no": "115",
+            "alt": "Bima dan Nadia berdiri di jalan setapak hutan",
+            "src": "arya-kirana/gallery_3.webp?v=mv4xdaj7",
+            "caption": "jalan setapak"
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "121",
+            "alt": "Bima dan Nadia berjalan di mulut gua",
+            "src": "arya-kirana/gallery_4.webp?v=mv4xdb7g",
+            "caption": "di mulut gua"
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "129",
+            "alt": "Bima bersandar di batang pohon, Nadia di belakang",
+            "src": "arya-kirana/gallery_5.webp?v=mv4xdbyv",
+            "caption": "menunggu"
+          },
+          {
+            "h": 1200,
+            "w": 1800,
+            "no": "134",
+            "alt": "Langkah Bima dan Nadia di rerumputan",
+            "src": "arya-kirana/gallery_6.webp?v=mv4xdcrd",
+            "caption": "langkah kecil"
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [
+          {
+            "h": 589,
+            "w": 600,
+            "no": "042",
+            "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
+            "latin": "Rosa chinensis",
+            "local": "mawar"
+          },
+          {
+            "h": 600,
+            "w": 600,
+            "no": "057",
+            "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek bulan"
+          },
+          {
+            "h": 675,
+            "w": 600,
+            "no": "063",
+            "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
+            "latin": "Rosa & Phalaenopsis",
+            "local": "buket pengantin"
+          },
+          {
+            "h": 436,
+            "w": 600,
+            "no": "071",
+            "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek putih"
+          }
+        ],
+        "enabled": true
+      }
+    }
+  }
+}
