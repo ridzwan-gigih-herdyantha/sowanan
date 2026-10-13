@@ -2,185 +2,168 @@
 
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { illumination, litPath } from "./moon";
+import { litPath } from "./moon";
 import { MoonFace, MoonHalo } from "./moon-disc";
 import { Starfield } from "./sky";
 
-export type BulanProps = { groom: string; bride: string; date: string; place: string; moon: string; invited: string; onOpen: () => void };
+export type BulanProps = { groom: string; bride: string; date: string; place: string; moon: string; age: number; invited: string; onOpen: () => void };
 
-const START = 0.07;
-const FULL = 0.5;
+const START = 0.08;
 
-// Lerp yang tidak bergantung pada kecepatan layar: rate besar berarti cepat sampai, gerakannya selalu melambat di ujung.
-const approach = (from: number, to: number, rate: number, dt: number) => from + (to - from) * (1 - Math.exp(-rate * dt));
+// Kurva gerak berdurasi tetap: mulai pelan, cepat di tengah, berhenti pelan tepat di akhir.
+const ease = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2);
+const span = (t: number, from: number, length: number) => ease(Math.min(1, Math.max(0, (t - from) / length)));
 
-// Lerp bertingkat: nilai mengejar pengejar yang mengejar target. Hasilnya mulai pelan dan berakhir pelan,
-// tanpa sentakan di awal seperti lerp tunggal.
-type Glide = { at: number; lead: number };
-const glide = (g: Glide, to: number, rate: number, dt: number) => {
-  g.lead = approach(g.lead, to, rate, dt);
-  g.at = approach(g.at, g.lead, rate, dt);
-  return g.at;
-};
-const still = (n: number): Glide => ({ at: n, lead: n });
+// Waktu dalam detik. Bulan naik dan membesar ke tempatnya di hero, bukit dan teks tenggelam, lalu langit pembuka
+// larut ke langit hero yang warnanya sama. Tidak ada cahaya yang memenuhi layar.
+const TEXT = [0, 0.5] as const;
+const RISE = [0.1, 1.7] as const;
+const HILLS = [0.15, 1.2] as const;
+const SKY = [0.95, 0.85] as const;
+// Bulan terbang memudar dan bulan hero muncul di tempat yang sama, jadi bulan seolah mundur ke balik foto.
+const SWAP = [1.45, 0.4] as const;
+const END = 1.85;
 
-// Pembuka Rembulan: bulan sabit di langit malam. Saat dibuka, teks memudar, bulan membesar sampai purnama,
-// cahayanya merekah memenuhi layar, lalu lapisan pembuka memudar ke undangan.
-export function BulanDoor({ groom, bride, date, place, moon, invited, onOpen }: BulanProps) {
+// Pembuka Rembulan: bulan sabit baru terbit di atas bukit. Saat dibuka, bulan naik, membesar, dan berganti fase
+// sampai bulan malam pernikahan, lalu berhenti tepat di posisi bulan pada hero.
+export function BulanDoor({ groom, bride, date, place, moon, age, invited, onOpen }: BulanProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();
   const root = useRef<HTMLDivElement>(null);
-  const fit = useRef<HTMLDivElement>(null);
+  const sky = useRef<HTMLDivElement>(null);
+  const stars = useRef<HTMLDivElement>(null);
+  const hills = useRef<HTMLDivElement>(null);
   const disc = useRef<HTMLDivElement>(null);
-  const bloom = useRef<HTMLDivElement>(null);
-  const wash = useRef<HTMLDivElement>(null);
-  const started = useRef<number | null>(null);
-  const [scale, setScale] = useState(1);
+  const path = useRef({ dx: 0, dy: 0, scale: 1 });
+  const target = useRef<HTMLElement | null>(null);
 
-  // Isi diperkecil bila lebih tinggi dari layar, supaya tamu tidak perlu menggulir untuk membuka undangan.
-  useEffect(() => {
-    const el = fit.current;
-    if (!el) return;
-    const measure = () => setScale(Math.min(1, (window.innerHeight - 40) / el.offsetHeight));
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
+  // Bulan di hero disembunyikan selama perpindahan, supaya tidak ada dua bulan di layar.
+  useEffect(() => () => {
+    if (target.current) target.current.style.opacity = "";
   }, []);
 
-  // Satu loop untuk semua gerak: bulan bernapas pelan selama menunggu, lalu urutan pembukaan setelah tombol ditekan.
   useEffect(() => {
-    if (phase === "done") return;
-    const g = { text: still(1), age: still(START), lift: still(0), bloom: still(0), fade: still(1) };
-    const v = { text: 1, age: START, lift: 0, bloom: 0, fade: 1 };
-    let last = performance.now();
-    let raf = 0;
-    const texts = root.current ? Array.from(root.current.querySelectorAll<HTMLElement>(".rb-text")) : [];
+    if (phase !== "playing") return;
+    const texts = Array.from(root.current?.querySelectorAll<HTMLElement>(".rb-text") ?? []);
     const lit = disc.current?.querySelector("[data-moon-lit]");
     const halo = disc.current?.querySelector("[data-moon-halo]");
+    const start = performance.now();
+    let raf = 0;
 
-    const frame = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-      const t = started.current === null ? -1 : (now - started.current) / 1000;
-      const playing = t >= 0;
-
-      // Urutan: teks memudar, bulan membesar sampai purnama, cahaya merekah, lalu seluruh lapisan memudar.
-      v.text = glide(g.text, playing ? 0 : 1, 9, dt);
-      v.age = glide(g.age, playing && t > 0.15 ? FULL : START, 4.6, dt);
-      v.lift = glide(g.lift, playing ? 1 : 0, 3.2, dt);
-      v.bloom = glide(g.bloom, playing && t > 0.85 ? 1 : 0, 4.4, dt);
-      v.fade = glide(g.fade, playing && t > 1.55 ? 0 : 1, 5.2, dt);
+    const tick = (now: number) => {
+      const t = (now - start) / 1000;
+      const text = span(t, ...TEXT);
+      const rise = span(t, ...RISE);
+      const sink = span(t, ...HILLS);
+      const fade = span(t, ...SKY);
+      const { dx, dy, scale } = path.current;
 
       for (const el of texts) {
-        el.style.opacity = String(v.text);
-        el.style.transform = `translateY(${(1 - v.text) * -10}px)`;
+        el.style.opacity = String(1 - text);
+        el.style.transform = `translateY(${text * 18}px)`;
       }
-      const light = illumination(v.age);
-      const breathe = reduce ? 0 : Math.sin(now / 1400) * 0.5 + 0.5;
-      lit?.setAttribute("d", litPath(v.age, 50));
-      halo?.setAttribute("opacity", String(0.2 + light * 0.65 + breathe * 0.15));
-      if (disc.current) {
-        disc.current.style.transform = `translateY(${(reduce ? 0 : Math.sin(now / 2200) * 4) * (1 - v.lift)}px) scale(${1 + v.lift * 0.12})`;
-        // Saat cahaya merekah, bulan ikut bersinar lalu larut ke dalam cahayanya sendiri.
-        disc.current.style.filter = v.bloom > 0.001 ? `brightness(${1 + v.bloom * 1.6})` : "";
-        disc.current.style.opacity = String(1 - v.bloom * 0.92);
+      // Bulan menempuh lengkung ringan: naik lebih dulu, baru bergeser ke samping, seperti benda langit yang terbit.
+      const across = span(t, RISE[0] + 0.2, RISE[1] - 0.2);
+      if (disc.current) disc.current.style.transform = `translate3d(${dx * across}px, ${dy * rise}px, 0) scale(${1 + (scale - 1) * rise})`;
+      lit?.setAttribute("d", litPath(START + (age - START) * rise, 50));
+      // Halo berakhir sama dengan halo bulan di hero, yang terangnya mengikuti fase.
+      halo?.setAttribute("opacity", String(0.52 + (0.2 + 0.8 * Math.sin(Math.PI * age) - 0.52) * rise));
+      if (hills.current) {
+        hills.current.style.transform = `translateY(${sink * 60}%)`;
+        hills.current.style.opacity = String(1 - sink);
       }
-      if (bloom.current) {
-        bloom.current.style.opacity = String(Math.min(1, v.bloom * 1.3));
-        bloom.current.style.transform = `translate(-50%, -50%) scale(${0.15 + v.bloom * 18})`;
+      // Kamera seolah menengadah: bintang ikut turun pelan, lalu langit pembuka larut ke hero.
+      if (stars.current) {
+        stars.current.style.transform = `translateY(${rise * 70}px)`;
+        stars.current.style.opacity = String(1 - fade);
       }
-      // Cahaya bulan membasuh seluruh layar sampai terang, lalu ikut memudar bersama lapisan pembuka.
-      if (wash.current) wash.current.style.opacity = String(Math.min(1, v.bloom * 1.15));
-      if (root.current) root.current.style.opacity = String(v.fade);
+      if (sky.current) sky.current.style.opacity = String(1 - fade);
+      const swap = span(t, ...SWAP);
+      if (disc.current) disc.current.style.opacity = String(1 - swap);
+      if (target.current) target.current.style.opacity = String(swap);
 
-      // Di bawah 3% lapisan sudah tidak terlihat, jadi pembuka ditutup tanpa menunggu ekor lerp yang panjang.
-      if (playing && v.fade < 0.03) {
+      if (t >= END) {
+        if (target.current) target.current.style.opacity = "";
         setPhase("done");
         return;
       }
-      raf = requestAnimationFrame(frame);
+      raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(frame);
+    raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [phase, reduce]);
-
-  const finish = () => setPhase("done");
+  }, [phase, age]);
 
   function play() {
     if (phase !== "idle") return;
     onOpen();
-    if (reduce) return finish();
-    started.current = performance.now();
-    setPhase("playing");
+    if (reduce) return setPhase("done");
+    // Tujuan dibaca dari bulan di hero setelah halaman kembali ke atas.
+    requestAnimationFrame(() => {
+      const from = disc.current?.getBoundingClientRect();
+      target.current = document.querySelector<HTMLElement>("[data-rb-target=moon]");
+      const to = target.current?.getBoundingClientRect();
+      if (from && to) path.current = { dx: to.left - from.left, dy: to.top - from.top, scale: to.width / from.width };
+      if (target.current) target.current.style.opacity = "0";
+      if (disc.current) disc.current.style.transformOrigin = "0 0";
+      setPhase("playing");
+    });
   }
 
   if (phase === "done") return null;
 
   return (
-    <div
-      ref={root}
-      className="rb-door fixed inset-0 z-50 overflow-hidden will-change-[opacity]"
-      style={{ background: "radial-gradient(120% 80% at 50% 30%, color-mix(in srgb, var(--inv-wash) 93%, var(--inv-accent)) 0%, var(--inv-paper) 55%, var(--inv-night) 100%)" }}
-    >
-      {/* Selama animasi buka, bintang berhenti digambar ulang supaya semua tenaga dipakai untuk bulan dan cahayanya. */}
-      <Starfield meteors seed={11} still={phase === "playing"} />
-      <div ref={wash} aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-0 will-change-[opacity]" style={{ background: "radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--inv-accent) 60%, #fff), var(--inv-accent) 70%)" }} />
-      <div className="absolute inset-0 flex items-center justify-center px-6">
-        <div ref={fit} style={{ transform: `scale(${scale})` }} className="flex w-[min(86vw,420px)] flex-col items-center text-center">
-          <div className="relative">
-            {/* Cahaya bulan yang merekah, berpusat di bulan. */}
-            <div
-              ref={bloom}
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 left-1/2 size-48 rounded-full opacity-0 will-change-[transform,opacity]"
-              style={{ background: "radial-gradient(circle, #fff 0%, color-mix(in srgb, var(--inv-accent) 70%, #fff) 18%, var(--inv-accent) 36%, color-mix(in srgb, var(--inv-accent) 55%, transparent) 54%, transparent 72%)", transform: "translate(-50%, -50%) scale(.15)" }}
-            />
-            <div ref={disc} className="relative size-36 will-change-[transform,opacity,filter] sm:size-40">
-              <svg viewBox="-58 -58 116 116" aria-hidden="true" className="size-full overflow-visible">
-                <MoonHalo id="rb-door" light={0.3} />
-                <MoonFace id="rb-door" d={litPath(START, 50)} />
-              </svg>
-            </div>
-          </div>
-
-          <p className="rb-text rb-label mt-10 text-[11px] tracking-[0.34em] text-inv-gold">Undangan Pernikahan</p>
-          <h1 className="rb-text mt-4 font-display text-[clamp(46px,13vw,68px)] leading-[0.95] text-inv-ink">
-            {groom}
-            <span className="my-1 block font-body text-[0.42em] text-inv-gold italic">&amp;</span>
-            {bride}
-          </h1>
-          <div aria-hidden="true" className="rb-text mt-6 flex items-center gap-3 text-inv-gold">
-            <span className="h-px w-12 bg-linear-to-r from-transparent to-current" />
-            <span className="size-1.5 rounded-full bg-current" />
-            <span className="h-px w-12 bg-linear-to-l from-transparent to-current" />
-          </div>
-          <p className="rb-text rb-label mt-5 text-[12px] tracking-[0.24em] text-inv-ink/85">{date}</p>
-          <p className="rb-text mt-1.5 font-body text-[15px] text-inv-ink/65 italic">{place}</p>
-          <p className="rb-text mt-1 font-body text-[13px] text-inv-gold italic">{moon}</p>
-
-          {invited && (
-            <div className="rb-text mt-8">
-              <p className="font-body text-[13px] text-inv-ink/55">Kepada Yth.</p>
-              <p className="mt-1 font-display text-[26px] leading-tight text-inv-accent">{invited}</p>
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={play}
-            className="rb-text rb-label mt-9 rounded-full border border-inv-gold/70 px-8 py-3 text-[12px] tracking-[0.3em] text-inv-ink transition-[background-color,border-color] duration-300 hover:border-inv-accent hover:bg-inv-accent/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inv-accent"
-          >
-            Buka undangan
-          </button>
-        </div>
+    <div ref={root} className="rb-door fixed inset-0 z-50 overflow-hidden">
+      <div ref={sky} aria-hidden="true" className="absolute inset-0 will-change-[opacity]" style={{ background: "var(--rb-sky)" }} />
+      <div ref={stars} aria-hidden="true" className="absolute inset-x-0 -inset-y-24 will-change-transform">
+        <Starfield meteors seed={11} still={phase === "playing"} />
       </div>
 
+      {/* Bukit berlapis di cakrawala, lapisan depan lebih gelap. */}
+      <div ref={hills} aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[34%] will-change-transform">
+        <div className="absolute inset-x-0 bottom-[12%] h-24 bg-[radial-gradient(60%_100%_at_50%_100%,color-mix(in_srgb,var(--inv-accent)_14%,transparent),transparent)]" />
+        <svg viewBox="0 0 1200 300" preserveAspectRatio="none" className="absolute inset-0 size-full">
+          <path d="M0 150 C 180 95 330 120 480 105 S 800 60 980 110 S 1140 130 1200 120 V300 H0Z" style={{ fill: "color-mix(in srgb, var(--inv-night) 55%, var(--inv-paper))" }} />
+          <path d="M0 215 C 200 160 360 205 560 180 S 900 150 1060 190 S 1170 200 1200 196 V300 H0Z" style={{ fill: "var(--inv-night)" }} />
+        </svg>
+      </div>
+
+      <div className="absolute inset-0 flex flex-col items-center px-6 pt-[max(56px,11vh)] text-center">
+        <p className="rb-text rb-label text-[11px] tracking-[0.34em] text-inv-gold">Undangan Pernikahan</p>
+        <h1 className="rb-text mt-4 font-display text-[clamp(46px,12vw,92px)] leading-[0.95] text-inv-ink">
+          {groom}
+          <span className="mx-3 font-body text-[0.42em] text-inv-gold italic">&amp;</span>
+          {bride}
+        </h1>
+        <p className="rb-text rb-label mt-5 text-[12px] tracking-[0.24em] text-inv-ink/85">{date}</p>
+        <p className="rb-text mt-1.5 font-body text-[15px] text-inv-ink/65 italic">{place}</p>
+        {invited && (
+          <p className="rb-text mt-6 font-body text-[15px] text-inv-ink/70">
+            Kepada <span className="font-display text-[22px] text-inv-accent">{invited}</span>
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={play}
+          className="rb-text rb-label mt-8 rounded-full border border-inv-gold/70 px-8 py-3 text-[12px] tracking-[0.3em] text-inv-ink transition-[background-color,border-color] duration-300 hover:border-inv-accent hover:bg-inv-accent/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inv-accent"
+        >
+          Buka undangan
+        </button>
+      </div>
+
+      {/* Bulan sabit baru terbit, sedikit di atas bukit. */}
+      <div className="absolute inset-x-0 bottom-[22%] flex justify-center">
+        {/* Tanpa will-change, supaya bulan digambar ulang tajam di setiap ukuran saat membesar. */}
+        <div ref={disc} className="relative size-28 sm:size-32">
+          <svg viewBox="-58 -58 116 116" aria-hidden="true" className="size-full overflow-visible">
+            <MoonHalo id="rb-door" light={0.4} />
+            <MoonFace id="rb-door" d={litPath(START, 50)} />
+          </svg>
+        </div>
+      </div>
+      <p className="rb-text pointer-events-none absolute inset-x-0 bottom-[max(20px,4vh)] text-center font-body text-[13px] text-inv-gold italic">{moon}</p>
+
       {phase === "playing" && (
-        <button type="button" onClick={finish} className="rb-label absolute right-4 bottom-4 z-10 rounded-full border border-inv-line px-4 py-2 text-[12px] tracking-[0.18em] text-inv-ink/80">
+        <button type="button" onClick={() => setPhase("done")} className="rb-label absolute right-4 bottom-4 z-10 rounded-full border border-inv-line px-4 py-2 text-[12px] tracking-[0.18em] text-inv-ink/80">
           Lewati
         </button>
       )}

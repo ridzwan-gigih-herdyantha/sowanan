@@ -8,7 +8,7 @@ type Photo = { src: string; w: number; h: number; alt: string; caption?: string;
 
 const tilt = [-2, 1.5, -1, 2.5, -2.5, 1];
 
-type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" | "bleed" };
+type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" | "bleed" | "strip" };
 
 export function Gallery({ photos, stamp, variant = "collage" }: Props) {
   const grid = variant === "grid";
@@ -31,6 +31,28 @@ export function Gallery({ photos, stamp, variant = "collage" }: Props) {
       )}
     </Modal>
   );
+
+  // Deretan foto tinggi yang digeser ke samping, berhenti tepat di tiap foto, dengan nomor urut di bawahnya.
+  if (variant === "strip") {
+    return (
+      <>
+        <ul className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:-mx-8 sm:gap-5 sm:px-8 [&::-webkit-scrollbar]:hidden">
+          {photos.map((p, i) => (
+            <li key={p.src} className="w-[72%] shrink-0 snap-start sm:w-[38%] lg:w-[30%]">
+              <button type="button" onClick={() => setActive(i)} className="relative block aspect-[3/4] w-full overflow-hidden rounded-sm" aria-label={`Buka foto: ${p.alt}`}>
+                <Image src={p.src} alt={p.alt} fill sizes="(min-width: 1024px) 30vw, (min-width: 640px) 38vw, 72vw" className="object-cover transition-transform duration-700 hover:scale-[1.03]" />
+              </button>
+              <p className="mt-3 flex justify-between gap-3 text-[12px] tracking-[0.2em] text-inv-gold tabular-nums">
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <span>{String(photos.length).padStart(2, "0")}</span>
+              </p>
+            </li>
+          ))}
+        </ul>
+        {lightbox}
+      </>
+    );
+  }
 
   if (variant === "bleed") {
     return (
