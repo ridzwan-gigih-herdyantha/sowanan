@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { AutoReveal, type RevealMode } from "./auto-reveal";
 import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
 import { GUEST_NAME_MAX } from "@/lib/guest-input";
@@ -96,6 +97,8 @@ type Props = {
   className: string;
   style: CSSProperties;
   children: ReactNode;
+  // Reveal bawaan saat digulir. "images" untuk tema yang teksnya sudah punya gerak masuk sendiri.
+  reveal?: RevealMode | false;
 };
 
 function GuestField({ invited, greeting, className = "" }: { invited: string; greeting: string; className?: string }) {
@@ -114,7 +117,7 @@ const arrow = (
   </svg>
 );
 
-export function InvitationShell({ door, music, synth, className, style, children }: Props) {
+export function InvitationShell({ door, music, synth, className, style, children, reveal = "all" }: Props) {
   const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
   const namesAllowed = useContext(GuestNamesContext);
   const invited = namesAllowed ? fromLink : "";
@@ -131,6 +134,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   }, [slug, namesAllowed]);
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [content, setContent] = useState<HTMLDivElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
   const fader = useRef<Fader | null>(null);
@@ -397,7 +401,10 @@ export function InvitationShell({ door, music, synth, className, style, children
             </div>
           )}
 
-          <div inert={!open}>{children}</div>
+          <div ref={setContent} inert={!open}>
+            {children}
+          </div>
+          {open && reveal && <AutoReveal root={content} mode={reveal} />}
 
           {open && hasMusic && (
             <button

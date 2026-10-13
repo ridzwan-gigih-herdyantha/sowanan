@@ -421,6 +421,7 @@ function Footer({ inv }: { inv: InvitationView }) {
 export function AryaKirana({ inv }: { inv: InvitationView }) {
   return (
     <InvitationShell
+      reveal="images"
       door={{ kind: "medali", groom: inv.groom.name, bride: inv.bride.name, monogram: inv.monogram, date: inv.dateLong, place: `${inv.venue.name}, ${inv.cityShort}` }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}

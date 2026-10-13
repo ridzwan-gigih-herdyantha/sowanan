@@ -11,6 +11,7 @@ import { RembulanCountdown } from "@/components/invitation/rembulan/countdown";
 import { moonOf, parseDay } from "@/components/invitation/rembulan/moon";
 import { MoonDisc } from "@/components/invitation/rembulan/moon-disc";
 import { Parallax } from "@/components/invitation/rembulan/parallax";
+import { ScrollMoon } from "@/components/invitation/rembulan/scroll-moon";
 import { Starfield } from "@/components/invitation/rembulan/sky";
 import { Rsvp } from "@/components/invitation/rsvp";
 import { InvitationShell } from "@/components/invitation/shell";
@@ -43,19 +44,14 @@ function Label({ children, className = "" }: { children: ReactNode; className?: 
   return <p className={`rb-label text-[11px] tracking-[0.3em] text-inv-gold ${className}`}>{children}</p>;
 }
 
-// Satu halaman almanak: kolom kiri berisi fase bulan dan nama bagian, kolom kanan isinya. Fase setiap bagian
-// makin penuh dari atas ke bawah, jadi halaman ini sendiri seperti satu bulan menuju malam pernikahan.
-function Folio({ phase, label, title, children, wash = false, seed }: { phase: number; label: string; title: ReactNode; children: ReactNode; wash?: boolean; seed: number }) {
+// Satu halaman almanak. Jarak kiri menyisakan tempat untuk bulan yang menempel di kiri atas (ScrollMoon),
+// supaya isi tidak pernah tertimpa bulan saat digulir.
+function Folio({ title, children, wash = false, seed }: { title: ReactNode; children: ReactNode; wash?: boolean; seed: number }) {
   return (
-    <section className={`relative overflow-hidden py-24 lg:py-32 ${wash ? "inv-wash" : "inv-paper"}`}>
+    <section data-rb-folio className={`relative overflow-hidden py-24 lg:py-32 ${wash ? "inv-wash" : "inv-paper"}`}>
       <Starfield density={0.4} seed={seed} />
-      <Wrap className="grid gap-10 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-16">
-        <aside className="flex items-center gap-4 lg:flex-col lg:items-start lg:gap-5">
-          <MoonDisc id={`rb-folio-${seed}`} age={phase} glow={false} small className="size-9" />
-          <div className="h-px flex-1 bg-inv-line lg:h-16 lg:w-px lg:flex-none" />
-          <Label>{label}</Label>
-        </aside>
-        <div className="min-w-0">
+      <Wrap>
+        <div className="min-w-0 pl-10 sm:pl-16 lg:pl-20">
           <h2 className="font-display text-[clamp(38px,7.4vw,76px)] leading-[1.02] text-balance text-inv-ink">{title}</h2>
           {children}
         </div>
@@ -112,20 +108,20 @@ function Intro({ inv }: { inv: InvitationView }) {
     <section className="inv-paper relative overflow-hidden py-24 lg:py-32">
       <Starfield density={0.4} seed={2} />
       <Wrap>
-        <p className="max-w-[22ch] font-display text-[clamp(32px,6.4vw,64px)] leading-[1.1] text-balance text-inv-ink lg:ml-[216px]">{inv.tagline}</p>
+        <p className="max-w-[22ch] font-display text-[clamp(32px,6.4vw,64px)] leading-[1.1] text-balance text-inv-ink pl-10 sm:pl-16 lg:pl-20">{inv.tagline}</p>
       </Wrap>
     </section>
   );
 }
 
 // Dua foto bulat yang saling menutupi seperti gerhana, nama masing-masing di sisinya.
-function Couple({ inv, phase }: { inv: InvitationView; phase: number }) {
+function Couple({ inv }: { inv: InvitationView }) {
   const people = [
     { p: inv.groom, side: "text-left" },
     { p: inv.bride, side: "text-right" },
   ];
   return (
-    <Folio phase={phase} label="Kedua mempelai" title="Dua cahaya, satu malam" wash seed={8}>
+    <Folio title="Dua cahaya, satu malam" wash seed={8}>
       {inv.honor && <p className="mt-6 max-w-[52ch] text-[17px] leading-relaxed text-inv-ink/75 italic">{inv.honor}</p>}
       <div className="mt-14 flex justify-center">
         {people.map(({ p }, i) => (
@@ -150,9 +146,9 @@ function Couple({ inv, phase }: { inv: InvitationView; phase: number }) {
 }
 
 // Cerita sebagai deretan malam: di layar lebar berjajar mendatar pada satu garis, di HP digeser ke samping.
-function StorySection({ inv, phase }: { inv: InvitationView; phase: number }) {
+function StorySection({ inv }: { inv: InvitationView }) {
   return (
-    <Folio phase={phase} label="Cerita kami" title="Di bawah bulan yang berganti" seed={13}>
+    <Folio title="Di bawah bulan yang berganti" seed={13}>
       <ol className="relative mt-14 -mr-5 flex snap-x snap-mandatory gap-6 overflow-x-auto pr-5 pb-2 [scrollbar-width:none] sm:-mr-8 sm:pr-8 lg:mr-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pr-0 [&::-webkit-scrollbar]:hidden">
         <span aria-hidden="true" className="absolute top-4 right-0 left-0 h-px bg-inv-line" />
         {inv.story.map((s, i) => {
@@ -180,9 +176,9 @@ function StorySection({ inv, phase }: { inv: InvitationView; phase: number }) {
   );
 }
 
-function Details({ inv, moon, phase }: { inv: InvitationView; moon: Moon; phase: number }) {
+function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
   return (
-    <Folio phase={phase} label="Waktu dan tempat" title="Malam yang kami nantikan" wash seed={21}>
+    <Folio title="Malam yang kami nantikan" wash seed={21}>
       <div className="mt-12 grid items-center gap-12 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <div className="relative mx-auto w-[min(62vw,280px)]">
           <div aria-hidden="true" className="absolute -inset-[14%] rounded-full border border-inv-line" />
@@ -236,9 +232,9 @@ function Details({ inv, moon, phase }: { inv: InvitationView; moon: Moon; phase:
   );
 }
 
-function CountdownSection({ inv, phase }: { inv: InvitationView; phase: number }) {
+function CountdownSection({ inv }: { inv: InvitationView }) {
   return (
-    <Folio phase={phase} label="Menuju malam itu" title="Menghitung malam" seed={34}>
+    <Folio title="Menghitung malam" seed={34}>
       <div className="mt-12">
         <RembulanCountdown target={inv.date} />
       </div>
@@ -246,9 +242,9 @@ function CountdownSection({ inv, phase }: { inv: InvitationView; phase: number }
   );
 }
 
-function GallerySection({ inv, phase }: { inv: InvitationView; phase: number }) {
+function GallerySection({ inv }: { inv: InvitationView }) {
   return (
-    <Folio phase={phase} label="Galeri" title="Potongan malam-malam kami" wash seed={55}>
+    <Folio title="Potongan malam-malam kami" wash seed={55}>
       <div className="mt-12">
         <Gallery photos={inv.gallery} variant="strip" />
       </div>
@@ -256,9 +252,9 @@ function GallerySection({ inv, phase }: { inv: InvitationView; phase: number }) 
   );
 }
 
-function RsvpSection({ inv, phase }: { inv: InvitationView; phase: number }) {
+function RsvpSection({ inv }: { inv: InvitationView }) {
   return (
-    <Folio phase={phase} label="Mohon balasan" title="Konfirmasi kehadiran" seed={89}>
+    <Folio title="Konfirmasi kehadiran" seed={89}>
       <div className="mt-10 max-w-[560px]">
         <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
       </div>
@@ -266,9 +262,9 @@ function RsvpSection({ inv, phase }: { inv: InvitationView; phase: number }) {
   );
 }
 
-function Gifts({ inv, phase }: { inv: InvitationView; phase: number }) {
+function Gifts({ inv }: { inv: InvitationView }) {
   return (
-    <Folio phase={phase} label="Tanda kasih" title="Doa restu Anda sudah lebih dari cukup" wash seed={144}>
+    <Folio title="Doa restu Anda sudah lebih dari cukup" wash seed={144}>
       <p className="mt-6 max-w-[46ch] text-[17px] leading-relaxed text-inv-ink/75 italic">Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut.</p>
       <ul className="mt-8">
         {inv.gifts.map((g) => (
@@ -299,10 +295,10 @@ function Gifts({ inv, phase }: { inv: InvitationView; phase: number }) {
   );
 }
 
-async function WishesSection({ inv, phase }: { inv: InvitationView; phase: number }) {
+async function WishesSection({ inv }: { inv: InvitationView }) {
   const wishes = await getWishes(inv.slug);
   return (
-    <Folio phase={phase} label="Doa dan ucapan" title="Titipkan satu bintang untuk kami" seed={233}>
+    <Folio title="Titipkan satu bintang untuk kami" seed={233}>
       <p className="mt-6 max-w-[46ch] text-[16px] leading-relaxed text-inv-ink/70 italic">Setiap ucapan menjadi satu bintang di langit ini. Ketuk bintang untuk membacanya.</p>
       <div className="mt-10">
         <Wishes slug={inv.slug} initial={wishes} variant="langit" />
@@ -360,8 +356,6 @@ function Footer({ inv }: { inv: InvitationView }) {
 
 export function BimaNadia({ inv }: { inv: InvitationView }) {
   const moon = moonOf(new Date(inv.date));
-  // Fase tiap bagian, dari sabit muda sampai mendekati purnama di bagian terakhir.
-  const phases = [0.12, 0.2, 0.27, 0.33, 0.38, 0.42, 0.45, 0.48];
   return (
     <InvitationShell
       door={{
@@ -377,25 +371,26 @@ export function BimaNadia({ inv }: { inv: InvitationView }) {
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
+      <ScrollMoon age={moon.age} />
       <main>
         <Hero inv={inv} moon={moon} />
         <Intro inv={inv} />
         <Extras inv={inv} at="hero" />
-        {inv.on.couple && <Couple inv={inv} phase={phases[0]} />}
+        {inv.on.couple && <Couple inv={inv} />}
         <Extras inv={inv} at="couple" />
-        {inv.on.story && <StorySection inv={inv} phase={phases[1]} />}
+        {inv.on.story && <StorySection inv={inv} />}
         <Extras inv={inv} at="story" />
-        {inv.on.event && <Details inv={inv} moon={moon} phase={phases[2]} />}
+        {inv.on.event && <Details inv={inv} moon={moon} />}
         <Extras inv={inv} at="event" />
-        {inv.on.countdown && <CountdownSection inv={inv} phase={phases[3]} />}
+        {inv.on.countdown && <CountdownSection inv={inv} />}
         <Extras inv={inv} at="countdown" />
-        {inv.on.gallery && <GallerySection inv={inv} phase={phases[4]} />}
+        {inv.on.gallery && <GallerySection inv={inv} />}
         <Extras inv={inv} at="gallery" />
-        {inv.on.rsvp && <RsvpSection inv={inv} phase={phases[5]} />}
+        {inv.on.rsvp && <RsvpSection inv={inv} />}
         <Extras inv={inv} at="rsvp" />
-        {inv.on.gifts && <Gifts inv={inv} phase={phases[6]} />}
+        {inv.on.gifts && <Gifts inv={inv} />}
         <Extras inv={inv} at="gifts" />
-        {inv.on.wishes && <WishesSection inv={inv} phase={phases[7]} />}
+        {inv.on.wishes && <WishesSection inv={inv} />}
         <Extras inv={inv} at="wishes" />
         {inv.on.closing && <Closing inv={inv} moon={moon} />}
         <Extras inv={inv} at="closing" />

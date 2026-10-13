@@ -358,6 +358,7 @@ function Footer({ inv }: { inv: InvitationView }) {
 export function ToniLayla({ inv }: { inv: InvitationView }) {
   return (
     <InvitationShell
+      reveal="images"
       door={{
         kind: "lensa",
         headline: inv.headline,
