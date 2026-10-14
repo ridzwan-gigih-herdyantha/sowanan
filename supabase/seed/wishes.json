@@ -114,5 +114,31 @@
       "name": "Laras",
       "message": "Bahagia selalu, Nadia. Kamu cantik sekali malam itu, pasti."
     }
+  ],
+  "arkasa-mentari": [
+    {
+      "name": "Dimas",
+      "message": "GG! Selamat Arkasa dan Mentari, semoga co-op kalian awet sampai level terakhir."
+    },
+    {
+      "name": "Sinta",
+      "message": "Akhirnya party kalian resmi. Selamat menempuh hidup baru, semoga selalu satu tim."
+    },
+    {
+      "name": "Bagus",
+      "message": "Achievement unlocked: menikah. Bahagia selalu ya kalian berdua!"
+    },
+    {
+      "name": "Rina",
+      "message": "Semoga rumah tangga kalian penuh tawa seperti malam-malam main bareng dulu."
+    },
+    {
+      "name": "Om Hendro",
+      "message": "Selamat untuk Arkasa dan Mentari. Semoga menjadi keluarga yang sakinah, mawaddah, warahmah."
+    },
+    {
+      "name": "Yoga",
+      "message": "Nggak ada tombol keluar dari petualangan ini, dan memang nggak perlu. Selamat!"
+    }
   ]
 }

@@ -2,6 +2,7 @@
   "slug": "arya-kirana",
   "theme": "arya-kirana",
   "published": true,
+  "package": "istimewa",
   "data": {
     "copy": {
       "ayat": "",

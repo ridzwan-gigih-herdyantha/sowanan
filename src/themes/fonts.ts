@@ -19,6 +19,7 @@ import {
 } from "next/font/google";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { defaultFonts as andiRina } from "./andi-rina/fonts";
+import { defaultFonts as arkasaMentari } from "./arkasa-mentari/fonts";
 import { defaultFonts as aryaKirana } from "./arya-kirana/fonts";
 import { defaultFonts as bagasSekar } from "./bagas-sekar/fonts";
 import { defaultFonts as bimaNadia } from "./bima-nadia/fonts";
@@ -110,6 +111,12 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
     { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
     { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
     { id: "lembut", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
+  ],
+  "arkasa-mentari": [
+    { id: "", name: "Pixelify & Lexend", ...arkasaMentari },
+    { id: "bersih", name: "Fraunces & Manrope", display: fraunces, body: manrope },
+    { id: "modern", name: "DM Serif & DM Sans", display: dmSerif, body: dmSans },
+    { id: "tegas", name: "Playfair & Work Sans", display: playfair, body: workSans },
   ],
 };
 

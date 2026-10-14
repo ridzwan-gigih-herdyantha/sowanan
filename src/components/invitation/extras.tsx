@@ -5,6 +5,7 @@ import type { ExtraView, InvitationView } from "@/lib/invitation/view";
 import { ExtraTracks, ExtraVideos, YoutubeStream } from "./extras-media";
 import { Gallery } from "./gallery";
 import { Lung, Motif, texture } from "./pakeliran-ornaments";
+import { PixelRule } from "./petualang/pixel";
 import { MoonDisc } from "./rembulan/moon-disc";
 import { rows } from "./rows";
 import { RuleIconSvg } from "./rule-icons";
@@ -22,7 +23,7 @@ const TONES: Record<ExtraTone, { section: string; line: string; dot: string; bg:
 type Tone = (typeof TONES)[ExtraTone];
 
 // Gaya per tema. Tema tanpa skin memakai tampilan umum yang rata tengah.
-type Skin = "film" | "ruang" | "herbarium" | "pakeliran" | "sakinah" | "sutra" | "rembulan";
+type Skin = "film" | "ruang" | "herbarium" | "pakeliran" | "sakinah" | "sutra" | "rembulan" | "petualang";
 const SKINS: Record<string, Skin> = {
   "andi-rina": "film",
   "bagas-sekar": "ruang",
@@ -33,6 +34,7 @@ const SKINS: Record<string, Skin> = {
   "bima-nadia": "rembulan",
   // Lensa memakai gaya editorial hitam putih yang sama dengan Ruang.
   "toni-layla": "ruang",
+  "arkasa-mentari": "petualang",
 };
 // Tema editorial meratakan judul dan isi ke kiri, tema berornamen ke tengah.
 const isLeft = (skin?: Skin) => skin === "film" || skin === "ruang" || skin === "herbarium";
@@ -81,6 +83,15 @@ function Heading({ skin, eyebrow, title, tone }: { skin?: Skin; eyebrow: string;
             <MoonDisc key={a} id={`rb-extra-${eyebrow.replace(/\W+/g, "-")}-${i}`} age={a} glow={false} small className={a === 0.5 ? "size-4" : "size-3"} />
           ))}
         </div>
+      </div>
+    );
+  }
+  if (skin === "petualang") {
+    return (
+      <div className="text-center">
+        {eyebrow && <p className={`pt-label text-[12px] ${tone.dark ? "opacity-75" : "text-inv-accent"}`}>{eyebrow}</p>}
+        {title && <h2 className="mt-3 font-display text-[clamp(34px,8vw,52px)] leading-[1.05] font-bold text-balance">{title}</h2>}
+        <PixelRule className={`mt-5 ${tone.dark ? "" : "text-inv-accent"}`} />
       </div>
     );
   }
@@ -289,6 +300,19 @@ const LOOKS: Record<Skin | "plain", Look> = {
       </li>
     ),
   },
+  // Co-op Adventure: kotak warna berbingkai piksel dengan nama dalam huruf piksel.
+  petualang: {
+    cap: { mobile: 4, desktop: 4 },
+    center: true,
+    gap: { mobile: "gap-x-4", desktop: "gap-x-8" },
+    rowGap: "gap-y-9",
+    item: (c, i, _per, desktop) => (
+      <li key={i} className={`flex flex-col items-center text-center ${desktop ? "w-28" : "w-[68px]"}`}>
+        <span aria-hidden="true" className={`pt-box block [--pt-edge:currentColor] ${desktop ? "size-20" : "size-13"}`} style={fill(c)} />
+        <span className={`pt-label mt-4 leading-tight ${desktop ? "text-[13px]" : "text-[11px]"}`}>{label(c)}</span>
+      </li>
+    ),
+  },
   plain: {
     cap: { mobile: 4, desktop: 4 },
     center: true,
@@ -456,6 +480,21 @@ function Rules({ rules, skin, tone }: { rules: ExtraView["rules"]; skin?: Skin; 
       </ul>
     );
   }
+  // Co-op Adventure: ikon di dalam ubin piksel, seperti slot barang di game.
+  if (skin === "petualang") {
+    return (
+      <ul className="mx-auto mt-10 grid max-w-[560px] gap-4 text-left">
+        {rules.map((r, i) => (
+          <li key={i} className="pt-box flex items-center gap-4 p-3.5 text-inv-ink [--pt-edge:var(--inv-line)]">
+            <span className="grid size-11 shrink-0 place-items-center bg-inv-wash text-inv-accent">
+              <RuleIconSvg name={r.icon} className="size-[18px]" />
+            </span>
+            <p className={ruleText}>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   // Sutra: ikon di dalam medali bercincin ganda, seperti medali monogram di pembuka.
   if (skin === "sutra") {
     return (
@@ -495,6 +534,7 @@ const STREAM_FRAME: Record<Skin | "plain", { className: string; shadow?: string 
   sakinah: { className: "rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--sk-emas), 0 0 0 9px var(--extra-bg), 0 0 0 10px color-mix(in srgb, var(--sk-emas) 45%, transparent)" },
   sutra: { className: "rounded-[1px]", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--inv-gold), 0 0 0 9px var(--extra-bg), 0 0 0 10px var(--inv-gold-light)" },
   rembulan: { className: "overflow-hidden rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--inv-gold-light), 0 0 40px -4px color-mix(in srgb, var(--inv-accent) 30%, transparent)" },
+  petualang: { className: "pt-box p-1.5 [--pt-edge:currentColor]" },
   plain: { className: "overflow-hidden rounded-[2px]" },
 };
 
@@ -568,16 +608,20 @@ function Body({ e, skin, tone, left }: { e: ExtraView; skin?: Skin; tone: Tone; 
 
 // Bagian tambahan di luar tema, misalnya susunan acara atau denah parkir.
 // Satu komponen dipakai semua tema lewat token inv-*, dengan judul dan bentuk yang mengikuti gaya tiap tema.
-export function Extras({ inv, at }: { inv: InvitationView; at: ExtraAnchor }) {
+// only merender satu bagian saja, dan compact memakai jarak dalam yang rapat. Keduanya untuk tema yang menaruh
+// setiap bagian tambahan di dalam papan sendiri, bukan sebagai section halaman.
+export function Extras({ inv, at, only, compact = false }: { inv: InvitationView; at: ExtraAnchor; only?: number; compact?: boolean }) {
   const items = inv.extras[at];
   if (!items?.length) return null;
   const skin = SKINS[inv.theme];
   const left = isLeft(skin);
   return items.map((e, i) => {
+    if (only !== undefined && i !== only) return null;
     const tone = TONES[e.tone] ?? TONES.paper;
+    const space = compact ? "px-4 py-6 sm:px-6" : `px-5 py-20 sm:px-8 lg:py-28 ${skin === "film" ? "torn-top relative -mt-3.5" : ""}`;
     return (
       // Senja Kota memakai tepi kertas sobek di setiap pergantian section.
-      <section key={`${at}-${i}`} className={`${tone.section} px-5 py-20 sm:px-8 lg:py-28 ${skin === "film" ? "torn-top relative -mt-3.5" : ""}`}>
+      <section key={`${at}-${i}`} className={`${tone.section} ${space}`}>
         <div className={`mx-auto ${e.kind === "bebas" && e.photos.length > 2 ? "max-w-[960px]" : "max-w-[680px]"}`}>
           <Heading skin={skin} eyebrow={EYEBROW[e.kind]} title={e.title} tone={tone} />
           <Body e={e} skin={skin} tone={tone} left={left} />

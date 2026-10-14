@@ -37,7 +37,11 @@ for (const file of files) {
 
   const { data: row, error } = await sb
     .from("invitations")
-    .upsert({ slug: seed.slug, theme: seed.theme, published: seed.published, payment_status: "lunas", data: data.data, draft: null }, { onConflict: "slug" })
+    // package di seed bersifat opsional. Bila tidak diisi, paket yang sudah tercatat di database dibiarkan.
+    .upsert(
+      { slug: seed.slug, theme: seed.theme, published: seed.published, payment_status: "lunas", data: data.data, draft: null, ...(seed.package && { package: seed.package }) },
+      { onConflict: "slug" },
+    )
     .select("id")
     .single();
   if (error) {

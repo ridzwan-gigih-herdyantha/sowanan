@@ -15,6 +15,7 @@ const CARD_BG: Record<string, string> = {
   "arya-kirana": "bg-[#ece2cf]",
   "bima-nadia": "bg-[#c9ccd6]",
   "toni-layla": "bg-[#dcd6cc]",
+  "arkasa-mentari": "bg-[#f3d9c4]",
 };
 
 // Seluruh kartu satu tautan ke demo tema. Paket lain bisa dipilih dari halaman demonya.

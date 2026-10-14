@@ -1,0 +1,322 @@
+{
+  "slug": "arkasa-mentari",
+  "theme": "arkasa-mentari",
+  "published": true,
+  "package": "istimewa",
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "",
+      "credit": "Foto oleh Kriisszzz di Pexels",
+      "sesanti": "",
+      "tagline": "Dua pemain, satu tim. Petualangan terbesar kami baru akan dimulai.",
+      "ayatArti": "",
+      "headline": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-05-15T14:00:00+07:00",
+      "city": "Bandung, Jawa Barat",
+      "start": "2027-05-15T09:00:00+07:00",
+      "venue": {
+        "name": "Taman Hutan Raya Juanda",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Tahura+Djuanda+Bandung",
+        "address": "Jl. Ir. H. Juanda No. 99, Ciburial, Bandung"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "09.00",
+          "until": "10.00"
+        },
+        {
+          "name": "Resepsi",
+          "time": "11.00",
+          "until": "14.00"
+        }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "1 Mei 2027"
+    },
+    "media": {
+      "og": "arkasa-mentari/og_1.jpg?v=mv6g1stw",
+      "hero": "arkasa-mentari/hero_1.webp?v=mv6g1rac",
+      "rsvp": "",
+      "music": "",
+      "venue": "arkasa-mentari/venue_1.webp?v=mv6g1twm",
+      "couple": "",
+      "detail": "",
+      "closing": "arkasa-mentari/closing_1.webp?v=mv6g1uz2",
+      "heroWide": "arkasa-mentari/herowide_1.webp?v=mv6g1sh8"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Arya & Kirana di Yogyakarta.",
+      "ogDescription": "Undangan pernikahan Arya & Kirana, Sabtu 14 Februari 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Mentari Ayuningtyas",
+        "name": "Mentari",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "arkasa-mentari/bride_1.webp?v=mv6g1w4a",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Bambang Susilo & Ibu Dewi Lestari"
+      },
+      "groom": {
+        "full": "Arkasa Pratama",
+        "name": "Arkasa",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "arkasa-mentari/groom_1.webp?v=mv6g1vj1",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Hendra Wijaya & Ibu Ratna Sari"
+      }
+    },
+    "extras": [
+      {
+        "body": "",
+        "kind": "dresscode",
+        "note": "",
+        "plan": {
+          "h": 0,
+          "w": 0,
+          "src": ""
+        },
+        "tone": "paper",
+        "after": "wishes",
+        "rules": [],
+        "title": "Dress Code",
+        "colors": [
+          {
+            "hex": "#50403C",
+            "name": "Terakota"
+          },
+          {
+            "hex": "#F6F0EA",
+            "name": "Bone"
+          },
+          {
+            "hex": "#F2C791",
+            "name": "Sand"
+          },
+          {
+            "hex": "#1E1E1D",
+            "name": "Black Tercot"
+          }
+        ],
+        "photos": [],
+        "stream": {
+          "url": "",
+          "time": ""
+        },
+        "tracks": [],
+        "videos": [],
+        "rundown": []
+      }
+    ],
+    "monogram": "A & M",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
+        "qris": "toni-layla/qris_1.webp?v=mv62kl8d",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Arkasa Pratama",
+            "number": "0000 2003 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Mentari Ayuningtyas",
+            "number": "2222 2003 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "14.02.2019",
+            "long": "Satu tim di lomba game kampus. Kalah di babak pertama, tapi menang satu teman baru.",
+            "image": "arkasa-mentari/story_1.webp?v=mv6g1wuu",
+            "place": "",
+            "short": "Satu tim di lomba game kampus. Kalah di babak pertama, tapi menang satu teman baru.",
+            "title": "Bertemu"
+          },
+          {
+            "no": "",
+            "date": "09.09.2021",
+            "long": "Ratusan malam main co-op, dan obrolan yang selalu lebih seru dari game-nya.",
+            "image": "arkasa-mentari/story_2.webp?v=mv6g1xrh",
+            "place": "",
+            "short": "Ratusan malam main co-op, dan obrolan yang selalu lebih seru dari game-nya.",
+            "title": "Main Bareng"
+          },
+          {
+            "no": "",
+            "date": "21.12.2025",
+            "long": "Dua keluarga bertemu di Bandung. Misi sampingan selesai, misi utama terbuka.",
+            "image": "arkasa-mentari/story_3.webp?v=mv6g1yhf",
+            "place": "",
+            "short": "Dua keluarga bertemu di Bandung. Misi sampingan selesai, misi utama terbuka.",
+            "title": "Lamaran"
+          },
+          {
+            "no": "",
+            "date": "15.05.2027",
+            "long": "Simpan permainan. Mulai petualangan baru, kali ini untuk seterusnya.",
+            "image": "arkasa-mentari/story_4.webp?v=mv6g1zfs",
+            "place": "",
+            "short": "Simpan permainan. Mulai petualangan baru, kali ini untuk seterusnya.",
+            "title": "Menikah"
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "src": "arkasa-mentari/gallery_1.webp?v=mv6g20gi",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Arkasa memeluk Mentari di antara pohon pinus",
+            "no": ""
+          },
+          {
+            "src": "arkasa-mentari/gallery_2.webp?v=mv6g2168",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Arkasa bersepeda menghampiri Mentari",
+            "no": ""
+          },
+          {
+            "src": "arkasa-mentari/gallery_3.webp?v=mv6g22dx",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Arkasa dan Mentari di depan kain putih di hutan pinus",
+            "no": ""
+          },
+          {
+            "src": "arkasa-mentari/gallery_4.webp?v=mv6g237y",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Arkasa dan Mentari berboncengan sepeda",
+            "no": ""
+          },
+          {
+            "src": "arkasa-mentari/gallery_5.webp?v=mv6g24ck",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Tangan Arkasa dan Mentari bergandengan",
+            "no": ""
+          },
+          {
+            "src": "arkasa-mentari/gallery_6.webp?v=mv6g24y8",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Mentari tersenyum di samping Arkasa",
+            "no": ""
+          },
+          {
+            "src": "arkasa-mentari/gallery_7.webp?v=mv6g25zh",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Arkasa dan Mentari bergandengan di jalan saat matahari bersinar",
+            "no": ""
+          },
+          {
+            "src": "arkasa-mentari/gallery_8.webp?v=mv6g2711",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Arkasa dan Mentari berjalan berdua",
+            "no": ""
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [
+          {
+            "h": 589,
+            "w": 600,
+            "no": "042",
+            "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
+            "latin": "Rosa chinensis",
+            "local": "mawar"
+          },
+          {
+            "h": 600,
+            "w": 600,
+            "no": "057",
+            "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek bulan"
+          },
+          {
+            "h": 675,
+            "w": 600,
+            "no": "063",
+            "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
+            "latin": "Rosa & Phalaenopsis",
+            "local": "buket pengantin"
+          },
+          {
+            "h": 436,
+            "w": 600,
+            "no": "071",
+            "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek putih"
+          }
+        ],
+        "enabled": true
+      }
+    }
+  }
+}

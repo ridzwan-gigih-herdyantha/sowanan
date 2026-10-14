@@ -13,7 +13,7 @@ const FIRST = 4;
 const STEP = 6;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
-type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" | "doa" | "langit" };
+type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" | "doa" | "langit" | "dialog" };
 
 export function Wishes({ slug, initial, variant = "notes" }: Props) {
   // Langit memakai daftar bergaris yang sama, dengan langit bintang ucapan di atasnya.
@@ -24,6 +24,8 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const lontar = variant === "lontar";
   const serat = variant === "serat";
   const doa = variant === "doa";
+  // Dialog: setiap ucapan sebagai kotak percakapan game dengan nama pengirim di label atasnya.
+  const dialog = variant === "dialog";
   const tagTone = ["bg-inv-wash", "bg-[var(--inv-note-a,#E6D8E4)]", "bg-[var(--inv-note-b,#DDE3D3)]"];
   const { guest, setGuest } = useGuest();
   const archived = useArchived();
@@ -127,7 +129,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
           disabled={pending}
           className="mt-6 rounded-sm border border-inv-accent px-6 py-3.5 text-[13px] tracking-[0.14em] text-inv-accent transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper disabled:opacity-50"
         >
-          {pending ? (lined || curator || tags ? "MENGIRIM..." : "MENEMPELKAN...") : tags ? "GANTUNGKAN UCAPAN" : curator ? "SIMPAN CATATAN" : lined ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
+          {pending ? (lined || curator || tags || dialog ? "MENGIRIM..." : "MENEMPELKAN...") : tags ? "GANTUNGKAN UCAPAN" : curator ? "SIMPAN CATATAN" : lined || dialog ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
         </button>
       </form>
       )}
@@ -135,9 +137,14 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
       <div className="mt-12 lg:mt-0">
         <div ref={listTop} className="scroll-mt-24" />
         {langit && <WishSky wishes={all} fresh={new Set(unsynced.map((w) => w.id))} />}
-        <ul className={serat || doa ? "columns-1 gap-4 sm:columns-2" : lontar ? "inv-lontar-list relative flex flex-col gap-3" : lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
+        <ul className={dialog ? "flex flex-col gap-7 pt-3" : serat || doa ? "columns-1 gap-4 sm:columns-2" : lontar ? "inv-lontar-list relative flex flex-col gap-3" : lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
           {all.slice(0, shown).map((w, i) =>
-            tags ? (
+            dialog ? (
+              <li key={w.id} className={`relative ${i < unsynced.length ? "animate-[inv-pop_.3s_ease-out]" : ""}`}>
+                <p className="pt-tag absolute -top-3 left-4 z-10 max-w-[calc(100%-32px)] truncate">{w.name}</p>
+                <p className="pt-dialog px-5 pt-6 pb-4 text-[16px] leading-relaxed text-[#FFF6E5]">{w.message}</p>
+              </li>
+            ) : tags ? (
               <li
                 key={w.id}
                 className={`inv-swing mb-5 break-inside-avoid origin-top ${i < unsynced.length ? "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]" : ""}`}

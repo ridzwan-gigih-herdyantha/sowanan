@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 // Yang dimunculkan: judul, teks, dan foto. Isi formulir dan elemen yang sudah punya gerak sendiri dilewati.
 const TARGETS = { all: "h2, h3, p, blockquote, figure, img", images: "img" } as const;
-const SKIP = "form, [role=timer], [data-reveal], [data-su], [data-lr], [aria-live], .inv-enter";
+const SKIP = "form, [role=timer], [data-reveal], [data-su], [data-lr], [data-pt], [data-pt-type], [data-pt-photo], [aria-live], .inv-enter";
 
 export type RevealMode = keyof typeof TARGETS;
 

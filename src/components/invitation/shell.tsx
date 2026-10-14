@@ -5,12 +5,14 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyn
 import { AutoReveal, type RevealMode } from "./auto-reveal";
 import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
+import { chiptune } from "./petualang/chiptune";
 import { GUEST_NAME_MAX } from "@/lib/guest-input";
 import { GUEST_KEY, guestCodeKey, recall, remember } from "@/lib/guest-memory";
 import { PintuDoor, type PintuProps } from "./sakinah/door";
 import { LensaDoor, type LensaProps } from "./lensa/door";
 import { BulanDoor, type BulanProps } from "./rembulan/door";
 import { MedaliDoor, type MedaliProps } from "./sutra/door";
+import { MulaiDoor, type MulaiProps } from "./petualang/door";
 
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
@@ -87,18 +89,24 @@ type Door =
   | ({ kind: "pintu" } & Omit<PintuProps, "invited" | "onOpen">)
   | ({ kind: "medali" } & Omit<MedaliProps, "invited" | "onOpen">)
   | ({ kind: "bulan" } & Omit<BulanProps, "invited" | "onOpen">)
-  | ({ kind: "lensa" } & Omit<LensaProps, "invited" | "onOpen">);
+  | ({ kind: "lensa" } & Omit<LensaProps, "invited" | "onOpen">)
+  | ({ kind: "mulai" } & Omit<MulaiProps, "invited" | "onOpen">);
+
+// Musik bawaan yang dibentuk langsung di browser, dipakai bila undangan tidak punya berkas musik.
+const SYNTHS = { gending, chiptune };
 
 type Props = {
   door: Door;
   music: string;
   // Musik bawaan yang dimainkan langsung di browser bila undangan tidak punya berkas musik.
-  synth?: "gending";
+  synth?: keyof typeof SYNTHS;
   className: string;
   style: CSSProperties;
   children: ReactNode;
   // Reveal bawaan saat digulir. "images" untuk tema yang teksnya sudah punya gerak masuk sendiri.
   reveal?: RevealMode | false;
+  // Posisi tombol musik. "top" untuk tema yang memakai sudut bawah layar sebagai tombol kontrol.
+  musicAt?: "bottom" | "top";
 };
 
 function GuestField({ invited, greeting, className = "" }: { invited: string; greeting: string; className?: string }) {
@@ -117,7 +125,7 @@ const arrow = (
   </svg>
 );
 
-export function InvitationShell({ door, music, synth, className, style, children, reveal = "all" }: Props) {
+export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom" }: Props) {
   const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
   const namesAllowed = useContext(GuestNamesContext);
   const invited = namesAllowed ? fromLink : "";
@@ -163,7 +171,7 @@ export function InvitationShell({ door, music, synth, className, style, children
     };
   }, []);
 
-  useEffect(() => () => gending.pause(), []);
+  useEffect(() => () => Object.values(SYNTHS).forEach((s) => s.pause()), []);
 
   const guest = invited || typed || "";
   const setGuest = (name: string) => {
@@ -171,7 +179,7 @@ export function InvitationShell({ door, music, synth, className, style, children
     if (slug) storeGuest(name);
   };
 
-  const player = !music && synth === "gending" ? gending : null;
+  const player = !music && synth ? SYNTHS[synth] : null;
   const useSynth = player !== null;
   const hasMusic = Boolean(music) || useSynth;
 
@@ -260,7 +268,7 @@ export function InvitationShell({ door, music, synth, className, style, children
       <MediaContext.Provider value={media}>
         <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
           <noscript>
-            <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+            <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
           </noscript>
 
           {door.kind === "vellum" && (
@@ -347,7 +355,9 @@ export function InvitationShell({ door, music, synth, className, style, children
             />
           )}
 
-          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" ? null : door.kind === "seal" ? (
+          {door.kind === "mulai" && <MulaiDoor groom={door.groom} bride={door.bride} monogram={door.monogram} date={door.date} place={door.place} year={door.year} invited={invited} onOpen={openInvitation} />}
+
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" ? null : door.kind === "seal" ? (
             <div
               className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
               aria-hidden={open}
@@ -412,7 +422,7 @@ export function InvitationShell({ door, music, synth, className, style, children
               onClick={toggleMusic}
               aria-pressed={playing}
               aria-label={playing ? "Matikan musik" : "Nyalakan musik"}
-              className="fixed right-4 bottom-4 z-40 flex size-12 items-center justify-center rounded-full bg-inv-night text-inv-gold-light shadow-[0_6px_20px_rgba(0,0,0,.3)] transition-transform duration-150 active:scale-95 sm:right-6 sm:bottom-6"
+              className={`fixed z-40 flex size-12 items-center justify-center rounded-full bg-inv-night text-inv-gold-light shadow-[0_6px_20px_rgba(0,0,0,.3)] transition-transform duration-150 active:scale-95 ${musicAt === "top" ? "top-3 right-3 sm:top-4 sm:right-5" : "right-4 bottom-4 sm:right-6 sm:bottom-6"}`}
             >
               {playing ? (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
