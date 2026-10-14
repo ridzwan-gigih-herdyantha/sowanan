@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DemoViewSwitch } from "@/components/invitation/demo-view-switch";
+import { TrackThemeView } from "@/components/meta-pixel";
 import { Archived, GuestNames, InvitationSlug } from "@/components/invitation/shell";
 import { Watermark } from "@/components/invitation/watermark";
 import { isDemo } from "@/lib/invitation/archive";
@@ -9,6 +10,7 @@ import { limitExtras } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
 import { getSettings, packageRules, type PackageId } from "@/lib/settings";
 import { THEMES } from "@/themes";
+import { THEME_NAMES } from "@/themes/media";
 
 // Dipakai halaman undangan (/slug) dan halaman contoh per paket (/slug/paket/<id>).
 // demoPkg hanya berlaku untuk undangan contoh. Tanpa demoPkg, undangan contoh tampil sebagai paket tertinggi.
@@ -83,7 +85,12 @@ export function InvitationBody({ found }: { found: InvitationPageData }) {
         </GuestNames>
       </Archived>
       {!found.paid && <Watermark />}
-      {found.demo && found.pkg && <DemoViewSwitch {...demoSwitchLinks(found.view.slug, found.pkg, "desktop", found.packages)} />}
+      {found.demo && found.pkg && (
+        <>
+          <DemoViewSwitch {...demoSwitchLinks(found.view.slug, found.pkg, "desktop", found.packages)} />
+          <TrackThemeView theme={found.view.slug} name={THEME_NAMES[found.view.slug] ?? found.view.slug} pkg={found.pkg} device="desktop" />
+        </>
+      )}
     </>
   );
 }

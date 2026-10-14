@@ -16,6 +16,7 @@
     "sakinah-assets": "node --no-warnings scripts/sakinah-assets.ts"
   },
   "dependencies": {
+    "@adkit/meta-pixel-next": "^1.1.2",
     "@lottiefiles/dotlottie-react": "^0.19.16",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.0",

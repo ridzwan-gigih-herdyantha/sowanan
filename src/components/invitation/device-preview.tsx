@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { demoSwitchLinks } from "@/app/[slug]/invitation-page";
+import { TrackThemeView } from "@/components/meta-pixel";
 import { isDemo } from "@/lib/invitation/archive";
 import { demoHref, demoPackages, TOP_PACKAGE } from "@/lib/invitation/demo-packages";
 import { getInvitation } from "@/lib/invitation/load";
@@ -39,6 +40,7 @@ export async function DevicePreview({ slug, device, pkg = TOP_PACKAGE }: { slug:
         h={h}
         aside={<DemoViewSwitch {...demoSwitchLinks(slug, pkg, device, packages)} attached />}
       />
+      <TrackThemeView theme={inv.theme} name={THEME_NAMES[inv.theme] ?? inv.theme} pkg={pkg} device={device} />
     </main>
   );
 }

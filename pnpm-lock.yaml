@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@adkit/meta-pixel-next':
+        specifier: ^1.1.2
+        version: 1.1.2(next@16.3.6(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@lottiefiles/dotlottie-react':
         specifier: ^0.19.16
         version: 0.19.16(react@19.2.8)
@@ -95,6 +98,20 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@adkit/meta-pixel-next@1.1.2':
+    resolution: {integrity: sha512-J7OCmwuIMe9de+sfYhOGWvevdFHxPE8c5jJOZkxWOt3QWoQ4JkdmqD0Z/22X0NzRmd97P1I1oPnsOML+zukieA==}
+    peerDependencies:
+      next: '>=13.0.0'
+      react: '>=18.0.0'
+
+  '@adkit/meta-pixel-react@1.1.2':
+    resolution: {integrity: sha512-peTJ/gUaRjnFKVi+VXKKkJOrW9oSwoN2bAORE14hJoXHeEogaxNoEl75gY53on00Y/9EcZtQ0b0kvosOyt9O9g==}
+    peerDependencies:
+      react: '>=16.8.0'
+
+  '@adkit/meta-pixel@1.2.2':
+    resolution: {integrity: sha512-0m8qJ3zdMixwKBHhBxjD7jNOsSy6GK9Qu84whPY9eVbFGLkq8DkpYdqnlQMcetkOZJS9Tr0BgZJp3tETOo1VLw==}
 
   '@alloc/quick-lru@5.3.0':
     resolution: {integrity: sha512-U4+70Pc5ZS9osnCBCE5Jha/ciHM+Yp+CNMNC/7HvYbNRk1Ldd+f7qO65W5qfhu/TCv+/ozljlXXe9Nj8419DMA==}
@@ -2292,6 +2309,19 @@ packages:
     resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
 
 snapshots:
+
+  '@adkit/meta-pixel-next@1.1.2(next@16.3.6(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@adkit/meta-pixel-react': 1.1.2(react@19.2.8)
+      next: 16.3.6(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react: 19.2.8
+
+  '@adkit/meta-pixel-react@1.1.2(react@19.2.8)':
+    dependencies:
+      '@adkit/meta-pixel': 1.2.2
+      react: 19.2.8
+
+  '@adkit/meta-pixel@1.2.2': {}
 
   '@alloc/quick-lru@5.3.0': {}
 
