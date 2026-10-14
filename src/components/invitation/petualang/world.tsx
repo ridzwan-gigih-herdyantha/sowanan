@@ -587,7 +587,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
   ];
 
   return (
-    <section data-world className="pt-world relative h-svh overflow-hidden">
+    <section data-world className="pt-world pt-sky relative h-svh overflow-hidden">
       <div ref={stage} onFocusCapture={onFocus} className="pt-stage relative h-svh overflow-x-auto overflow-y-hidden text-[#FFF6E5]">
         <Zoom size={size}>
           <div className="relative h-full" style={{ "--t": `${t}px` } as CSSProperties}>

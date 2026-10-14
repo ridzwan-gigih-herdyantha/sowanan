@@ -424,6 +424,15 @@
 .pt-stage {
   scrollbar-width: none;
 }
+/* Tanpa JavaScript ukuran layar tidak pernah terukur, jadi dunia tetap ditampilkan dengan ukuran cadangan. */
+.pt-wait {
+  visibility: hidden;
+}
+@media (scripting: none) {
+  .pt-wait {
+    visibility: visible;
+  }
+}
 .pt-hero svg {
   display: none;
 }

@@ -9,8 +9,9 @@ export function tileFor(w: number, h: number) {
 }
 
 // w dan h adalah ukuran panggung sebelum diperkecil. Di layar HP seluruh panggung diperkecil sedikit (zoom),
-// jadi dunia yang terlihat lebih luas dan papan tidak terasa terlalu besar.
-export type Size = { w: number; h: number; t: number; zoom: number };
+// jadi dunia yang terlihat lebih luas dan papan tidak terasa terlalu besar. ready menandai ukuran yang sudah diukur
+// dari layar sungguhan, bukan ukuran cadangan dari server.
+export type Size = { w: number; h: number; t: number; zoom: number; ready: boolean };
 const ZOOM = 0.86;
 const FLOORS = 19;
 
@@ -20,9 +21,9 @@ function sizeFor(w: number, h: number): Size {
   const vh = Math.round(h / zoom);
   // Di layar lebar ubin dibatasi supaya tinggi layar muat paling sedikit FLOORS ubin, cukup untuk cerita dua lantai.
   const fit = Math.max(32, 16 * Math.floor(vh / FLOORS / 16));
-  return { w: vw, h: vh, t: zoom < 1 ? 32 : Math.min(tileFor(vw, vh), fit), zoom };
+  return { w: vw, h: vh, t: zoom < 1 ? 32 : Math.min(tileFor(vw, vh), fit), zoom, ready: true };
 }
-const FALLBACK = sizeFor(390, 844);
+const FALLBACK = { ...sizeFor(390, 844), ready: false };
 
 export function useSize(ref: RefObject<HTMLElement | null>) {
   const [size, setSize] = useState<Size>(FALLBACK);
@@ -33,7 +34,7 @@ export function useSize(ref: RefObject<HTMLElement | null>) {
       // Saat tamu mengetik, keyboard layar mengecilkan tinggi layar. Ukuran ubin ditahan supaya level tidak bergeser.
       if (document.activeElement?.closest("input, textarea, select")) return;
       const next = sizeFor(el.clientWidth, el.clientHeight);
-      setSize((s) => (s.w === next.w && s.h === next.h ? s : next));
+      setSize((s) => (s.ready && s.w === next.w && s.h === next.h ? s : next));
     };
     const ro = new ResizeObserver(read);
     ro.observe(el);
@@ -191,10 +192,11 @@ export function Land({ size, width, layers, decor = true }: { size: Size; width:
   );
 }
 
-// Panggung yang diperkecil sesuai zoom. Isinya disusun di ukuran sebelum diperkecil.
+// Panggung yang diperkecil sesuai zoom. Isinya disusun di ukuran sebelum diperkecil. Sebelum layar terukur, isinya
+// disembunyikan supaya susunan ukuran HP dari server tidak sempat terlihat di layar lebar.
 export function Zoom({ size, children }: { size: Size; children: ReactNode }) {
   return (
-    <div className="absolute top-0 left-0" style={{ width: size.w, height: size.h, transform: size.zoom === 1 ? undefined : `scale(${size.zoom})`, transformOrigin: "0 0" }}>
+    <div className={`absolute top-0 left-0 ${size.ready ? "" : "pt-wait"}`} style={{ width: size.w, height: size.h, transform: size.zoom === 1 ? undefined : `scale(${size.zoom})`, transformOrigin: "0 0" }}>
       {children}
     </div>
   );
@@ -205,7 +207,7 @@ export function Backdrop() {
   const ref = useRef<HTMLDivElement>(null);
   const size = useSize(ref);
   return (
-    <div ref={ref} className="absolute inset-0 overflow-hidden">
+    <div ref={ref} className="pt-sky absolute inset-0 overflow-hidden">
       <Zoom size={size}>
         <Land size={size} width={size.w} />
         <span className="pt-bob absolute" style={{ left: size.w * 0.22 - size.t / 2, top: size.h - size.t * 3.5 }}>
