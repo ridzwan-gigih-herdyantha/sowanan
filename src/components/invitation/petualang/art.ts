@@ -105,6 +105,27 @@ export const GROOM_JUMP: Art = [
   "................",
 ];
 
+// Berlutut dengan satu tangan terulur ke depan untuk menyerahkan cincin. Lutut belakang dan sepatu depan sama-sama
+// menapak di baris terbawah.
+export const GROOM_KNEEL: Art = [
+  "................",
+  "................",
+  "................",
+  ...GROOM_HEAD,
+  "...oKKCTCKKoooo.",
+  "..oKKjCTCKKKKKSo",
+  ".oKKjKKTKKKoooo.",
+  ".okKKKKKKKko....",
+  ".oPPPPPPPPPPPo..",
+  ".oPPPPPPo.oPPPo.",
+  "oBBPPPPPo.oBBBBo",
+  "ooooooooo.oooooo",
+];
+
+// Cincin perak dengan berlian di atasnya.
+export const RING: Art = ["...ooo...", "..oWCco..", "..oCcco..", "...oco...", "..osWso..", ".os...so.", ".oW...so.", ".os...so.", "..ossso..", "...ooo..."];
+export const RING_COLORS: Palette = { o: "#4A4F66", s: "#C9CED9", W: "#FFFFFF", C: "#CFF6FF", c: "#7FD3FF" };
+
 // Mempelai wanita menghadap kiri, menunggu di gapura dengan buket bunga dan kerudung panjang.
 export const BRIDE_IDLE: Art = [
   "......oooooo....",
@@ -355,65 +376,145 @@ export const CLOUD: Art = blob(34, 14, [
 ]);
 export const CLOUD_COLORS: Palette = { o: "#DCE6F4", d: "#E6EEF8", b: "#FFFFFF", h: "#FFFFFF" };
 
-// Istana di ujung level: dinding bata, dua menara beratap runcing dengan bendera, bangunan tengah dengan jalan di
-// atasnya tempat kedua mempelai muncul di akhir, jendela, dan pintu lengkung. Ukuran 96 x 112 piksel gambar,
-// sama dengan 6 x 7 ubin.
-export const CASTLE_W = 6;
+const FLOWERS = ["F", "W", "Y"];
+
+// Istana di ujung level, 144 x 176 piksel gambar atau 9 x 11 ubin. Dua menara beratap runcing dengan bola emas dan
+// bendera, bangunan tengah dengan jendela mawar dan jalan di atasnya tempat kedua mempelai muncul di akhir, dinding
+// depan dengan panji dan hati di atas pintu, serta semak berbunga di kaki dinding. Hanya separuh kiri yang menentukan, separuh kanan dicerminkan supaya
+// kedua sisi persis sama.
+export const CASTLE_W = 9;
+export const CASTLE_H = 11;
 // Tinggi jalan di atas bangunan tengah dari tanah, dalam ubin.
-export const CASTLE_TOP = 4.9;
+export const CASTLE_TOP = 8;
+// Tepi kiri pintu dari tepi kiri istana, dalam piksel gambar.
+export const CASTLE_DOOR = 60;
 export const CASTLE: Art = (() => {
-  const w = 96;
-  const h = 112;
+  const w = 144;
+  const h = 176;
+  const mid = w / 2;
   const grid: string[][] = Array.from({ length: h }, () => Array(w).fill("."));
   const put = (x0: number, y0: number, x1: number, y1: number, c: (x: number, y: number) => string) => {
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (x >= 0 && y >= 0 && x < w && y < h) grid[y][x] = c(x, y);
   };
   const brick = (x: number, y: number) => (y % 5 === 4 ? "m" : (x + (Math.floor(y / 5) % 2) * 4) % 8 === 0 ? "m" : x % 9 === 3 && y % 5 === 1 ? "h" : "b");
+  const gold = (x: number) => (x % 4 === 0 ? "y" : "Y");
   // Gigi benteng selebar 4 berjarak 2, diatur di tengah supaya kedua ujungnya sama.
   const battlement = (x0: number, x1: number, y: number) => {
     const count = Math.floor((x1 - x0 + 2) / 6);
     const start = x0 + Math.floor((x1 - x0 - (count * 6 - 2)) / 2);
     for (let k = 0; k < count; k++) put(start + k * 6, y, start + k * 6 + 4, y + 6, brick);
   };
-  // Dinding depan.
-  put(10, 64, 86, 112, brick);
-  battlement(10, 86, 58);
-  // Bangunan tengah dengan jalan di atasnya.
-  put(32, 34, 64, 64, brick);
-  battlement(32, 64, 28);
-  // Menara kiri dan kanan dengan atap runcing dan bendera.
-  for (const tx of [0, 70]) {
-    put(tx, 40, tx + 26, 112, brick);
-    for (let y = 6; y < 40; y++) {
-      const half = Math.round(((y - 6) / 34) * 14);
-      put(tx + 13 - half, y, tx + 13 + half, y + 1, (x) => (x < tx + 13 ? "R" : "r"));
+  // Lengkung dengan pusat cx, jari-jari r, dan puncak di y0, diisi warna dari c.
+  const arch = (cx: number, r: number, y0: number, y1: number, c: (x: number, y: number) => string) => {
+    for (let y = y0; y < y1; y++) {
+      const dy = Math.max(0, y0 + r - y - 0.5);
+      if (dy >= r) continue;
+      const half = Math.round(Math.sqrt(r * r - dy * dy));
+      put(cx - half, y, cx + half, y + 1, c);
     }
-    put(tx + 12, 0, tx + 13, 8, () => "p");
-    put(tx + 13, 0, tx + 20, 4, () => "F");
-    put(tx + 10, 50, tx + 16, 62, () => "k");
+  };
+  // Jendela lengkung bercahaya dengan bingkai gelap dan tiang tengah.
+  const pane = (cx: number, r: number, y0: number, y1: number) => {
+    arch(cx, r, y0, y1, () => "k");
+    arch(cx, r - 1, y0 + 1, y1 - 1, (x) => (r > 3 && (x === cx || x === cx - 1) ? "k" : "L"));
+  };
+
+  // Dinding depan dengan gigi benteng dan pita emas.
+  put(20, 116, 124, 176, brick);
+  battlement(20, 124, 110);
+  put(20, 116, 124, 118, gold);
+  // Bangunan tengah, jalan di atasnya setinggi CASTLE_TOP.
+  put(46, 48, 98, 116, brick);
+  battlement(46, 98, 42);
+  put(46, 48, 98, 50, gold);
+  // Jendela mawar di bangunan tengah: lingkar emas, kaca merah muda dan biru berselang, pusat emas.
+  for (let y = 60; y < 84; y++)
+    for (let x = 60; x < 84; x++) {
+      const dx = x + 0.5 - mid;
+      const dy = y + 0.5 - 72;
+      const d = Math.hypot(dx, dy);
+      if (d >= 10) continue;
+      const sector = Math.floor((Math.atan2(dy, dx) + Math.PI + Math.PI / 8) / (Math.PI / 4)) % 8;
+      grid[y][x] = d >= 8.6 ? "y" : d < 2.6 ? "Y" : d >= 7.6 ? "k" : sector % 2 ? "P" : "B";
+    }
+  pane(57, 3, 88, 104);
+  // Menara dengan atap genteng runcing, bola emas di puncak, dan bendera menghadap ke luar.
+  put(0, 64, 36, 176, brick);
+  put(0, 64, 36, 66, gold);
+  for (let y = 18; y < 64; y++) {
+    const half = Math.round(((y - 18) / 45) * 18);
+    put(18 - half, y, 18 + half, y + 1, (x) => ((y - 18) % 7 === 6 ? "q" : x < 18 ? "R" : "r"));
   }
-  // Jendela bangunan tengah.
-  put(38, 42, 44, 52, () => "k");
-  put(52, 42, 58, 52, () => "k");
-  // Pintu lengkung.
-  for (let y = 80; y < 112; y++) {
-    const inset = y < 88 ? 88 - y : 0;
-    put(38 + inset, y, 58 - inset, y + 1, (x) => (x === 48 ? "n" : "N"));
+  put(17, 3, 19, 15, () => "p");
+  put(16, 14, 20, 20, () => "Y");
+  put(6, 3, 17, 9, () => "F");
+  put(6, 5, 9, 7, () => ".");
+  pane(18, 4, 80, 96);
+  pane(18, 4, 124, 140);
+  // Panji merah muda bergambar wajik emas di kiri pintu, dengan ujung berbelah.
+  put(36, 118, 50, 120, () => "y");
+  put(38, 120, 48, 150, (x) => (x === 38 || x === 47 ? "r" : "F"));
+  for (let y = 144; y < 150; y++) put(43 - (y - 143), y, 43 + (y - 143), y + 1, brick);
+  for (let dy = -3; dy <= 3; dy++) put(43 - (3 - Math.abs(dy)), 132 + dy, 43 + (3 - Math.abs(dy)), 133 + dy, () => "Y");
+  // Hati di atas pintu, lalu pintu lengkung berbingkai emas.
+  [".FF..FF.", "FFFFFFFF", "FFFFFFFF", ".FFFFFF.", "..FFFF..", "...FF..."].forEach((row, y) => [...row].forEach((c, x) => c === "F" && (grid[128 + y][68 + x] = "F")));
+  arch(mid, 14, 140, 176, () => "Y");
+  arch(mid, 12, 142, 176, (x) => (x === mid || x === mid - 1 ? "n" : (x - 60) % 6 === 0 ? "n" : "N"));
+  // Semak berbunga di kaki dinding sampai bingkai pintu, dengan tepi atas hijau tua.
+  for (let x = 0; x < 58; x++) {
+    const top = h - 6 - Math.round(2 * Math.sin(x * 0.55) + hash(x, 1) * 1.5);
+    for (let y = top; y < h; y++) grid[y][x] = y === top ? "d" : hash(x, y, 5) > 0.84 ? FLOWERS[Math.floor(hash(x, y, 6) * 3)] : (x + y) % 5 === 0 ? "g" : "G";
   }
-  // Tepi bergaris di setiap batas dengan ruang kosong.
+
+  // Separuh kanan adalah cermin separuh kiri.
+  for (const row of grid) for (let x = 0; x < mid; x++) row[w - 1 - x] = row[x];
+  // Tepi bergaris di setiap batas dengan ruang kosong, kecuali dasar yang menyatu dengan tanah.
   return grid.map((row, y) =>
     row
       .map((c, x) => {
-        if (c === "." || c === "F" || c === "p") return c;
-        const edge = [grid[y - 1]?.[x], grid[y + 1]?.[x], row[x - 1], row[x + 1]].some((n) => n === undefined || n === ".");
+        if (c === "." || c === "F" || c === "p" || c === "Y" || c === "W") return c;
+        const edge = [grid[y - 1]?.[x], y + 1 < h ? grid[y + 1][x] : c, row[x - 1], row[x + 1]].some((n) => n === undefined || n === ".");
         return edge ? "o" : c;
       })
       .join(""),
   );
 })();
-export const CASTLE_COLORS: Palette = { o: "#3A3550", b: "#C9C3DA", m: "#9C95B4", h: "#E4E0EE", R: "#E05A5A", r: "#B03E46", k: "#2B2640", N: "#8A5328", n: "#5E3519", p: "#5E3519", F: "#F48FB1" };
+export const CASTLE_COLORS: Palette = {
+  o: "#3A3550",
+  b: "#E4E1EE",
+  m: "#B9B3CC",
+  h: "#F7F5FB",
+  R: "#E05A5A",
+  r: "#B03E46",
+  q: "#8E2E38",
+  k: "#2B2640",
+  L: "#FFE7A0",
+  N: "#8A5328",
+  n: "#5E3519",
+  p: "#5E3519",
+  F: "#F48FB1",
+  Y: "#F6C945",
+  y: "#D69A23",
+  P: "#F48FB1",
+  B: "#7FD3FF",
+  W: "#FFFFFF",
+  G: "#4E9A3D",
+  g: "#3A7A2E",
+  d: "#24452A",
+};
 
-const FLOWERS = ["F", "W", "Y"];
+// Pintu istana yang terbuka: daun pintu terdorong ke dalam di kedua sisi, ruang dalam gelap. Ukurannya sama dengan
+// pintu tertutup di gambar istana.
+export const DOOR_OPEN: Art = Array.from({ length: 34 }, (_, y) => {
+  const dy = Math.max(0, 12 - y - 0.5);
+  const half = dy >= 12 ? 0 : Math.round(Math.sqrt(144 - dy * dy));
+  return Array.from({ length: 24 }, (_, x) => {
+    if (x < 12 - half || x >= 12 + half) return ".";
+    if (x < 12 - half + 3 || x >= 12 + half - 3) return "N";
+    return y > 29 ? "n" : "k";
+  }).join("");
+});
+
 // Gapura bunga di garis akhir: lengkung daun dengan bunga berselang, berdiri di dua tiang.
 export const ARCH: Art = (() => {
   const w = 48;

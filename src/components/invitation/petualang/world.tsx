@@ -14,6 +14,8 @@ import {
   BRIDE_WAVE,
   CASTLE,
   CASTLE_COLORS,
+  CASTLE_DOOR,
+  CASTLE_H,
   CASTLE_TOP,
   CASTLE_W,
   CHARACTER_COLORS,
@@ -21,13 +23,17 @@ import {
   COIN_COLORS,
   CRATE,
   CRATE_COLORS,
+  DOOR_OPEN,
   FLAG,
   FLAG_COLORS,
   GROOM_IDLE,
   GROOM_JUMP,
+  GROOM_KNEEL,
   GROOM_RUN_A,
   GROOM_RUN_B,
   GROOM_RUN_C,
+  RING,
+  RING_COLORS,
   STONE,
   STONE_COLORS,
 } from "./art";
@@ -49,9 +55,9 @@ const BODY = 1.5;
 // Jarak bawah papan dari dasar layar, termasuk dua ubin tanah, cukup untuk melompat di bawahnya.
 const BOARD_LIFT = 4.4;
 // Papan tujuan berada di atas istana.
-const GOAL_LIFT = 9.4;
-// Tangga batu sebelum garis akhir, seperti tangga di ujung level game lama.
-const STAIRS = [1, 2, 3, 4, 4];
+const GOAL_LIFT = 2 + CASTLE_H + 0.3;
+// Tangga batu sepuluh tingkat sebelum garis akhir, seperti tangga di ujung level game lama.
+const STAIRS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10];
 // Cerita dua lantai, tinggi dalam ubin dari tanah. Semua bata di sini satu arah, jadi jalan di tanah tetap bebas
 // bolak-balik. Pijakan pertama yang lebar dicapai dengan satu lompatan, lalu anak tangga melayang cukup dilangkahi
 // sampai lantai dua.
@@ -74,18 +80,27 @@ type Coin = { x: number; y: number };
 // Tempat papan: tengah, lebar, jarak bawah dari dasar layar dalam ubin, pijakan tiangnya, jarak atas dari puncak
 // layar dalam piksel, dan bendera.
 type Spot = { center: number; width: number; lift: number; base: number; top: number; flag?: { x: number; y: number } };
-type Phase = "toBride" | "meet" | "toCastle" | "inside" | "rise" | "party";
+type Phase = "toBride" | "zoomIn" | "kneel" | "yes" | "zoomOut" | "toCastle" | "inside" | "rise" | "party";
 
-const FRAMES = { idle: GROOM_IDLE, a: GROOM_RUN_A, b: GROOM_RUN_B, c: GROOM_RUN_C, jump: GROOM_JUMP } as const;
+const FRAMES = { idle: GROOM_IDLE, a: GROOM_RUN_A, b: GROOM_RUN_B, c: GROOM_RUN_C, jump: GROOM_JUMP, kneel: GROOM_KNEEL } as const;
 const STRIDE = ["a", "b", "c", "b"] as const;
 const ART = { crate: [CRATE, CRATE_COLORS], stone: [STONE, STONE_COLORS], brick: [BRICK, BRICK_COLORS] } as const;
 // Kembang api di atas istana: posisi dalam ubin dari puncak istana, warna, dan jeda mulai.
 const BURSTS = [
-  { x: -4.5, y: -1, c: "#F48FB1", d: 0 },
-  { x: 3.5, y: -2.5, c: "#F6C945", d: 0.7 },
-  { x: -0.5, y: -4, c: "#7FD3FF", d: 1.3 },
-  { x: 5.5, y: 0, c: "#FFFFFF", d: 1.9 },
-  { x: -2.5, y: -5.5, c: "#B9F27A", d: 2.4 },
+  { x: -5.5, y: 0.5, c: "#F48FB1", d: 0 },
+  { x: 4, y: -0.5, c: "#F6C945", d: 0.7 },
+  { x: -1, y: -1.5, c: "#7FD3FF", d: 1.3 },
+  { x: 6, y: 1.5, c: "#FFFFFF", d: 1.9 },
+  { x: -3, y: -2, c: "#B9F27A", d: 2.4 },
+];
+// Hati yang melayang di antara kedua mempelai saat lamaran: posisi dalam ubin, jeda mulai, dan ukuran.
+const LOVE = [
+  { x: -0.9, y: -0.1, d: 0, k: 0.8 },
+  { x: -0.3, y: -0.8, d: 0.3, k: 1.1 },
+  { x: 0.3, y: -0.3, d: 0.6, k: 0.9 },
+  { x: 0.8, y: -1, d: 0.15, k: 0.7 },
+  { x: -0.1, y: -1.4, d: 0.9, k: 1.2 },
+  { x: 0.6, y: 0.2, d: 1.2, k: 0.8 },
 ];
 
 function blip(freqs: number[]) {
@@ -97,8 +112,9 @@ const typing = () => (document.activeElement as HTMLElement | null)?.closest("in
 
 // Dunia Co-op Adventure: seluruh undangan sebagai satu level ke samping. Mempelai pria hanya bergerak dari tombol
 // atau keyboard, kamera mengikutinya, dan semua isi undangan berupa papan di sepanjang jalan. Papan yang isinya
-// panjang bisa digulir di dalam papannya. Setelah melompat turun dari tangga batu terakhir, adegan penutup berjalan
-// sendiri: pria menjemput wanita, keduanya masuk istana dan muncul di atasnya, lalu jendela penutup terbuka.
+// panjang bisa digulir di dalam papannya. Setelah melewati puncak tangga batu terakhir, adegan penutup berjalan
+// sendiri: pria menghampiri wanita, kamera mendekat, pria berlutut menyerahkan cincin, kamera menjauh lagi, keduanya
+// masuk istana dan muncul di atasnya, lalu jendela penutup terbuka.
 // Tanpa JavaScript, panggung bisa digeser ke samping seperti biasa.
 export function World({ start, stations, goal, finale, groom, bride, date }: { start: ReactNode; stations: Station[]; goal: ReactNode; finale: ReactNode; groom: string; bride: string; date: string }) {
   const stage = useRef<HTMLDivElement>(null);
@@ -106,6 +122,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
   const hero = useRef<HTMLDivElement>(null);
   const heroine = useRef<HTMLDivElement>(null);
   const shade = useRef<HTMLSpanElement>(null);
+  const lens = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const layers = useRef<(HTMLElement | null)[]>([]);
   const coinEls = useRef<(HTMLElement | null)[]>([]);
@@ -127,6 +144,10 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
   const [cheer, setCheer] = useState(false);
   // Setelah keduanya masuk, istana berada di depan, jadi keduanya tampak berdiri di balik benteng atas.
   const [behind, setBehind] = useState(false);
+  // Hati di antara kedua mempelai selama lamaran.
+  const [love, setLove] = useState(false);
+  // Pintu istana terbuka saat kedua mempelai tiba di depannya dan tertutup lagi setelah keduanya masuk.
+  const [door, setDoor] = useState(false);
   const reduce = useReducedMotion();
   const size = useSize(stage);
   const { w: vw, h: vh, t } = size;
@@ -184,15 +205,15 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
 
     // Layar terakhir, dari kiri: tangga batu, tanah kosong, gapura dengan mempelai wanita, lalu istana.
     // scene adalah lebar susunan dari tepi kiri gapura sampai tepi kanan istana.
-    const scene = 11;
+    const scene = 5 + CASTLE_W;
     const archAt = Math.max(1.5, (cols - scene) / 2 + 1.5);
     const final = r(edge + space + STAIRS.length + 3 + 1.5 - archAt);
     const arch = r(final + archAt);
     const castle = r(arch + 3.5);
-    const goalCenter = r(final + cols / 2);
-    const width = r(Math.max(final + cols, castle + CASTLE_W + 0.5));
+    const goalCenter = r(castle + CASTLE_W / 2);
+    const width = r(Math.max(final + cols, castle + CASTLE_W / 2 + cols / 2, castle + CASTLE_W + 0.5));
     const stairs = arch - 1.5 - 3 - STAIRS.length;
-    gaps.push([edge, r(stairs)]);
+    // Tanah sebelum tangga batu dibiarkan kosong tanpa peti.
     STAIRS.forEach((h, k) => solids.push({ x: Math.round(stairs + k), w: 1, y0: 0, y1: h, art: "stone" }));
 
     // Peti dan koin di tengah setiap jarak kosong yang cukup lebar.
@@ -237,6 +258,8 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
     const meetX = (plan.arch - 1.1) * T;
     const stairsEnd = plan.stairsEnd * T;
     const camFor = (x: number) => Math.min(W - vw, Math.max(0, x - vw * ANCHOR));
+    // Selama adegan penutup kamera berhenti saat istana tepat di tengah layar.
+    const castleCam = (plan.castle + CASTLE_W / 2) * T - vw * (0.5 - ANCHOR);
 
     let x = pos.current === null ? vw * 0.22 : pos.current.x * T;
     let y = pos.current === null ? 0 : surface(x, pos.current.y * T);
@@ -268,6 +291,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
     const next = (phase: Phase, now: number) => {
       cut = { phase, at: now };
     };
+    const lensTo = (v: string) => write("lens", v, () => lens.current && (lens.current.style.transform = v));
     const reset = () => {
       timers.current.forEach((id) => window.clearTimeout(id));
       timers.current = [];
@@ -280,6 +304,9 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       setReached(false);
       setCheer(false);
       setBehind(false);
+      setLove(false);
+      lensTo("none");
+      write("door", "closed", () => setDoor(false));
       setFireworks(false);
       setEnded(false);
       setLocked(false);
@@ -352,8 +379,8 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
         }
       } else jumpQueued.current = false;
 
-      // Adegan penutup dimulai begitu mendarat di tanah setelah melompat dari tangga batu terakhir.
-      if (!cut && x > stairsEnd + T * 0.4 && y <= 1) {
+      // Adegan penutup dimulai begitu melewati ujung tangga batu terakhir.
+      if (!cut && x > stairsEnd + T * 0.4) {
         held.current = 0;
         setLocked(true);
         setMenu(false);
@@ -362,16 +389,33 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       if (cut) {
         const since = now - cut.at;
         if (cut.phase === "toBride" && Math.abs(meetX - x) <= 2 && y <= 1) {
+          // Kamera mendekat ke kedua mempelai. Tepi dunia tetap menutup layar, jadi tanah tidak pernah terpotong.
           setReached(true);
+          const k = Math.min(3, Math.max(2, vh / (T * 7)));
+          const px = (x + brideHome) / 2 - camFor(Math.min(x, castleCam));
+          const py = vh - 2 * T - H * 0.6;
+          const tx = Math.min(0, Math.max(vw * (1 - k), vw / 2 - px * k));
+          const ty = Math.min(0, Math.max(vh * (1 - k), vh / 2 - py * k));
+          lensTo(`translate3d(${tx.toFixed(1)}px, ${ty.toFixed(1)}px, 0) scale(${k.toFixed(2)})`);
+          next("zoomIn", now);
+        } else if (cut.phase === "zoomIn") {
+          facing = 1;
+          if (since > 1000) {
+            setLove(true);
+            blip([784, 988, 1175, 1568]);
+            next("kneel", now);
+          }
+        } else if (cut.phase === "kneel" && since > 2200) {
           setCheer(true);
           blip([523, 659, 784, 1047]);
-          next("meet", now);
-        } else if (cut.phase === "meet") {
-          facing = 1;
-          if (since > 1300) {
-            setCheer(false);
-            next("toCastle", now);
-          }
+          next("yes", now);
+        } else if (cut.phase === "yes" && since > 1600) {
+          lensTo("none");
+          next("zoomOut", now);
+        } else if (cut.phase === "zoomOut" && since > 1000) {
+          setCheer(false);
+          setLove(false);
+          next("toCastle", now);
         } else if (cut.phase === "toCastle") {
           // Mempelai wanita mulai mengikuti setelah mempelai pria lewat di depannya.
           const target = door - T * 0.9;
@@ -381,18 +425,21 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
             bDist += move;
             bFace = -1;
           }
+          if (door - x < T * 2.5) write("door", "open", () => setDoor(true));
           if (door - x <= 2) gAlpha = Math.max(0, gAlpha - dt / 0.45);
           if (target - bx <= 2) bAlpha = Math.max(0, bAlpha - dt / 0.45);
           if (gAlpha === 0 && bAlpha === 0) {
             setBehind(true);
+            write("door", "closed", () => setDoor(false));
+            blip([196, 147]);
             next("inside", now);
           }
         } else if (cut.phase === "inside" && since > 800) {
           // Keduanya muncul di jalan atas bangunan tengah istana, saling berhadapan.
-          x = (plan.castle + 2.6) * T;
+          x = (plan.castle + CASTLE_W / 2 - 0.5) * T;
           y = CASTLE_TOP * T;
           facing = 1;
-          bx = (plan.castle + 3.4) * T;
+          bx = (plan.castle + CASTLE_W / 2 + 0.5) * T;
           by = CASTLE_TOP * T;
           bFace = 1;
           next("rise", now);
@@ -419,7 +466,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       pos.current = { x: x / T, y: y / T };
       const under = frozen ? y : surface(x, y);
       const air = !frozen && y > under + 0.5;
-      const pose = air ? "jump" : !frozen && Math.abs(vx) > T * 0.4 ? STRIDE[Math.floor(dist / (T * 0.42)) % 4] : "idle";
+      const pose = cut?.phase === "kneel" ? "kneel" : air ? "jump" : !frozen && Math.abs(vx) > T * 0.4 ? STRIDE[Math.floor(dist / (T * 0.42)) % 4] : "idle";
       write("pose", pose, () => (me.dataset.pose = pose));
       me.style.transform = `translate3d(${(x - T / 2).toFixed(1)}px, ${(-y).toFixed(1)}px, 0)`;
       write("alpha", gAlpha.toFixed(2), () => (me.style.opacity = gAlpha.toFixed(2)));
@@ -449,7 +496,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       for (const f of flags) if (x >= f.x && y >= f.y - 1) write(`flag-${f.x}-${f.y}`, "1", () => f.el.setAttribute("data-done", ""));
 
       // Kamera mengejar karakter dengan lerp, jadi geraknya halus walau karakter berhenti mendadak.
-      const to = camFor(cut ? Math.min(x, (plan.castle - 1) * T) : x);
+      const to = camFor(cut ? Math.min(x, castleCam) : x);
       cam = reduce ? to : cam + (to - cam) * (1 - Math.exp(-8 * dt));
       if (track.current) track.current.style.transform = `translate3d(${(-cam).toFixed(1)}px, 0, 0)`;
       [0.1, 0.2, 0.45, 1].forEach((f, i) => {
@@ -463,7 +510,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       cancelAnimationFrame(raf);
       timers.current.forEach((id) => window.clearTimeout(id));
     };
-  }, [plan, t, vw, W, reduce]);
+  }, [plan, t, vw, vh, W, reduce]);
 
   useEffect(() => {
     if (ending) closeRef.current?.focus();
@@ -544,102 +591,127 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       <div ref={stage} onFocusCapture={onFocus} className="pt-stage relative h-svh overflow-x-auto overflow-y-hidden text-[#FFF6E5]">
         <Zoom size={size}>
           <div className="relative h-full" style={{ "--t": `${t}px` } as CSSProperties}>
-            <Land size={size} width={W} layers={layers} decor />
-            <div ref={track} className="pt-track absolute inset-y-0 left-0 will-change-transform" style={{ width: W }}>
-              {/* Layar awal: judul dan misi. */}
-              <div data-at={plan.cols * 0.5} className="absolute flex flex-col items-center justify-center px-6 text-center" style={{ left: 0, width: vw, top: HUD, bottom: t * 4.2 }}>
-                {start}
-              </div>
-
-              {fireworks && (
-                <div aria-hidden="true" className="pointer-events-none absolute" style={{ left: (plan.castle + CASTLE_W / 2) * t, top: groundTop - (CASTLE_TOP + 5) * t }}>
-                  {BURSTS.map((b, i) => (
-                    <span key={i} className="absolute" style={{ left: b.x * t, top: b.y * t }}>
-                      {Array.from({ length: 12 }, (_, k) => (
-                        <span key={k} className="pt-spark" style={{ "--a": `${k * 30}deg`, "--c": b.c, "--r": `${t * 1.9}px`, animationDelay: `${b.d}s` } as CSSProperties} />
-                      ))}
-                    </span>
-                  ))}
+            {/* Lensa membungkus seluruh dunia supaya kamera bisa mendekat saat lamaran. Papan status dan tombol di luarnya. */}
+            <div ref={lens} className="pt-lens absolute inset-0">
+              <Land size={size} width={W} layers={layers} decor />
+              <div ref={track} className="pt-track absolute inset-y-0 left-0 will-change-transform" style={{ width: W }}>
+                {/* Layar awal: judul dan misi. */}
+                <div data-at={plan.cols * 0.5} className="absolute flex flex-col items-center justify-center px-6 text-center" style={{ left: 0, width: vw, top: HUD, bottom: t * 4.2 }}>
+                  {start}
                 </div>
-              )}
 
-              {/* Istana di ujung level, dipasang lebih dulu supaya tampak di belakang kedua mempelai. */}
-              <Img art={CASTLE} colors={CASTLE_COLORS} scale={s} className={behind ? "z-20" : ""} style={{ left: plan.castle * t, top: groundTop - castleSize.h * s }} />
-
-              {stations.map((st, i) => {
-                const sp = plan.spots[i];
-                return (
-                  <div key={st.id} data-at={sp.center} className="absolute flex flex-col justify-end" style={boardStyle(sp)}>
-                    <div className="pt-post" style={{ left: "18%", height: t * (sp.lift - sp.base) + 2 }} />
-                    <div className="pt-post" style={{ right: "18%", height: t * (sp.lift - sp.base) + 2 }} />
-                    <div className="relative flex max-h-full min-h-0 flex-col">{st.node}</div>
-                  </div>
-                );
-              })}
-              {plan.spots.map(
-                (sp, i) =>
-                  sp.flag && (
-                    <span key={`flag-${i}`} className="pt-flag absolute" data-x={Math.round(sp.flag.x * t)} data-y={Math.round(sp.flag.y * t)} style={{ left: sp.flag.x * t - t * 0.4, bottom: t * (2 + sp.flag.y) }}>
-                      <Pixels art={FLAG} colors={FLAG_COLORS} scale={Math.max(2, s - 1)} />
-                    </span>
-                  ),
-              )}
-
-              {plan.solids.map((b, i) =>
-                Array.from({ length: Math.round(b.w) }, (_, k) =>
-                  Array.from({ length: Math.max(1, Math.round(b.y1 - b.y0)) }, (_, j) => (
-                    <Img key={`${i}-${k}-${j}`} art={ART[b.art][0]} colors={ART[b.art][1]} scale={s} style={{ left: (b.x + k) * t, top: groundTop - (b.y1 - j) * t }} />
-                  )),
-                ),
-              )}
-
-              {/* Garis akhir: gapura bunga dengan mempelai wanita, lalu istana. */}
-              <div data-at={plan.goalCenter} data-reached={reached ? "" : undefined} className="pt-goal absolute flex flex-col justify-end" style={boardStyle(goalSpot, 40)}>
-                <div className="relative flex max-h-full min-h-0 flex-col">{goal}</div>
-              </div>
-              <Img art={ARCH} colors={ARCH_COLORS} scale={s} style={{ left: plan.arch * t - (archSize.w * s) / 2, top: groundTop - archSize.h * s }} />
-              <div ref={heroine} data-pose="idle" className="pt-heroine absolute" style={{ left: (plan.arch + 0.2) * t - t / 2, top: groundTop - t * BODY }}>
-                <span className="pt-face block">
-                  <span className={`block ${cheer ? "pt-cheer" : "pt-bob"}`}>
-                    {cheer ? (
-                      <Pixels art={BRIDE_WAVE} colors={CHARACTER_COLORS} scale={s} />
-                    ) : (
-                      <>
-                        <Pixels art={BRIDE_IDLE} colors={CHARACTER_COLORS} scale={s} className="pt-pose-idle" />
-                        <Pixels art={BRIDE_STEP_A} colors={CHARACTER_COLORS} scale={s} className="pt-pose-a" />
-                        <Pixels art={BRIDE_STEP_B} colors={CHARACTER_COLORS} scale={s} className="pt-pose-b" />
-                      </>
-                    )}
-                  </span>
-                </span>
-                {cheer && (
-                  <span className="absolute -top-2 left-0 w-full">
-                    {[0, 1, 2, 3, 4].map((k) => (
-                      <span key={k} className="pt-rise absolute" style={{ left: `${-30 + k * 35}%`, animationDelay: `${k * 0.18}s` }}>
-                        <Sprite data={HEART} scale={Math.max(2, Math.round(s * 0.9))} />
+                {fireworks && (
+                  <div aria-hidden="true" className="pointer-events-none absolute" style={{ left: (plan.castle + CASTLE_W / 2) * t, top: groundTop - (CASTLE_H + 1.5) * t }}>
+                    {BURSTS.map((b, i) => (
+                      <span key={i} className="absolute" style={{ left: b.x * t, top: b.y * t }}>
+                        {Array.from({ length: 12 }, (_, k) => (
+                          <span key={k} className="pt-spark" style={{ "--a": `${k * 30}deg`, "--c": b.c, "--r": `${t * 1.9}px`, animationDelay: `${b.d}s` } as CSSProperties} />
+                        ))}
                       </span>
                     ))}
-                  </span>
+                  </div>
                 )}
-              </div>
 
-              <span ref={shade} aria-hidden="true" className="pt-shade absolute left-0" style={{ top: groundTop - t * 0.12, width: t * 0.84, height: t * 0.24, transform: `translate3d(${vw * 0.22 - t * 0.42}px, 0, 0)` }} />
-              <div ref={hero} data-pose="idle" className="pt-hero absolute left-0" style={{ top: groundTop - t * BODY, transform: `translate3d(${vw * 0.22 - t / 2}px, 0, 0)` }}>
-                <span className="pt-face block">
-                  <span className={`block ${cheer ? "pt-cheer" : ""}`}>
-                    {Object.entries(FRAMES).map(([k, art]) => (
-                      <Pixels key={k} art={art} colors={CHARACTER_COLORS} scale={s} className={`pt-pose-${k}`} />
-                    ))}
+                {/* Istana di ujung level, dipasang lebih dulu supaya tampak di belakang kedua mempelai. */}
+                <Img art={CASTLE} colors={CASTLE_COLORS} scale={s} className={behind ? "z-20" : ""} style={{ left: plan.castle * t, top: groundTop - castleSize.h * s }} />
+                {door && <Img art={DOOR_OPEN} colors={CASTLE_COLORS} scale={s} style={{ left: plan.castle * t + CASTLE_DOOR * s, top: groundTop - artSize(DOOR_OPEN).h * s }} />}
+
+                {stations.map((st, i) => {
+                  const sp = plan.spots[i];
+                  return (
+                    <div key={st.id} data-at={sp.center} className="absolute flex flex-col justify-end" style={boardStyle(sp)}>
+                      <div className="pt-post" style={{ left: "18%", height: t * (sp.lift - sp.base) + 2 }} />
+                      <div className="pt-post" style={{ right: "18%", height: t * (sp.lift - sp.base) + 2 }} />
+                      <div className="relative flex max-h-full min-h-0 flex-col">{st.node}</div>
+                    </div>
+                  );
+                })}
+                {plan.spots.map(
+                  (sp, i) =>
+                    sp.flag && (
+                      <span key={`flag-${i}`} className="pt-flag absolute" data-x={Math.round(sp.flag.x * t)} data-y={Math.round(sp.flag.y * t)} style={{ left: sp.flag.x * t - t * 0.4, bottom: t * (2 + sp.flag.y) }}>
+                        <Pixels art={FLAG} colors={FLAG_COLORS} scale={Math.max(2, s - 1)} />
+                      </span>
+                    ),
+                )}
+
+                {/* Satu elemen per benda dengan ubin berulang, satu piksel lebih lebar dan lebih tinggi supaya tidak ada
+                    celah di antara benda yang bersebelahan saat layar diperkecil. */}
+                {plan.solids.map((b, i) => {
+                  const rows = Math.max(1, Math.round(b.y1 - b.y0));
+                  return (
+                    <Img
+                      key={i}
+                      art={ART[b.art][0]}
+                      colors={ART[b.art][1]}
+                      scale={s}
+                      style={{ left: b.x * t, top: groundTop - b.y1 * t, width: Math.round(b.w) * t + 1, height: rows * t + 1, backgroundSize: `${t}px ${t}px`, backgroundRepeat: "repeat" }}
+                    />
+                  );
+                })}
+
+                {/* Garis akhir: gapura bunga dengan mempelai wanita, lalu istana. */}
+                <div data-at={plan.goalCenter} data-reached={reached ? "" : undefined} className="pt-goal absolute flex flex-col justify-end" style={boardStyle(goalSpot, 40)}>
+                  <div className="relative flex max-h-full min-h-0 flex-col">{goal}</div>
+                </div>
+                <Img art={ARCH} colors={ARCH_COLORS} scale={s} style={{ left: plan.arch * t - (archSize.w * s) / 2, top: groundTop - archSize.h * s }} />
+                <div ref={heroine} data-pose="idle" className="pt-heroine absolute" style={{ left: (plan.arch + 0.2) * t - t / 2, top: groundTop - t * BODY }}>
+                  <span className="pt-face block">
+                    <span className={`block ${cheer ? "pt-cheer" : "pt-bob"}`}>
+                      {cheer ? (
+                        <Pixels art={BRIDE_WAVE} colors={CHARACTER_COLORS} scale={s} />
+                      ) : (
+                        <>
+                          <Pixels art={BRIDE_IDLE} colors={CHARACTER_COLORS} scale={s} className="pt-pose-idle" />
+                          <Pixels art={BRIDE_STEP_A} colors={CHARACTER_COLORS} scale={s} className="pt-pose-a" />
+                          <Pixels art={BRIDE_STEP_B} colors={CHARACTER_COLORS} scale={s} className="pt-pose-b" />
+                        </>
+                      )}
+                    </span>
                   </span>
-                </span>
-              </div>
+                  {cheer && (
+                    <span className="absolute -top-2 left-0 w-full">
+                      {[0, 1, 2, 3, 4].map((k) => (
+                        <span key={k} className="pt-rise absolute" style={{ left: `${-30 + k * 35}%`, animationDelay: `${k * 0.18}s` }}>
+                          <Sprite data={HEART} scale={Math.max(2, Math.round(s * 0.9))} />
+                        </span>
+                      ))}
+                    </span>
+                  )}
+                </div>
 
-              {/* Koin selalu di lapisan paling atas dunia, di atas papan dan karakter. */}
-              {plan.coins.map((c, i) => (
-                <span key={i} ref={(el) => void (coinEls.current[i] = el)} className="pt-coin absolute z-30" style={{ left: c.x * t - (artSize(COIN).w * s) / 2, top: groundTop - c.y * t - artSize(COIN).h * s }}>
-                  <Pixels art={COIN} colors={COIN_COLORS} scale={s} />
-                </span>
-              ))}
+                {love && (
+                  <div aria-hidden="true" className="pointer-events-none absolute z-30" style={{ left: (plan.arch - 0.45) * t, top: groundTop - t * (BODY + 0.5) }}>
+                    {LOVE.map((h, k) => (
+                      <span key={k} className="pt-rise absolute" style={{ left: h.x * t, top: h.y * t, animationDelay: `${h.d}s` }}>
+                        <Sprite data={HEART} scale={Math.max(2, Math.round(s * h.k))} />
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <span ref={shade} aria-hidden="true" className="pt-shade absolute left-0" style={{ top: groundTop - t * 0.12, width: t * 0.84, height: t * 0.24, transform: `translate3d(${vw * 0.22 - t * 0.42}px, 0, 0)` }} />
+                <div ref={hero} data-pose="idle" className="pt-hero absolute left-0" style={{ top: groundTop - t * BODY, transform: `translate3d(${vw * 0.22 - t / 2}px, 0, 0)` }}>
+                  <span className="pt-face relative block">
+                    <span className={`block ${cheer ? "pt-cheer" : ""}`}>
+                      {Object.entries(FRAMES).map(([k, art]) => (
+                        <Pixels key={k} art={art} colors={CHARACTER_COLORS} scale={s} className={`pt-pose-${k}`} />
+                      ))}
+                    </span>
+                    {/* Cincin di tangan saat berlutut. */}
+                    <span className="pt-held absolute" style={{ left: 10 * s, top: 6 * s }}>
+                      <Pixels art={RING} colors={RING_COLORS} scale={s} />
+                    </span>
+                  </span>
+                </div>
+
+                {/* Koin selalu di lapisan paling atas dunia, di atas papan dan karakter. */}
+                {plan.coins.map((c, i) => (
+                  <span key={i} ref={(el) => void (coinEls.current[i] = el)} className="pt-coin absolute z-30" style={{ left: c.x * t - (artSize(COIN).w * s) / 2, top: groundTop - c.y * t - artSize(COIN).h * s }}>
+                    <Pixels art={COIN} colors={COIN_COLORS} scale={s} />
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* Papan status, menu peta, dan tombol kontrol menempel di layar, tidak ikut bergeser. */}

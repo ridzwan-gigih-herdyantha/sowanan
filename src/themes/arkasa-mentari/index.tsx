@@ -250,14 +250,10 @@ function ExtraBoard({ inv, at, index }: { inv: InvitationView; at: ExtraAnchor; 
   );
 }
 
-// Papan di atas istana. Sebelum mempelai pria tiba, isinya mempelai wanita sebagai tujuan. Sesudah tiba, berganti
-// menjadi pesan misi selesai.
+// Papan di atas istana, muncul setelah mempelai pria tiba di depan mempelai wanita.
 function GoalBoard({ inv }: { inv: InvitationView }) {
   return (
     <div className="flex max-h-full min-h-0 flex-col">
-      <div className="pt-before flex max-h-full min-h-0 flex-col">
-        <Player p={inv.bride} tag="P2" label="Tujuan akhir" alt={`Foto ${inv.bride.name}`} />
-      </div>
       <div className="pt-done pt-dialog flex-col px-4 py-3 text-center">
         <p className="pt-label text-[10px] text-[color-mix(in_srgb,var(--inv-accent)_40%,#FFE3A0)]">Misi selesai</p>
         <p className="mt-1 font-display text-[clamp(17px,4.6vw,22px)] leading-tight font-semibold">
@@ -326,6 +322,7 @@ async function Adventure({ inv }: { inv: InvitationView }) {
     ...(inv.tagline || inv.honor ? [{ id: "intro", label: "Prolog", node: <IntroBoard inv={inv} /> }] : []),
     ...extra("hero"),
     ...(inv.on.couple ? [{ id: "groom", label: "Mempelai", node: <Player p={inv.groom} tag="P1" label="Mempelai pria" alt={`Foto ${inv.groom.name}`} /> }] : []),
+    ...(inv.on.couple ? [{ id: "bride", node: <Player p={inv.bride} tag="P2" label="Mempelai wanita" alt={`Foto ${inv.bride.name}`} /> }] : []),
     ...extra("couple"),
     ...(inv.on.story ? inv.story.map((s, i) => ({ id: `story-${i}`, label: i === 0 ? "Cerita" : undefined, flag: true, story: true, size: "compact" as const, node: <StoryBoard s={s} i={i} /> })) : []),
     ...extra("story"),

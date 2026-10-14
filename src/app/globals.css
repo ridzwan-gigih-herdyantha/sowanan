@@ -431,7 +431,9 @@
 .pt-hero[data-pose="a"] .pt-pose-a,
 .pt-hero[data-pose="b"] .pt-pose-b,
 .pt-hero[data-pose="c"] .pt-pose-c,
-.pt-hero[data-pose="jump"] .pt-pose-jump {
+.pt-hero[data-pose="jump"] .pt-pose-jump,
+.pt-hero[data-pose="kneel"] .pt-pose-kneel,
+.pt-hero[data-pose="kneel"] .pt-held svg {
   display: block;
 }
 .pt-heroine svg {
@@ -445,6 +447,16 @@
 }
 .pt-heroine:not([data-pose="idle"]) .pt-bob {
   animation: none;
+}
+/* Kamera mendekat saat lamaran dan menjauh lagi sesudahnya. */
+.pt-lens {
+  transform-origin: 0 0;
+  transition: transform 1s cubic-bezier(0.45, 0, 0.25, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pt-lens {
+    transition: none;
+  }
 }
 .pt-face {
   transform: scaleX(var(--face, 1));
@@ -464,8 +476,7 @@
 .pt-coin[data-taken] {
   animation: pt-take 0.45s steps(5) forwards;
 }
-.pt-goal .pt-done,
-.pt-goal[data-reached] .pt-before {
+.pt-goal .pt-done {
   display: none;
 }
 .pt-goal[data-reached] {
