@@ -55,10 +55,10 @@ export function ThemeCard({ theme, index, waHref, animate = true }: { theme: The
   );
 }
 
-// Tema di beranda: yang ditandai admin, atau tema aktif pertama bila belum ada yang ditandai.
+// Tema di beranda sesuai pilihan dan urutan admin. Bila belum ada yang dipilih, tema aktif pertama.
 function homeThemes(s: Settings) {
   const active = s.themes.filter((t) => t.on);
-  const picked = active.filter((t) => t.home);
+  const picked = s.homeThemes.map((id) => active.find((t) => t.id === id)).filter((t) => t !== undefined);
   return (picked.length ? picked : active).slice(0, HOME_THEMES);
 }
 

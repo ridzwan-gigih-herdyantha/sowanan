@@ -186,10 +186,11 @@ export const settingsSchema = z
           category: z.enum(Object.keys(THEME_CATEGORIES) as [ThemeCategory, ...ThemeCategory[]]).default("minimalis"),
           style: str("Deskripsi tema", 90),
           image: str("Gambar sampul", 300),
-          home: z.boolean().default(false),
         }),
       )
       .max(30, "Tema maksimal 30."),
+    // Id tema yang tampil di section tema beranda, sesuai urutan.
+    homeThemes: z.array(z.string()).max(HOME_THEMES, `Tema di beranda maksimal ${HOME_THEMES}.`).default([]),
     faq: z.array(z.object({ id, on: z.boolean(), q: req("Pertanyaan", 80), a: req("Jawaban", 600) })).max(30, "Tanya jawab maksimal 30."),
     themeFaq: z
       .array(z.object({ id, on: z.boolean(), q: req("Pertanyaan", 80), a: req("Jawaban", 600) }))
@@ -258,9 +259,8 @@ export const settingsSchema = z
       if (slugs.has(t.slug)) ctx.addIssue({ code: "custom", path: ["themes", i, "slug"], message: "Slug ini sudah dipakai tema lain." });
       slugs.add(t.slug);
     });
-    if (s.themes.filter((t) => t.home).length > HOME_THEMES) {
-      s.themes.forEach((t, i) => t.home && ctx.addIssue({ code: "custom", path: ["themes", i, "home"], message: `Tema di beranda maksimal ${HOME_THEMES}.` }));
-    }
+    const ids = new Set(s.themes.map((t) => t.id));
+    if (s.homeThemes.some((id) => !ids.has(id))) ctx.addIssue({ code: "custom", path: ["homeThemes"], message: "Ada tema beranda yang sudah tidak ada di daftar tema." });
     const keys = new Set<string>();
     s.matrix.forEach((r, i) => {
       if (!r.key) return;

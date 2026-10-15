@@ -3,10 +3,13 @@
 import { HOME_THEMES, ICONS, newId, PACKAGE_IDS, PACKAGE_NAMES, THEME_CATEGORIES, THEME_TIERS, type Settings } from "@/lib/settings/schema";
 import { generalWaLink, themeCount, themesLimited, VARIABLES } from "@/lib/settings/text";
 import { THEME_NAMES } from "@/themes/media";
-import { getIn, setIn, useSettings } from "./form-context";
+import Image from "next/image";
+import { Dropdown } from "../dropdown";
+import { mediaUrl } from "@/lib/storage/media";
+import { setIn, useSettings } from "./form-context";
 import { ImagePicker } from "./image-picker";
 import { RichField } from "./rich-field";
-import { Card, Note, RepList, Row, Select, Switch, Text, width } from "./ui";
+import { Card, DeleteButton, Note, RepList, Row, Select, Text, width } from "./ui";
 
 const v = (k: string) => `{${k}}`;
 
@@ -182,6 +185,15 @@ const SLUG_OPTIONS = Object.entries(THEME_NAMES).map(([slug, name]): [string, st
 
 export function TemaPanel() {
   const { s } = useSettings();
+  return (
+    <>
+      <HomeThemesCard />
+      <ThemeList s={s} />
+    </>
+  );
+}
+
+function ThemeList({ s }: { s: Settings }) {
   const counts = PACKAGE_IDS.map((p) => `${PACKAGE_NAMES[p]} ${themeCount(s, p).n}`).join(", ");
   const limited = themesLimited(s);
   return (
@@ -231,7 +243,6 @@ export function TemaPanel() {
               <Text path={`${base}.style`} label="Deskripsi satu baris" max={90} placeholder="film / urban" />
               <ImagePicker path={`${base}.image`} label="Gambar sampul" purpose="cover" className={width.md} tall help="Tangkapan layar ponsel, rasio 390 x 844." />
             </Row>
-            <HomeSwitch base={base} />
           </>
         )}
       />
@@ -239,16 +250,46 @@ export function TemaPanel() {
   );
 }
 
-// Menandai tema yang tampil di section tema beranda, paling banyak HOME_THEMES.
-function HomeSwitch({ base }: { base: string }) {
+// Tema yang tampil di section tema beranda: diurutkan, dihapus, dan ditambah dari daftar tema aktif.
+function HomeThemesCard() {
   const { s, update } = useSettings();
-  const on = Boolean(getIn(s, `${base}.home`));
-  const full = s.themes.filter((t) => t.home).length >= HOME_THEMES;
+  const ids = s.homeThemes;
+  const write = (next: string[]) => update((d) => setIn(d, "homeThemes", next));
+  const byId = (id: string) => s.themes.find((t) => t.id === id);
+  const options = s.themes.filter((t) => t.on && !ids.includes(t.id)).map((t) => ({ value: t.id, label: t.name }));
+  const move = (i: number, to: number) => {
+    const next = [...ids];
+    const [x] = next.splice(i, 1);
+    next.splice(to, 0, x);
+    write(next);
+  };
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <Switch checked={on} label="Tampil di beranda" onChange={(v) => (!v || !full) && update((d) => setIn(d, `${base}.home`, v))} />
-      {!on && full && <span className="text-[12px] text-ink-mute">Sudah {HOME_THEMES} tema di beranda. Matikan salah satu dulu.</span>}
-    </div>
+    <Card title="Tema di beranda" hint={`Paling banyak ${HOME_THEMES} tema, tampil sesuai urutan di sini. Tema lainnya bisa dilihat pengunjung di halaman /tema. Kosong berarti beranda menampilkan ${HOME_THEMES} tema aktif pertama.`}>
+      <div className="flex flex-col gap-2">
+        {ids.map((id, i) => {
+          const t = byId(id);
+          return (
+            <div key={id} className="flex items-center gap-3 rounded-[9px] border border-[#E8E0D6] bg-[#FCFAF7] px-3 py-2.5">
+              <span className="w-5 text-center font-serif text-[15px] text-wine">{i + 1}</span>
+              <div className="relative h-14 w-[26px] flex-none overflow-hidden rounded-[4px] bg-blush">{t?.image && <Image src={mediaUrl(t.image)} alt="" fill sizes="26px" className="object-cover object-top" />}</div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[14px] font-medium text-[#2A2320]">{t?.name ?? "Tema dihapus"}</p>
+                <p className="truncate text-[12px] text-ink-mute">{t ? (t.on ? t.style || t.slug : "Tema ini sedang disembunyikan, tidak tampil di beranda.") : "Hapus dari daftar ini."}</p>
+              </div>
+              <div className="flex flex-none items-center gap-1.5">
+                <button type="button" onClick={() => move(i, i - 1)} disabled={i === 0} aria-label={`Naikkan ${t?.name ?? "tema"}`} className="size-[26px] rounded-[5px] border border-[#E8E0D6] bg-white text-ink-mute disabled:opacity-40">&uarr;</button>
+                <button type="button" onClick={() => move(i, i + 1)} disabled={i === ids.length - 1} aria-label={`Turunkan ${t?.name ?? "tema"}`} className="size-[26px] rounded-[5px] border border-[#E8E0D6] bg-white text-ink-mute disabled:opacity-40">&darr;</button>
+                <DeleteButton label={`Keluarkan ${t?.name ?? "tema"} dari beranda`} onClick={() => write(ids.filter((x) => x !== id))} />
+              </div>
+            </div>
+          );
+        })}
+        {ids.length === 0 && <p className="rounded-[9px] border border-dashed border-[#E8E0D6] px-3 py-4 text-center text-[13px] text-ink-mute">Belum ada tema dipilih.</p>}
+      </div>
+      {ids.length < HOME_THEMES && options.length > 0 && (
+        <Dropdown label="Tambah tema ke beranda" placeholder="+ Tambah tema ke beranda" value="" options={options} onChange={(v) => write([...ids, v])} className="mt-3 w-full sm:w-[320px]" />
+      )}
+    </Card>
   );
 }
 
