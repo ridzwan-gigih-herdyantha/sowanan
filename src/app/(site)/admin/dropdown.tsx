@@ -18,12 +18,14 @@ type Props = {
   // Garis putus-putus saat belum dipilih, garis merah saat filter aktif, kuning untuk yang perlu ditindaklanjuti.
   tone?: "default" | "empty" | "active" | "warn";
   size?: "md" | "sm";
+  // "down" selalu membuka daftar ke bawah, untuk halaman yang bisa digulir supaya daftar tidak tertutup navbar.
+  placement?: "auto" | "down";
   className?: string;
 };
 
 // Pengganti select bawaan supaya daftar pilihannya bisa ditata. Tetap bisa dipakai lewat keyboard:
 // panah atas bawah, Home, End, Enter, Esc, dan ketik huruf awal pilihan.
-export function Dropdown({ value, options, onChange, label, prefix, placeholder = "Pilih", name, disabled, tone = "default", size = "md", className = "" }: Props) {
+export function Dropdown({ value, options, onChange, label, prefix, placeholder = "Pilih", name, disabled, tone = "default", size = "md", placement = "auto", className = "" }: Props) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -51,7 +53,7 @@ export function Dropdown({ value, options, onChange, label, prefix, placeholder 
     if (disabled) return;
     const rect = button.current?.getBoundingClientRect();
     // Daftar dibuka ke atas kalau ruang di bawah tidak cukup, misalnya di baris terakhir tabel.
-    setUp(Boolean(rect && window.innerHeight - rect.bottom < Math.min(280, options.length * 40 + 16) && rect.top > window.innerHeight - rect.bottom));
+    setUp(placement === "auto" && Boolean(rect && window.innerHeight - rect.bottom < Math.min(280, options.length * 40 + 16) && rect.top > window.innerHeight - rect.bottom));
     const selected = options.findIndex((o) => o.value === value);
     setActive(selected >= 0 && !options[selected].disabled ? selected : (enabled[0] ?? 0));
     setOpen(true);
