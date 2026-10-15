@@ -140,5 +140,31 @@
       "name": "Yoga",
       "message": "Nggak ada tombol keluar dari petualangan ini, dan memang nggak perlu. Selamat!"
     }
+  ],
+  "ivan-mawar": [
+    {
+      "name": "Dimas & Ayu",
+      "message": "Selamat menempuh hidup baru, Ivan dan Mawar. Semoga sakinah, mawadah, warahmah."
+    },
+    {
+      "name": "Bu Sri",
+      "message": "Bahagia selalu untuk kalian berdua. Semoga rumah tangganya selalu mekar seperti mawar."
+    },
+    {
+      "name": "Rizky",
+      "message": "Akhirnya! Selamat ya bro, jaga Mawar baik-baik."
+    },
+    {
+      "name": "Keluarga Pak Budi",
+      "message": "Turut berbahagia. Semoga dilancarkan sampai hari H dan seterusnya."
+    },
+    {
+      "name": "Nadia",
+      "message": "Cantik banget undangannya, secantik pasangannya. Selamat Mawar!"
+    },
+    {
+      "name": "Teman kantor",
+      "message": "Selamat menikah! Semoga menjadi keluarga yang penuh berkah."
+    }
   ]
 }

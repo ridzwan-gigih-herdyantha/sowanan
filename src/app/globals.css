@@ -1499,3 +1499,64 @@ html:has(.sk-root) {
     animation: none;
   }
 }
+
+/* Mekar Mawar: huruf sambung hanya untuk tanda & dan kata pendek berukuran besar, bunga bergoyang pelan seperti
+   tertiup angin, kelopak melayang di pembuka dan penutup, dan bingkai foto bergaris emas berjarak. */
+.mm-amp {
+  font-family: var(--font-mm-script), cursive;
+  font-weight: 400;
+  letter-spacing: normal;
+}
+.mm-sway {
+  transform-origin: 50% 100%;
+  animation: mm-sway 6s ease-in-out infinite alternate;
+}
+.mm-petal {
+  position: absolute;
+  top: -20px;
+  width: 12px;
+  height: 9px;
+  border-radius: 70% 10% 70% 10%;
+  background: var(--mm-rose);
+  opacity: 0;
+  animation: mm-fall linear infinite;
+}
+/* Kelopak hembusan pembuka: gradasi dari kelopak terang ke warna nama, seperti kelopak mawar sungguhan. */
+.mm-gust-petal {
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--mm-rose) 45%, #fff), var(--mm-rose) 55%, color-mix(in srgb, var(--mm-rose) 50%, var(--inv-accent)));
+  box-shadow: 0 2px 6px -2px color-mix(in srgb, var(--inv-accent) 40%, transparent);
+  will-change: transform;
+}
+.mm-frame {
+  outline: 1px solid var(--inv-gold);
+  outline-offset: 6px;
+  box-shadow: 0 0 0 12px color-mix(in srgb, var(--inv-card) 55%, transparent);
+}
+.mm-card {
+  background: color-mix(in srgb, var(--inv-card) 86%, transparent);
+  border: 1px solid var(--inv-line);
+  box-shadow: 0 18px 40px -26px color-mix(in srgb, var(--inv-accent) 45%, transparent);
+}
+@keyframes mm-sway {
+  from {
+    transform: rotate(-1.4deg);
+  }
+  to {
+    transform: rotate(1.4deg);
+  }
+}
+@keyframes mm-fall {
+  10% {
+    opacity: 0.85;
+  }
+  to {
+    opacity: 0;
+    transform: translate(40px, 105vh) rotate(300deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mm-sway,
+  .mm-petal {
+    animation: none;
+  }
+}

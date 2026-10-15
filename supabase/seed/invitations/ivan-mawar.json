@@ -1,0 +1,321 @@
+{
+  "slug": "ivan-mawar",
+  "theme": "ivan-mawar",
+  "published": true,
+  "package": "istimewa",
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "",
+      "credit": "Foto oleh Trung Nguyen di Pexels",
+      "sesanti": "",
+      "tagline": "Seperti mawar yang mekar pada waktunya, kami menemukan satu sama lain.",
+      "ayatArti": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-06-20T14:00:00+07:00",
+      "city": "Kota Batu, Jawa Timur",
+      "start": "2027-06-20T09:00:00+07:00",
+      "venue": {
+        "name": "Taman Bunga Selecta",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Taman+Rekreasi+Selecta+Batu",
+        "address": "Jl. Raya Selecta No. 1, Tulungrejo, Bumiaji, Kota Batu"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "09.00",
+          "until": "10.00"
+        },
+        {
+          "name": "Resepsi",
+          "time": "11.00",
+          "until": "14.00"
+        }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "6 Juni 2027"
+    },
+    "media": {
+      "og": "ivan-mawar/og_1.jpg?v=mv7ujwoo",
+      "hero": "ivan-mawar/hero_1.webp?v=mv7ujuzr",
+      "rsvp": "",
+      "music": "",
+      "venue": "ivan-mawar/venue_1.webp?v=mv7ujxix",
+      "couple": "",
+      "detail": "",
+      "closing": "ivan-mawar/closing_1.webp?v=mv7ujyw1",
+      "heroWide": "ivan-mawar/herowide_1.webp?v=mv7ujw6o"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Ivan & Mawar di Kota Batu.",
+      "ogDescription": "Undangan pernikahan Ivan & Mawar, Minggu 20 Juni 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Mawar Kinasih",
+        "name": "Mawar",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "ivan-mawar/bride_1.webp?v=mv7uk09z",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Suryo Atmojo & Ibu Ratna Dewi"
+      },
+      "groom": {
+        "full": "Ivan Pratama Wijaya",
+        "name": "Ivan",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "ivan-mawar/groom_1.webp?v=mv7ujzol",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Handoko Wijaya & Ibu Lestari Ningsih"
+      }
+    },
+    "extras": [
+      {
+        "body": "",
+        "kind": "dresscode",
+        "note": "Nuansa merah mawar dan krem, agar foto bersama terlihat serasi.",
+        "plan": {
+          "h": 0,
+          "w": 0,
+          "src": ""
+        },
+        "tone": "paper",
+        "after": "gallery",
+        "rules": [],
+        "title": "Dress Code",
+        "colors": [
+          {
+            "hex": "#8E1B30",
+            "name": "Merah mawar"
+          },
+          {
+            "hex": "#F3E6DA",
+            "name": "Krem"
+          }
+        ],
+        "photos": [],
+        "stream": {
+          "url": "",
+          "time": ""
+        },
+        "tracks": [],
+        "videos": [],
+        "rundown": []
+      }
+    ],
+    "monogram": "I & M",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
+        "qris": "ivan-mawar/qris_1.webp?v=mv7uk0hd",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Ivan Pratama Wijaya",
+            "number": "0000 2006 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Mawar Kinasih",
+            "number": "2222 2006 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "2019",
+            "long": "Satu jalan setapak di antara pinus, dan sapaan kecil yang ternyata menjadi awal segalanya.",
+            "image": "ivan-mawar/story_1.webp?v=mv7uk116",
+            "place": "",
+            "title": "Pertama Bertemu",
+            "short": "Satu jalan setapak di antara pinus, dan sapaan kecil yang ternyata menjadi awal segalanya."
+          },
+          {
+            "no": "",
+            "date": "2021",
+            "long": "Pesan panjang setiap malam, perjalanan singkat di akhir pekan, dan tawa yang selalu terasa kurang.",
+            "image": "ivan-mawar/story_2.webp?v=mv7uk1nm",
+            "place": "",
+            "title": "Saling Mengenal",
+            "short": "Pesan panjang setiap malam, perjalanan singkat di akhir pekan, dan tawa yang selalu terasa kurang."
+          },
+          {
+            "no": "",
+            "date": "2025",
+            "long": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan senyum.",
+            "image": "ivan-mawar/story_3.webp?v=mv7uk25s",
+            "place": "",
+            "title": "Lamaran",
+            "short": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan senyum."
+          },
+          {
+            "no": "",
+            "date": "2027",
+            "long": "Kini kami melangkah bersama, menyambut babak baru dengan doa restu Anda.",
+            "image": "ivan-mawar/story_4.webp?v=mv7uk2qk",
+            "place": "",
+            "title": "Menuju Halal",
+            "short": "Kini kami melangkah bersama, menyambut babak baru dengan doa restu Anda."
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "src": "ivan-mawar/gallery_1.webp?v=mv7uk3f7",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Ivan dan Mawar di bukit saat matahari terbenam",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "ivan-mawar/gallery_2.webp?v=mv7uk4s2",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Ivan dan Mawar saling menatap di jalan hutan pinus",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "ivan-mawar/gallery_3.webp?v=mv7uk622",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Mawar tersenyum menoleh ke belakang",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "ivan-mawar/gallery_4.webp?v=mv7uk6ug",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Ivan memutar Mawar di jalan berkabut",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "ivan-mawar/gallery_5.webp?v=mv7uk7xt",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Ivan dan Mawar berjalan di bebatuan sungai",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "ivan-mawar/gallery_6.webp?v=mv7uk91g",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Ivan dan Mawar di tepi sungai berbatu",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "ivan-mawar/gallery_7.webp?v=mv7uk9oq",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Ivan dan Mawar berdansa di jalan pinus",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "ivan-mawar/gallery_8.webp?v=mv7ukaij",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Ivan mencium pipi Mawar",
+            "no": "",
+            "caption": ""
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [
+          {
+            "h": 589,
+            "w": 600,
+            "no": "042",
+            "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
+            "latin": "Rosa chinensis",
+            "local": "mawar"
+          },
+          {
+            "h": 600,
+            "w": 600,
+            "no": "057",
+            "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek bulan"
+          },
+          {
+            "h": 675,
+            "w": 600,
+            "no": "063",
+            "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
+            "latin": "Rosa & Phalaenopsis",
+            "local": "buket pengantin"
+          },
+          {
+            "h": 436,
+            "w": 600,
+            "no": "071",
+            "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek putih"
+          }
+        ],
+        "enabled": true
+      }
+    }
+  }
+}
