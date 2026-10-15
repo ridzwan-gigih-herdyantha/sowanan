@@ -43,6 +43,10 @@
   html {
     scroll-behavior: smooth;
   }
+  /* Lompatan ke bagian lewat menu berhenti di bawah navbar yang menempel. */
+  html:has(.site-header) {
+    scroll-padding-top: 5.5rem;
+  }
   body {
     background: var(--color-ivory);
     color: var(--color-ink);

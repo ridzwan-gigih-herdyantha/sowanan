@@ -11,9 +11,10 @@ export function SiteHeader({ settings, waHref }: { settings: Settings; waHref: s
     { href: "#harga", label: sec.harga.title },
     { href: "#tanya", label: sec.faq.title },
   ];
+  // Menempel di atas saat digulir, dengan latar kaca buram supaya isi di belakangnya tetap terasa.
   return (
-    <header className="border-b border-line">
-      <Container className="flex items-center justify-between gap-4 py-[22px]">
+    <header className="site-header sticky top-0 z-40 border-b border-line/70 bg-ivory/75 backdrop-blur-md backdrop-saturate-150">
+      <Container className="flex items-center justify-between gap-4 py-3.5 sm:py-4">
         <Link prefetch={false} href="/" className="flex min-w-0 items-center gap-2.5 text-ink no-underline sm:gap-3">
           <LogoMark className="h-9 w-auto text-wine sm:h-11" />
           <span className="font-serif text-[26px] leading-tight tracking-[.5px]">
