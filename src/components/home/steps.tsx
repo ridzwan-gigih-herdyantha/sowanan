@@ -1,11 +1,16 @@
-import { Container, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
+import { Container, Eyebrow, cx, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
+import { LineArt } from "./line-art";
 import { fill, type Settings } from "@/lib/settings";
 
 export function Steps({ settings, vars }: { settings: Settings; vars: Record<string, string> }) {
   const sec = settings.sections.cara;
   return (
-    <section id="cara" className="border-y border-line bg-blush">
-      <Container className={sectionPad}>
+    <section id="cara" className="relative overflow-hidden border-y border-line bg-blush">
+      <LineArt kind="cincin" className="top-8 right-2 w-20 opacity-55 lg:top-12 lg:right-[max(1.5rem,calc(50%-540px))] lg:w-40 lg:opacity-100" />
+      <Container className={cx(sectionPad, "relative")}>
+        <Eyebrow no="04" {...reveal()}>
+          Cara pesan
+        </Eyebrow>
         <SectionTitle className={sec.sub ? undefined : "mb-11"} {...reveal()}>
           {sec.title}
         </SectionTitle>

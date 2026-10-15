@@ -43,6 +43,20 @@
   html {
     scroll-behavior: smooth;
   }
+  /* Kartu kecil di hero yang naik turun pelan. */
+  .home-float {
+    animation: home-float 5s ease-in-out infinite alternate;
+  }
+  @keyframes home-float {
+    to {
+      translate: 0 -10px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .home-float {
+      animation: none;
+    }
+  }
   /* Lompatan ke bagian lewat menu berhenti di bawah navbar yang menempel. */
   html:has(.site-header) {
     scroll-padding-top: 5.5rem;

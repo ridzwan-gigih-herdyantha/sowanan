@@ -44,7 +44,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) setHover(false);
       }}
-      className="mx-auto w-full max-w-[300px] flex-none md:mx-0 md:w-[clamp(220px,calc((100svh-290px)*0.462),260px)] lg:w-[clamp(220px,calc((100svh-290px)*0.462),300px)]"
+      className="mx-auto w-[200px] flex-none md:mx-0 md:max-w-[300px] md:w-[clamp(220px,calc((100svh-290px)*0.462),260px)] lg:w-[clamp(220px,calc((100svh-290px)*0.462),300px)]"
     >
       <a
         href={current.href}

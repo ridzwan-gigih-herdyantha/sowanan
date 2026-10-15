@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 export function cx(...parts: (string | false | null | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -16,6 +16,42 @@ export function SectionTitle({ className, ...props }: ComponentProps<"h2">) {
       className={cx("mb-3 font-serif text-[clamp(30px,4vw,44px)] leading-[1.15] font-medium", className)}
       {...props}
     />
+  );
+}
+
+// Label kecil bernomor di atas judul bagian beranda, seperti penanda bab.
+export function Eyebrow({ no, children, className }: { no: string; children: ReactNode; className?: string }) {
+  return (
+    <p className={cx("mb-3 flex items-center gap-3 text-[12px] tracking-[3px] text-wine uppercase", className)}>
+      <span className="font-serif text-[16px] tracking-normal">{no}</span>
+      <span aria-hidden="true" className="h-px w-8 bg-current opacity-40" />
+      {children}
+    </p>
+  );
+}
+
+// Ranting daun bergaris tipis sebagai hiasan latar bagian. Selalu dekoratif dan tidak bisa diklik.
+export function Sprig({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 120 240" fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" className={cx("pointer-events-none absolute", className)}>
+      <path d="M60 236 C58 190 62 140 56 96 C52 62 58 30 70 4" />
+      {[
+        [58, 206, -1],
+        [59, 178, 1],
+        [59, 150, -1],
+        [58, 122, 1],
+        [56, 96, -1],
+        [56, 70, 1],
+        [60, 44, -1],
+        [65, 22, 1],
+      ].map(([x, y, d], i) => {
+        const len = 30 - i * 2;
+        const tx = x + d * len;
+        const ty = y - len * 0.55;
+        return <path key={i} d={`M${x} ${y} C${x + d * len * 0.3} ${y - len * 0.6} ${tx - d * 4} ${ty - 6} ${tx} ${ty} C${tx - d * 8} ${ty + 6} ${x + d * len * 0.5} ${y + 2} ${x} ${y} Z`} />;
+      })}
+      <circle cx="70" cy="4" r="2.2" />
+    </svg>
   );
 }
 

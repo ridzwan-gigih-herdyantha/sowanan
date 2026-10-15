@@ -1,6 +1,7 @@
 import { WaIcon } from "@/components/home/closing";
 import { Inline } from "@/components/rich-text";
-import { Container, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
+import { Container, Eyebrow, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
+import { LineArt } from "./line-art";
 import { fill, type Settings } from "@/lib/settings";
 
 // Dua kolom di layar lebar: judul dan ajakan bertanya di kiri (menempel saat digulir), daftar pertanyaan bernomor di kanan.
@@ -9,9 +10,13 @@ import { fill, type Settings } from "@/lib/settings";
 export function Faq({ settings, vars }: { settings: Settings; vars: Record<string, string> }) {
   const sec = settings.sections.faq;
   return (
-    <section id="tanya">
-      <Container className={`${sectionPad} grid grid-cols-1 gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16`}>
+    <section id="tanya" className="relative overflow-hidden">
+      <LineArt kind="mawar" className="top-8 right-3 w-12 opacity-55 lg:hidden" />
+      <Container className={`${sectionPad} relative grid grid-cols-1 gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16`}>
         <div className="lg:sticky lg:top-28 lg:self-start">
+          <Eyebrow no="05" {...reveal()}>
+            Tanya jawab
+          </Eyebrow>
           <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
           {sec.sub && (
             <SectionSub className="mb-0! text-base leading-relaxed" {...reveal()}>
@@ -28,6 +33,9 @@ export function Faq({ settings, vars }: { settings: Settings; vars: Record<strin
               {fill(sec.cta, vars)}
             </a>
           )}
+          <div className="relative mt-12 hidden h-56 lg:block">
+            <LineArt kind="mawar" className="top-0 left-0 h-full w-auto" />
+          </div>
         </div>
         <div className="border-t border-line">
           {settings.faq

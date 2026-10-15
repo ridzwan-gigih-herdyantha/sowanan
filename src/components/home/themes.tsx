@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
+import { Container, Eyebrow, SectionSub, SectionTitle, Sprig, cx, reveal, sectionPad } from "@/components/ui";
 import { fill, THEME_CATEGORIES, type Settings, type ThemeEntry } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { OfferCard } from "./offer-card";
@@ -58,8 +58,10 @@ export function ThemeCard({ theme, index, waHref, animate = true }: { theme: The
 export function Themes({ settings, vars, waHref }: { settings: Settings; vars: Record<string, string>; waHref: string }) {
   const sec = settings.sections.tema;
   return (
-    <section id="tema" className="border-y border-line bg-blush">
-      <Container className={sectionPad}>
+    <section id="tema" className="relative overflow-hidden border-y border-line bg-blush">
+      <Sprig className="-top-4 -right-8 h-44 -scale-x-100 rotate-[200deg] text-wine/10 lg:-right-6 lg:h-80 lg:text-wine/12" />
+      <Container className={cx(sectionPad, "relative")}>
+        <Eyebrow no="01" {...reveal()}>Galeri tema</Eyebrow>
         <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
         {sec.sub && (
           <SectionSub className="mb-7!" {...reveal()}>

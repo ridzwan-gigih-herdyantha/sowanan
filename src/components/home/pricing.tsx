@@ -1,7 +1,8 @@
 import { OfferCard } from "@/components/home/offer-card";
 import { PlanSlider } from "@/components/home/plan-slider";
 import { Inline } from "@/components/rich-text";
-import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
+import { Scribble } from "./line-art";
+import { Container, Eyebrow, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
 import { cellView, fill, formatRupiah, PACKAGE_NAMES, planWaLink, slaText, visiblePackages, type Settings } from "@/lib/settings";
 
 type Feature = { label: string; note?: string; on: boolean };
@@ -93,8 +94,13 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
   const addons = settings.addons.filter((a) => a.on);
   const list = plans(settings);
   return (
-    <section id="harga" className="bg-ink text-paper">
-      <Container className={sectionPad}>
+    <section id="harga" className="relative overflow-hidden bg-ink text-paper">
+      <Scribble kind="atas" className="top-0 right-0 w-[min(46vw,460px)] text-wine-pale/25" />
+      <Scribble kind="bawah" className="bottom-0 left-0 w-[min(46vw,460px)] text-wine-pale/25" />
+      <Container className={cx(sectionPad, "relative")}>
+        <Eyebrow no="03" className="text-wine-pale" {...reveal()}>
+          Harga paket
+        </Eyebrow>
         <SectionTitle className="text-paper" {...reveal()}>
           {harga.title}
         </SectionTitle>
