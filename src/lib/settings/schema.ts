@@ -167,7 +167,7 @@ export const settingsSchema = z
       line1: str("Baris footer", 80),
       line2: str("Baris kedua footer", 60),
       nav: str("Judul kolom tautan", 24).default("Jelajahi"),
-      demos: str("Judul kolom contoh undangan", 24).default("Contoh undangan"),
+      demos: str("Judul kolom kategori tema", 24).default("Kategori tema"),
       reach: str("Judul kolom kontak", 24).default("Hubungi"),
     }),
     themes: z

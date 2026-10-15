@@ -290,7 +290,7 @@ export const DEFAULT_SETTINGS: Settings = {
     points: ["Mulai {harga}", "Jadi dalam {waktu}", "Tanpa batas jumlah tamu"],
     covers: ["andi-rina", "danang-kinanthi", "hendrawan-larasati"],
   },
-  footer: { line1: "Undangan pernikahan digital · {kota}", line2: "", nav: "Jelajahi", demos: "Contoh undangan", reach: "Hubungi" },
+  footer: { line1: "Undangan pernikahan digital · {kota}", line2: "", nav: "Jelajahi", demos: "Kategori tema", reach: "Hubungi" },
   themes: [
     { id: "senja", on: true, name: "Senja Kota", slug: "andi-rina", demo: "/andi-rina", tier: "semua", category: "vintage", style: "film / urban", image: "/img/tema-andi-rina.webp" },
     { id: "ruang", on: true, name: "Ruang", slug: "bagas-sekar", demo: "/bagas-sekar", tier: "semua", category: "minimalis", style: "monokrom / minimalis", image: "/img/tema-bagas-sekar.webp" },

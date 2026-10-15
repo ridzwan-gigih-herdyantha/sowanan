@@ -170,7 +170,7 @@ export function BerandaPanel() {
         </Row>
         <Row>
           <Text path="footer.nav" label="Judul kolom tautan" chip="view" max={24} />
-          <Text path="footer.demos" label="Judul kolom contoh undangan" chip="view" max={24} />
+          <Text path="footer.demos" label="Judul kolom kategori tema" chip="view" max={24} />
           <Text path="footer.reach" label="Judul kolom kontak" chip="view" max={24} />
         </Row>
       </Card>

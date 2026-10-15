@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogoMark } from "@/components/logo";
 import { Container, btn, cx, reveal } from "@/components/ui";
-import { fill, type Settings } from "@/lib/settings";
+import { fill, THEME_CATEGORIES, type Settings } from "@/lib/settings";
 import { SITE_NAME } from "@/lib/site";
 
 const WA_PATH =
@@ -120,7 +120,9 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
     ["/#cara", s.cara.title],
     ["/#tanya", s.faq.title],
   ];
-  const demos = settings.themes.filter((t) => t.on);
+  // Kategori yang punya paling sedikit satu tema aktif, masing-masing menaut ke halaman tema dengan filternya.
+  const active = new Set<string>(settings.themes.filter((t) => t.on).map((t) => t.category));
+  const categories = Object.entries(THEME_CATEGORIES).filter(([k]) => active.has(k));
   const hours = [vars.hari, vars.jam].filter(Boolean).join(", ");
   return (
     <footer className="bg-night text-[15px] text-dusk-light">
@@ -147,14 +149,14 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
           </ul>
         </nav>
 
-        {demos.length > 0 && (
+        {categories.length > 0 && (
           <nav aria-label={f.demos}>
             <p className={footLabel}>{f.demos}</p>
             <ul className="grid gap-2.5">
-              {demos.map((t) => (
-                <li key={t.id}>
-                  <a href={t.demo || `/${t.slug}`} className={footLink}>
-                    {t.name}
+              {categories.map(([k, name]) => (
+                <li key={k}>
+                  <a href={`/tema?kategori=${k}`} className={footLink}>
+                    {name}
                   </a>
                 </li>
               ))}
