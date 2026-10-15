@@ -40,12 +40,16 @@ function PlanCard({ p }: { p: Plan }) {
   const fade = "transition-colors duration-200";
   return (
     <article className={cx("plan relative flex h-full flex-col rounded-[14px] border bg-night px-[22px] pt-7 pb-[26px] transition-[background-color,border-color,transform] duration-200 lit:border-wine lit:bg-wine sm:px-7 sm:pt-[34px] sm:pb-[30px] [@media(hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none", rec ? "border-wine-soft border-2" : "border-night-line")}>
-      {p.badge && (
-        <span className={cx("absolute top-[26px] right-[22px] rounded-full border border-wine-soft/50 bg-wine-soft/28 px-[11px] py-[5px] text-[11px] font-medium tracking-[.15em] text-paper uppercase lit:border-paper/40 lit:bg-paper/15 lit:text-paper sm:top-[30px] sm:right-[26px]", fade)}>
-          {p.badge}
-        </span>
-      )}
-      <h3 className={cx("mb-4 text-[12px] font-medium tracking-[.24em] text-mist uppercase lit:text-[#f2dfe2]", fade)}>{p.tier}</h3>
+      {/* Nama paket dan label rekomendasi satu baris. Label turun ke baris berikutnya kalau kartunya sempit, jadi
+          tidak pernah menimpa nama paket. */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <h3 className={cx("text-[12px] font-medium tracking-[.24em] text-mist uppercase lit:text-[#f2dfe2]", fade)}>{p.tier}</h3>
+        {p.badge && (
+          <span className={cx("rounded-full border border-wine-soft/50 bg-wine-soft/28 px-[11px] py-[5px] text-[11px] font-medium tracking-[.15em] whitespace-nowrap text-paper uppercase lit:border-paper/40 lit:bg-paper/15 lit:text-paper", fade)}>
+            {p.badge}
+          </span>
+        )}
+      </div>
       <p className={cx("mb-2.5 font-serif text-[38px] leading-none font-medium text-paper sm:text-[42px]", fade)}>{formatRupiah(p.price)}</p>
       <p className={cx("mb-[22px] text-[15px] leading-normal text-mist lit:text-[#f2dfe2] lg:min-h-[46px]", fade)}>{p.blurb}</p>
 
