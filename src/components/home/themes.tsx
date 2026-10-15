@@ -19,15 +19,16 @@ const CARD_BG: Record<string, string> = {
   "ivan-mawar": "bg-[#f3dcdc]",
 };
 
-// Seluruh kartu satu tautan ke demo tema. Paket lain bisa dipilih dari halaman demonya.
-function Card({ theme, index, waHref }: { theme: ThemeEntry; index: number; waHref: string }) {
+// Seluruh kartu satu tautan ke demo tema. Paket lain bisa dipilih dari halaman demonya. animate false untuk kartu di
+// dalam batas Suspense, karena animasi muncul saat digulir mengubah class kartu sebelum bagian itu selesai dimuat.
+export function ThemeCard({ theme, index, waHref, animate = true }: { theme: ThemeEntry; index: number; waHref: string; animate?: boolean }) {
   const demo = Boolean(theme.demo);
   return (
     <a
       href={theme.demo || waHref}
       aria-label={demo ? `Lihat demo tema ${theme.name}` : `Tanya tema ${theme.name} lewat WhatsApp`}
       className="group flex flex-col text-ink no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-wine"
-      {...reveal(index)}
+      {...(animate ? reveal(index) : {})}
     >
       <div
         className={cx(
@@ -70,7 +71,7 @@ export function Themes({ settings, vars, waHref }: { settings: Settings; vars: R
           waHref={vars.wa_link}
           items={settings.themes
             .filter((t) => t.on)
-            .map((t, i) => ({ id: t.id, category: t.category, node: <Card theme={t} index={i} waHref={waHref} /> }))}
+            .map((t, i) => ({ id: t.id, category: t.category, node: <ThemeCard theme={t} index={i} waHref={waHref} /> }))}
         />
         <OfferCard card={sec.custom} vars={vars} className="mt-12" />
       </Container>

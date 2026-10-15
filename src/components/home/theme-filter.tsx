@@ -4,10 +4,17 @@ import { useState, type ReactNode } from "react";
 
 type Item = { id: string; category: string; node: ReactNode };
 
+type Props = { items: Item[]; categories: [string, string][]; waHref: string; initial?: string; onPick?: (category: string) => void };
+
 // Chip kategori di atas daftar tema. Kartu yang tidak cocok disembunyikan, bukan dicabut, supaya animasi
-// muncul saat digulir tetap jalan ketika filter diganti.
-export function ThemeFilter({ items, categories, waHref }: { items: Item[]; categories: [string, string][]; waHref: string }) {
-  const [picked, setPicked] = useState("");
+// muncul saat digulir tetap jalan ketika filter diganti. initial dan onPick dipakai halaman tema untuk
+// menyimpan kategori di alamat halaman.
+export function ThemeFilter({ items, categories, waHref, initial = "", onPick }: Props) {
+  const [picked, setPicked] = useState(initial);
+  const pick = (k: string) => {
+    setPicked(k);
+    onPick?.(k);
+  };
   const label = categories.find(([k]) => k === picked)?.[1] ?? "";
   const shown = items.filter((it) => !picked || it.category === picked).length;
   const chips: [string, string][] = [["", "Semua"], ...categories];
@@ -20,7 +27,7 @@ export function ThemeFilter({ items, categories, waHref }: { items: Item[]; cate
             key={k || "semua"}
             type="button"
             aria-pressed={picked === k}
-            onClick={() => setPicked(k)}
+            onClick={() => pick(k)}
             className={`shrink-0 rounded-full border px-4 py-1.5 text-[14px] whitespace-nowrap transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wine ${
               picked === k ? "border-wine bg-wine text-white" : "border-line bg-white/60 text-ink-soft hover:border-wine hover:text-wine"
             }`}

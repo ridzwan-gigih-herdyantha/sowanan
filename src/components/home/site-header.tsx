@@ -6,10 +6,10 @@ import type { Settings } from "@/lib/settings";
 export function SiteHeader({ settings, waHref }: { settings: Settings; waHref: string }) {
   const sec = settings.sections;
   const links = [
-    { href: "#tema", label: sec.tema.title },
-    { href: "#fitur", label: sec.fitur.title },
-    { href: "#harga", label: sec.harga.title },
-    { href: "#tanya", label: sec.faq.title },
+    { href: "/tema", label: sec.tema.title },
+    { href: "/#fitur", label: sec.fitur.title },
+    { href: "/#harga", label: sec.harga.title },
+    { href: "/#tanya", label: sec.faq.title },
   ];
   // Menempel di atas saat digulir, dengan latar kaca buram supaya isi di belakangnya tetap terasa.
   return (

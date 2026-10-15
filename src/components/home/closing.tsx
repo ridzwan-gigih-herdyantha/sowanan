@@ -114,11 +114,11 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
   const f = settings.footer;
   const s = settings.sections;
   const nav: [string, string][] = [
-    ["tema", s.tema.title],
-    ["fitur", s.fitur.title],
-    ["harga", s.harga.title],
-    ["cara", s.cara.title],
-    ["tanya", s.faq.title],
+    ["/tema", s.tema.title],
+    ["/#fitur", s.fitur.title],
+    ["/#harga", s.harga.title],
+    ["/#cara", s.cara.title],
+    ["/#tanya", s.faq.title],
   ];
   const demos = settings.themes.filter((t) => t.on);
   const hours = [vars.hari, vars.jam].filter(Boolean).join(", ");
@@ -137,9 +137,9 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
         <nav aria-label={f.nav}>
           <p className={footLabel}>{f.nav}</p>
           <ul className="grid gap-2.5">
-            {nav.map(([id, label]) => (
-              <li key={id}>
-                <a href={`#${id}`} className={footLink}>
+            {nav.map(([href, label]) => (
+              <li key={href}>
+                <a href={href} className={footLink}>
                   {label}
                 </a>
               </li>
