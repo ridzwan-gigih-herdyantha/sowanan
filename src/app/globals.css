@@ -1545,6 +1545,22 @@ html:has(.sk-root) {
   box-shadow: 0 2px 6px -2px color-mix(in srgb, var(--inv-accent) 40%, transparent);
   will-change: transform;
 }
+/* Hati yang muncul saat sepasang kolibri berdekatan: naik, bergoyang, lalu hilang. */
+.mm-heart {
+  position: absolute;
+  opacity: 0;
+  animation: mm-heart 1.8s ease-out forwards;
+}
+@keyframes mm-heart {
+  15% {
+    opacity: 1;
+    transform: translate(0, -10px) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--hx, 8px), -90px) scale(0.6) rotate(18deg);
+  }
+}
 .mm-frame {
   outline: 1px solid var(--inv-gold);
   outline-offset: 6px;
