@@ -225,7 +225,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hero: {
     eyebrow: "Kabarnya sampai dulu, sebelum tamunya datang",
     title: "Undangan nikah digital, mulai {harga}.",
-    sub: "Kirim nama, tanggal, lokasi, dan foto lewat WhatsApp. Undangan kalian jadi dalam {waktu}, tinggal disebar ke semua tamu.\n\nSudah termasuk peta lokasi, RSVP, buku ucapan, dan amplop digital. Tanpa biaya tambahan.",
+    sub: "Kirim data lewat WhatsApp, undangan jadi dalam {waktu}. Sudah termasuk RSVP, peta lokasi, buku ucapan, dan amplop digital.",
     cta1: "Pesan lewat WhatsApp",
     cta1Href: "",
     cta2: "Lihat pilihan tema",

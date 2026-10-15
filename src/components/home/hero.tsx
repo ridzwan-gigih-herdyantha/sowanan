@@ -47,13 +47,13 @@ export function Hero({ settings, vars, waHref }: Props) {
       {/* Hiasan khusus HP: cahaya lembut, coretan dari pojok kanan atas, dan mawar kecil di samping judul. */}
       <div aria-hidden="true" className="pointer-events-none absolute -top-54 -right-24 size-80 md:size-[520px] rounded-full bg-[radial-gradient(closest-side,rgba(124,43,62,.15),transparent)]" />
       <Scribble kind="atas" className="top-0 right-0 w-[78vw] text-wine/15 md:hidden" />
-      <LineArt kind="mawar" className="top-[380px] right-3 w-14 opacity-30 md:hidden" />
+      <LineArt kind="mawar" className="top-[280px] right-3 w-14 opacity-30 md:hidden" />
       <Container className="relative flex flex-col items-stretch gap-11 pt-11 pb-10 sm:pt-16 sm:pb-14 md:flex-row md:items-center lg:gap-[144px] lg:pt-[clamp(36px,8svh,84px)] lg:pb-[clamp(36px,8svh,76px)]">
         <div className="flex-auto md:max-w-[560px]">
           {h.eyebrow && <p className="mb-[22px] text-[14px] tracking-[3px] text-wine uppercase">{fill(h.eyebrow, vars)}</p>}
-          <h1 className="mb-6 font-serif text-[clamp(38px,6vw,64px)] leading-[1.06] font-medium">{fill(h.title, vars)}</h1>
+          <h1 className="mb-6 font-serif text-[clamp(46px,7.4vw,84px)] leading-[1.0] font-medium tracking-[-0.01em]">{fill(h.title, vars)}</h1>
           {paragraphs(fill(h.sub, vars)).map((p, i) => (
-            <p key={i} className="mb-[18px] max-w-[62ch] text-[clamp(16px,1.6vw,19px)] leading-[1.65] text-ink-soft">
+            <p key={i} className="mb-7 max-w-[46ch] text-[clamp(14px,1.2vw,16px)] leading-[1.65] text-ink-soft">
               <Inline text={p} />
             </p>
           ))}
