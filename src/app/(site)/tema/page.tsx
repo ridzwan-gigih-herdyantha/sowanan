@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SiteFooter, WhatsAppFloat } from "@/components/home/closing";
+import { Faq } from "@/components/home/faq";
 import { OfferCard } from "@/components/home/offer-card";
 import { SiteHeader } from "@/components/home/site-header";
 import { ThemeCatalog } from "@/components/home/theme-catalog";
@@ -43,6 +44,9 @@ export default async function ThemesPage() {
           </Suspense>
           <OfferCard card={sec.custom} vars={vars} className="mt-14" />
         </Container>
+        <div className="border-t border-line bg-ivory">
+          <Faq settings={s} vars={vars} items={s.themeFaq} id="tanya-tema" title="Seputar tema" sub="Pertanyaan yang sering muncul saat memilih tema undangan." />
+        </div>
       </main>
       <SiteFooter settings={s} vars={vars} waHref={wa} />
       <WhatsAppFloat waHref={wa} />

@@ -1,12 +1,12 @@
 "use client";
 
-import { ICONS, newId, PACKAGE_IDS, PACKAGE_NAMES, THEME_CATEGORIES, THEME_TIERS, type Settings } from "@/lib/settings/schema";
+import { HOME_THEMES, ICONS, newId, PACKAGE_IDS, PACKAGE_NAMES, THEME_CATEGORIES, THEME_TIERS, type Settings } from "@/lib/settings/schema";
 import { generalWaLink, themeCount, themesLimited, VARIABLES } from "@/lib/settings/text";
 import { THEME_NAMES } from "@/themes/media";
-import { useSettings } from "./form-context";
+import { getIn, setIn, useSettings } from "./form-context";
 import { ImagePicker } from "./image-picker";
 import { RichField } from "./rich-field";
-import { Card, Note, RepList, Row, Select, Text, width } from "./ui";
+import { Card, Note, RepList, Row, Select, Switch, Text, width } from "./ui";
 
 const v = (k: string) => `{${k}}`;
 
@@ -231,10 +231,24 @@ export function TemaPanel() {
               <Text path={`${base}.style`} label="Deskripsi satu baris" max={90} placeholder="film / urban" />
               <ImagePicker path={`${base}.image`} label="Gambar sampul" purpose="cover" className={width.md} tall help="Tangkapan layar ponsel, rasio 390 x 844." />
             </Row>
+            <HomeSwitch base={base} />
           </>
         )}
       />
     </Card>
+  );
+}
+
+// Menandai tema yang tampil di section tema beranda, paling banyak HOME_THEMES.
+function HomeSwitch({ base }: { base: string }) {
+  const { s, update } = useSettings();
+  const on = Boolean(getIn(s, `${base}.home`));
+  const full = s.themes.filter((t) => t.home).length >= HOME_THEMES;
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Switch checked={on} label="Tampil di beranda" onChange={(v) => (!v || !full) && update((d) => setIn(d, `${base}.home`, v))} />
+      {!on && full && <span className="text-[12px] text-ink-mute">Sudah {HOME_THEMES} tema di beranda. Matikan salah satu dulu.</span>}
+    </div>
   );
 }
 
@@ -248,6 +262,20 @@ export function TanyaPanel() {
           path="faq"
           noun="pertanyaan"
           max={30}
+          blank={() => ({ id: newId(), on: true, q: "", a: "" })}
+          render={(_, __, base) => (
+            <>
+              <Text path={`${base}.q`} label="Pertanyaan" max={80} />
+              <Text path={`${base}.a`} label="Jawaban" max={600} rows={3} />
+            </>
+          )}
+        />
+      </Card>
+      <Card title="Tanya jawab halaman tema" hint="Tampil di bawah daftar tema di halaman /tema. Fokus ke pertanyaan seputar pilihan tema, warna, dan foto.">
+        <RepList
+          path="themeFaq"
+          noun="pertanyaan"
+          max={20}
           blank={() => ({ id: newId(), on: true, q: "", a: "" })}
           render={(_, __, base) => (
             <>

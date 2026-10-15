@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { Container, Eyebrow, SectionSub, SectionTitle, Sprig, cx, reveal, sectionPad } from "@/components/ui";
-import { fill, THEME_CATEGORIES, type Settings, type ThemeEntry } from "@/lib/settings";
+import Link from "next/link";
+import { Container, SectionSub, SectionTitle, Sprig, cx, reveal, sectionPad } from "@/components/ui";
+import { fill, HOME_THEMES, type Settings, type ThemeEntry } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { OfferCard } from "./offer-card";
-import { ThemePicker } from "./theme-picker";
 
 // Warna latar kartu mengikuti nuansa tiap tema.
 const CARD_BG: Record<string, string> = {
@@ -55,26 +55,35 @@ export function ThemeCard({ theme, index, waHref, animate = true }: { theme: The
   );
 }
 
+// Tema di beranda: yang ditandai admin, atau tema aktif pertama bila belum ada yang ditandai.
+function homeThemes(s: Settings) {
+  const active = s.themes.filter((t) => t.on);
+  const picked = active.filter((t) => t.home);
+  return (picked.length ? picked : active).slice(0, HOME_THEMES);
+}
+
 export function Themes({ settings, vars, waHref }: { settings: Settings; vars: Record<string, string>; waHref: string }) {
   const sec = settings.sections.tema;
   return (
     <section id="tema" className="relative overflow-x-clip border-y border-line bg-blush">
       <Sprig className="-top-4 -right-8 h-44 -scale-x-100 rotate-[200deg] text-wine/10 lg:-right-6 lg:h-80 lg:text-wine/12" />
       <Container className={cx(sectionPad, "relative")}>
-        <Eyebrow no="01" {...reveal()}>Galeri tema</Eyebrow>
         <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
         {sec.sub && (
           <SectionSub className="mb-7!" {...reveal()}>
             {fill(sec.sub, vars)}
           </SectionSub>
         )}
-        <ThemePicker
-          categories={Object.entries(THEME_CATEGORIES)}
-          waHref={vars.wa_link}
-          items={settings.themes
-            .filter((t) => t.on)
-            .map((t, i) => ({ id: t.id, category: t.category, node: <ThemeCard theme={t} index={i} waHref={waHref} /> }))}
-        />
+        <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-5 lg:grid-cols-4">
+          {homeThemes(settings).map((t, i) => (
+            <ThemeCard key={t.id} theme={t} index={i} waHref={waHref} />
+          ))}
+        </div>
+        <div className="mt-10 flex justify-center" {...reveal()}>
+          <Link prefetch={false} href="/tema" className="inline-flex items-center gap-2 rounded-sm border border-wine px-6 py-3 text-[15px] text-wine no-underline transition-colors duration-200 hover:bg-wine hover:text-white">
+            Lihat semua tema <span aria-hidden="true">&rarr;</span>
+          </Link>
+        </div>
         <OfferCard card={sec.custom} vars={vars} className="mt-12" />
       </Container>
     </section>

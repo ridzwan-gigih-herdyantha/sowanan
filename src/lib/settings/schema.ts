@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { THEME_NAMES } from "@/themes/media";
+import { THEME_FAQ } from "./theme-faq";
 
 export const PACKAGE_IDS = ["dasar", "lengkap", "istimewa"] as const;
 export type PackageId = (typeof PACKAGE_IDS)[number];
@@ -24,6 +25,9 @@ export type IconId = keyof typeof ICONS;
 export const THEME_TIERS = { semua: "Semua paket", lengkap: "Lengkap dan Istimewa", istimewa: "Istimewa" } as const;
 export type ThemeTier = keyof typeof THEME_TIERS;
 // Kategori untuk filter di section Tema. Urutan di sini adalah urutan chip di homepage.
+// Jumlah tema yang tampil di section tema beranda.
+export const HOME_THEMES = 4;
+
 export const THEME_CATEGORIES = {
   minimalis: "Minimalis",
   elegan: "Elegan",
@@ -182,10 +186,15 @@ export const settingsSchema = z
           category: z.enum(Object.keys(THEME_CATEGORIES) as [ThemeCategory, ...ThemeCategory[]]).default("minimalis"),
           style: str("Deskripsi tema", 90),
           image: str("Gambar sampul", 300),
+          home: z.boolean().default(false),
         }),
       )
       .max(30, "Tema maksimal 30."),
     faq: z.array(z.object({ id, on: z.boolean(), q: req("Pertanyaan", 80), a: req("Jawaban", 600) })).max(30, "Tanya jawab maksimal 30."),
+    themeFaq: z
+      .array(z.object({ id, on: z.boolean(), q: req("Pertanyaan", 80), a: req("Jawaban", 600) }))
+      .max(20, "Tanya jawab tema maksimal 20.")
+      .default(THEME_FAQ),
     terms: z.object({
       date: req("Tanggal berlaku", 40),
       title: req("Judul halaman", 50),
@@ -249,6 +258,9 @@ export const settingsSchema = z
       if (slugs.has(t.slug)) ctx.addIssue({ code: "custom", path: ["themes", i, "slug"], message: "Slug ini sudah dipakai tema lain." });
       slugs.add(t.slug);
     });
+    if (s.themes.filter((t) => t.home).length > HOME_THEMES) {
+      s.themes.forEach((t, i) => t.home && ctx.addIssue({ code: "custom", path: ["themes", i, "home"], message: `Tema di beranda maksimal ${HOME_THEMES}.` }));
+    }
     const keys = new Set<string>();
     s.matrix.forEach((r, i) => {
       if (!r.key) return;

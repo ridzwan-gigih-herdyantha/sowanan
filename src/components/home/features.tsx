@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Container, Eyebrow, cx, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
+import { Container, cx, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
 import { LineArt } from "./line-art";
 import { fill, type IconId, type Settings } from "@/lib/settings";
 
@@ -65,7 +65,6 @@ export function Features({ settings, vars }: { settings: Settings; vars: Record<
     <section id="fitur" className="relative overflow-hidden">
       <LineArt kind="amplop" className="top-8 right-2 w-20 opacity-55 lg:top-14 lg:right-[max(1.5rem,calc(50%-540px))] lg:w-40 lg:opacity-100" />
       <Container className={cx(sectionPad, "relative")}>
-        <Eyebrow no="02" {...reveal()}>Fitur undangan</Eyebrow>
         <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
         {sec.sub && <SectionSub {...reveal()}>{fill(sec.sub, vars)}</SectionSub>}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-9 lg:grid-cols-3">

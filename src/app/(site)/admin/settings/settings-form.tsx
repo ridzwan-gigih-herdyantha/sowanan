@@ -11,7 +11,7 @@ import { button, cx } from "./ui";
 const TABS = [
   { key: "beranda", label: "Beranda", group: "Konten", paths: ["hero", "sections", "features", "steps", "closing", "footer"], Panel: BerandaPanel },
   { key: "tema", label: "Tema", group: "Konten", paths: ["themes"], Panel: TemaPanel },
-  { key: "tanya", label: "Tanya Jawab", group: "Konten", paths: ["faq"], Panel: TanyaPanel },
+  { key: "tanya", label: "Tanya Jawab", group: "Konten", paths: ["faq", "themeFaq"], Panel: TanyaPanel },
   { key: "ketentuan", label: "Ketentuan", group: "Konten", paths: ["terms"], Panel: KetentuanPanel },
   { key: "paket", label: "Paket", group: "Data", paths: ["packages", "matrix"], Panel: PaketPanel },
   { key: "addon", label: "Add-on", group: "Data", paths: ["addons"], Panel: AddonPanel },

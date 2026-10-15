@@ -1,22 +1,22 @@
 import { WaIcon } from "@/components/home/closing";
 import { Inline } from "@/components/rich-text";
-import { Container, Eyebrow, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
+import { Container, SectionSub, SectionTitle, reveal, sectionPad } from "@/components/ui";
 import { LineArt } from "./line-art";
 import { fill, type Settings } from "@/lib/settings";
 
 // Dua kolom di layar lebar: judul dan ajakan bertanya di kiri (menempel saat digulir), daftar pertanyaan bernomor di kanan.
 // Accordion dari elemen details bawaan. Atribut name yang sama membuat browser hanya membuka satu
 // pertanyaan sekaligus, tanpa JavaScript. Semua tertutup saat halaman dibuka.
-export function Faq({ settings, vars }: { settings: Settings; vars: Record<string, string> }) {
-  const sec = settings.sections.faq;
+type FaqItem = { id: string; on: boolean; q: string; a: string };
+
+// items, title, dan sub dipakai halaman tema untuk tanya jawab khusus tema dengan tampilan yang sama.
+export function Faq({ settings, vars, items, title, sub, id = "tanya" }: { settings: Settings; vars: Record<string, string>; items?: FaqItem[]; title?: string; sub?: string; id?: string }) {
+  const sec = { ...settings.sections.faq, ...(title && { title }), ...(sub !== undefined && { sub }) };
   return (
-    <section id="tanya" className="relative overflow-hidden">
+    <section id={id} className="relative overflow-hidden">
       <LineArt kind="mawar" className="top-8 right-3 w-12 opacity-55 lg:hidden" />
       <Container className={`${sectionPad} relative grid grid-cols-1 gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16`}>
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <Eyebrow no="05" {...reveal()}>
-            Tanya jawab
-          </Eyebrow>
           <SectionTitle {...reveal()}>{sec.title}</SectionTitle>
           {sec.sub && (
             <SectionSub className="mb-0! text-base leading-relaxed" {...reveal()}>
@@ -38,10 +38,10 @@ export function Faq({ settings, vars }: { settings: Settings; vars: Record<strin
           </div>
         </div>
         <div className="border-t border-line">
-          {settings.faq
+          {(items ?? settings.faq)
             .filter((f) => f.on)
             .map((item, i) => (
-              <details key={item.id} name="faq" className="faq group border-b border-line" {...reveal(i)}>
+              <details key={item.id} name={id} className="faq group border-b border-line" {...reveal(i)}>
                 <summary className="flex cursor-pointer list-none items-baseline gap-4 py-5 text-left transition-colors duration-150 hover:text-wine focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wine sm:gap-5 sm:py-6 [&::-webkit-details-marker]:hidden">
                   <span aria-hidden="true" className="w-7 flex-none font-serif text-lg text-wine/70 italic lining-nums tabular-nums sm:w-8 sm:text-xl">
                     {String(i + 1).padStart(2, "0")}
