@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { BrandLoader } from "@/components/brand-loader";
 import { AutoReveal, type RevealMode } from "./auto-reveal";
 import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
@@ -159,6 +160,36 @@ export function InvitationShell({ door, music, synth, className, style, children
     playingRef.current = playing;
   }, [playing]);
 
+  // Loader tetap menutup undangan sampai halaman siap dipakai, huruf termuat, dan foto pembuka selesai diunduh,
+  // supaya tamu tidak melihat pembuka yang masih menata diri. Paling lama 4 detik.
+  const [boot, setBoot] = useState<"on" | "leaving" | "gone">("on");
+  useEffect(() => {
+    let alive = true;
+    const pending = [...document.querySelectorAll<HTMLImageElement>("[data-inv-state] img")].filter((img) => img.loading !== "lazy" && !img.complete);
+    const wait = [
+      document.fonts?.ready,
+      ...pending.map(
+        (img) =>
+          new Promise((done) => {
+            img.addEventListener("load", done, { once: true });
+            img.addEventListener("error", done, { once: true });
+          }),
+      ),
+    ];
+    let t = 0;
+    Promise.race([Promise.all(wait), new Promise((done) => setTimeout(done, 4000))]).then(() =>
+      requestAnimationFrame(() => {
+        if (!alive) return;
+        setBoot("leaving");
+        t = window.setTimeout(() => alive && setBoot("gone"), 450);
+      }),
+    );
+    return () => {
+      alive = false;
+      window.clearTimeout(t);
+    };
+  }, []);
+
   // Selagi tamu masih di pembuka, foto di dalam undangan diunduh lebih dulu supaya setelah dibuka tidak ada
   // foto yang baru muncul saat digulir. Ditunda sebentar supaya aset pembuka didahulukan.
   useEffect(() => {
@@ -282,8 +313,9 @@ export function InvitationShell({ door, music, synth, className, style, children
       <MediaContext.Provider value={media}>
         <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
           <noscript>
-            <style>{`.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+            <style>{`.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
           </noscript>
+          {boot !== "gone" && <BrandLoader boot leaving={boot === "leaving"} />}
 
           {door.kind === "vellum" && (
             <div

@@ -7,9 +7,10 @@ const ARCH = "M0 224V86A86 86 0 0 1 172 86V224Z";
 
 // Tampilan memuat halaman: dua daun pintu lengkung logo terbuka dari engselnya, cahaya hangat terlihat di
 // baliknya, lalu menutup kembali. Muncul sedikit terlambat supaya perpindahan halaman yang cepat tidak berkedip.
-export function BrandLoader() {
+// boot dipakai undangan: langsung tampil tanpa jeda dan memudar keluar saat leaving, menyambung loader halaman.
+export function BrandLoader({ boot, leaving = false }: { boot?: boolean; leaving?: boolean }) {
   return (
-    <div role="status" aria-live="polite" className="sw-loader fixed inset-0 z-[90] grid place-items-center bg-ivory">
+    <div role="status" aria-live="polite" className={`fixed inset-0 z-[90] grid place-items-center bg-ivory ${boot ? `sw-boot ${leaving ? "sw-boot-out" : ""}` : "sw-loader"}`}>
       <div className="flex flex-col items-center">
         <svg viewBox={MARK_VIEWBOX} aria-hidden="true" className="h-20 w-auto overflow-visible">
           <defs>
