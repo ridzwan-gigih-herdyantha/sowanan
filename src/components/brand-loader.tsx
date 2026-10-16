@@ -22,8 +22,7 @@ export function BrandLoader() {
           <path d={LEFT} className="sw-leaf sw-leaf-l fill-wine" />
           <path d={RIGHT} className="sw-leaf sw-leaf-r fill-wine" />
         </svg>
-        <p className="mt-6 font-serif text-[26px] leading-none text-ink">Sowanan</p>
-        <p className="mt-2 text-[12px] tracking-[0.22em] text-ink-mute uppercase">Membuka pintu</p>
+        <p className="mt-6 font-serif text-[20px] leading-none text-ink">Sowanan</p>
       </div>
     </div>
   );
