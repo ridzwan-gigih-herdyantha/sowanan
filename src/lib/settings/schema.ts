@@ -186,6 +186,8 @@ export const settingsSchema = z
           category: z.enum(Object.keys(THEME_CATEGORIES) as [ThemeCategory, ...ThemeCategory[]]).default("minimalis"),
           style: str("Deskripsi tema", 90),
           image: str("Gambar sampul", 300),
+          // Tampilan setelah undangan dibuka. Kosong berarti memakai tangkapan bawaan tema.
+          screen: str("Gambar setelah dibuka", 300).default(""),
         }),
       )
       .max(30, "Tema maksimal 30."),

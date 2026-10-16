@@ -36,7 +36,7 @@ export function ThemeFilter({ items, categories, waHref, initial = "", onPick }:
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-x-6 lg:gap-x-8 lg:gap-y-12">
         {items.map((it) => (
           <div key={it.id} hidden={Boolean(picked) && it.category !== picked}>
             {it.node}

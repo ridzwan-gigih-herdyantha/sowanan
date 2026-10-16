@@ -20,6 +20,17 @@ const CARD_BG: Record<string, string> = {
   "galih-ardila": "bg-[#ecd3a8]",
 };
 
+// Bingkai ponsel berisi tangkapan layar tema.
+function Phone({ src, alt, className }: { src: string; alt: string; className: string }) {
+  return (
+    <div className={cx("aspect-[390/844] rounded-[20px] bg-ink p-[4px] shadow-[0_14px_30px_rgba(31,26,23,.22)] transition-transform duration-300 motion-reduce:transform-none", className)}>
+      <div className="relative size-full overflow-hidden rounded-[16px] bg-blush">
+        <Image src={mediaUrl(src)} alt={alt} fill loading="eager" sizes="(min-width: 640px) 170px, 34vw" className="object-cover object-top" />
+      </div>
+    </div>
+  );
+}
+
 // Seluruh kartu satu tautan ke demo tema. Paket lain bisa dipilih dari halaman demonya. animate false untuk kartu di
 // dalam batas Suspense, karena animasi muncul saat digulir mengubah class kartu sebelum bagian itu selesai dimuat.
 export function ThemeCard({ theme, index, waHref, animate = true }: { theme: ThemeEntry; index: number; waHref: string; animate?: boolean }) {
@@ -38,11 +49,10 @@ export function ThemeCard({ theme, index, waHref, animate = true }: { theme: The
         )}
       >
         {theme.image ? (
-          <div className="aspect-[390/844] h-[88%] rounded-[22px] bg-ink p-[5px] shadow-[0_14px_30px_rgba(31,26,23,.22)] transition-transform duration-300 group-hover:-translate-y-1 motion-reduce:transform-none">
-            <div className="relative size-full overflow-hidden rounded-[17px]">
-              <Image src={mediaUrl(theme.image)} alt={`Contoh undangan tema ${theme.name}`} fill loading="eager" sizes="(min-width: 640px) 170px, 30vw" className="object-cover object-top" />
-            </div>
-          </div>
+          <>
+            <Phone src={theme.screen || `/img/tema-${theme.slug}-isi.webp`} alt="" className="absolute top-1/2 right-[5%] w-[45%] -translate-y-[44%] rotate-[4deg] group-hover:translate-x-1 group-hover:rotate-[6deg]" />
+            <Phone src={theme.image} alt={`Contoh undangan tema ${theme.name}`} className="absolute top-1/2 left-[5%] z-10 w-[50%] -translate-y-[54%] -rotate-[3deg] group-hover:-translate-y-[56%]" />
+          </>
         ) : (
           <span>{theme.name}</span>
         )}

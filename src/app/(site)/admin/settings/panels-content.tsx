@@ -220,7 +220,7 @@ function ThemeList({ s }: { s: Settings }) {
         blank={() => {
           const used = new Set(s.themes.map((t) => t.slug));
           const slug = SLUG_OPTIONS.find(([k]) => !used.has(k))?.[0] ?? SLUG_OPTIONS[0][0];
-          return { id: newId(), on: true, name: THEME_NAMES[slug] ?? "", slug, demo: `/${slug}`, tier: "lengkap" as const, category: "minimalis" as const, style: "", image: "" };
+          return { id: newId(), on: true, name: THEME_NAMES[slug] ?? "", slug, demo: `/${slug}`, tier: "lengkap" as const, category: "minimalis" as const, style: "", image: "", screen: "" };
         }}
         render={(_, __, base) => (
           <>
@@ -241,7 +241,8 @@ function ThemeList({ s }: { s: Settings }) {
             <Row>
               <Select path={`${base}.category`} label="Kategori" chip="view" className={width.md} options={Object.entries(THEME_CATEGORIES)} help="Untuk filter di section Tema." />
               <Text path={`${base}.style`} label="Deskripsi satu baris" max={90} placeholder="film / urban" />
-              <ImagePicker path={`${base}.image`} label="Gambar sampul" purpose="cover" className={width.md} tall help="Tangkapan layar ponsel, rasio 390 x 844." />
+              <ImagePicker path={`${base}.image`} label="Gambar sampul" purpose="cover" className={width.md} tall help="Layar pembuka, rasio 390 x 844." />
+              <ImagePicker path={`${base}.screen`} label="Setelah dibuka" purpose="cover" className={width.md} tall help="Tampilan setelah dibuka, rasio 390 x 844. Kosongkan untuk memakai bawaan tema." />
             </Row>
           </>
         )}
