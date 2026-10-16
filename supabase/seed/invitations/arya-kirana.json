@@ -8,7 +8,7 @@
       "ayat": "",
       "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
       "quote": "",
-      "credit": "Foto oleh Ricky S di Pexels",
+      "credit": "Foto oleh Widyaditya Hidayat di Pexels",
       "sesanti": "",
       "tagline": "Dua nama, satu janji yang kami jaga sepanjang usia.",
       "ayatArti": "",
@@ -44,15 +44,15 @@
       "rsvpDeadline": "31 Januari 2027"
     },
     "media": {
-      "og": "arya-kirana/og_1.jpg?v=mv4xd2tz",
-      "hero": "arya-kirana/hero_1.webp?v=mv4xjwqs",
+      "og": "arya-kirana/og_1.jpg?v=mvafvctj",
+      "hero": "arya-kirana/hero_1.webp?v=mvafvb4j",
       "rsvp": "",
       "music": "",
-      "venue": "arya-kirana/venue_1.webp?v=mv4xd3h1",
+      "venue": "arya-kirana/venue_1.webp?v=mvafvdmp",
       "couple": "",
       "detail": "",
-      "closing": "arya-kirana/closing_1.webp?v=mv4xr76j",
-      "heroWide": "arya-kirana/herowide_1.webp?v=mv4xd2iv"
+      "closing": "arya-kirana/closing_1.webp?v=mvafvet6",
+      "heroWide": "arya-kirana/herowide_1.webp?v=mvafvchg"
     },
     "share": {
       "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Arya & Kirana di Yogyakarta.",
@@ -74,7 +74,7 @@
         "name": "Kirana",
         "role": "Putri dari",
         "latin": "",
-        "photo": "arya-kirana/bride_1.webp?v=mv4xjxti",
+        "photo": "arya-kirana/bride_1.webp?v=mvafvg8i",
         "aksara": "",
         "flower": "",
         "parents": "Bapak Bambang Sudarmo & Ibu Endang Widowati"
@@ -84,7 +84,7 @@
         "name": "Arya",
         "role": "Putra dari",
         "latin": "",
-        "photo": "arya-kirana/groom_1.webp?v=mv4xjx6y",
+        "photo": "arya-kirana/groom_1.webp?v=mvafyj8o",
         "aksara": "",
         "flower": "",
         "parents": "Bapak Hartono Wibowo & Ibu Sri Rahayu"
@@ -158,7 +158,7 @@
             "no": "",
             "date": "09.11.2019",
             "long": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
-            "image": "arya-kirana/story_1.webp?v=mv4xd55j",
+            "image": "arya-kirana/story_1.webp?v=mvafvh0n",
             "place": "",
             "short": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
             "title": "Pertama Bertemu"
@@ -167,7 +167,7 @@
             "no": "",
             "date": "17.03.2021",
             "long": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
-            "image": "arya-kirana/story_2.webp?v=mv4xd5lx",
+            "image": "arya-kirana/story_2.webp?v=mvafvhsd",
             "place": "",
             "short": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
             "title": "Saling Mengenal"
@@ -176,7 +176,7 @@
             "no": "",
             "date": "06.12.2025",
             "long": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
-            "image": "arya-kirana/story_3.webp?v=mv4xd6dq",
+            "image": "arya-kirana/story_3.webp?v=mvafvinm",
             "place": "",
             "short": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
             "title": "Lamaran"
@@ -185,7 +185,7 @@
             "no": "",
             "date": "14.02.2027",
             "long": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
-            "image": "arya-kirana/story_4.webp?v=mv4xd6xh",
+            "image": "arya-kirana/story_4.webp?v=mvafvjkm",
             "place": "",
             "short": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
             "title": "Hari Pernikahan"
@@ -210,52 +210,52 @@
       "gallery": {
         "photos": [
           {
-            "h": 1800,
+            "src": "arya-kirana/gallery_1.webp?v=mvafvkpi",
             "w": 1800,
-            "no": "102",
-            "alt": "Arya dan Kirana berjalan berdampingan di hutan pinus",
-            "src": "arya-kirana/gallery_1.webp?v=mv4xjyo5",
-            "caption": "berdampingan"
+            "h": 1200,
+            "alt": "Arya dan Kirana berdiri di padang rumput berkabut",
+            "no": "",
+            "caption": ""
           },
           {
+            "src": "arya-kirana/gallery_2.webp?v=mvafvmg0",
+            "w": 1800,
             "h": 2700,
-            "w": 1800,
-            "no": "108",
-            "alt": "Arya dan Kirana bergandengan tangan di hutan",
-            "src": "arya-kirana/gallery_2.webp?v=mv4xd9f6",
-            "caption": "bergandengan"
+            "alt": "Arya dan Kirana di tengah lembah pegunungan",
+            "no": "",
+            "caption": ""
           },
           {
-            "h": 2400,
+            "src": "arya-kirana/gallery_3.webp?v=mvafvo5a",
             "w": 1800,
-            "no": "115",
-            "alt": "Arya dan Kirana berdiri di jalan setapak hutan",
-            "src": "arya-kirana/gallery_3.webp?v=mv4xdaj7",
-            "caption": "jalan setapak"
+            "h": 2700,
+            "alt": "Arya memeluk Kirana di padang rumput pagi hari",
+            "no": "",
+            "caption": ""
           },
           {
+            "src": "arya-kirana/gallery_4.webp?v=mvafvpnk",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Arya dan Kirana diterpa cahaya matahari pagi",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "arya-kirana/gallery_5.webp?v=mvafvqfn",
+            "w": 1800,
             "h": 1200,
-            "w": 1800,
-            "no": "121",
-            "alt": "Arya dan Kirana berjalan di mulut gua",
-            "src": "arya-kirana/gallery_4.webp?v=mv4xdb7g",
-            "caption": "di mulut gua"
+            "alt": "Arya dan Kirana di padang rumput dengan kabut tipis",
+            "no": "",
+            "caption": ""
           },
           {
-            "h": 1200,
+            "src": "arya-kirana/gallery_6.webp?v=mvafvrlh",
             "w": 1800,
-            "no": "129",
-            "alt": "Arya bersandar di batang pohon, Kirana di belakang",
-            "src": "arya-kirana/gallery_5.webp?v=mv4xdbyv",
-            "caption": "menunggu"
-          },
-          {
-            "h": 1200,
-            "w": 1800,
-            "no": "134",
-            "alt": "Langkah Arya dan Kirana di rerumputan",
-            "src": "arya-kirana/gallery_6.webp?v=mv4xdcrd",
-            "caption": "langkah kecil"
+            "h": 2700,
+            "alt": "Arya dan Kirana berdampingan di bawah langit pagi",
+            "no": "",
+            "caption": ""
           }
         ],
         "enabled": true
