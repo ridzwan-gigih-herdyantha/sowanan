@@ -17,6 +17,7 @@ const CARD_BG: Record<string, string> = {
   "toni-layla": "bg-[#dcd6cc]",
   "arkasa-mentari": "bg-[#f3d9c4]",
   "ivan-mawar": "bg-[#f3dcdc]",
+  "galih-ardila": "bg-[#ecd3a8]",
 };
 
 // Seluruh kartu satu tautan ke demo tema. Paket lain bisa dipilih dari halaman demonya. animate false untuk kartu di

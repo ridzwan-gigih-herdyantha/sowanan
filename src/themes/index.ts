@@ -10,6 +10,7 @@ import { DanangKinanthi } from "./danang-kinanthi";
 import { FadhilNayla } from "./fadhil-nayla";
 import { HendrawanLarasati } from "./hendrawan-larasati";
 import { IvanMawar } from "./ivan-mawar";
+import { GalihArdila } from "./galih-ardila";
 import { THEME_NAMES } from "./media";
 
 export type Theme = { name: string; Component: ComponentType<{ inv: InvitationView }>; themeColor: string };
@@ -25,4 +26,5 @@ export const THEMES: Record<string, Theme> = {
   "toni-layla": { name: THEME_NAMES["toni-layla"], Component: ToniLayla, themeColor: "#171615" },
   "arkasa-mentari": { name: THEME_NAMES["arkasa-mentari"], Component: ArkasaMentari, themeColor: "#2A1F3D" },
   "ivan-mawar": { name: THEME_NAMES["ivan-mawar"], Component: IvanMawar, themeColor: "#FFF9F6" },
+  "galih-ardila": { name: THEME_NAMES["galih-ardila"], Component: GalihArdila, themeColor: "#F8EEDB" },
 };

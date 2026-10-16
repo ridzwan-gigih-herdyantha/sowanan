@@ -10,6 +10,7 @@ import { MoonDisc } from "./rembulan/moon-disc";
 import { rows } from "./rows";
 import { RuleIconSvg } from "./rule-icons";
 import { Pita, Star } from "./sakinah/ornaments";
+import { Chip, Sticker, Title } from "./tabloid/pop";
 import { Flourish } from "./sutra/ornaments";
 
 // Warna latar mengikuti palet tema yang aktif, termasuk palet kustom dari tab Palet.
@@ -23,7 +24,7 @@ const TONES: Record<ExtraTone, { section: string; line: string; dot: string; bg:
 type Tone = (typeof TONES)[ExtraTone];
 
 // Gaya per tema. Tema tanpa skin memakai tampilan umum yang rata tengah.
-type Skin = "film" | "ruang" | "herbarium" | "pakeliran" | "sakinah" | "sutra" | "rembulan" | "petualang";
+type Skin = "film" | "ruang" | "herbarium" | "pakeliran" | "sakinah" | "sutra" | "rembulan" | "petualang" | "tabloid";
 const SKINS: Record<string, Skin> = {
   "andi-rina": "film",
   "bagas-sekar": "ruang",
@@ -35,7 +36,11 @@ const SKINS: Record<string, Skin> = {
   // Lensa memakai gaya editorial hitam putih yang sama dengan Ruang.
   "toni-layla": "ruang",
   "arkasa-mentari": "petualang",
+  "galih-ardila": "tabloid",
 };
+
+// Kabar Retro memakai latar kertas bertekstur miliknya sendiri, bukan warna rata.
+const TABLOID_BG: Record<ExtraTone, string> = { paper: "tp-bg-krem text-inv-ink", wash: "tp-bg-kraft text-inv-ink", accent: "tp-bg-pop text-inv-card", ink: "tp-bg-ink text-inv-card" };
 // Tema editorial meratakan judul dan isi ke kiri, tema berornamen ke tengah.
 const isLeft = (skin?: Skin) => skin === "film" || skin === "ruang" || skin === "herbarium";
 
@@ -95,6 +100,14 @@ function Heading({ skin, eyebrow, title, tone }: { skin?: Skin; eyebrow: string;
       </div>
     );
   }
+  if (skin === "tabloid") {
+    return (
+      <div className="text-center">
+        {eyebrow && <Chip tone="sun">{eyebrow}</Chip>}
+        {title && <Title className={`mt-3 text-[clamp(36px,10vw,48px)] ${tone.dark ? "text-inv-card" : "text-inv-accent"}`}>{title}</Title>}
+      </div>
+    );
+  }
   if (skin === "sutra") {
     return (
       <div className="text-center">
@@ -122,8 +135,9 @@ function Heading({ skin, eyebrow, title, tone }: { skin?: Skin; eyebrow: string;
   );
 }
 
-function Note({ text, left }: { text: string; left: boolean }) {
+function Note({ text, left, skin }: { text: string; left: boolean; skin?: Skin }) {
   if (!text) return null;
+  if (skin === "tabloid") return <p className="tp-torn mx-auto mt-10 max-w-[460px] bg-inv-card px-5 py-4 text-center text-[16px] leading-[1.7] whitespace-pre-line text-pretty text-inv-ink">{text}</p>;
   return <p className={`mt-10 max-w-[56ch] text-[16px] leading-[1.75] whitespace-pre-line text-pretty ${left ? "" : "mx-auto text-center"}`}>{text}</p>;
 }
 
@@ -146,7 +160,7 @@ function Rundown({ items, tone, left }: { items: ExtraView["rundown"]; tone: Ton
 }
 
 // Denah dibuka dalam ukuran penuh di tab baru supaya tamu bisa memperbesarnya dengan jari.
-function Plan({ plan, note, left }: { plan: NonNullable<ExtraView["plan"]>; note: string; left: boolean }) {
+function Plan({ plan, note, left, skin }: { plan: NonNullable<ExtraView["plan"]>; note: string; left: boolean; skin?: Skin }) {
   return (
     <>
       <a
@@ -165,7 +179,7 @@ function Plan({ plan, note, left }: { plan: NonNullable<ExtraView["plan"]>; note
           </svg>
         </span>
       </a>
-      <Note text={note} left={left} />
+      <Note text={note} left={left} skin={skin} />
     </>
   );
 }
@@ -310,6 +324,19 @@ const LOOKS: Record<Skin | "plain", Look> = {
       <li key={i} className={`flex flex-col items-center text-center ${desktop ? "w-28" : "w-[68px]"}`}>
         <span aria-hidden="true" className={`pt-box block [--pt-edge:currentColor] ${desktop ? "size-20" : "size-13"}`} style={fill(c)} />
         <span className={`pt-label mt-4 leading-tight ${desktop ? "text-[13px]" : "text-[11px]"}`}>{label(c)}</span>
+      </li>
+    ),
+  },
+  // Kabar Retro: kartu contoh cat bergaris tebal dengan bayangan sablon, sedikit miring.
+  tabloid: {
+    cap: { mobile: 3, desktop: 4 },
+    center: true,
+    gap: { mobile: "gap-x-4", desktop: "gap-x-7" },
+    rowGap: "gap-y-8",
+    item: (c, i, _per, desktop) => (
+      <li key={i} className={`tp-card bg-inv-card p-2 pb-2.5 text-inv-ink ${desktop ? "w-36" : "w-[96px]"}`} style={tilt([-3, 2, -1.5, 3], i)}>
+        <span aria-hidden="true" className="block aspect-square border-2 border-inv-ink" style={fill(c)} />
+        <span className={`tp-label mt-2 block text-center leading-tight ${desktop ? "text-[17px]" : "text-[14px]"}`}>{label(c)}</span>
       </li>
     ),
   },
@@ -495,6 +522,21 @@ function Rules({ rules, skin, tone }: { rules: ExtraView["rules"]; skin?: Skin; 
       </ul>
     );
   }
+  // Kabar Retro: setiap imbauan di kartu krem bergaris tebal, ikon di dalam lingkaran mustard.
+  if (skin === "tabloid") {
+    return (
+      <ul className="mx-auto mt-10 grid max-w-[560px] gap-4 text-left">
+        {rules.map((r, i) => (
+          <li key={i} className="tp-torn flex items-center gap-4 bg-inv-card p-3.5 text-inv-ink">
+            <span className="grid size-11 shrink-0 place-items-center rounded-full border-[3px] border-inv-ink bg-(--tp-sun)">
+              <RuleIconSvg name={r.icon} className="size-[18px]" />
+            </span>
+            <p className={ruleText}>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   // Sutra: ikon di dalam medali bercincin ganda, seperti medali monogram di pembuka.
   if (skin === "sutra") {
     return (
@@ -535,12 +577,14 @@ const STREAM_FRAME: Record<Skin | "plain", { className: string; shadow?: string 
   sutra: { className: "rounded-[1px]", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--inv-gold), 0 0 0 9px var(--extra-bg), 0 0 0 10px var(--inv-gold-light)" },
   rembulan: { className: "overflow-hidden rounded-sm", shadow: "0 0 0 4px var(--extra-bg), 0 0 0 5px var(--inv-gold-light), 0 0 40px -4px color-mix(in srgb, var(--inv-accent) 30%, transparent)" },
   petualang: { className: "pt-box p-1.5 [--pt-edge:currentColor]" },
+  tabloid: { className: "tp-card bg-inv-card p-2" },
   plain: { className: "overflow-hidden rounded-[2px]" },
 };
 
 // Tombol mengikuti tema: tema editorial memakai garis dan huruf kapital berjarak, tema berornamen memakai tombol isi.
 function streamButton(skin: Skin | undefined, tone: Tone) {
   const base = "inline-flex items-center gap-2 no-underline transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current";
+  if (skin === "tabloid") return "tp-pill tp-label text-[17px] no-underline";
   if (isLeft(skin)) return `${base} border border-current px-6 py-3 text-[13px] tracking-[0.2em] text-inherit uppercase hover:bg-current/10`;
   return `${base} rounded-sm px-6 py-3 text-[15px] ${tone.dark ? "bg-inv-paper text-inv-ink" : "bg-inv-accent text-inv-paper"} hover:opacity-90`;
 }
@@ -578,7 +622,7 @@ function Stream({ stream, title, note, skin, tone, left }: { stream: NonNullable
           </a>
         )}
       </div>
-      <Note text={note} left={left} />
+      <Note text={note} left={left} skin={skin} />
     </div>
   );
 }
@@ -589,17 +633,17 @@ function Body({ e, skin, tone, left }: { e: ExtraView; skin?: Skin; tone: Tone; 
     return (
       <>
         <Rules rules={e.rules} skin={skin} tone={tone} />
-        <Note text={e.note} left={left} />
+        <Note text={e.note} left={left} skin={skin} />
       </>
     );
   }
   if (e.kind === "rundown") return <Rundown items={e.rundown} tone={tone} left={left} />;
-  if (e.kind === "denah" && e.plan) return <Plan plan={e.plan} note={e.note} left={left} />;
+  if (e.kind === "denah" && e.plan) return <Plan plan={e.plan} note={e.note} left={left} skin={skin} />;
   if (e.kind === "dresscode") {
     return (
       <>
         <Swatches colors={e.colors} skin={skin} tone={tone} />
-        <Note text={e.note} left={left} />
+        <Note text={e.note} left={left} skin={skin} />
       </>
     );
   }
@@ -619,10 +663,18 @@ export function Extras({ inv, at, only, compact = false }: { inv: InvitationView
     if (only !== undefined && i !== only) return null;
     const tone = TONES[e.tone] ?? TONES.paper;
     const space = compact ? "px-4 py-6 sm:px-6" : `px-5 py-20 sm:px-8 lg:py-28 ${skin === "film" ? "torn-top relative -mt-3.5" : ""}`;
+    const tabloid = skin === "tabloid";
     return (
       // Senja Kota memakai tepi kertas sobek di setiap pergantian section.
-      <section key={`${at}-${i}`} className={`${tone.section} ${space}`}>
-        <div className={`mx-auto ${e.kind === "bebas" && e.photos.length > 2 ? "max-w-[960px]" : "max-w-[680px]"}`}>
+      <section key={`${at}-${i}`} className={`${tabloid ? `${TABLOID_BG[e.tone] ?? TABLOID_BG.paper} relative overflow-hidden` : tone.section} ${space}`}>
+        {tabloid && (
+          <>
+            <Sticker shape="daisy" fill="card" className="top-10 -left-8 size-20 -rotate-12" />
+            <Sticker shape="star" fill="sun" className="top-16 right-6 size-9" />
+            <Sticker shape="pinwheel" fill="sun" className="-right-8 bottom-10 size-24" />
+          </>
+        )}
+        <div className={`relative mx-auto ${e.kind === "bebas" && e.photos.length > 2 ? "max-w-[960px]" : "max-w-[680px]"}`}>
           <Heading skin={skin} eyebrow={EYEBROW[e.kind]} title={e.title} tone={tone} />
           <Body e={e} skin={skin} tone={tone} left={left} />
         </div>

@@ -1,0 +1,321 @@
+{
+  "slug": "galih-ardila",
+  "theme": "galih-ardila",
+  "published": true,
+  "package": "istimewa",
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "",
+      "credit": "Foto oleh Ihza Akbar di Pexels",
+      "sesanti": "",
+      "tagline": "Dua penggemar kaset lawas, satu playlist untuk selamanya.",
+      "ayatArti": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-08-21T14:00:00+07:00",
+      "city": "Yogyakarta",
+      "start": "2027-08-21T09:00:00+07:00",
+      "venue": {
+        "name": "Gedung Societet Militair",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Societet+Militair+Yogyakarta",
+        "address": "Taman Budaya Yogyakarta, Jl. Sriwedani No. 1, Yogyakarta"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "09.00",
+          "until": "10.00"
+        },
+        {
+          "name": "Resepsi",
+          "time": "11.00",
+          "until": "14.00"
+        }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "7 Agustus 2027"
+    },
+    "media": {
+      "og": "galih-ardila/og_1.jpg?v=mv9adbuh",
+      "hero": "galih-ardila/hero_1.webp?v=mvachehq",
+      "rsvp": "",
+      "music": "",
+      "venue": "galih-ardila/venue_1.webp?v=mv9adczo",
+      "couple": "",
+      "detail": "",
+      "closing": "galih-ardila/closing_1.webp?v=mv9addye",
+      "heroWide": "galih-ardila/herowide_1.webp?v=mvachfy8"
+    },
+    "share": {
+      "description": "Kabar gembira! Galih & Ardila menikah di Yogyakarta. Datang, ya.",
+      "ogDescription": "Undangan pernikahan Galih & Ardila, Sabtu 21 Agustus 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Ardila Kusumawati",
+        "name": "Ardila",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "galih-ardila/bride_1.webp?v=mv9adfzx",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Hendro Wibisono & Ibu Siti Rohmah"
+      },
+      "groom": {
+        "full": "Galih Prasetyo",
+        "name": "Galih",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "galih-ardila/groom_1.webp?v=mv9adf34",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Bambang Sutejo & Ibu Endang Wuryani"
+      }
+    },
+    "extras": [
+      {
+        "body": "",
+        "kind": "dresscode",
+        "note": "Pakai baju bermotif atau denim, biar foto bersama makin retro.",
+        "plan": {
+          "h": 0,
+          "w": 0,
+          "src": ""
+        },
+        "tone": "paper",
+        "after": "gallery",
+        "rules": [],
+        "title": "Dress Code",
+        "colors": [
+          {
+            "hex": "#E0472B",
+            "name": "Merah bata"
+          },
+          {
+            "hex": "#1F7F8C",
+            "name": "Biru tosca"
+          }
+        ],
+        "photos": [],
+        "stream": {
+          "url": "",
+          "time": ""
+        },
+        "tracks": [],
+        "videos": [],
+        "rundown": []
+      }
+    ],
+    "monogram": "G & A",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
+        "qris": "galih-ardila/qris_1.webp?v=mv9adgdq",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Galih Prasetyo",
+            "number": "0000 2108 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Ardila Kusumawati",
+            "number": "2222 2108 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "2018",
+            "image": "galih-ardila/story_1.webp?v=mv9adi5k",
+            "place": "",
+            "title": "Toko Kaset",
+            "short": "Kami berebut kaset bekas yang sama di pasar loak. Akhirnya didengarkan berdua.",
+            "long": "Kami berebut kaset bekas yang sama di pasar loak. Akhirnya didengarkan berdua."
+          },
+          {
+            "no": "",
+            "date": "2020",
+            "image": "galih-ardila/story_2.webp?v=mv9adis0",
+            "place": "",
+            "title": "Kencan Pertama",
+            "short": "Es teh, motor tua yang mogok, dan obrolan yang tidak selesai sampai magrib.",
+            "long": "Es teh, motor tua yang mogok, dan obrolan yang tidak selesai sampai magrib."
+          },
+          {
+            "no": "",
+            "date": "2024",
+            "image": "galih-ardila/story_3.webp?v=mv9adjjg",
+            "place": "",
+            "title": "Lamaran",
+            "short": "Satu pertanyaan sederhana di teras rumah, dijawab dengan anggukan dan tawa.",
+            "long": "Satu pertanyaan sederhana di teras rumah, dijawab dengan anggukan dan tawa."
+          },
+          {
+            "no": "",
+            "date": "2027",
+            "image": "galih-ardila/story_4.webp?v=mv9adk52",
+            "place": "",
+            "title": "Hari H",
+            "short": "Babak baru dimulai. Terima kasih sudah ikut menonton dari bab pertama.",
+            "long": "Babak baru dimulai. Terima kasih sudah ikut menonton dari bab pertama."
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "src": "galih-ardila/gallery_1.webp?v=mv9adkto",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Galih dan Ardila duduk berdampingan",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "galih-ardila/gallery_2.webp?v=mv9admaq",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Galih bersandar di jendela, Ardila mengintip",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "galih-ardila/gallery_3.webp?v=mv9adnuu",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Galih dan Ardila duduk di taman",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "galih-ardila/gallery_4.webp?v=mv9adp68",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Galih dan Ardila berdiri berdampingan",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "galih-ardila/gallery_5.webp?v=mv9adqzn",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Kaki Galih dan Ardila bersantai di kursi",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "galih-ardila/gallery_6.webp?v=mv9adsvm",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Ardila tersenyum di balik kaca",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "galih-ardila/gallery_7.webp?v=mv9adtui",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Galih dan Ardila di depan mobil tua",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "galih-ardila/gallery_8.webp?v=mv9aduio",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Galih minum es, Ardila tertawa",
+            "no": "",
+            "caption": ""
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [
+          {
+            "h": 589,
+            "w": 600,
+            "no": "042",
+            "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
+            "latin": "Rosa chinensis",
+            "local": "mawar"
+          },
+          {
+            "h": 600,
+            "w": 600,
+            "no": "057",
+            "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek bulan"
+          },
+          {
+            "h": 675,
+            "w": 600,
+            "no": "063",
+            "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
+            "latin": "Rosa & Phalaenopsis",
+            "local": "buket pengantin"
+          },
+          {
+            "h": 436,
+            "w": 600,
+            "no": "071",
+            "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek putih"
+          }
+        ],
+        "enabled": true
+      }
+    }
+  }
+}
