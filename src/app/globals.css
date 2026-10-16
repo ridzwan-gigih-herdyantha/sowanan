@@ -1636,6 +1636,19 @@ html:has(.sk-root) {
 .tp-sunburst {
   background: var(--inv-paper);
 }
+/* Selama undangan belum dibuka halaman tidak bisa digulir, sudah berlaku sejak tampilan pertama sebelum skrip jalan. */
+html:has([data-inv-state="closed"]) {
+  overflow: hidden;
+}
+
+/* Isi pembuka ditahan sampai huruf dan fotonya siap, lalu muncul perlahan. Kelasnya dipasang skrip ukuran pembuka. */
+[data-fit] {
+  transition: opacity 0.35s ease-out;
+}
+html.door-wait [data-fit] {
+  opacity: 0;
+}
+
 /* Loader halaman Sowanan: daun pintu logo membuka dari engsel luar, cahaya di baliknya ikut menyala. */
 .sw-loader {
   animation: sw-in 0.3s ease-out 0.15s both;

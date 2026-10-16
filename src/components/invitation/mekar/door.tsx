@@ -3,6 +3,7 @@
 import { useReducedMotion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { doorFit, useDoorFit } from "../door-fit";
 import { Flora, Wash } from "./flora";
 
 export type MekarProps = { groom: string; bride: string; date: string; place: string; photo: string; set: string; invited: string; onOpen: () => void };
@@ -57,22 +58,8 @@ export function MekarDoor({ groom, bride, date, place, photo, set, invited, onOp
   const wind = useRef<HTMLDivElement>(null);
   const [petals, setPetals] = useState<Petal[]>([]);
   const fit = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
 
-  // Isi diperkecil bila tidak muat di layar pendek, supaya tombol buka selalu terlihat tanpa menggulir.
-  useEffect(() => {
-    const el = fit.current;
-    if (!el) return;
-    const measure = () => setScale(Math.min(1, (window.innerHeight - 48) / el.offsetHeight));
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
+  useDoorFit(fit, { y: 48 });
 
   const finish = () => {
     skipped.current = true;
@@ -133,7 +120,7 @@ export function MekarDoor({ groom, bride, date, place, photo, set, invited, onOp
         <Flora set={set} piece="mawar-3" sizes="140px" className="-right-6 -bottom-3 w-[min(26vw,130px)]" />
 
         <div className="absolute inset-0 flex items-center justify-center px-6 pt-10">
-          <div ref={fit} style={{ transform: `scale(${scale})` }} className="mm-door-body flex w-[min(86vw,420px)] flex-col items-center text-center">
+          <div ref={fit} {...doorFit({ y: 48 })} className="mm-door-body flex w-[min(86vw,420px)] flex-col items-center text-center">
             <div className="relative">
               <div className="mm-frame relative size-[min(44vw,190px)] overflow-hidden rounded-full">
                 <Image src={photo} alt={`${groom} dan ${bride}`} fill priority sizes="190px" className="object-cover object-[50%_30%]" />

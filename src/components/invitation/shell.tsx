@@ -159,6 +159,16 @@ export function InvitationShell({ door, music, synth, className, style, children
     playingRef.current = playing;
   }, [playing]);
 
+  // Selagi tamu masih di pembuka, foto di dalam undangan diunduh lebih dulu supaya setelah dibuka tidak ada
+  // foto yang baru muncul saat digulir. Ditunda sebentar supaya aset pembuka didahulukan.
+  useEffect(() => {
+    if (!content) return;
+    const t = window.setTimeout(() => {
+      content.querySelectorAll<HTMLImageElement>('img[loading="lazy"]').forEach((img) => (img.loading = "eager"));
+    }, 1200);
+    return () => window.clearTimeout(t);
+  }, [content]);
+
   useEffect(() => {
     const root = document.documentElement;
     root.style.overflow = open ? "" : "hidden";

@@ -2,6 +2,7 @@
 
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { doorFit, useDoorFit } from "../door-fit";
 import { Panel, Rays, Sticker, Title } from "./pop";
 
 export type TabloidProps = { groom: string; bride: string; date: string; photo: string; invited: string; onOpen: () => void };
@@ -15,24 +16,10 @@ export function TabloidDoor({ groom, bride, date, photo, invited, onOpen }: Tabl
   const fit = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
   const raf = useRef(0);
-  const [scale, setScale] = useState(1);
 
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
-  // Sampul diperkecil bila tidak muat di layar pendek, supaya tombol buka selalu terlihat.
-  useEffect(() => {
-    const el = fit.current;
-    if (!el) return;
-    const measure = () => setScale(Math.min(1, (window.innerHeight - 32) / el.offsetHeight, (window.innerWidth - 24) / el.offsetWidth));
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
+  useDoorFit(fit, { y: 32, x: 24 });
 
   function play() {
     if (phase !== "idle") return;
@@ -72,7 +59,7 @@ export function TabloidDoor({ groom, bride, date, photo, invited, onOpen }: Tabl
       <div ref={cover} className="tp-sunburst absolute inset-0">
         <div aria-hidden="true" className="tp-stripe absolute inset-x-0 top-0 h-3" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div ref={fit} style={{ transform: `scale(${scale})` }} className="relative w-[min(92vw,400px)] px-1 pt-4 pb-6 md:w-[min(84vw,640px)]">
+          <div ref={fit} {...doorFit({ y: 32, x: 24 })} className="relative w-[min(92vw,400px)] px-1 pt-4 pb-6 md:w-[min(84vw,640px)]">
             <div className="relative z-10 flex items-center justify-between">
               <span className="tp-chip tp-label bg-inv-card text-inv-ink">Kabar Retro · No. 27</span>
               <span className="tp-chip tp-label bg-(--tp-sun) text-inv-ink">Edisi spesial</span>

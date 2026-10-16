@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Script from "next/script";
+import { DOOR_FIT_SCRIPT } from "@/lib/door-fit-script";
 import { MetaPixel } from "@/components/meta-pixel";
 import { OG_BASE, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -17,8 +19,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id">
+    // Skrip ukuran pembuka menulis variabel --door-fit di html sebelum halaman siap, jadi gayanya boleh berbeda.
+    <html lang="id" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <Script id="door-fit" strategy="beforeInteractive">
+          {DOOR_FIT_SCRIPT}
+        </Script>
         {children}
         <MetaPixel />
       </body>

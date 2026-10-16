@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, useAnimate, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { doorFit, useDoorFit } from "../door-fit";
 import { Corner } from "./ornaments";
 
 export type MedaliProps = { groom: string; bride: string; monogram: string; date: string; place: string; invited: string; onOpen: () => void };
@@ -111,26 +112,16 @@ export function MedaliDoor({ groom, bride, monogram, date, place, invited, onOpe
   const reduce = useReducedMotion();
   const skipped = useRef(false);
   const fit = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
 
-  // Isi diperkecil bila tidak muat di dalam bingkai, supaya tamu tidak perlu menggulir untuk membuka undangan.
-  useEffect(() => {
-    const el = fit.current;
-    if (!el) return;
-    const measure = () => {
-      setBox({ w: window.innerWidth, h: window.innerHeight });
-      const room = window.innerHeight - (window.innerWidth < 640 ? 120 : 170);
-      setScale(Math.min(1, room / el.offsetHeight));
-    };
+  useDoorFit(fit, { y: 170, ySm: 120 });
+
+  // Ukuran layar untuk bingkai hiasan.
+  useLayoutEffect(() => {
+    const measure = () => setBox({ w: window.innerWidth, h: window.innerHeight });
     measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
     window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
+    return () => window.removeEventListener("resize", measure);
   }, []);
 
   const finish = () => {
@@ -189,7 +180,7 @@ export function MedaliDoor({ groom, bride, monogram, date, place, invited, onOpe
       </motion.div>
       <div aria-hidden="true" className="su-rings pointer-events-none absolute inset-0 opacity-0" style={RINGS} />
       <div className="absolute inset-0 flex items-center justify-center px-12">
-        <div ref={fit} style={{ transform: `scale(${scale})` }} className="flex w-[min(80vw,400px)] flex-col items-center text-center">
+        <div ref={fit} {...doorFit({ y: 170, ySm: 120 })} className="flex w-[min(80vw,400px)] flex-col items-center text-center">
           {/* Cincin luar berjarak 7px, sama dengan cincin gradasi, supaya pergantiannya tidak terlihat. */}
           <div className="su-medal relative size-32 rounded-full border border-inv-gold sm:size-36">
             <div className="absolute -inset-1.75 rounded-full border border-inv-gold-light" />

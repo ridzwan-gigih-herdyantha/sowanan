@@ -2,6 +2,7 @@
 
 import { motion, useAnimate, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { doorFit, useDoorFit } from "../door-fit";
 import { Arch, ArchCard, Hias, Lantern, Lattice, Pattern, Star } from "./ornaments";
 import { BISMILLAH, SAKINAH_ENTER } from "./text";
 
@@ -34,22 +35,8 @@ export function PintuDoor({ groom, bride, date, hijri, invited, onOpen }: PintuP
   const reduce = useReducedMotion();
   const skipped = useRef(false);
   const fit = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
 
-  // Papan nama diperkecil bila lebih tinggi dari layar, supaya tamu tidak perlu menggulir untuk membuka undangan.
-  useEffect(() => {
-    const el = fit.current;
-    if (!el) return;
-    const measure = () => setScale(Math.min(1, (window.innerHeight - 32) / el.offsetHeight));
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
+  useDoorFit(fit, { y: 32 });
 
   useEffect(() => {
     if (phase !== "playing") return;
@@ -109,7 +96,7 @@ export function PintuDoor({ groom, bride, date, hijri, invited, onOpen }: PintuP
 
       {/* Papan nama mengikuti tinggi isinya dan selalu di tengah. Di layar yang sangat pendek bisa digulir. */}
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden px-4">
-        <div ref={fit} style={{ transform: `scale(${scale})` }}>
+        <div ref={fit} {...doorFit({ y: 32 })}>
           <div className="sk-plaque relative w-[min(84vw,400px)] [@media(max-height:700px)]:w-[min(78vw,340px)] [@media(max-height:620px)]:w-[min(80vw,380px)]">
             <div aria-hidden="true" className="aspect-[100/18] [@media(max-height:620px)]:aspect-[100/11]" />
             <Hias name="mahkota" className="absolute top-0 left-1/2 z-10 w-[64%] -translate-x-1/2 text-sk-emas [@media(max-height:620px)]:w-[44%]" />
