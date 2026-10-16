@@ -1636,6 +1636,57 @@ html:has(.sk-root) {
 .tp-sunburst {
   background: var(--inv-paper);
 }
+/* Loader halaman Sowanan: daun pintu logo membuka dari engsel luar, cahaya di baliknya ikut menyala. */
+.sw-loader {
+  animation: sw-in 0.3s ease-out 0.15s both;
+}
+.sw-leaf {
+  transform-box: fill-box;
+  animation: sw-door 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.sw-leaf-l {
+  transform-origin: left center;
+}
+.sw-leaf-r {
+  transform-origin: right center;
+}
+.sw-light {
+  animation: sw-light 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes sw-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes sw-door {
+  0%,
+  15%,
+  100% {
+    transform: none;
+  }
+  45%,
+  70% {
+    transform: scaleX(0.42);
+  }
+}
+@keyframes sw-light {
+  0%,
+  15%,
+  100% {
+    opacity: 0.25;
+  }
+  45%,
+  70% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sw-leaf,
+  .sw-light {
+    animation: none;
+  }
+}
+
 /* Reveal Kabar Retro: elemen meletup membesar dengan sedikit pantulan, bukan memudar naik. */
 .tp-theme .reveal {
   transform: scale(0.6);
