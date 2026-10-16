@@ -116,6 +116,13 @@ const typing = () => (document.activeElement as HTMLElement | null)?.closest("in
 // sendiri: pria menghampiri wanita, kamera mendekat, pria berlutut menyerahkan cincin, kamera menjauh lagi, keduanya
 // masuk istana dan muncul di atasnya, lalu jendela penutup terbuka.
 // Tanpa JavaScript, panggung bisa digeser ke samping seperti biasa.
+// Geser dibulatkan ke piksel layar utuh. Geseran pecahan membuat GPU menghaluskan seni piksel, sehingga tampak
+// buram seperti motion blur saat berjalan dan baru tajam lagi ketika berhenti.
+function snap(v: number) {
+  const d = typeof window === "undefined" ? 1 : window.devicePixelRatio || 1;
+  return Math.round(v * d) / d;
+}
+
 export function World({ start, stations, goal, finale, groom, bride, date }: { start: ReactNode; stations: Station[]; goal: ReactNode; finale: ReactNode; groom: string; bride: string; date: string }) {
   const stage = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
@@ -468,10 +475,10 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       const air = !frozen && y > under + 0.5;
       const pose = cut?.phase === "kneel" ? "kneel" : air ? "jump" : !frozen && Math.abs(vx) > T * 0.4 ? STRIDE[Math.floor(dist / (T * 0.42)) % 4] : "idle";
       write("pose", pose, () => (me.dataset.pose = pose));
-      me.style.transform = `translate3d(${(x - T / 2).toFixed(1)}px, ${(-y).toFixed(1)}px, 0)`;
+      me.style.transform = `translate3d(${snap(x - T / 2)}px, ${snap(-y)}px, 0)`;
       write("alpha", gAlpha.toFixed(2), () => (me.style.opacity = gAlpha.toFixed(2)));
       write("face", String(facing), () => me.style.setProperty("--face", String(facing)));
-      her.style.transform = `translate3d(${(bx - brideHome).toFixed(1)}px, ${(-by).toFixed(1)}px, 0)`;
+      her.style.transform = `translate3d(${snap(bx - brideHome)}px, ${snap(-by)}px, 0)`;
       write("bAlpha", bAlpha.toFixed(2), () => (her.style.opacity = bAlpha.toFixed(2)));
       write("bFace", String(bFace), () => her.style.setProperty("--face", String(bFace)));
       // Langkah mempelai wanita berganti bingkai selama berjalan, berdiri diam bila tidak.
@@ -480,7 +487,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       write("herPose", herPose, () => (her.dataset.pose = herPose));
       if (shade.current) {
         const lift = Math.min(1, (y - under) / (T * 3));
-        shade.current.style.transform = `translate3d(${(x - T * 0.42).toFixed(1)}px, ${(-under).toFixed(1)}px, 0) scale(${(1 - lift * 0.55).toFixed(2)})`;
+        shade.current.style.transform = `translate3d(${snap(x - T * 0.42)}px, ${snap(-under)}px, 0) scale(${(1 - lift * 0.55).toFixed(2)})`;
         shade.current.style.opacity = frozen ? "0" : ((0.32 - lift * 0.2) * gAlpha).toFixed(2);
       }
 
@@ -498,10 +505,10 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       // Kamera mengejar karakter dengan lerp, jadi geraknya halus walau karakter berhenti mendadak.
       const to = camFor(cut ? Math.min(x, castleCam) : x);
       cam = reduce ? to : cam + (to - cam) * (1 - Math.exp(-8 * dt));
-      if (track.current) track.current.style.transform = `translate3d(${(-cam).toFixed(1)}px, 0, 0)`;
+      if (track.current) track.current.style.transform = `translate3d(${snap(-cam)}px, 0, 0)`;
       [0.1, 0.2, 0.45, 1].forEach((f, i) => {
         const l = layers.current[i];
-        if (l) l.style.transform = `translate3d(${(-cam * f).toFixed(1)}px, 0, 0)`;
+        if (l) l.style.transform = `translate3d(${snap(-cam * f)}px, 0, 0)`;
       });
       raf = requestAnimationFrame(frame);
     };
