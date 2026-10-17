@@ -19,7 +19,7 @@ Seluruh pemesanan dilakukan lewat WhatsApp. Urutannya:
 
 - Anda menghubungi kami dan memilih paket serta tema
 - Kami kirim formulir isian data acara
-- Anda melunasi DP dan mengirim data serta foto secara lengkap
+- Anda membayar sesuai ketentuan paketnya, lalu mengirim data serta foto secara lengkap
 - Kami mengabari bahwa data sudah lengkap dan pengerjaan dimulai
 - Draf undangan dikirim dalam bentuk tautan
 - Setelah revisi selesai dan pembayaran lunas, undangan siap disebar
@@ -45,7 +45,7 @@ Seluruh isi paket Dasar, dengan warna tema disesuaikan palet acara Anda. Galeri 
 
 Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Paket ini ditujukan untuk acara dengan jumlah tamu banyak. Pada paket ini Anda juga dapat meminta hingga 2 bagian tambahan yang belum ada di tema.
 
-Bagian tambahan dipilih dari daftar berikut, maksimal dua:
+Bagian tambahan dipilih dari enam berikut, maksimal dua:
 
 - Susunan acara, rundown jam per jam dari akad sampai selesai resepsi
 - Denah lokasi dan parkir, berupa gambar denah yang Anda kirimkan
@@ -54,22 +54,13 @@ Bagian tambahan dipilih dari daftar berikut, maksimal dua:
 - Imbauan untuk tamu, misalnya tidak merekam saat akad
 - Siaran langsung, tautan siaran yang kami tanam di halaman undangan
 
-Permintaan bagian di luar daftar ini, atau lebih dari dua bagian, tidak termasuk paket Istimewa dan akan kami tawarkan melalui Paket Khusus. Permintaan yang memerlukan sistem baru, misalnya pemilihan kursi, undian, atau metode pembayaran di luar yang kami sediakan, tidak termasuk dalam paket ini.
+Permintaan di luar keenam bagian ini tidak termasuk dalam paket Istimewa.
 
-Harga ketiga paket di atas berlaku sekali bayar. Tidak ada biaya bulanan dan tidak ada biaya perpanjangan.
+Permintaan yang memerlukan sistem baru, misalnya pemilihan kursi, undian, atau metode pembayaran di luar yang kami sediakan, tidak termasuk dalam paket ini dan akan kami tawarkan sebagai pekerjaan tersendiri.
 
-### Paket Khusus (harga menyesuaikan)
+Harga di atas berlaku sekali bayar. Tidak ada biaya bulanan dan tidak ada biaya perpanjangan.
 
-Di luar ketiga paket di atas, kami menerima permintaan yang tidak tercakup oleh paket mana pun: fitur yang memerlukan sistem baru, rangkaian acara yang panjang, dan tema yang dirancang baru dari nol khusus untuk Anda.
-
-Harga, lingkup, dan waktu pengerjaan Paket Khusus ditentukan setelah kami menerima penjelasan kebutuhan Anda, lalu dituangkan dalam penawaran tertulis sebelum pekerjaan dimulai. Sebagai gambaran waktu pengerjaannya berkisar 5 sampai 10 hari kerja, dan angka pastinya disepakati bersama di penawaran tersebut.
-
-Ketentuan Paket Khusus:
-
-- Seluruh isi paket Istimewa termasuk di dalamnya, beserta arsip permanen
-- Uang muka {dp} persen, sama seperti paket Lengkap dan Istimewa
-- Rancangan desain mendapat 2 putaran revisi. Kami kirim satu konsep lebih dulu, dan Anda dapat memintanya diubah dua kali sebelum kami lanjutkan ke pengerjaan
-- Tema yang kami rancang untuk Anda dapat kami tambahkan ke katalog tema Sowanan setelah acara Anda selesai, dengan seluruh nama, foto, dan data acara Anda dihapus lebih dulu. Apabila Anda menghendaki tema tersebut tidak dipakai ulang, sampaikan sejak awal dan akan kami hitung tersendiri di penawaran
+Permintaan yang tidak tercakup ketiga paket di atas, misalnya tema yang dirancang baru dari nol, fitur yang memerlukan sistem baru, atau rangkaian acara yang panjang, kami tangani sebagai pekerjaan tersendiri. Harga, lingkup, dan waktu pengerjaannya disepakati bersama Anda lewat percakapan, lalu kami sampaikan sebagai penawaran sebelum pekerjaan dimulai.
 `,
   ),
   article(
@@ -98,7 +89,6 @@ Waktu pengerjaan per paket:
 - Dasar: 1 hari kerja
 - Lengkap: 2 sampai 3 hari kerja
 - Istimewa: 3 sampai 5 hari kerja
-- Paket Khusus: sesuai penawaran, berkisar 5 sampai 10 hari kerja
 
 Permintaan revisi setelah undangan kami kirim dikerjakan berurutan juga, dan tidak termasuk dalam waktu pengerjaan di atas.
 `,
@@ -111,9 +101,7 @@ Permintaan revisi setelah undangan kami kirim dikerjakan berurutan juga, dan tid
 
 **Lengkap** mendapat revisi bebas sampai undangan Anda sebar.
 
-**Istimewa** mendapat revisi bebas sampai undangan Anda sebar, ditambah 2 putaran revisi atas rancangan bagian tambahan. Kami kirim satu rancangan lebih dulu, dan Anda dapat memintanya diubah dua kali sebelum kami lanjutkan ke pengerjaan.
-
-**Paket Khusus** mendapat revisi bebas sampai undangan Anda sebar, ditambah 2 putaran revisi atas rancangan desain, dengan cara yang sama.
+**Istimewa** mendapat revisi bebas sampai undangan Anda sebar.
 
 Penggantian tema dapat dilakukan sebelum pengerjaan dimulai. Setelah pengerjaan dimulai, penggantian tema dihitung sebagai revisi.
 
@@ -191,16 +179,16 @@ Kedua, Anda dapat meminta undangan Anda dicabut dari halaman contoh kapan saja, 
 - Dibatalkan setelah draf dikerjakan: DP tidak dapat dikembalikan, karena pekerjaan sudah berjalan
 - Setelah pelunasan, pembayaran tidak dapat dikembalikan
 
-Bila acara Anda ditunda, undangan tidak perlu dipesan ulang. Perubahan tanggal termasuk revisi biasa selama masih dalam masa aktif.
+Bila acara Anda ditunda, undangan tidak perlu dipesan ulang. Perubahan tanggal termasuk revisi biasa, selama undangan belum menjadi arsip.
 `,
   ),
   article(
     "batas",
     "Batas tanggung jawab",
     `
-Kami berusaha menjaga undangan Anda dapat diakses sepanjang masa aktif. Namun gangguan yang berada di luar kendali kami, seperti gangguan penyedia server, jaringan internet, atau keadaan kahar, berada di luar tanggung jawab kami.
+Kami berusaha menjaga undangan Anda tetap dapat diakses. Namun gangguan yang berada di luar kendali kami, seperti gangguan penyedia server, jaringan internet, atau keadaan kahar, berada di luar tanggung jawab kami.
 
-Bila terjadi gangguan, kami memperbaikinya secepat mungkin dan memperpanjang masa aktif undangan Anda selama durasi gangguan tersebut.
+Bila terjadi gangguan, kami memperbaikinya secepat mungkin. Apabila gangguan terjadi sebelum undangan Anda sebar, tenggat pengerjaan kami mundur selama durasi gangguan tersebut dan kami beri tahu Anda tanggal barunya.
 
 Tanggung jawab kami atas kerugian apa pun terbatas pada nilai yang telah Anda bayarkan untuk pesanan tersebut.
 `,
@@ -216,7 +204,7 @@ Ketentuan ini dapat kami perbarui sewaktu-waktu. Ketentuan yang berlaku bagi pes
     "kontak",
     "Menghubungi kami",
     `
-Pertanyaan mengenai ketentuan ini, atau permintaan terkait data Anda, dapat dikirim ke WhatsApp kami di [{wa}]({wa_link}), setiap hari pukul {jam} WIB.
+Pertanyaan mengenai ketentuan ini, atau permintaan terkait data Anda, dapat dikirim ke WhatsApp kami di [{wa}]({wa_link}), Senin sampai Sabtu pukul {jam} WIB.
 `,
   ),
 ];
@@ -305,13 +293,13 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "lama", on: true, q: "Berapa lama jadinya?", a: "Undangan pernikahan digital Sowanan jadi dalam {waktu}, tergantung paket: {pengerjaan}. Waktu pengerjaan dihitung setelah data lengkap dan pembayaran masuk, dan pesanan yang masuk setelah pukul 15.00 dihitung mulai hari kerja berikutnya. Perbandingan lengkap tiap paket ada di [bagian harga](#harga)." },
     { id: "teknis", on: true, q: "Saya tidak paham teknis, bisa?", a: "Bisa. Kalian cukup kirim nama, tanggal, lokasi, dan foto lewat WhatsApp, sisanya kami yang kerjakan sampai undangan nikah digital siap disebar. Tidak perlu membuat akun atau memasang aplikasi, dan tamu cukup membuka link-nya di browser. [Chat WhatsApp]({wa_link}) untuk mulai." },
     { id: "aktif", on: true, q: "Link-nya aktif sampai kapan?", a: "Selamanya. Undangan digital Sowanan tidak punya masa aktif dan tidak kami hapus, tanpa biaya perpanjangan. Tiga puluh hari setelah acara, undangan menjadi arsip permanen yang tetap bisa dibuka di alamat yang sama, lengkap dengan galeri foto dan ucapan dari tamu. Ketentuan lengkapnya ada di [halaman ketentuan](/ketentuan)." },
-    { id: "revisi", on: true, q: "Bisa revisi berapa kali?", a: "Paket Dasar mendapat 1 putaran revisi, sedangkan paket Lengkap dan Istimewa bebas revisi sampai undangan disebar. Paket Istimewa juga mendapat 2 putaran revisi desain sebelum pengerjaan. Kirim semua perubahan sekaligus dalam satu daftar supaya lebih cepat dikerjakan." },
+    { id: "revisi", on: true, q: "Bisa revisi berapa kali?", a: "Paket Dasar mendapat 1 putaran revisi, sedangkan paket Lengkap dan Istimewa bebas revisi sampai undangan disebar. Kirim semua perubahan sekaligus dalam satu daftar supaya lebih cepat dikerjakan." },
     { id: "tamu", on: true, q: "Bisa untuk berapa tamu?", a: "Tidak dibatasi. Satu link undangan, misalnya sowanan.com/nama-kalian, bisa disebar ke berapa pun tamu lewat WhatsApp atau Instagram tanpa biaya tambahan. Semua paket sudah termasuk RSVP untuk konfirmasi kehadiran, peta lokasi, buku ucapan, dan amplop digital, dan di paket Lengkap ke atas nama tiap tamu bisa muncul di undangan." },
     { id: "tema", on: true, q: "Kalau mau ganti tema di tengah jalan?", a: "Bisa, selama pengerjaan belum dimulai. Setelah pengerjaan dimulai, penggantian tema dihitung sebagai revisi. Lihat dulu contoh asli setiap tema, dari yang modern dan minimalis sampai bernuansa Jawa dan islami, di [bagian pilihan tema](#tema)." },
     { id: "bayar", on: true, q: "Cara bayarnya?", a: "Sekali bayar, mulai {harga}, tanpa biaya bulanan. Paket Dasar dibayar lunas di muka, sedangkan paket Lengkap dan Istimewa dengan uang muka {dp} persen dan sisanya dilunasi sebelum undangan dilepas tanpa watermark. Pembayaran lewat transfer bank atau QRIS." },
   ],
   terms: {
-    date: "09 Oktober 2026",
+    date: "17 Oktober 2026",
     title: "Syarat dan Ketentuan",
     intro:
       "Dokumen ini menjelaskan bagaimana layanan Sowanan bekerja: apa yang kami kerjakan, apa yang menjadi tanggung jawab Anda, dan apa yang terjadi bila ada perubahan. Dengan memesan undangan di Sowanan, Anda dianggap telah membaca dan menyetujui ketentuan di halaman ini.",
@@ -325,7 +313,6 @@ export const DEFAULT_SETTINGS: Settings = {
   matrix: [
     { id: "katalog", label: "Bebas pilih satu tema dari katalog", kind: "check", unit: "", key: "", cells: all },
     { id: "warna", label: "Warna tema disesuaikan palet acara", kind: "check", unit: "", key: "warna_tema", cells: cells(false, true, true) },
-    { id: "modif", label: "Tema dimodifikasi atau dirancang baru", kind: "check", unit: "", key: "", cells: cells(false, false, true) },
     {
       id: "bagian",
       label: "Bagian tambahan di luar tema",
@@ -350,7 +337,6 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "rsvp", label: "RSVP dan buku ucapan", kind: "check", unit: "", key: "", cells: all },
     { id: "amplop", label: "Amplop digital", kind: "check", unit: "", key: "", cells: all },
     { id: "sebar", label: "Sebar tanpa batas jumlah tamu", kind: "check", unit: "", key: "", cells: all },
-    { id: "desain", label: "Revisi desain, 2 putaran", kind: "check", unit: "", key: "", cells: cells(false, false, true) },
     { id: "excel", label: "Daftar tamu diunduh ke Excel", kind: "check", unit: "", key: "ekspor_excel", cells: cells(false, false, true) },
     { id: "qr", label: "QR absensi tamu di lokasi", kind: "check", unit: "", key: "qr_absensi", cells: cells(false, false, true) },
     { id: "arsip", label: "Arsip permanen setelah acara", kind: "check", unit: "", key: "", cells: all },
