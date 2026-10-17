@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Container, SectionSub, SectionTitle, Sprig, cx, reveal, sectionPad } from "@/components/ui";
-import { fill, HOME_THEMES, type Settings, type ThemeEntry } from "@/lib/settings";
+import { fill, HOME_THEMES, themeScreen, type Settings, type ThemeEntry } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { OfferCard } from "./offer-card";
 
@@ -50,7 +50,7 @@ export function ThemeCard({ theme, index, waHref, animate = true }: { theme: The
       >
         {theme.image ? (
           <>
-            <Phone src={theme.screen || `/img/tema-${theme.slug}-isi.webp`} alt="" className="absolute top-1/2 right-[5%] w-[45%] -translate-y-[44%] rotate-[4deg] group-hover:translate-x-1 group-hover:rotate-[6deg]" />
+            <Phone src={themeScreen(theme)} alt="" className="absolute top-1/2 right-[5%] w-[45%] -translate-y-[44%] rotate-[4deg] group-hover:translate-x-1 group-hover:rotate-[6deg]" />
             <Phone src={theme.image} alt={`Contoh undangan tema ${theme.name}`} className="absolute top-1/2 left-[5%] z-10 w-[50%] -translate-y-[54%] -rotate-[3deg] group-hover:-translate-y-[56%]" />
           </>
         ) : (

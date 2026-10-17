@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogoMark } from "@/components/logo";
 import { Container, btn, cx, reveal } from "@/components/ui";
-import { fill, THEME_CATEGORIES, type Settings } from "@/lib/settings";
+import { fill, THEME_CATEGORIES, themeScreen, type Settings } from "@/lib/settings";
+import { mediaUrl } from "@/lib/storage/media";
 import { SITE_NAME } from "@/lib/site";
 
 const WA_PATH =
@@ -56,7 +57,7 @@ function CoverFan({ covers, label }: { covers: Settings["themes"]; label: string
           )}
         >
           <span className="relative block size-full overflow-hidden rounded-[14px]">
-            <Image src={t.image} alt="" fill sizes="184px" className="object-cover object-top" />
+            <Image src={mediaUrl(themeScreen(t))} alt="" fill sizes="184px" className="object-cover object-top" />
           </span>
         </span>
       ))}

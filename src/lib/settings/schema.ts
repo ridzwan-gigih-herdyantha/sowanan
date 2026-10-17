@@ -290,6 +290,9 @@ export const settingsSchema = z
 
 export type Settings = z.infer<typeof settingsSchema>;
 export type ThemeEntry = Settings["themes"][number];
+
+// Tampilan setelah undangan dibuka (pasangan terlihat). Kosong berarti memakai tangkapan bawaan tema.
+export const themeScreen = (t: ThemeEntry) => t.screen || `/img/tema-${t.slug}-isi.webp`;
 export type MatrixRow = Settings["matrix"][number];
 
 export const newId = () => Math.random().toString(36).slice(2, 10);

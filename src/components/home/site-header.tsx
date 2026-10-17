@@ -34,7 +34,7 @@ export function SiteHeader({ settings, waHref }: { settings: Settings; waHref: s
               {l.label}
             </a>
           ))}
-          <a href={waHref} className={cx(btn.dark, "shrink-0 whitespace-nowrap max-sm:px-4 max-sm:py-2.5")}>
+          <a href={waHref} className={cx(btn.base, "shrink-0 bg-wine px-[22px] py-3 text-sm whitespace-nowrap text-white hover:-translate-y-0.5 hover:bg-wine-dark max-sm:px-4 max-sm:py-2.5")}>
             Pesan Sekarang
           </a>
         </nav>

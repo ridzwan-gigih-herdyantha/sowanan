@@ -1,6 +1,6 @@
 import { Inline, paragraphs } from "@/components/rich-text";
 import { Container, Sprig, btn } from "@/components/ui";
-import { fill, resolveHref, type Settings } from "@/lib/settings";
+import { fill, resolveHref, themeScreen, type Settings } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { HeroSlider } from "./hero-slider";
 import { LineArt, Scribble } from "./line-art";
@@ -40,7 +40,7 @@ export function Hero({ settings, vars, waHref }: Props) {
   // Slider memakai tema yang tampil di bagian Pilihan tema dan punya gambar sampul.
   const slides = settings.themes
     .filter((t) => t.on && t.image)
-    .map((t) => ({ name: t.name, style: t.style, image: mediaUrl(t.image), href: t.demo || waHref }));
+    .map((t) => ({ name: t.name, style: t.style, image: mediaUrl(themeScreen(t)), href: t.demo || waHref }));
   return (
     <section className="relative overflow-hidden">
       <Sprig className="-bottom-6 -left-6 h-44 text-wine/10 lg:-left-4 lg:h-72 lg:text-wine/15" />
