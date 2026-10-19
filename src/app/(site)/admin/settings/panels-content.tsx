@@ -168,8 +168,8 @@ export function BerandaPanel() {
           ))}
         </Row>
         <Row>
-          <Text path="footer.line1" label="Baris footer" chip="view" max={80} help="Bisa memakai {kota}." />
-          <Text path="footer.line2" label="Baris kedua footer" chip="view" max={60} />
+          <Text path="footer.line1" label="Deskripsi footer" chip="view" max={220} help="Di bawah logo. Bisa memakai {kota}." />
+          <Text path="footer.line2" label="Baris kedua footer" chip="view" max={80} />
         </Row>
         <Row>
           <Text path="footer.nav" label="Judul kolom tautan" chip="view" max={24} />

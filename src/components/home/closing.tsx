@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { LogoMark } from "@/components/logo";
-import { Container, btn, cx, reveal } from "@/components/ui";
+import { Container, Sprig, btn, cx, reveal } from "@/components/ui";
 import { fill, THEME_CATEGORIES, themeScreen, type Settings } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { SITE_NAME } from "@/lib/site";
@@ -108,12 +109,58 @@ export function ClosingCta({ settings, vars, waHref }: { settings: Settings; var
 }
 
 const footLink = cx("rounded-sm text-dusk-light no-underline transition-colors duration-200 hover:text-paper", focus);
-const footLabel = "mb-4 text-[13px] font-medium text-dusk";
+const footLabel = "mb-5 text-[17px] font-medium text-wine-pale";
 
-// Peta kecil di ujung halaman: merek, isi halaman, contoh undangan, dan cara menghubungi.
+// Ikon garis untuk kolom kontak dan deretan akun sosial di footer.
+const ICON = {
+  instagram: "M7 3h10a4 4 0 014 4v10a4 4 0 01-4 4H7a4 4 0 01-4-4V7a4 4 0 014-4zm5 5a4 4 0 100 8 4 4 0 000-8zm5.5-1.5v.01",
+  tiktok: "M14 3v11.5a3.5 3.5 0 11-3.5-3.5M14 3c.4 2.8 2.2 4.6 5 5",
+  youtube:
+    "M3.5 8.2c.2-1.6 1.3-2.6 2.9-2.7C8 5.4 10 5.3 12 5.3s4 .1 5.6.2c1.6.1 2.7 1.1 2.9 2.7.2 1.2.2 2.5.2 3.8s0 2.6-.2 3.8c-.2 1.6-1.3 2.6-2.9 2.7-1.6.1-3.6.2-5.6.2s-4-.1-5.6-.2c-1.6-.1-2.7-1.1-2.9-2.7-.2-1.2-.2-2.5-.2-3.8s0-2.6.2-3.8zM10 9.2v5.6l4.8-2.8z",
+  pinterest:
+    "M12 3a9 9 0 110 18 9 9 0 010-18zM10.2 20.8l1.6-7m-.4 1.9c.5.6 1.2.9 2 .9 2.3 0 3.6-2.1 3.6-4.4 0-2.5-2-4.2-4.6-4.2-2.9 0-4.8 2-4.8 4.4 0 1 .4 1.9 1 2.3",
+  clock: "M12 3a9 9 0 110 18 9 9 0 010-18zm0 4.5V12l3 2",
+  mail: "M4 6h16v12H4zm0 0l8 6.5L20 6",
+} as const;
+
+function LineIcon({ kind, className }: { kind: keyof typeof ICON; className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+      <path d={ICON[kind]} />
+    </svg>
+  );
+}
+
+// Satu baris kontak: ikon di kiri, isi utama terang, dan keterangan redup di bawahnya.
+function ContactRow({ icon, title, note, href }: { icon: ReactNode; title: string; note?: string; href?: string }) {
+  const row = "grid grid-cols-[28px_minmax(0,1fr)] gap-x-4";
+  const body = (
+    <>
+      <span className="mt-0.5 text-wine-pale">{icon}</span>
+      <span>
+        <span className={cx("block text-[16px] text-paper", href && "transition-colors duration-200 group-hover:text-wine-pale")}>{title}</span>
+        {note && <span className="mt-1 block text-[14px] leading-snug text-dusk">{note}</span>}
+      </span>
+    </>
+  );
+  return (
+    <li>
+      {href ? (
+        <a href={href} rel={href.startsWith("http") ? "noopener" : undefined} className={cx(row, "group rounded-sm no-underline", focus)}>
+          {body}
+        </a>
+      ) : (
+        <div className={row}>{body}</div>
+      )}
+    </li>
+  );
+}
+
+// Peta kecil di ujung halaman: merek, isi halaman, pilihan tema, dan cara menghubungi.
 export function SiteFooter({ settings, vars, waHref }: { settings: Settings; vars: Record<string, string>; waHref: string }) {
   const f = settings.footer;
   const s = settings.sections;
+  const c = settings.contact;
   const nav: [string, string][] = [
     ["/tema", s.tema.title],
     ["/#fitur", s.fitur.title],
@@ -124,22 +171,53 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
   // Kategori yang punya paling sedikit satu tema aktif, masing-masing menaut ke halaman tema dengan filternya.
   const active = new Set<string>(settings.themes.filter((t) => t.on).map((t) => t.category));
   const categories = Object.entries(THEME_CATEGORIES).filter(([k]) => active.has(k));
-  const hours = [vars.hari, vars.jam].filter(Boolean).join(", ");
+  // Instagram selalu ada, akun lain hanya kalau diisi di Pengaturan.
+  const socials: [keyof typeof ICON, string, string][] = [
+    ["instagram", "Instagram", `https://instagram.com/${c.instagram}`],
+    ["tiktok", "TikTok", c.tiktok && `https://tiktok.com/@${c.tiktok}`],
+    ["youtube", "YouTube", c.youtube && `https://youtube.com/@${c.youtube}`],
+    ["pinterest", "Pinterest", c.pinterest && `https://pinterest.com/${c.pinterest}`],
+  ];
   return (
-    <footer className="bg-night text-[15px] text-dusk-light">
-      <Container className="grid grid-cols-2 gap-x-6 gap-y-10 pt-14 pb-12 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] md:gap-8 md:pt-[72px]">
+    <footer className="relative isolate overflow-hidden bg-night text-[15px] text-dusk-light">
+      <Sprig className="-bottom-10 -left-10 -z-10 hidden h-80 rotate-[8deg] text-wine-pale/15 md:block lg:-left-4 lg:h-[420px]" />
+      <Sprig className="-top-6 -right-10 -z-10 h-56 -scale-x-100 rotate-[196deg] text-wine-pale/12 md:h-80 lg:-right-4 lg:h-[420px] lg:text-wine-pale/15" />
+
+      <Container className="grid grid-cols-2 gap-x-6 gap-y-11 pt-14 pb-12 md:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] md:gap-10 md:pt-[72px] md:pb-16">
         <div className="col-span-2 md:col-span-1">
-          <p className="flex items-center gap-2.5 font-serif text-2xl text-paper">
-            <LogoMark className="h-7 w-auto text-wine-pale" />
-            {SITE_NAME}
+          <p className="flex items-center gap-4">
+            <LogoMark className="h-14 w-auto text-wine-pale" />
+            <span>
+              <span className="block font-serif text-[34px] leading-none text-paper">{SITE_NAME}</span>
+              <span className="mt-2 block text-[11px] tracking-[3px] text-dusk uppercase">Undangan pernikahan digital</span>
+            </span>
           </p>
-          {f.line1 && <p className="mt-3 text-[14px] text-dusk">{fill(f.line1, vars)}</p>}
-          {f.line2 && <p className="mt-1 text-[14px] text-dusk">{fill(f.line2, vars)}</p>}
+          {f.line1 && <p className="mt-6 max-w-[44ch] text-[16px] leading-relaxed text-dusk-light">{fill(f.line1, vars)}</p>}
+          {f.line2 && <p className="mt-2 max-w-[44ch] text-[14px] text-dusk">{fill(f.line2, vars)}</p>}
+          <ul className="mt-7 flex gap-3">
+            {socials
+              .filter(([, , href]) => href)
+              .map(([icon, label, href]) => (
+                <li key={icon}>
+                  <a
+                    href={href}
+                    rel="noopener"
+                    aria-label={label}
+                    className={cx(
+                      "flex size-11 items-center justify-center rounded-full border border-night-line text-dusk-light transition-colors duration-200 hover:border-wine-pale hover:text-paper",
+                      focus,
+                    )}
+                  >
+                    <LineIcon kind={icon} className="size-5" />
+                  </a>
+                </li>
+              ))}
+          </ul>
         </div>
 
         <nav aria-label={f.nav}>
           <p className={footLabel}>{f.nav}</p>
-          <ul className="grid gap-2.5">
+          <ul className="grid gap-3.5">
             {nav.map(([href, label]) => (
               <li key={href}>
                 <a href={href} className={footLink}>
@@ -153,7 +231,7 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
         {categories.length > 0 && (
           <nav aria-label={f.demos}>
             <p className={footLabel}>{f.demos}</p>
-            <ul className="grid gap-2.5">
+            <ul className="grid gap-3.5">
               {categories.map(([k, name]) => (
                 <li key={k}>
                   <a href={`/tema?kategori=${k}`} className={footLink}>
@@ -167,35 +245,27 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
 
         <div className="col-span-2 md:col-span-1">
           <p className={footLabel}>{f.reach}</p>
-          <ul className="grid gap-2.5">
-            <li>
-              <a href={waHref} className={cx(footLink, "inline-flex items-center gap-2")}>
-                <WaIcon className="size-4 shrink-0" />
-                {vars.wa}
-              </a>
-            </li>
-            <li>
-              <a href={`https://instagram.com/${settings.contact.instagram}`} rel="noopener" className={footLink}>
-                @{settings.contact.instagram}
-              </a>
-            </li>
-            {settings.contact.email && (
-              <li>
-                <a href={`mailto:${settings.contact.email}`} className={footLink}>
-                  {settings.contact.email}
-                </a>
-              </li>
-            )}
-            {hours && <li className="text-dusk">{hours}</li>}
+          <ul className="grid gap-6">
+            <ContactRow href={waHref} icon={<WaIcon className="size-6" />} title={vars.wa} note="Chat kami di WhatsApp" />
+            <ContactRow
+              href={`https://instagram.com/${c.instagram}`}
+              icon={<LineIcon kind="instagram" className="size-6" />}
+              title={`@${c.instagram}`}
+              note="Ikuti untuk inspirasi tema"
+            />
+            {c.email && <ContactRow href={`mailto:${c.email}`} icon={<LineIcon kind="mail" className="size-6" />} title={c.email} />}
+            {vars.jam && <ContactRow icon={<LineIcon kind="clock" className="size-6" />} title={vars.jam} note={vars.hari || undefined} />}
           </ul>
         </div>
       </Container>
 
       <Container>
         <div className="flex flex-col gap-2 border-t border-night-line py-6 text-[13px] text-dusk sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {SITE_NAME}</p>
+          <p>
+            &copy; {new Date().getFullYear()} {SITE_NAME}. Hak cipta dilindungi.
+          </p>
           <Link prefetch={false} href="/ketentuan" className={cx(footLink, "w-fit text-dusk")}>
-            Ketentuan
+            Syarat &amp; Ketentuan
           </Link>
         </div>
       </Container>

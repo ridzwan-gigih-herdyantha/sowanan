@@ -74,6 +74,13 @@ const count = (label: string, min: number, max: number) =>
   z.number({ error: `${label} wajib diisi angka.` }).int(`${label} harus bilangan bulat.`).min(min, `${label} minimal ${min}.`).max(max, `${label} maksimal ${max}.`);
 const id = z.string().max(40);
 // Tujuan tautan: kosong, anchor (#harga), jalur di situs (/ketentuan), atau alamat lengkap.
+const handle = (label: string) =>
+  z
+    .string()
+    .trim()
+    .transform((v) => v.replace(/^@/, ""))
+    .pipe(z.union([z.literal(""), z.string().regex(/^[A-Za-z0-9._-]{1,40}$/, `Username ${label} hanya huruf, angka, titik, strip, dan garis bawah.`)]))
+    .default("");
 const href = (label: string) =>
   z
     .string()
@@ -168,8 +175,8 @@ export const settingsSchema = z
       covers: z.array(z.string().max(60)).max(3).default(["andi-rina", "danang-kinanthi", "hendrawan-larasati"]),
     }),
     footer: z.object({
-      line1: str("Baris footer", 80),
-      line2: str("Baris kedua footer", 60),
+      line1: str("Deskripsi footer", 220),
+      line2: str("Baris kedua footer", 80),
       nav: str("Judul kolom tautan", 24).default("Jelajahi"),
       demos: str("Judul kolom kategori tema", 24).default("Kategori tema"),
       reach: str("Judul kolom kontak", 24).default("Hubungi"),
@@ -239,6 +246,10 @@ export const settingsSchema = z
         .transform((v) => v.replace(/^@/, ""))
         .pipe(z.string().regex(/^[A-Za-z0-9._]{1,30}$/, "Username Instagram hanya huruf, angka, titik, dan garis bawah.")),
       email: z.union([z.literal(""), z.email("Email tidak valid.")]),
+      // Akun sosial lain di footer. Kosong berarti ikonnya tidak ditampilkan.
+      tiktok: handle("TikTok"),
+      youtube: handle("YouTube"),
+      pinterest: handle("Pinterest"),
       city: str("Kota", 40),
       open: time("Jam buka"),
       close: time("Jam tutup"),

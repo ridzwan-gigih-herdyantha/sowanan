@@ -279,7 +279,13 @@ export const DEFAULT_SETTINGS: Settings = {
     points: ["Mulai {harga}", "Jadi dalam {waktu}", "Tanpa batas jumlah tamu"],
     covers: ["andi-rina", "danang-kinanthi", "hendrawan-larasati"],
   },
-  footer: { line1: "Undangan pernikahan digital · {kota}", line2: "", nav: "Jelajahi", demos: "Kategori tema", reach: "Hubungi" },
+  footer: {
+    line1: "Undangan pernikahan digital yang elegan, praktis, dan siap dibagikan. Kamu fokus ke hari bahagiamu, biar urusan undangan kami yang bereskan.",
+    line2: "",
+    nav: "Jelajahi",
+    demos: "Pilihan tema",
+    reach: "Hubungi kami",
+  },
   themes: [
     { id: "senja", on: true, name: "Senja Kota", slug: "andi-rina", demo: "/andi-rina", tier: "semua", category: "vintage", style: "film / urban", image: "/img/tema-andi-rina-buka.webp", screen: "" },
     { id: "ruang", on: true, name: "Ruang", slug: "bagas-sekar", demo: "/bagas-sekar", tier: "semua", category: "minimalis", style: "monokrom / minimalis", image: "/img/tema-bagas-sekar-buka.webp", screen: "" },
@@ -352,7 +358,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "kilat", on: false, name: "Pengerjaan kilat 24 jam", price: 99000, scope: "Dasar dan Lengkap", unlock: "", amount: 0 },
     { id: "perpanjang", on: false, name: "Perpanjangan masa aktif 1 tahun", price: 50000, scope: "Semua paket", unlock: "", amount: 0 },
   ],
-  contact: { wa: "6281234567890", instagram: "sowanan.id", email: "", city: "Semarang", open: "08:00", close: "20:00", days: "" },
+  contact: { wa: "6281234567890", instagram: "sowanan.id", email: "", tiktok: "", youtube: "", pinterest: "", city: "Semarang", open: "08:00", close: "20:00", days: "" },
   wa: {
     general: "Halo Sowanan, saya mau tanya soal undangan pernikahan digital.",
     plan: "Halo Sowanan, saya mau pesan paket {paket}. Acaranya tanggal ",

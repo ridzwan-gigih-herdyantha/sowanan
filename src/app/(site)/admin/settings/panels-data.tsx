@@ -313,6 +313,11 @@ export function KontakPanel() {
           <Text path="contact.city" label="Kota" chip="view" className={width.md} help="Muncul di footer lewat {kota}." />
         </Row>
         <Row>
+          <Text path="contact.tiktok" label="Username TikTok" chip="view" help="Ikonnya muncul di footer kalau diisi." />
+          <Text path="contact.youtube" label="Handle YouTube" chip="view" help="Tanpa @. Ikonnya muncul di footer kalau diisi." />
+          <Text path="contact.pinterest" label="Username Pinterest" chip="view" help="Ikonnya muncul di footer kalau diisi." />
+        </Row>
+        <Row>
           <Text path="contact.open" label="Jam buka" chip="view" type="time" className={width.sm} />
           <Text path="contact.close" label="Jam tutup" chip="view" type="time" className={width.sm} />
           <Text path="contact.days" label="Hari operasional" chip="view" max={40} placeholder="Senin sampai Sabtu" help="Muncul lewat {hari}. Jam buka dan tutup muncul lewat {jam}." />
