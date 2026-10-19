@@ -156,6 +156,12 @@ function ContactRow({ icon, title, note, href }: { icon: ReactNode; title: strin
   );
 }
 
+// Tahun hak cipta di-cache supaya halaman tetap bisa diprerender. Nilainya ikut berganti saat cache diperbarui.
+async function Tahun() {
+  "use cache";
+  return <>{new Date().getFullYear()}</>;
+}
+
 // Peta kecil di ujung halaman: merek, isi halaman, pilihan tema, dan cara menghubungi.
 export function SiteFooter({ settings, vars, waHref }: { settings: Settings; vars: Record<string, string>; waHref: string }) {
   const f = settings.footer;
@@ -262,7 +268,7 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
       <Container>
         <div className="flex flex-col gap-2 border-t border-night-line py-6 text-[13px] text-dusk sm:flex-row sm:items-center sm:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} {SITE_NAME}. Hak cipta dilindungi.
+            &copy; <Tahun /> {SITE_NAME}. Hak cipta dilindungi.
           </p>
           <Link prefetch={false} href="/ketentuan" className={cx(footLink, "w-fit text-dusk")}>
             Syarat &amp; Ketentuan
