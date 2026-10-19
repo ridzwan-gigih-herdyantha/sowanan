@@ -189,13 +189,13 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
       <Sprig className="-bottom-10 -left-10 -z-10 hidden h-80 rotate-[8deg] text-wine-pale/15 md:block lg:-left-4 lg:h-[420px]" />
       <Sprig className="-top-6 -right-10 -z-10 h-56 -scale-x-100 rotate-[196deg] text-wine-pale/12 md:h-80 lg:-right-4 lg:h-[420px] lg:text-wine-pale/15" />
 
-      <Container className="grid grid-cols-2 gap-x-6 gap-y-11 pt-14 pb-12 md:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] md:gap-10 md:pt-[72px] md:pb-16">
+      <Container className="grid grid-cols-2 gap-x-6 gap-y-11 pt-14 pb-12 md:grid-cols-[minmax(0,1.5fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,1.2fr)] md:gap-10 md:pt-[72px] md:pb-16">
         <div className="col-span-2 md:col-span-1">
           <p className="flex items-center gap-4">
             <LogoMark className="h-14 w-auto text-wine-pale" />
             <span>
               <span className="block font-serif text-[34px] leading-none text-paper">{SITE_NAME}</span>
-              <span className="mt-2 block text-[11px] tracking-[3px] text-dusk uppercase">Undangan pernikahan digital</span>
+              <span className="mt-2 block text-[11px] tracking-[3px] whitespace-nowrap text-dusk uppercase max-[379px]:tracking-[2px]">Undangan pernikahan digital</span>
             </span>
           </p>
           {f.line1 && <p className="mt-6 max-w-[44ch] text-[16px] leading-relaxed text-dusk-light">{fill(f.line1, vars)}</p>}
@@ -260,7 +260,7 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
               note="Ikuti untuk inspirasi tema"
             />
             {c.email && <ContactRow href={`mailto:${c.email}`} icon={<LineIcon kind="mail" className="size-6" />} title={c.email} />}
-            {vars.jam && <ContactRow icon={<LineIcon kind="clock" className="size-6" />} title={vars.jam} note={vars.hari || undefined} />}
+            {vars.jam && <ContactRow icon={<LineIcon kind="clock" className="size-6" />} title={`${vars.jam} WIB`} note={vars.hari || undefined} />}
           </ul>
         </div>
       </Container>
