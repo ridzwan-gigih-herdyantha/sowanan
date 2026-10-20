@@ -358,7 +358,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "kilat", on: false, name: "Pengerjaan kilat 24 jam", price: 99000, scope: "Dasar dan Lengkap", unlock: "", amount: 0 },
     { id: "perpanjang", on: false, name: "Perpanjangan masa aktif 1 tahun", price: 50000, scope: "Semua paket", unlock: "", amount: 0 },
   ],
-  contact: { wa: "6281234567890", instagram: "sowanan.id", email: "", tiktok: "", youtube: "", pinterest: "", city: "Semarang", open: "08:00", close: "20:00", days: "" },
+  contact: { wa: "6281234567890", instagram: "sowanan.id", email: "", socials: [], city: "Semarang", open: "08:00", close: "20:00", days: "" },
   wa: {
     general: "Halo Sowanan, saya mau tanya soal undangan pernikahan digital.",
     plan: "Halo Sowanan, saya mau pesan paket {paket}. Acaranya tanggal ",

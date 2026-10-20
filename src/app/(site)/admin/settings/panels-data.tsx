@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { COUNT_KEYS, newId, PACKAGE_IDS, PACKAGE_NAMES, SYSTEM_KEYS, UNLOCK_KEYS, type MatrixRow, type PackageId, type Settings, type SystemKey } from "@/lib/settings/schema";
+import { COUNT_KEYS, newId, PACKAGE_IDS, PACKAGE_NAMES, SOCIALS, socialUrl, SYSTEM_KEYS, UNLOCK_KEYS, type MatrixRow, type PackageId, type Settings, type SystemKey } from "@/lib/settings/schema";
 import { slaText, themeCount } from "@/lib/settings/text";
 import { setIn, useSettings } from "./form-context";
 import { ImagePicker } from "./image-picker";
@@ -35,7 +35,8 @@ function PackageCard({ id }: { id: PackageId }) {
 
 const KEY_OPTIONS: [string, string][] = [["", "Tanpa kunci"], ...Object.keys(SYSTEM_KEYS).map((k): [string, string] => [k, k])];
 const UNLOCK_OPTIONS: [string, string][] = [["", "Tidak membuka apa pun"], ...UNLOCK_KEYS.map((k): [string, string] => [k, k === "galeri_foto" ? "galeri_foto (tambah foto)" : k === "bagian_tambahan" ? "bagian_tambahan (tambah bagian)" : k])];
-const COLS = "grid-cols-[26px_minmax(170px,1fr)_118px_140px_repeat(3,96px)_34px]";
+const SOCIAL_OPTIONS = Object.entries(SOCIALS).map(([k, v]): [string, string] => [k, v.name]);
+const COLS ="grid-cols-[26px_minmax(170px,1fr)_118px_140px_repeat(3,96px)_34px]";
 
 function Matrix() {
   const { s, update, errors } = useSettings();
@@ -313,15 +314,24 @@ export function KontakPanel() {
           <Text path="contact.city" label="Kota" chip="view" className={width.md} help="Muncul di footer lewat {kota}." />
         </Row>
         <Row>
-          <Text path="contact.tiktok" label="Username TikTok" chip="view" help="Ikonnya muncul di footer kalau diisi." />
-          <Text path="contact.youtube" label="Handle YouTube" chip="view" help="Tanpa @. Ikonnya muncul di footer kalau diisi." />
-          <Text path="contact.pinterest" label="Username Pinterest" chip="view" help="Ikonnya muncul di footer kalau diisi." />
-        </Row>
-        <Row>
           <Text path="contact.open" label="Jam buka" chip="view" type="time" className={width.sm} />
           <Text path="contact.close" label="Jam tutup" chip="view" type="time" className={width.sm} />
           <Text path="contact.days" label="Hari operasional" chip="view" max={40} placeholder="Senin sampai Sabtu" help="Muncul lewat {hari}. Jam buka dan tutup muncul lewat {jam}." />
         </Row>
+      </Card>
+      <Card title="Akun sosial lain" hint="Ikonnya muncul di footer setelah Instagram, sesuai urutan di sini. Yang dimatikan tetap tersimpan, hanya tidak ditampilkan.">
+        <RepList
+          path="contact.socials"
+          noun="akun"
+          max={12}
+          blank={(): Settings["contact"]["socials"][number] => ({ id: newId(), on: true, kind: "tiktok", handle: "" })}
+          render={(item, __, base) => (
+            <Row>
+              <Select path={`${base}.kind`} label="Platform" chip="view" className={width.md} options={SOCIAL_OPTIONS} />
+              <Text path={`${base}.handle`} label="Username" chip="view" help={`Tanpa @. Tautannya ${socialUrl(item.kind, item.handle.replace(/^@/, "") || "username")}`} />
+            </Row>
+          )}
+        />
       </Card>
       <Card title="Template chat WhatsApp" hint="Teks yang sudah terisi di kolom pesan ketika pembeli menekan tombol WhatsApp.">
         <Text path="wa.general" label="Pesan pembuka" chip="sys" max={200} rows={3} placeholder="Contoh: Halo Sowanan, saya mau tanya soal undangan pernikahan digital." help="Dipakai semua tombol WhatsApp kecuali tombol di kartu harga." />

@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { LogoMark } from "@/components/logo";
 import { Container, Sprig, btn, cx, reveal } from "@/components/ui";
-import { fill, THEME_CATEGORIES, themeScreen, type Settings } from "@/lib/settings";
+import { fill, SOCIALS, socialUrl, THEME_CATEGORIES, themeScreen, type Settings } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { SITE_NAME } from "@/lib/site";
 
@@ -119,6 +119,11 @@ const ICON = {
     "M3.5 8.2c.2-1.6 1.3-2.6 2.9-2.7C8 5.4 10 5.3 12 5.3s4 .1 5.6.2c1.6.1 2.7 1.1 2.9 2.7.2 1.2.2 2.5.2 3.8s0 2.6-.2 3.8c-.2 1.6-1.3 2.6-2.9 2.7-1.6.1-3.6.2-5.6.2s-4-.1-5.6-.2c-1.6-.1-2.7-1.1-2.9-2.7-.2-1.2-.2-2.5-.2-3.8s0-2.6.2-3.8zM10 9.2v5.6l4.8-2.8z",
   pinterest:
     "M12 3a9 9 0 110 18 9 9 0 010-18zM10.2 20.8l1.6-7m-.4 1.9c.5.6 1.2.9 2 .9 2.3 0 3.6-2.1 3.6-4.4 0-2.5-2-4.2-4.6-4.2-2.9 0-4.8 2-4.8 4.4 0 1 .4 1.9 1 2.3",
+  facebook: "M15.5 3.5H14A4 4 0 0010 7.5V10H7.5v3.5H10v7h3.5v-7H16l.5-3.5h-3V8a1 1 0 011-1h1z",
+  threads:
+    "M16.6 11.3c-.4-2.5-2-3.8-4.4-3.8-2.6 0-4.2 1.9-4.2 4.6 0 2.9 1.7 4.6 4.1 4.6 2.1 0 3.5-1.2 3.5-3 0-1.7-1.4-2.6-3.3-2.6-1.5 0-2.6.7-2.6 1.9 0 1 .8 1.6 1.9 1.6 2.3 0 3.4-1.8 3.4-4.7M19.5 8C18.5 4.7 15.9 3 12 3 6.9 3 4 6.4 4 12s2.9 9 8 9c3.6 0 6.2-1.6 7.1-4.4",
+  x: "M4 4h4.5L20 20h-4.5zM20 4l-6.6 7.5M10.6 12.5L4 20",
+  linkedin: "M4 4h16v16H4zM8 10.5V16m0-8.5v.01M11.5 16v-5.5m0 2.5a2.5 2.5 0 015 0v3",
   clock: "M12 3a9 9 0 110 18 9 9 0 010-18zm0 4.5V12l3 2",
   mail: "M4 6h16v12H4zm0 0l8 6.5L20 6",
 } as const;
@@ -177,12 +182,10 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
   // Kategori yang punya paling sedikit satu tema aktif, masing-masing menaut ke halaman tema dengan filternya.
   const active = new Set<string>(settings.themes.filter((t) => t.on).map((t) => t.category));
   const categories = Object.entries(THEME_CATEGORIES).filter(([k]) => active.has(k));
-  // Instagram selalu ada, akun lain hanya kalau diisi di Pengaturan.
+  // Instagram selalu ada, lalu akun lain yang aktif di Pengaturan sesuai urutannya.
   const socials: [keyof typeof ICON, string, string][] = [
     ["instagram", "Instagram", `https://instagram.com/${c.instagram}`],
-    ["tiktok", "TikTok", c.tiktok && `https://tiktok.com/@${c.tiktok}`],
-    ["youtube", "YouTube", c.youtube && `https://youtube.com/@${c.youtube}`],
-    ["pinterest", "Pinterest", c.pinterest && `https://pinterest.com/${c.pinterest}`],
+    ...c.socials.filter((a) => a.on).map((a): [keyof typeof ICON, string, string] => [a.kind, SOCIALS[a.kind].name, socialUrl(a.kind, a.handle)]),
   ];
   return (
     <footer className="relative isolate overflow-hidden bg-night text-[15px] text-dusk-light">
@@ -201,23 +204,21 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
           {f.line1 && <p className="mt-6 max-w-[44ch] text-[16px] leading-relaxed text-dusk-light">{fill(f.line1, vars)}</p>}
           {f.line2 && <p className="mt-2 max-w-[44ch] text-[14px] text-dusk">{fill(f.line2, vars)}</p>}
           <ul className="mt-7 flex gap-3">
-            {socials
-              .filter(([, , href]) => href)
-              .map(([icon, label, href]) => (
-                <li key={icon}>
-                  <a
-                    href={href}
-                    rel="noopener"
-                    aria-label={label}
-                    className={cx(
-                      "flex size-11 items-center justify-center rounded-full border border-night-line text-dusk-light transition-colors duration-200 hover:border-wine-pale hover:text-paper",
-                      focus,
-                    )}
-                  >
-                    <LineIcon kind={icon} className="size-5" />
-                  </a>
-                </li>
-              ))}
+            {socials.map(([icon, label, href]) => (
+              <li key={href}>
+                <a
+                  href={href}
+                  rel="noopener"
+                  aria-label={label}
+                  className={cx(
+                    "flex size-11 items-center justify-center rounded-full border border-night-line text-dusk-light transition-colors duration-200 hover:border-wine-pale hover:text-paper",
+                    focus,
+                  )}
+                >
+                  <LineIcon kind={icon} className="size-5" />
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
 

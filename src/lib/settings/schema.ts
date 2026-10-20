@@ -73,14 +73,19 @@ const rupiah = (label: string) =>
 const count = (label: string, min: number, max: number) =>
   z.number({ error: `${label} wajib diisi angka.` }).int(`${label} harus bilangan bulat.`).min(min, `${label} minimal ${min}.`).max(max, `${label} maksimal ${max}.`);
 const id = z.string().max(40);
+// Akun sosial selain Instagram yang bisa ditambahkan di footer. {u} diganti username.
+export const SOCIALS = {
+  tiktok: { name: "TikTok", url: "https://tiktok.com/@{u}" },
+  youtube: { name: "YouTube", url: "https://youtube.com/@{u}" },
+  facebook: { name: "Facebook", url: "https://facebook.com/{u}" },
+  threads: { name: "Threads", url: "https://threads.net/@{u}" },
+  x: { name: "X", url: "https://x.com/{u}" },
+  pinterest: { name: "Pinterest", url: "https://pinterest.com/{u}" },
+  linkedin: { name: "LinkedIn", url: "https://linkedin.com/company/{u}" },
+} as const;
+export type SocialKind = keyof typeof SOCIALS;
+export const socialUrl = (kind: SocialKind, handle: string) => SOCIALS[kind].url.replace("{u}", handle);
 // Tujuan tautan: kosong, anchor (#harga), jalur di situs (/ketentuan), atau alamat lengkap.
-const handle = (label: string) =>
-  z
-    .string()
-    .trim()
-    .transform((v) => v.replace(/^@/, ""))
-    .pipe(z.union([z.literal(""), z.string().regex(/^[A-Za-z0-9._-]{1,40}$/, `Username ${label} hanya huruf, angka, titik, strip, dan garis bawah.`)]))
-    .default("");
 const href = (label: string) =>
   z
     .string()
@@ -246,10 +251,22 @@ export const settingsSchema = z
         .transform((v) => v.replace(/^@/, ""))
         .pipe(z.string().regex(/^[A-Za-z0-9._]{1,30}$/, "Username Instagram hanya huruf, angka, titik, dan garis bawah.")),
       email: z.union([z.literal(""), z.email("Email tidak valid.")]),
-      // Akun sosial lain di footer. Kosong berarti ikonnya tidak ditampilkan.
-      tiktok: handle("TikTok"),
-      youtube: handle("YouTube"),
-      pinterest: handle("Pinterest"),
+      // Akun sosial lain di footer setelah Instagram, sesuai urutan. Yang dimatikan tidak ditampilkan.
+      socials: z
+        .array(
+          z.object({
+            id,
+            on: z.boolean(),
+            kind: z.enum(Object.keys(SOCIALS) as [SocialKind, ...SocialKind[]]),
+            handle: z
+              .string()
+              .trim()
+              .transform((v) => v.replace(/^@/, ""))
+              .pipe(z.string().regex(/^[A-Za-z0-9._-]{1,60}$/, "Username wajib diisi, hanya huruf, angka, titik, strip, dan garis bawah.")),
+          }),
+        )
+        .max(12, "Akun sosial maksimal 12.")
+        .default([]),
       city: str("Kota", 40),
       open: time("Jam buka"),
       close: time("Jam tutup"),

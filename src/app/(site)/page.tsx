@@ -8,7 +8,7 @@ import { SiteHeader } from "@/components/home/site-header";
 import { Steps } from "@/components/home/steps";
 import { Themes } from "@/components/home/themes";
 import { plain } from "@/components/rich-text";
-import { fill, formatRupiah, generalWaLink, getSettings, highestPrice, lowestPrice, slaRange, textVars, type Settings } from "@/lib/settings";
+import { fill, formatRupiah, generalWaLink, getSettings, highestPrice, lowestPrice, slaRange, socialUrl, textVars, type Settings } from "@/lib/settings";
 import { OG_BASE, SITE_URL } from "@/lib/site";
 import { RevealOnScroll } from "@/components/reveal-on-scroll";
 
@@ -43,7 +43,7 @@ function jsonLd(s: Settings) {
       ...(s.contact.email && { email: s.contact.email }),
       areaServed: "ID",
       address: { "@type": "PostalAddress", ...(s.contact.city && { addressLocality: s.contact.city }), addressCountry: "ID" },
-      sameAs: [`https://instagram.com/${s.contact.instagram}`],
+      sameAs: [`https://instagram.com/${s.contact.instagram}`, ...s.contact.socials.filter((a) => a.on).map((a) => socialUrl(a.kind, a.handle))],
       priceRange: `${formatRupiah(lowestPrice(s))} - ${formatRupiah(highestPrice(s))}`,
     },
     {
