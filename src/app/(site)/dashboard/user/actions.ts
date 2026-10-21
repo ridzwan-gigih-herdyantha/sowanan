@@ -58,6 +58,16 @@ export async function coupleHideWish(slug: string, wishId: number, hidden: boole
   return setWishHidden(slug, found.invitation.id, wishId, hidden, "mempelai");
 }
 
+// Tamu ditandai sudah dikirimi link saat mempelai membuka WhatsApp dari dashboard, sama seperti di halaman admin.
+export async function coupleMarkSent(slug: string, guestId: number): Promise<{ ok: true; data: string } | { ok: false; error: string }> {
+  const found = await coupleInvitation(slug);
+  if (!found) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
+  const at = new Date().toISOString();
+  const { error } = await supabaseAdmin().from("guests").update({ sent_at: at }).eq("id", guestId).eq("invitation_id", found.invitation.id);
+  if (error) return { ok: false, error: "Gagal menandai terkirim." };
+  return { ok: true, data: at };
+}
+
 // Keluar dari perangkat ini saja. Perangkat lain tetap masuk sampai password diganti admin.
 export async function coupleLogout() {
   const supabase = await supabaseServer();

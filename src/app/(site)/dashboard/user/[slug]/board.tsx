@@ -3,12 +3,12 @@
 import { useMemo, useState } from "react";
 import { useWorking } from "@/app/(site)/admin/use-working";
 import { rsvpSheet } from "@/lib/export/rsvp-sheet";
-import { guestLink } from "@/lib/guests";
-import { coupleHideWish } from "../actions";
+import { fillGuestMessage, guestLink } from "@/lib/guests";
+import { coupleHideWish, coupleMarkSent } from "../actions";
 
 export type BoardRsvp = { id: number; name: string; attending: boolean; guests: number; created_at: string };
 export type BoardWish = { id: number; name: string; message: string; created_at: string; hidden_at: string | null; hidden_by: "admin" | "mempelai" | null };
-export type BoardGuest = { id: number; name: string; sent_at: string | null; qr_token: string | null; checked_in_at: string | null; walk_in: boolean };
+export type BoardGuest = { id: number; name: string; phone: string | null; sent_at: string | null; qr_token: string | null; checked_in_at: string | null; walk_in: boolean };
 
 type Tab = "rsvp" | "wish" | "guest" | "checkin";
 type Props = {
@@ -21,6 +21,10 @@ type Props = {
   excelLock: string | null;
   qr: boolean;
   personalLinks: boolean;
+  // Template pesan WhatsApp dari admin, beserta isian {mempelai} dan {tanggal}.
+  template: string;
+  couple: string;
+  date: string;
 };
 
 const PAGE = 50;
@@ -44,14 +48,15 @@ function Stat({ label, value, note }: { label: string; value: number | string; n
   );
 }
 
-// Isi dashboard mempelai. Semua data hanya dibaca, kecuali tombol sembunyikan ucapan.
-export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests, excelLock, qr, personalLinks }: Props) {
+// Isi dashboard mempelai. Semua data hanya dibaca, kecuali tombol sembunyikan ucapan dan tanda link terkirim.
+export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests: initialGuests, excelLock, qr, personalLinks, template, couple, date }: Props) {
   const [wishes, setWishes] = useState(initialWishes);
+  const [guests, setGuests] = useState(initialGuests);
   const [tab, setTab] = useState<Tab>("rsvp");
   const [filter, setFilter] = useState<"all" | "yes" | "no">("all");
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
-  const [copied, setCopied] = useState<number | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
   const [error, setError] = useState("");
   const { working, run } = useWorking(setError);
 
@@ -67,6 +72,24 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
   const invited = guests.filter((g) => !g.walk_in);
   const hiddenCount = wishes.filter((w) => w.hidden_at).length;
   const link = (g: BoardGuest) => guestLink(origin, slug, g.name, qr ? g.qr_token : null);
+  const message = (g: BoardGuest) => fillGuestMessage(template, { nama: g.name, link: link(g), mempelai: couple, tanggal: date });
+
+  // WhatsApp dibuka langsung, tanda terkirim menyusul di latar.
+  function send(g: BoardGuest) {
+    window.open(`https://wa.me/${g.phone ?? ""}?text=${encodeURIComponent(message(g))}`, "_blank", "noopener");
+    if (g.sent_at) return;
+    run(`terkirim:${g.id}`, async () => {
+      const res = await coupleMarkSent(slug, g.id);
+      if (!res.ok) return setError(res.error);
+      setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, sent_at: res.data } : x)));
+    });
+  }
+
+  async function copy(g: BoardGuest, what: "link" | "pesan") {
+    await navigator.clipboard.writeText(what === "link" ? link(g) : message(g));
+    setCopied(`${what}:${g.id}`);
+    setTimeout(() => setCopied((c) => (c === `${what}:${g.id}` ? null : c)), 1500);
+  }
 
   const q = key(query);
   const lists = {
@@ -248,17 +271,17 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
                 </p>
               </div>
               {personalLinks && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(link(g));
-                    setCopied(g.id);
-                    setTimeout(() => setCopied((c) => (c === g.id ? null : c)), 1500);
-                  }}
-                  className="text-[14px] text-wine underline underline-offset-4"
-                >
-                  {copied === g.id ? "Tersalin" : "Salin link"}
-                </button>
+                <span className="flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
+                  <button type="button" onClick={() => send(g)} className="text-wine underline underline-offset-4">
+                    {working === `terkirim:${g.id}` ? "Menandai terkirim..." : "Kirim WA"}
+                  </button>
+                  <button type="button" onClick={() => copy(g, "link")} className="text-ink-soft hover:text-wine">
+                    {copied === `link:${g.id}` ? "Tersalin" : "Salin link"}
+                  </button>
+                  <button type="button" onClick={() => copy(g, "pesan")} className="text-ink-soft hover:text-wine">
+                    {copied === `pesan:${g.id}` ? "Tersalin" : "Salin pesan"}
+                  </button>
+                </span>
               )}
             </li>
           ))}
