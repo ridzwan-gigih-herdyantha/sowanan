@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
-import { artSize, artUri, BUSH, CHARACTER_COLORS, CLOUD, CLOUD_COLORS, DIRT_TILE, GRASS_TILE, GROOM_IDLE, GROUND_COLORS, runs, SUN, TREE, TREE_COLORS, type Art, type Palette } from "./art";
+import { artSize, artUri, BUSH, CHARACTER_COLORS, CLOUD, CLOUD_COLORS, DIRT_TILE, GRASS_TILE, GROOM_IDLE, GROUND_COLORS, SUN, TREE, TREE_COLORS, type Art, type Palette } from "./art";
+import { shapes } from "./runs";
 
 // Ukuran ubin mengikuti layar dan selalu kelipatan 16, jadi satu piksel gambar tepat 2, 3, atau 4 piksel layar.
 export function tileFor(w: number, h: number) {
@@ -54,14 +55,10 @@ export function Pixels({ art, colors, scale, className = "", style }: { art: Art
   const { w, h } = artSize(art);
   return (
     <svg aria-hidden="true" viewBox={`0 0 ${w} ${h}`} width={w * scale} height={h * scale} shapeRendering="crispEdges" className={`block shrink-0 overflow-visible ${className}`} style={style}>
-      {runs(art).map((r, i) => {
+      {shapes(art).map((r) => {
         // Warna jadi ditulis sebagai atribut, hanya warna dari variabel CSS yang perlu gaya inline.
         const c = colors[r.c] ?? r.c;
-        return c.startsWith("var(") || c.startsWith("color-mix(") ? (
-          <rect key={i} x={r.x} y={r.y} width={r.w} height={1} style={{ fill: c }} />
-        ) : (
-          <rect key={i} x={r.x} y={r.y} width={r.w} height={1} fill={c} />
-        );
+        return c.startsWith("var(") || c.startsWith("color-mix(") ? <path key={r.c} d={r.d} style={{ fill: c }} /> : <path key={r.c} d={r.d} fill={c} />;
       })}
     </svg>
   );
@@ -91,9 +88,11 @@ export function groundStyle(t: number): CSSProperties {
   };
 }
 
-// Gunung bertangga dengan sisi terang dan sisi bayangan serta puncak bersalju, satuan dalam piksel gambar.
+// Gunung bertangga dengan sisi terang dan sisi bayangan serta puncak bersalju, satuan dalam piksel gambar. Setiap warna
+// menjadi satu path.
 function mountains(width: number, height: number) {
-  const out: { x: number; y: number; w: number; tone: "a" | "b" | "c" }[] = [];
+  const out = { a: "", b: "", c: "" };
+  const add = (x: number, y: number, w: number, tone: keyof typeof out) => (out[tone] += `M${x} ${y}h${w}v2h-${w}z`);
   for (let i = 0, x = -20; x < width + 40; i++) {
     const peak = Math.round(height * (0.45 + hash(i, 1) * 0.4));
     const cx = x + 30;
@@ -101,8 +100,8 @@ function mountains(width: number, height: number) {
       const half = Math.round(r * 0.95) + 2;
       const y = height - peak + r;
       const snow = r < peak * 0.2;
-      out.push({ x: cx - half, y, w: half, tone: snow ? "c" : "a" });
-      out.push({ x: cx, y, w: half, tone: snow ? "c" : "b" });
+      add(cx - half, y, half, snow ? "c" : "a");
+      add(cx, y, half, snow ? "c" : "b");
     }
     x += 46 + Math.round(hash(i, 2) * 40);
   }
@@ -154,9 +153,21 @@ export function Land({ size, width, layers, decor = true }: { size: Size; width:
 
   return (
     <div aria-hidden="true" className="pt-sky pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Bintang digambar sebagai bayangan kotak di tiga elemen dengan jeda kedip berbeda, bukan satu elemen beranimasi
+          per bintang yang masing-masing menjadi lapisan terpisah. */}
       <div className="absolute inset-0" style={{ opacity: "var(--inv-stars, 1)" }}>
-        {Array.from({ length: 14 }, (_, i) => (
-          <span key={i} className="pt-star absolute size-1 bg-[#FFF6E5]" style={{ left: `${Math.round(hash(i, 3) * 1000) / 10}%`, top: `${Math.round(hash(i, 4) * 260) / 10}%`, animationDelay: `${Math.round(hash(i, 5) * 24) / 10}s` }} />
+        {[0, 1, 2].map((g) => (
+          <span
+            key={g}
+            className="pt-star absolute top-0 left-0 size-1"
+            style={{
+              boxShadow: Array.from({ length: 14 }, (_, i) => i)
+                .filter((i) => i % 3 === g)
+                .map((i) => `${Math.round(hash(i, 3) * vw)}px ${Math.round(hash(i, 4) * 0.26 * vh)}px #FFF6E5`)
+                .join(", "),
+              animationDelay: `${g * 0.8}s`,
+            }}
+          />
         ))}
       </div>
       <div className="absolute left-[62%] sm:left-[70%]" style={{ top: vh * 0.12 }}>
@@ -168,9 +179,9 @@ export function Land({ size, width, layers, decor = true }: { size: Size; width:
         ))}
       </div>
       <svg ref={set(1) as never} viewBox={`0 0 ${Math.ceil(far / s)} ${mh}`} preserveAspectRatio="none" shapeRendering="crispEdges" className="absolute left-0 will-change-transform" style={{ width: Math.ceil(far / s) * s, height: mh * s, top: ground - mh * s + t * 0.6 }}>
-        {peaks.map((r, i) => (
-          <rect key={i} x={r.x} y={r.y} width={r.w} height={2} style={{ fill: r.tone === "c" ? "#F4F7FB" : r.tone === "a" ? "color-mix(in srgb, var(--inv-hill) 35%, var(--inv-horizon))" : "color-mix(in srgb, var(--inv-hill) 50%, color-mix(in srgb, var(--inv-sky) 50%, var(--inv-horizon)))" }} />
-        ))}
+        <path d={peaks.a} style={{ fill: "color-mix(in srgb, var(--inv-hill) 35%, var(--inv-horizon))" }} />
+        <path d={peaks.b} style={{ fill: "color-mix(in srgb, var(--inv-hill) 50%, color-mix(in srgb, var(--inv-sky) 50%, var(--inv-horizon)))" }} />
+        <path d={peaks.c} fill="#F4F7FB" />
       </svg>
       <svg ref={set(2) as never} viewBox={`0 0 ${hills.gw} ${hh}`} preserveAspectRatio="none" shapeRendering="crispEdges" className="absolute left-0 will-change-transform" style={{ width: hills.gw * s, height: hh * s, top: ground - hh * s + t * 0.4 }}>
         <path d={hills.back} style={{ fill: "color-mix(in srgb, var(--inv-hill) 55%, #B8F08A)" }} />

@@ -559,6 +559,13 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
   const front = (center: number) => center - (vw * (0.5 - ANCHOR)) / t;
   const goTo = (center: number) => warp.current(front(center));
 
+  useEffect(() => {
+    const el = track.current;
+    if (!el || reduce) return;
+    const id = window.setInterval(() => el.toggleAttribute("data-spin"), 600);
+    return () => window.clearInterval(id);
+  }, [reduce]);
+
   // Editor meminta sebuah foto ditampilkan di pratinjau, jadi karakter dipindah ke papan yang memuat foto itu.
   useEffect(() => {
     const box = stage.current;
@@ -677,7 +684,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
                 <Img art={ARCH} colors={ARCH_COLORS} scale={s} style={{ left: plan.arch * t - (archSize.w * s) / 2, top: groundTop - archSize.h * s }} />
                 <div ref={heroine} data-pose="idle" className="pt-heroine absolute" style={{ left: (plan.arch + 0.2) * t - t / 2, top: groundTop - t * BODY }}>
                   <span className="pt-face block">
-                    <span className={`block ${cheer ? "pt-cheer" : "pt-bob"}`}>
+                    <span className={`pt-frames ${cheer ? "pt-cheer" : "pt-bob"}`}>
                       {cheer ? (
                         <Pixels art={BRIDE_WAVE} colors={CHARACTER_COLORS} scale={s} />
                       ) : (
@@ -713,7 +720,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
                 <span ref={shade} aria-hidden="true" className="pt-shade absolute left-0" style={{ top: groundTop - t * 0.12, width: t * 0.84, height: t * 0.24, transform: `translate3d(${vw * 0.22 - t * 0.42}px, 0, 0)` }} />
                 <div ref={hero} data-pose="idle" className="pt-hero absolute left-0" style={{ top: groundTop - t * BODY, transform: `translate3d(${vw * 0.22 - t / 2}px, 0, 0)` }}>
                   <span className="pt-face relative block">
-                    <span className={`block ${cheer ? "pt-cheer" : ""}`}>
+                    <span className={`pt-frames ${cheer ? "pt-cheer" : ""}`}>
                       {Object.entries(FRAMES).map(([k, art]) => (
                         <Pixels key={k} art={art} colors={CHARACTER_COLORS} scale={s} className={`pt-pose-${k}`} />
                       ))}

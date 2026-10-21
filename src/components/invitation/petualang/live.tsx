@@ -113,7 +113,12 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
     const c = canvas.current;
     const img = el?.querySelector("img");
     if (!el || !c || !img) return;
-    const done = () => el.setAttribute("data-pt-photo-done", "");
+    // Setelah memudar, kanvas mosaik disembunyikan total supaya tidak lagi menjadi lapisan yang ikut disusun tiap frame.
+    let hide = 0;
+    const done = () => {
+      el.setAttribute("data-pt-photo-done", "");
+      hide = window.setTimeout(() => (c.style.display = "none"), 300);
+    };
     if (reduce) return done();
     let timer = 0;
     let gone = false;
@@ -156,12 +161,13 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
     const draw = (cols: number) => {
       const w = el.clientWidth;
       const h = el.clientHeight;
-      const ctx = c.getContext("2d");
+      // Kanvasnya kecil, jadi digambar tanpa GPU supaya tidak dipromosikan menjadi lapisan tersendiri.
+      const ctx = c.getContext("2d", { willReadFrequently: true });
       if (!sumber || !w || !h || !ctx) return false;
       const rows = Math.max(1, Math.round((cols * h) / w));
       kecil.width = cols;
       kecil.height = rows;
-      kecil.getContext("2d")?.drawImage(sumber, 0, 0, cols, rows);
+      kecil.getContext("2d", { willReadFrequently: true })?.drawImage(sumber, 0, 0, cols, rows);
       c.width = cols;
       c.height = rows;
       ctx.imageSmoothingEnabled = false;
@@ -195,6 +201,7 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
       gone = true;
       stop();
       window.clearTimeout(timer);
+      window.clearTimeout(hide);
     };
   }, [reduce]);
 

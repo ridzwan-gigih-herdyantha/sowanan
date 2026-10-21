@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { shapes } from "./runs";
 
 // Ikon piksel tema Co-op Adventure. Setiap sprite ditulis sebagai baris huruf, satu huruf satu piksel, titik berarti
 // kosong. Digambar sebagai SVG dengan tepi tajam, jadi tetap kotak-kotak rapi di ukuran berapa pun.
@@ -34,22 +35,6 @@ const COLORS: Record<string, string> = {
 
 export type SpriteData = readonly string[];
 
-// Baris piksel yang warnanya sama dan bersebelahan digabung menjadi satu kotak.
-function runs(rows: SpriteData) {
-  const out: { x: number; y: number; w: number; c: string }[] = [];
-  rows.forEach((row, y) => {
-    let x = 0;
-    while (x < row.length) {
-      const c = row[x];
-      let w = 1;
-      while (row[x + w] === c) w++;
-      if (c !== ".") out.push({ x, y, w, c });
-      x += w;
-    }
-  });
-  return out;
-}
-
 export function Sprite({ data, scale = 4, className = "", style, colors }: { data: SpriteData; scale?: number; className?: string; style?: CSSProperties; colors?: Record<string, string> }) {
   const w = Math.max(...data.map((r) => r.length));
   const h = data.length;
@@ -63,8 +48,8 @@ export function Sprite({ data, scale = 4, className = "", style, colors }: { dat
       className={`block shrink-0 overflow-visible ${className}`}
       style={style}
     >
-      {runs(data).map((r, i) => (
-        <rect key={i} x={r.x} y={r.y} width={r.w} height={1} style={{ fill: colors?.[r.c] ?? COLORS[r.c] ?? r.c }} />
+      {shapes(data).map((r) => (
+        <path key={r.c} d={r.d} style={{ fill: colors?.[r.c] ?? COLORS[r.c] ?? r.c }} />
       ))}
     </svg>
   );

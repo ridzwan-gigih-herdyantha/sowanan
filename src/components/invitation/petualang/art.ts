@@ -2,6 +2,8 @@
 // Karakter ditulis tangan, satu huruf satu piksel. Pohon, semak, awan, dan gapura dibentuk dari gabungan
 // lingkaran dengan bayangan dari kiri atas dan tepi bergaris, jadi detailnya konsisten tanpa digambar satu per satu.
 
+import { runs } from "./runs";
+
 export type Art = readonly string[];
 export type Palette = Record<string, string>;
 
@@ -547,22 +549,6 @@ export const ARCH: Art = (() => {
   return rows;
 })();
 export const ARCH_COLORS: Palette = { o: "#24452A", g: "#3A7A2E", G: "#4E9A3D", L: "#7CC65A", F: "#F48FB1", W: "#FFFFFF", Y: "#F6C945" };
-
-// Baris piksel yang warnanya sama dan bersebelahan digabung menjadi satu kotak.
-export function runs(rows: Art) {
-  const out: { x: number; y: number; w: number; c: string }[] = [];
-  rows.forEach((row, y) => {
-    let x = 0;
-    while (x < row.length) {
-      const c = row[x];
-      let w = 1;
-      while (row[x + w] === c) w++;
-      if (c !== ".") out.push({ x, y, w, c });
-      x += w;
-    }
-  });
-  return out;
-}
 
 const cache = new Map<string, string>();
 // Gambar sebagai data URI SVG, dipakai untuk aset yang berulang supaya tidak menambah elemen di halaman.

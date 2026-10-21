@@ -460,8 +460,16 @@
     visibility: visible;
   }
 }
+/* Semua bingkai langkah ditumpuk di satu sel grid dan hanya yang aktif terlihat. Berganti visibility tidak mengubah
+   ukuran apa pun, jadi langkah karakter tidak memicu hitung ulang tata letak setiap beberapa frame. */
+.pt-frames {
+  display: grid;
+}
+.pt-frames > svg {
+  grid-area: 1 / 1;
+}
 .pt-hero svg {
-  display: none;
+  visibility: hidden;
 }
 .pt-hero[data-pose="idle"] .pt-pose-idle,
 .pt-hero[data-pose="a"] .pt-pose-a,
@@ -470,16 +478,16 @@
 .pt-hero[data-pose="jump"] .pt-pose-jump,
 .pt-hero[data-pose="kneel"] .pt-pose-kneel,
 .pt-hero[data-pose="kneel"] .pt-held svg {
-  display: block;
+  visibility: visible;
 }
 .pt-heroine svg {
-  display: none;
+  visibility: hidden;
 }
 .pt-heroine .pt-cheer svg,
 .pt-heroine[data-pose="idle"] .pt-pose-idle,
 .pt-heroine[data-pose="a"] .pt-pose-a,
 .pt-heroine[data-pose="b"] .pt-pose-b {
-  display: block;
+  visibility: visible;
 }
 .pt-heroine:not([data-pose="idle"]) .pt-bob {
   animation: none;
@@ -606,19 +614,16 @@
 .pt-modal {
   animation: pt-pop-in 0.3s steps(4);
 }
-.pt-coin {
-  animation: pt-spin 1.2s steps(1) infinite;
+/* Semua koin berputar bersama lewat satu atribut di lintasan yang diganti setiap 0,6 detik (world.tsx), bukan animasi
+   CSS sendiri-sendiri yang membuat setiap koin menjadi lapisan terpisah. */
+.pt-track[data-spin] .pt-coin:not([data-taken]) {
+  transform: scaleX(0.55);
 }
 .pt-cheer {
   animation: pt-jump 0.6s cubic-bezier(0.3, 0.7, 0.4, 1) infinite;
 }
 .pt-rise {
   animation: pt-pop 1.6s ease-out infinite;
-}
-@keyframes pt-spin {
-  50% {
-    transform: scaleX(0.55);
-  }
 }
 @keyframes pt-take {
   to {
