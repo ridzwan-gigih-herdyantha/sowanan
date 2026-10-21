@@ -380,6 +380,10 @@
 .pt-skin:not([style*="--inv-script"]) .font-script {
   letter-spacing: 0.06em;
 }
+/* Pixelify Sans menggabungkan f dan i menjadi satu huruf, jadi ligatur dimatikan di semua teks judul. */
+.pt-skin .font-display {
+  font-variant-ligatures: none;
+}
 .pt-btn {
   background: var(--inv-accent);
   color: var(--inv-paper);
