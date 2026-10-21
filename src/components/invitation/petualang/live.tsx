@@ -119,38 +119,63 @@ export function PixelPhoto({ children, focus = 0.5, className = "" }: { children
     let timer = 0;
     let gone = false;
 
-    const draw = (cols: number) => {
+    // Foto di-decode dan dipotong sekali menjadi bitmap kecil secara asinkron, lalu setiap langkah mosaik digambar
+    // dari bitmap itu. Foto ukuran penuh tidak lagi diolah di thread utama saat bagiannya masuk layar.
+    let sumber: CanvasImageSource | null = null;
+    const kecil = document.createElement("canvas");
+    const siapkan = async () => {
+      await img.decode().catch(() => {});
       const w = el.clientWidth;
       const h = el.clientHeight;
       const iw = img.naturalWidth;
       const ih = img.naturalHeight;
       if (!w || !h || !iw || !ih) return false;
-      const rows = Math.max(1, Math.round((cols * h) / w));
       // Potongan foto yang terlihat, sama dengan object-cover.
       const k = Math.max(w / iw, h / ih);
       const sw = w / k;
       const sh = h / k;
       const sx = (iw - sw) / 2;
       const sy = (ih - sh) * focus;
-      const small = document.createElement("canvas");
-      small.width = cols;
-      small.height = rows;
-      small.getContext("2d")?.drawImage(img, sx, sy, sw, sh, 0, 0, cols, rows);
+      const lebar = STEPS[STEPS.length - 1] * 2;
+      const tinggi = Math.max(1, Math.round((lebar * h) / w));
+      try {
+        sumber = await createImageBitmap(img, sx, sy, sw, sh, { resizeWidth: lebar, resizeHeight: tinggi, resizeQuality: "medium" });
+      } catch {
+        const cadangan = document.createElement("canvas");
+        cadangan.width = lebar;
+        cadangan.height = tinggi;
+        cadangan.getContext("2d")?.drawImage(img, sx, sy, sw, sh, 0, 0, lebar, tinggi);
+        sumber = cadangan;
+      }
+      return true;
+    };
+    const draw = (cols: number) => {
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      const ctx = c.getContext("2d");
+      if (!sumber || !w || !h || !ctx) return false;
+      const rows = Math.max(1, Math.round((cols * h) / w));
+      kecil.width = cols;
+      kecil.height = rows;
+      kecil.getContext("2d")?.drawImage(sumber, 0, 0, cols, rows);
       c.width = cols;
       c.height = rows;
-      const ctx = c.getContext("2d");
-      if (!ctx) return false;
       ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(small, 0, 0);
+      ctx.drawImage(kecil, 0, 0);
       return true;
     };
 
     const ready = () => img.complete && img.naturalWidth > 0;
-    const whenLoaded = (cb: () => void) => (ready() ? cb() : img.addEventListener("load", cb, { once: true }));
-    whenLoaded(() => !gone && draw(STEPS[0]));
+    const siap = new Promise<boolean>((resolve) => {
+      const mulai = () => siapkan().then(resolve, () => resolve(false));
+      if (ready()) mulai();
+      else img.addEventListener("load", mulai, { once: true });
+    });
+    siap.then((ok) => ok && !gone && draw(STEPS[0]));
 
     const play = () =>
-      whenLoaded(() => {
+      siap.then((ok) => {
+        if (!ok) return done();
         let i = 0;
         const next = () => {
           if (gone) return;

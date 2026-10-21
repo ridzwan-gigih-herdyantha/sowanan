@@ -38,6 +38,7 @@ export type ExtraView = {
   photos: { src: string; w: number; h: number; alt: string }[];
   videos: { src: string; poster: string }[];
   tracks: { src: string; cover: string; title: string; artist: string }[];
+  youtube: { id: string; title: string }[];
 };
 
 // Bagian tambahan dikelompokkan per posisi. Posisi yang tidak ada di tema (misalnya setelah ganti tema) tampil sebelum Penutup.
@@ -47,6 +48,8 @@ function groupExtras(d: InvitationData, theme: string) {
   for (const e of d.extras) {
     const photos = e.photos.filter((p) => p.src).map((p, i) => ({ src: u(p.src), w: p.w || 1600, h: p.h || 1200, alt: `${e.title || "Foto"} ${i + 1}` }));
     const videos = e.videos.filter((v) => v.src).map((v) => ({ src: u(v.src), poster: u(v.poster) }));
+    // Tautan YouTube yang id videonya tidak dikenali diabaikan.
+    const youtube = e.youtube.map((y) => ({ id: streamOf(y.url.trim(), "", "")?.youtube ?? "", title: y.title.trim() })).filter((y) => y.id);
     const tracks = e.tracks.filter((t) => t.src).map((t, i) => ({ src: u(t.src), cover: u(t.cover), title: t.title || `Lagu ${i + 1}`, artist: t.artist }));
     const rundown = e.kind === "rundown" ? e.rundown.filter((r) => r.time.trim() || r.name.trim()) : [];
     const plan = e.kind === "denah" && e.plan.src ? { src: u(e.plan.src), w: e.plan.w || 1600, h: e.plan.h || 1200, alt: e.title || "Denah lokasi" } : null;
@@ -55,7 +58,7 @@ function groupExtras(d: InvitationData, theme: string) {
     const stream = e.kind === "siaran" ? streamOf(e.stream.url.trim(), e.stream.time.trim(), d.event.timezone) : null;
     const colors = e.kind === "dresscode" ? e.colors.filter((c) => HEX.test(c.hex.trim())).map((c) => ({ name: c.name.trim(), hex: c.hex.trim() })) : [];
     // Jenis siap pakai tampil kalau isi utamanya ada. Blok bebas cukup salah satu isiannya terisi.
-    const empty = { rundown: !rundown.length, denah: !plan, dresscode: !colors.length, imbauan: !rules.length, siaran: !stream, bebas: !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length };
+    const empty = { rundown: !rundown.length, denah: !plan, dresscode: !colors.length, imbauan: !rules.length, siaran: !stream, bebas: !e.title.trim() && !e.body.trim() && !photos.length && !videos.length && !tracks.length && !youtube.length };
     if (empty[e.kind]) continue;
     const at = known.has(e.after) ? e.after : "wishes";
     const bebas = e.kind === "bebas";
@@ -73,6 +76,7 @@ function groupExtras(d: InvitationData, theme: string) {
       photos: bebas ? photos : [],
       videos: bebas ? videos : [],
       tracks: bebas ? tracks : [],
+      youtube: bebas ? youtube : [],
     });
   }
   return out;

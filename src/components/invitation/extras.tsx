@@ -379,7 +379,7 @@ function Swatches({ colors, skin, tone }: { colors: Color[]; skin?: Skin; tone: 
   );
 }
 
-// Blok bebas: teks, foto, video, dan lagu sesuai isian.
+// Blok bebas: teks, foto, video, video YouTube, dan lagu sesuai isian.
 function Free({ e, left }: { e: ExtraView; left: boolean }) {
   const [one] = e.photos;
   return (
@@ -396,6 +396,16 @@ function Free({ e, left }: { e: ExtraView; left: boolean }) {
       {e.videos.length > 0 && (
         <div className="mt-10">
           <ExtraVideos videos={e.videos} />
+        </div>
+      )}
+      {e.youtube.length > 0 && (
+        <div className="mt-10 grid gap-8">
+          {e.youtube.map((y) => (
+            <figure key={y.id}>
+              <YoutubeStream id={y.id} title={y.title || e.title || "Video"} />
+              {y.title && <figcaption className={`mt-3 text-[14px] opacity-75 ${left ? "" : "text-center"}`}>{y.title}</figcaption>}
+            </figure>
+          ))}
         </div>
       )}
       {e.tracks.length > 0 && (

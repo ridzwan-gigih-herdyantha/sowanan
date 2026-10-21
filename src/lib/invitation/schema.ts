@@ -148,6 +148,8 @@ export const invitationDataSchema = z.object({
       photos: list(z.object({ src: str(), w: num(), h: num() })),
       videos: list(z.object({ src: str(), poster: str() })),
       tracks: list(z.object({ src: str(), cover: str(), title: str(), artist: str() })),
+      // Video YouTube di blok bebas, diputar langsung di undangan.
+      youtube: list(z.object({ url: str(), title: str() })),
       tone: z.enum(Object.keys(EXTRA_TONES) as [ExtraTone, ...ExtraTone[]]).catch("paper"),
       after: z.enum(EXTRA_ANCHORS).catch("event"),
     }),

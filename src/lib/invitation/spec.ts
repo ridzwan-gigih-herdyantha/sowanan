@@ -63,6 +63,7 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
   photos: [],
   videos: [],
   tracks: [],
+  youtube: [],
   tone: "paper",
   after: "event",
 });
@@ -282,7 +283,7 @@ export const GROUPS: Group[] = [
             { value: "dresscode", label: EXTRA_KINDS.dresscode, hint: "Warna pakaian yang diminta, tampil sebagai contoh palet.", counted: true, blank: extraBlank("dresscode", "Dress Code") },
             { value: "imbauan", label: EXTRA_KINDS.imbauan, hint: "Hal yang perlu diperhatikan tamu, misalnya tidak merekam saat akad.", counted: true, blank: extraBlank("imbauan", "Imbauan untuk Tamu") },
             { value: "siaran", label: EXTRA_KINDS.siaran, hint: "Tautan YouTube, Zoom, atau lainnya untuk tamu yang menonton dari jauh.", counted: true, blank: extraBlank("siaran", "Siaran Langsung") },
-            { value: "bebas", label: `${EXTRA_KINDS.bebas} (Paket Khusus)`, hint: "Judul, teks, foto, video, dan lagu bebas. Tidak dihitung dalam batas paket.", counted: false, blank: extraBlank("bebas") },
+            { value: "bebas", label: `${EXTRA_KINDS.bebas} (Paket Khusus)`, hint: "Judul, teks, foto, video, video YouTube, dan lagu bebas. Tidak dihitung dalam batas paket.", counted: false, blank: extraBlank("bebas") },
           ],
         },
         fields: [
@@ -364,6 +365,16 @@ export const GROUPS: Group[] = [
             when: ["bebas"],
             blank: { src: "", poster: "" },
             fields: [media("src", "Video", "video"), media("poster", "Poster video", "poster", { ...optional, hint: "Gambar sebelum video diputar." })],
+          },
+          {
+            kind: "list",
+            path: "youtube",
+            label: "Video YouTube",
+            item: "Video YouTube",
+            hint: "Opsional. Tempel tautan video YouTube, misalnya youtube.com/watch?v=... atau youtu.be/.... Musik latar tema meredup otomatis saat video diputar.",
+            when: ["bebas"],
+            blank: { url: "", title: "" },
+            fields: [text("url", "Tautan YouTube", 300, { format: "url", placeholder: "https://youtu.be/..." }), text("title", "Judul", 80, optional)],
           },
           {
             kind: "list",
