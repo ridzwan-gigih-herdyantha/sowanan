@@ -580,11 +580,13 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
     return () => box.removeEventListener("sowanan:reveal", reveal);
   }, [vw, t]);
 
-  // Fokus keyboard ke isi papan memindahkan karakter ke papan itu, karena panggung tidak bisa digulir sendiri.
+  // Fokus keyboard ke isi papan memindahkan karakter ke papan itu, karena panggung tidak bisa digulir sendiri. Fokus dari
+  // ketukan atau klik, dan fokus di dalam jendela seperti cerita lengkap, tidak memindahkan karakter.
   const onFocus = (e: React.FocusEvent) => {
     if (stage.current) stage.current.scrollLeft = 0;
-    if (locked) return;
-    const at = (e.target as HTMLElement).closest<HTMLElement>("[data-at]");
+    const target = e.target as HTMLElement;
+    if (locked || target.closest("dialog") || !target.matches(":focus-visible")) return;
+    const at = target.closest<HTMLElement>("[data-at]");
     if (at) goTo(Number(at.dataset.at));
   };
 
