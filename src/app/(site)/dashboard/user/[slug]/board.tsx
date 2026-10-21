@@ -17,8 +17,8 @@ type Props = {
   rsvps: BoardRsvp[];
   wishes: BoardWish[];
   guests: BoardGuest[];
-  // Fitur paket. Teks berisi alasan kalau tidak termasuk paket.
-  excelLock: string | null;
+  // Fitur paket. Yang tidak termasuk paket disembunyikan tanpa keterangan, karena alasan kunci ditulis untuk admin.
+  excel: boolean;
   qr: boolean;
   personalLinks: boolean;
   // Template pesan WhatsApp dari admin, beserta isian {mempelai} dan {tanggal}.
@@ -49,7 +49,7 @@ function Stat({ label, value, note }: { label: string; value: number | string; n
 }
 
 // Isi dashboard mempelai. Semua data hanya dibaca, kecuali tombol sembunyikan ucapan dan tanda link terkirim.
-export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests: initialGuests, excelLock, qr, personalLinks, template, couple, date }: Props) {
+export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests: initialGuests, excel, qr, personalLinks, template, couple, date }: Props) {
   const [wishes, setWishes] = useState(initialWishes);
   const [guests, setGuests] = useState(initialGuests);
   const [tab, setTab] = useState<Tab>("rsvp");
@@ -215,8 +215,7 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
             ))}
           </div>
         )}
-        {list.length > 0 && excelLock && <span className="max-w-xs text-[12px] text-ink-mute">{excelLock}</span>}
-        {list.length > 0 && !excelLock && (
+        {list.length > 0 && excel && (
           <button type="button" onClick={() => run("excel", exportXlsx)} disabled={working !== null} className="text-[14px] text-wine underline underline-offset-4 disabled:opacity-60">
             {working === "excel" ? "Menyiapkan Excel..." : "Unduh Excel"}
           </button>

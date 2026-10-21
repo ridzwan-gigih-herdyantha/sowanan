@@ -59,7 +59,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         rsvps={(rsvps.data ?? []) as BoardRsvp[]}
         wishes={wishes}
         guests={(guests.data ?? []) as BoardGuest[]}
-        excelLock={locked.ekspor_excel ?? null}
+        excel={!locked.ekspor_excel}
         qr={!locked.qr_absensi && !locked.nama_tamu}
         personalLinks={!locked.nama_tamu}
         template={message.data?.guest_message ?? DEFAULT_GUEST_MESSAGE}
