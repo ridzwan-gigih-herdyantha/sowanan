@@ -6,7 +6,7 @@ import { CopyButton } from "@/components/invitation/copy-button";
 import { Extras } from "@/components/invitation/extras";
 import { Gallery } from "@/components/invitation/gallery";
 import { GuestName } from "@/components/invitation/guest-name";
-import { PixelPhoto, ScoreCountdown, Typewriter } from "@/components/invitation/petualang/live";
+import { PixelPhoto, ScoreCountdown, StoryDetail, Typewriter } from "@/components/invitation/petualang/live";
 import { CHEST, COIN, HEART, LETTER, Sprite, type SpriteData } from "@/components/invitation/petualang/pixel";
 import { World, type Station } from "@/components/invitation/petualang/world";
 import { QrisDownload } from "@/components/invitation/qris-download";
@@ -110,6 +110,7 @@ function StoryBoard({ s, i }: { s: InvitationView["story"][number]; i: number })
         </p>
         <h3 className="mt-1 font-display text-[clamp(18px,4.6vw,22px)] leading-tight font-bold">{s.title}</h3>
         <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-inv-ink/80 sm:text-[14px]">{s.short}</p>
+        {(s.long.trim() || s.video) && <StoryDetail s={s} no={i + 1} />}
       </div>
     </article>
   );

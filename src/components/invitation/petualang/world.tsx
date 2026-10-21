@@ -531,7 +531,8 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
         setEnding(false);
         return;
       }
-      if (typing() || document.querySelector('[data-inv-state="closed"]')) return;
+      // Selama jendela seperti cerita lengkap terbuka, tombol arah dipakai untuk menggulir isinya, bukan berjalan.
+      if (typing() || document.querySelector('[data-inv-state="closed"], dialog[open]')) return;
       if (e.code === "ArrowRight" || e.code === "KeyD") held.current = 1;
       else if (e.code === "ArrowLeft" || e.code === "KeyA") held.current = -1;
       else if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") jumpQueued.current = true;

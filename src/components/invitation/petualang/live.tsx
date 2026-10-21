@@ -1,6 +1,7 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
+import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { pad, useTimeLeft } from "@/components/countdown";
 
@@ -210,6 +211,61 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
       {children}
       <canvas ref={canvas} aria-hidden="true" className="pt-mosaic pointer-events-none absolute inset-0 size-full" />
     </div>
+  );
+}
+
+type StoryEntry = { title: string; date: string; image: string; long: string; place?: string; video?: { src: string; poster: string } };
+
+// Tombol di papan cerita yang membuka cerita lengkap dalam jendela bergaya kotak dialog game. Memakai dialog bawaan
+// peramban supaya tampil di atas panggung yang diperkecil dan digeser.
+export function StoryDetail({ s, no }: { s: StoryEntry; no: number }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const [open, setOpen] = useState(false);
+  const show = () => {
+    setOpen(true);
+    ref.current?.showModal();
+  };
+  const close = () => ref.current?.close();
+
+  return (
+    <>
+      <button type="button" onClick={show} className="pt-label mt-2 text-[10px] text-inv-accent underline underline-offset-4 sm:text-[11px]">
+        Lihat cerita &#9654;
+      </button>
+      <dialog
+        ref={ref}
+        aria-label={s.title}
+        onClose={() => setOpen(false)}
+        onClick={(e) => e.target === ref.current && close()}
+        className="m-auto max-h-[calc(100dvh-32px)] w-[min(520px,calc(100%-32px))] overflow-visible bg-transparent p-2 text-inv-ink backdrop:bg-[#1E1830]/60"
+      >
+        {/* Bingkai piksel di elemen dalam, karena gaya pt-box mengubah posisi dan akan menggeser dialog dari tengah layar. */}
+        {open && (
+          <div className="pt-box pt-modal flex max-h-[calc(100dvh-48px)] flex-col">
+            <div className="pt-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <div className="relative aspect-[4/3] w-full bg-inv-wash">
+                {s.video ? (
+                  <video src={s.video.src} poster={s.video.poster} className="size-full object-cover" autoPlay muted loop playsInline preload="none" />
+                ) : (
+                  <Image src={s.image} alt={s.title} fill sizes="(min-width: 560px) 520px, 100vw" className="object-cover" />
+                )}
+              </div>
+              <div className="px-5 pt-4 pb-2 text-left">
+                <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">
+                  Checkpoint {no} / {s.date}
+                </p>
+                <h3 className="mt-1.5 font-display text-[clamp(22px,6vw,28px)] leading-tight font-bold">{s.title}</h3>
+                {s.place && <p className="mt-1 text-[13px] text-inv-ink/70">{s.place}</p>}
+                <p className="mt-3 text-[15px] leading-relaxed whitespace-pre-line">{s.long}</p>
+              </div>
+            </div>
+            <button type="button" onClick={close} className="pt-btn pt-label m-3 shrink-0 px-5 py-3 text-[12px]">
+              Kembali ke dunia
+            </button>
+          </div>
+        )}
+      </dialog>
+    </>
   );
 }
 
