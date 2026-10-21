@@ -375,6 +375,11 @@
     4px 4px 0 var(--inv-accent),
     7px 7px 0 var(--inv-night);
 }
+/* Huruf piksel tebal seperti f dan i saling menempel, jadi nama diberi jarak. Font nama pilihan di editor tidak
+   diberi jarak karena biasanya hurufnya bersambung. */
+.pt-skin:not([style*="--inv-script"]) .font-script {
+  letter-spacing: 0.06em;
+}
 .pt-btn {
   background: var(--inv-accent);
   color: var(--inv-paper);
