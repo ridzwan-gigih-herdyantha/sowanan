@@ -230,9 +230,11 @@ export function InvitationShell({ door, music, synth, className, style, children
   useEffect(() => () => Object.values(SYNTHS).forEach((s) => s.pause()), []);
 
   const guest = invited || typed || "";
+  // Paket tanpa nama tamu tidak membaca maupun menyimpan nama yang diingat, supaya nama dari undangan lain tidak ikut
+  // muncul. Nama yang diketik tamu di RSVP atau ucapan tetap dipakai selama kunjungan itu.
   const setGuest = (name: string) => {
     setTyped(name);
-    if (slug) storeGuest(name);
+    if (slug && namesAllowed) storeGuest(name);
   };
 
   const player = !music && synth ? SYNTHS[synth] : null;
@@ -305,7 +307,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   const media = useMemo<MediaCtx>(() => ({ claim: (id, stop) => handlers.current.claim(id, stop), release: (id) => handlers.current.release(id) }), []);
 
   const openInvitation = () => {
-    const name = guest || (slug ? readStoredGuest() : "");
+    const name = guest || (slug && namesAllowed ? readStoredGuest() : "");
     if (name) setGuest(name);
     window.scrollTo(0, 0);
     setOpen(true);
