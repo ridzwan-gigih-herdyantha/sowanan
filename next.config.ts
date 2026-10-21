@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   // Hanya untuk dev: izinkan membuka dev server lewat tunnel ngrok, misalnya untuk mencoba undangan di HP.
   allowedDevOrigins: ["*.ngrok-free.app", "*.ngrok.app"],
   images: {
+    // Gambar dimuat langsung tanpa Vercel Image Optimization. Media unggahan sudah diperkecil dan dijadikan WebP
+    // saat diunggah (lib/storage/process.ts), dan kuota optimasi Vercel pernah habis sehingga semua gambar gagal tampil.
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     qualities: [75, 85],
     remotePatterns: [
