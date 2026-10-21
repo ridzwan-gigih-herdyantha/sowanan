@@ -85,7 +85,7 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name}`, fetchPriority: "high" as const };
   const { props: { srcSet, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1000, height: 1400, sizes: "(min-width: 1024px) 46vw, 96vw" });
   // eslint-disable-next-line @next/next/no-img-element
-  return <img {...rest} srcSet={srcSet} alt={common.alt} className="size-full object-cover object-[50%_30%]" />;
+  return <img {...rest} {...inv.frame.hero} style={{ ...rest.style, ...inv.frame.hero.style }} srcSet={srcSet} alt={common.alt} className="size-full object-cover object-[50%_30%]" />;
 }
 
 function Hero({ inv }: { inv: InvitationView }) {
@@ -155,7 +155,7 @@ function Couple({ inv }: { inv: InvitationView }) {
   const card = (p: typeof inv.groom, i: number) => (
     <div {...reveal(i + 2)} className="text-center">
       <Arch className="mx-auto aspect-[3/4] w-full max-w-[340px]" gap="var(--sk-pasir)">
-        <Image src={p.photo} alt={p.full || p.name} fill sizes="(min-width: 640px) 340px, 44vw" className="object-cover object-top" />
+        <Image {...p.frame} src={p.photo} alt={p.full || p.name} fill sizes="(min-width: 640px) 340px, 44vw" className="object-cover object-top" />
       </Arch>
       <p className="mt-4 font-display text-[clamp(20px,5.4vw,30px)] leading-tight text-inv-ink">{p.full || p.name}</p>
       <p className="mt-1 text-[13px] text-inv-ink/70">{p.role}</p>
@@ -230,7 +230,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
           </div>
           <div {...reveal(2)}>
             <Arch className="aspect-[4/4.4]" gap="var(--sk-night2)">
-              <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 400px, 92vw" className="object-cover" />
+              <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 400px, 92vw" className="object-cover" />
             </Arch>
             <p className="mt-5 font-display text-[26px] leading-tight">{inv.venue.name}</p>
             <p className="mt-1 text-[15px] text-inv-wash/80">{inv.venue.address}</p>
@@ -293,7 +293,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
       <Wrap className="max-w-[980px]">
         <div {...reveal()} className="overflow-hidden rounded-sm bg-inv-paper shadow-[0_24px_50px_color-mix(in_srgb,var(--inv-ink)_16%,transparent)] ring-1 ring-sk-emas/50 md:grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="relative min-h-[260px] overflow-hidden text-inv-wash md:min-h-[400px]">
-            <Image src={inv.images.heroWide} alt="" fill sizes="(min-width: 768px) 440px, 100vw" className="object-cover" />
+            <Image {...inv.frame.heroWide} src={inv.images.heroWide} alt="" fill sizes="(min-width: 768px) 440px, 100vw" className="object-cover" />
             <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-inv-night via-inv-night/70 to-inv-night/20" />
             <Pattern name="zellige" color="var(--sk-emas)" opacity={0.08} />
             <div className="relative flex h-full min-h-[inherit] flex-col justify-end p-6 sm:p-8">

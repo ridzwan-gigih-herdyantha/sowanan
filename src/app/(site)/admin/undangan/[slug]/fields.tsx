@@ -1,11 +1,13 @@
 "use client";
 
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { slotOfPath, type Frame, type FrameDevice } from "@/lib/invitation/frame";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { TIMEZONES } from "@/lib/invitation/schema";
 import { extraAnchors, forTheme, getIn, HEX, itemFields, setIn, variantFor, type Field } from "@/lib/invitation/spec";
 import { mediaUrl, PURPOSES } from "@/lib/storage/media";
 import { ACCEPT, useUploader, type UploadResult } from "../../media/use-uploader";
+import { FrameDialog } from "./frame-dialog";
 
 type Ctx = {
   slug: string;
@@ -54,12 +56,18 @@ function MediaInput({ f, path }: { f: Extract<Field, { kind: "media" }>; path: s
   const value = String(getIn(data, path) ?? "");
   const kind = PURPOSES[f.purpose].kind;
   const err = errors[path];
+  // Foto utama bisa diatur posisi dan zoomnya. Pengaturan dibuang saat fotonya diganti atau dikosongkan.
+  const slot = kind === "image" ? slotOfPath(path) : undefined;
+  const [framing, setFraming] = useState(false);
+  const framed = slot ? data.frames[slot] : undefined;
+  const unframe = (d: InvitationData) => (slot && d.frames[slot] ? setIn(d, `frames.${slot}`, undefined) : d);
+  const setFrame = (device: FrameDevice, frame: Frame | null) => slot && update((d) => setIn(d, `frames.${slot}.${device}`, frame ?? undefined));
 
   const apply = (res: UploadResult) => {
     if (!res.ok) return setStatus(res.error);
     setStatus("");
     update((d) => {
-      let next = setIn(d, path, res.data.path);
+      let next = unframe(setIn(d, path, res.data.path));
       const base = path.slice(0, path.lastIndexOf("."));
       if (f.dims && res.data.width && res.data.height) next = setIn(setIn(next, `${base}.w`, res.data.width), `${base}.h`, res.data.height);
       if (f.dims || f.purpose === "photo") {
@@ -103,14 +111,20 @@ function MediaInput({ f, path }: { f: Extract<Field, { kind: "media" }>; path: s
                 }}
               />
             </span>
+            {value && slot && (
+              <button type="button" className="text-wine underline underline-offset-4" onClick={() => setFraming(true)}>
+                Atur posisi{framed?.hp || framed?.desktop ? " (diatur)" : ""}
+              </button>
+            )}
             {value && (
-              <button type="button" className="text-ink-mute hover:text-wine" onClick={() => update((d) => setIn(d, path, ""))}>
+              <button type="button" className="text-ink-mute hover:text-wine" onClick={() => update((d) => unframe(setIn(d, path, "")))}>
                 Kosongkan
               </button>
             )}
           </span>
         </span>
       </span>
+      {framing && slot && <FrameDialog slug={slug} slot={slot} value={framed ?? {}} onChange={setFrame} onClose={() => setFraming(false)} />}
     </Label>
   );
 }

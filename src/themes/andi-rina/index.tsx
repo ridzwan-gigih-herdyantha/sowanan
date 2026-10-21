@@ -44,7 +44,7 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
   return (
     <picture>
       <source media="(min-width: 760px)" srcSet={wide} sizes="100vw" />
-      <img {...rest} srcSet={tall} sizes="100vw" alt={common.alt} className="absolute inset-0 size-full object-cover md:object-[50%_22%]" />
+      <img {...rest} {...inv.frame.heroArt} style={{ ...rest.style, ...inv.frame.heroArt.style }} srcSet={tall} sizes="100vw" alt={common.alt} className="absolute inset-0 size-full object-cover md:object-[50%_22%]" />
     </picture>
   );
 }
@@ -155,6 +155,7 @@ function Couple({ inv }: { inv: InvitationView }) {
       <div className="relative mx-auto mt-10 max-w-[1280px] border-y-[10px] border-inv-night bg-inv-night lg:border-y-[16px]">
         <div className="relative aspect-[16/10] lg:aspect-[2.39/1]">
           <Image
+            {...inv.frame.couple}
             src={inv.images.couple}
             alt={`${inv.groom.name} dan ${inv.bride.name}`}
             fill
@@ -227,7 +228,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
         <div className="relative flex flex-col drop-shadow-[0_12px_22px_rgba(28,25,22,.14)] lg:flex-row">
           <div className="ticket-main flex flex-1 flex-col bg-inv-card lg:flex-row">
           <div className="relative aspect-[16/10] lg:aspect-auto lg:w-[46%]">
-            <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 360px, 100vw" className="object-cover" />
+            <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 360px, 100vw" className="object-cover" />
           </div>
           <div className="flex-1 p-6 sm:p-8">
             <div className="flex items-baseline justify-between text-[11px] tracking-[0.22em] text-inv-gold">
@@ -410,7 +411,7 @@ function Closing({ inv }: { inv: InvitationView }) {
       <Wrap className="flex flex-col items-center">
         <p className="max-w-[16ch] font-display text-[clamp(36px,10vw,64px)] leading-[1.05]">Terima kasih atas doa dan kehadirannya.</p>
         <div className="relative mt-12 aspect-[1/1.05] w-40 rotate-[-3deg] bg-inv-card p-2 pb-7">
-          <Image src={inv.images.closing} alt="" width={144} height={151} sizes="160px" className="h-full w-full object-cover" />
+          <Image {...inv.frame.closing} src={inv.images.closing} alt="" width={144} height={151} sizes="160px" className="h-full w-full object-cover" />
         </div>
         <p className="mt-10 font-script text-2xl tracking-[0.12em]">
           {inv.groom.name} &amp; {inv.bride.name}

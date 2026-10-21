@@ -2,10 +2,11 @@
 
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import type { FrameProps } from "@/lib/invitation/frame";
 import { FitText } from "./fit";
 import { LensaPhoto, SCRIM } from "./photo";
 
-export type LensaProps = { headline: string; groom: string; bride: string; monogram: string; date: string; portrait: string; wide: string; invited: string; onOpen: () => void };
+export type LensaProps = { headline: string; groom: string; bride: string; monogram: string; date: string; portrait: string; wide: string; frame?: FrameProps; invited: string; onOpen: () => void };
 
 // Teks yang berpindah dari pembuka ke hero. Pasangannya di hero memakai data-ls-target dengan nama yang sama.
 const MORPH = ["city", "names", "mono", "date"] as const;
@@ -28,7 +29,7 @@ type Move = { el: HTMLElement; dx: number; dy: number; from: number; to: number;
 // Pembuka Lensa: foto hero diburamkan dan sedikit diperbesar, dengan judul kota yang sangat besar. Saat dibuka,
 // foto menjadi tajam dan kembali ke ukuran asli, sementara setiap teks bergeser dan mengecil atau membesar ke
 // tempatnya di hero, seperti transisi morph. Di akhir lapisan ini dilepas, dan hero yang identik ada di baliknya.
-export function LensaDoor({ headline, groom, bride, monogram, date, portrait, wide, invited, onOpen }: LensaProps) {
+export function LensaDoor({ headline, groom, bride, monogram, date, portrait, wide, frame: photoFrame, invited, onOpen }: LensaProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();
   const root = useRef<HTMLDivElement>(null);
@@ -127,7 +128,7 @@ export function LensaDoor({ headline, groom, bride, monogram, date, portrait, wi
     <div ref={root} className="ls-door fixed inset-0 z-50 overflow-hidden bg-inv-night text-white">
       {/* Perbesaran awal lewat transform, sama dengan yang dianimasikan, supaya di akhir benar-benar kembali ke ukuran asli. */}
       <div ref={frame} className="absolute inset-0 will-change-transform" style={{ transform: "scale(1.08)" }}>
-        <LensaPhoto portrait={portrait} wide={wide} alt="" priority />
+        <LensaPhoto portrait={portrait} wide={wide} frame={photoFrame} alt="" priority />
         <div ref={blur} className="absolute inset-0 will-change-[opacity]">
           <LensaPhoto portrait={portrait} wide={wide} alt="" className="scale-110 blur-xl" />
         </div>

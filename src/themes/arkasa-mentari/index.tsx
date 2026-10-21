@@ -64,8 +64,8 @@ function Start({ inv }: { inv: InvitationView }) {
 function IntroBoard({ inv }: { inv: InvitationView }) {
   return (
     <article className={board}>
-      <PixelPhoto focus={0.62} className={boardPhoto}>
-        <Image src={inv.images.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover object-[50%_62%]" />
+      <PixelPhoto className={boardPhoto}>
+        <Image {...inv.frame.hero} src={inv.images.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover object-[50%_62%]" />
       </PixelPhoto>
       <div className={boardText}>
         <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">Prolog</p>
@@ -79,8 +79,8 @@ function IntroBoard({ inv }: { inv: InvitationView }) {
 function Player({ p, tag, label, alt }: { p: InvitationView["groom"]; tag: string; label: string; alt: string }) {
   return (
     <article className={board}>
-      <PixelPhoto focus={0.25} className={boardPhoto}>
-        <Image src={p.photo} alt={alt} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover object-[50%_25%]" />
+      <PixelPhoto className={boardPhoto}>
+        <Image {...p.frame} src={p.photo} alt={alt} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover object-[50%_25%]" />
       </PixelPhoto>
       <div className={boardText}>
         <div className="flex items-center gap-2.5">
@@ -119,7 +119,7 @@ function EventBoard({ inv }: { inv: InvitationView }) {
   return (
     <article className={board}>
       <PixelPhoto className="relative h-[20svh] min-h-[56px] shrink overflow-hidden bg-inv-wash sm:h-[min(42svh,var(--room))] sm:w-[42%] sm:shrink-0">
-        <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover" />
+        <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover" />
       </PixelPhoto>
       <div className={boardText}>
         <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">Misi utama / Hari H</p>
@@ -279,8 +279,8 @@ function Finale({ inv }: { inv: InvitationView }) {
           <p className="font-display text-[clamp(44px,12vw,72px)] leading-none font-bold text-inv-accent">Tamat</p>
           <p className="pt-label mt-2 text-[10px] text-inv-gold sm:text-[11px]">Terima kasih sudah bermain bersama kami</p>
           <div className="pt-frame mx-auto mt-5 w-[min(72%,300px)]">
-            <PixelPhoto focus={0.3} className="relative aspect-[4/5] overflow-hidden bg-inv-wash">
-              <Image src={inv.images.closing} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="300px" className="object-cover object-[50%_30%]" />
+            <PixelPhoto className="relative aspect-[4/5] overflow-hidden bg-inv-wash">
+              <Image {...inv.frame.closing} src={inv.images.closing} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="300px" className="object-cover object-[50%_30%]" />
             </PixelPhoto>
           </div>
           <dl className="mt-6">

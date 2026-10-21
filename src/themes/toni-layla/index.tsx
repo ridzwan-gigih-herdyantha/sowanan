@@ -59,7 +59,7 @@ function Hero({ inv }: { inv: InvitationView }) {
       {/* Foto bergeser lebih lambat dari halaman saat digulir. Di posisi teratas geserannya nol, jadi tetap sama
           persis dengan foto di pembuka. */}
       <Parallax speed={0.3} max={2000} className="absolute inset-0">
-        <LensaPhoto portrait={inv.images.hero} wide={inv.images.heroWide} alt={`${inv.groom.name} dan ${inv.bride.name}`} priority />
+        <LensaPhoto portrait={inv.images.hero} wide={inv.images.heroWide} frame={inv.frame.heroArt} alt={`${inv.groom.name} dan ${inv.bride.name}`} priority />
       </Parallax>
       <div aria-hidden="true" className="absolute inset-0" style={{ background: SCRIM }} />
       <div className="relative flex h-full flex-col justify-between px-6 pt-[max(28px,5vh)] pb-[max(96px,10vh)] sm:px-[6vw] sm:pb-[max(104px,12vh)]">
@@ -109,7 +109,7 @@ function Person({ p, alt, label }: { p: InvitationView["groom"]; alt: string; la
   return (
     <figure>
       <div data-lr="photo" className="relative aspect-[4/5] overflow-hidden bg-inv-wash">
-        <Image src={p.photo} alt={alt} fill sizes="(min-width: 768px) 45vw, 90vw" className="object-cover object-[50%_25%]" />
+        <Image {...p.frame} src={p.photo} alt={alt} fill sizes="(min-width: 768px) 45vw, 90vw" className="object-cover object-[50%_25%]" />
       </div>
       <figcaption className="mt-6">
         <Label>{label}</Label>
@@ -196,7 +196,7 @@ function Details({ inv }: { inv: InvitationView }) {
 
         <div className="mt-14 grid gap-8 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:items-end md:gap-10">
           <div data-lr="photo" className="relative aspect-[3/2] overflow-hidden bg-inv-wash">
-            <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 55vw, 90vw" className="object-cover" />
+            <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 55vw, 90vw" className="object-cover" />
           </div>
           <div>
             <Label>Tempat</Label>
@@ -313,7 +313,7 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
 function Closing({ inv }: { inv: InvitationView }) {
   return (
     <section className="relative flex min-h-svh items-end overflow-hidden bg-inv-night text-white">
-      <Image src={inv.images.closing} alt="" fill sizes="100vw" className="object-cover" />
+      <Image {...inv.frame.closing} src={inv.images.closing} alt="" fill sizes="100vw" className="object-cover" />
       <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-black/70 via-black/25 to-black/10" />
       <Wrap className="relative pt-32 pb-[max(96px,12vh)]">
         <p className="max-w-[40ch] text-[16px] leading-relaxed text-white/85">
@@ -368,6 +368,7 @@ export function ToniLayla({ inv }: { inv: InvitationView }) {
         date: inv.dateLong,
         portrait: inv.images.hero,
         wide: inv.images.heroWide,
+        frame: inv.frame.heroArt,
       }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}

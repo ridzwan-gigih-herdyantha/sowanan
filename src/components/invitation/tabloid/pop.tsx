@@ -1,13 +1,14 @@
 import Image from "next/image";
 import type { CSSProperties, ReactNode } from "react";
+import type { FrameProps } from "@/lib/invitation/frame";
 
 // Elemen retro pop Tabloid Asmara. Semua warnanya dari variabel palet, jadi ikut berganti saat palet diganti.
 
 // Foto berwarna asli dengan bingkai tebal dan bayangan sablon.
-export function Panel({ src, alt, sizes, className = "", style, priority, round, children }: { src: string; alt: string; sizes: string; className?: string; style?: CSSProperties; priority?: boolean; round?: boolean; children?: ReactNode }) {
+export function Panel({ src, frame, alt, sizes, className = "", style, priority, round, children }: { src: string; frame?: FrameProps; alt: string; sizes: string; className?: string; style?: CSSProperties; priority?: boolean; round?: boolean; children?: ReactNode }) {
   return (
     <div className={`tp-panel relative overflow-hidden ${round ? "rounded-t-full rounded-b-[10px]" : "rounded-[6px]"} ${className}`} style={style}>
-      <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" />
+      <Image {...frame} src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" />
       {children}
     </div>
   );

@@ -64,7 +64,7 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
   return (
     <picture className="absolute inset-0">
       <source media="(min-width: 760px)" srcSet={wide} sizes="min(1120px, 100vw)" />
-      <img {...rest} srcSet={tall} sizes="96vw" alt={common.alt} className="size-full object-cover object-[50%_25%]" />
+      <img {...rest} {...inv.frame.heroArt} style={{ ...rest.style, ...inv.frame.heroArt.style }} srcSet={tall} sizes="96vw" alt={common.alt} className="size-full object-cover object-[50%_25%]" />
     </picture>
   );
 }
@@ -130,7 +130,7 @@ function Couple({ inv }: { inv: InvitationView }) {
         <span className="relative block border border-inv-line bg-inv-paper p-3 shadow-[0_10px_24px_rgba(0,0,0,.08)]">
           <Tape className="-top-2.5 left-1/2 -translate-x-1/2 rotate-2" />
           <span className="relative block aspect-[4/5] overflow-hidden">
-            <Image src={p.photo} alt={p.full} fill sizes="(min-width: 980px) 440px, 92vw" className="object-cover object-top" />
+            <Image {...p.frame} src={p.photo} alt={p.full} fill sizes="(min-width: 980px) 440px, 92vw" className="object-cover object-top" />
           </span>
           <span className="flex items-end justify-between gap-3 px-1 pt-4 pb-1">
             <span className="font-display text-[44px] leading-none text-inv-accent">{p.name}</span>
@@ -227,7 +227,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
           <div className="relative rotate-1 border border-inv-line bg-inv-paper p-2.5 shadow-[0_10px_24px_rgba(0,0,0,.07)]">
             <Tape className="-top-2.5 left-8 -rotate-3" />
             <div className="relative aspect-[4/5] overflow-hidden">
-              <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 440px, 90vw" className="object-cover" />
+              <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 440px, 90vw" className="object-cover" />
             </div>
             <p className="px-1 pt-2.5 font-display text-[14px] italic">{inv.venue.name}</p>
           </div>

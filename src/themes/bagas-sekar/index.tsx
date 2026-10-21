@@ -55,7 +55,7 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
   return (
     <picture>
       <source media="(min-width: 760px)" srcSet={wide} sizes="100vw" />
-      <img {...rest} srcSet={tall} sizes="100vw" alt={common.alt} className="size-full object-cover object-[50%_35%]" />
+      <img {...rest} {...inv.frame.heroArt} style={{ ...rest.style, ...inv.frame.heroArt.style }} srcSet={tall} sizes="100vw" alt={common.alt} className="size-full object-cover object-[50%_35%]" />
     </picture>
   );
 }
@@ -107,7 +107,7 @@ function Couple({ inv }: { inv: InvitationView }) {
         <Label>KEDUA MEMPELAI</Label>
       </Wrap>
       <div className="clip-circle relative mt-8 aspect-[4/5] w-full md:aspect-[16/10]">
-        <Image src={inv.images.couple} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="100vw" className="object-cover object-[50%_40%]" />
+        <Image {...inv.frame.couple} src={inv.images.couple} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="100vw" className="object-cover object-[50%_40%]" />
       </div>
       <Wrap className="mt-10 grid gap-8 sm:grid-cols-2 sm:gap-10">
         {person(inv.groom)}
@@ -170,7 +170,7 @@ function Details({ inv }: { inv: InvitationView }) {
         <p className="mt-10 max-w-[48ch] font-display text-lg leading-snug italic">{inv.honor}</p>
       </Wrap>
       <div className="clip-arch relative mt-14 aspect-[4/5] w-full md:aspect-[21/9]">
-        <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="100vw" className="object-cover object-[50%_45%]" />
+        <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="100vw" className="object-cover object-[50%_45%]" />
       </div>
     </section>
   );
@@ -215,7 +215,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
     <section className="bg-inv-night text-inv-ink" style={dark}>
       <div className="lg:grid lg:grid-cols-2">
         <div className="relative aspect-[3/2] lg:aspect-auto lg:min-h-[640px]">
-          <Image src={inv.images.rsvp} alt="" fill sizes="(min-width: 980px) 50vw, 100vw" className="object-cover opacity-80" />
+          <Image {...inv.frame.rsvp} src={inv.images.rsvp} alt="" fill sizes="(min-width: 980px) 50vw, 100vw" className="object-cover opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-t from-inv-night via-inv-night/30 to-transparent" />
           <p className="absolute inset-x-5 bottom-6 max-w-[18ch] font-display text-[clamp(28px,7vw,44px)] leading-tight text-bs-paper italic sm:inset-x-8 lg:inset-x-12 lg:bottom-12">
             {inv.rsvpQuote}

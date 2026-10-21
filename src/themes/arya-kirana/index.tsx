@@ -67,7 +67,7 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
   return (
     <picture>
       <source media="(min-width: 760px) and (max-width: 1023px)" srcSet={wide} sizes="100vw" />
-      <img {...rest} srcSet={tall} sizes="(min-width: 1024px) 520px, 100vw" alt={common.alt} className="size-full object-cover object-[50%_30%]" />
+      <img {...rest} {...inv.frame.hero} style={{ ...rest.style, ...inv.frame.hero.style }} srcSet={tall} sizes="(min-width: 1024px) 520px, 100vw" alt={common.alt} className="size-full object-cover object-[50%_30%]" />
     </picture>
   );
 }
@@ -128,7 +128,7 @@ function Cameo({ p, alt }: { p: InvitationView["groom"]; alt: string }) {
         <div className="rounded-[50%] border border-inv-gold p-2">
           <div className="rounded-[50%] border border-inv-gold-light p-1.5">
             <div className="relative aspect-[4/5] w-[min(56vw,230px)] overflow-hidden rounded-[50%]">
-              <Image src={p.photo} alt={alt} fill sizes="230px" className="object-cover object-[50%_28%]" />
+              <Image {...p.frame} src={p.photo} alt={alt} fill sizes="230px" className="object-cover object-[50%_28%]" />
             </div>
           </div>
         </div>
@@ -224,7 +224,7 @@ function Details({ inv }: { inv: InvitationView }) {
         <OrnateFrame corners={false} className={`mx-auto mt-10 max-w-[860px] ${card}`}>
           <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div className="relative aspect-[3/2] md:aspect-auto">
-              <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 430px, 100vw" className="object-cover" />
+              <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 430px, 100vw" className="object-cover" />
             </div>
             <div className="px-6 py-10 text-center md:px-10 md:text-left">
               <Label>Tempat</Label>
@@ -373,7 +373,7 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
 function Closing({ inv }: { inv: InvitationView }) {
   return (
     <section className="relative overflow-hidden py-24 lg:py-32">
-      <Image src={inv.images.closing} alt="" fill sizes="100vw" className="object-cover" />
+      <Image {...inv.frame.closing} src={inv.images.closing} alt="" fill sizes="100vw" className="object-cover" />
       <div aria-hidden="true" className="absolute inset-0 bg-inv-paper/40" />
       <Pattern opacity={0.06} />
       <Wrap width="max-w-[640px]">

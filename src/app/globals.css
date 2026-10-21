@@ -2143,3 +2143,27 @@ html.door-wait [data-fit] {
     transition: none;
   }
 }
+
+/* Posisi dan zoom foto yang diatur di editor (lib/invitation/frame.ts). Batasnya sama dengan pergantian foto hero
+   potret ke lebar. Zoom memakai properti scale supaya tidak bentrok dengan transform animasi tema, dan pembungkus
+   fotonya dipotong supaya foto yang diperbesar tidak keluar dari kotaknya. */
+@media (max-width: 759.98px) {
+  :where(:has(> [data-frame-m])) {
+    overflow: clip;
+  }
+  [data-frame-m] {
+    object-position: var(--fm-x) var(--fm-y);
+    scale: var(--fm-z);
+    transform-origin: var(--fm-x) var(--fm-y);
+  }
+}
+@media (min-width: 760px) {
+  :where(:has(> [data-frame-d])) {
+    overflow: clip;
+  }
+  [data-frame-d] {
+    object-position: var(--fd-x) var(--fd-y);
+    scale: var(--fd-z);
+    transform-origin: var(--fd-x) var(--fd-y);
+  }
+}

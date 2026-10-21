@@ -102,9 +102,8 @@ const STEPS = [5, 8, 12, 18, 28, 44, 70];
 const STEP_MS = 85;
 
 // Foto yang muncul seperti dimuat game lama: kotak-kotak besar yang makin halus sampai foto aslinya tajam.
-// Mosaik digambar dari foto yang sama di kanvas, mengikuti potongan object-cover. focus adalah posisi tegak
-// potongan, sama dengan object-position.
-export function PixelPhoto({ children, focus = 0.5, className = "" }: { children: ReactNode; focus?: number; className?: string }) {
+// Mosaik digambar dari foto yang sama di kanvas, mengikuti potongan object-cover, object-position, dan zoom fotonya.
+export function PixelPhoto({ children, className = "" }: { children: ReactNode; className?: string }) {
   const box = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
@@ -130,12 +129,17 @@ export function PixelPhoto({ children, focus = 0.5, className = "" }: { children
       const iw = img.naturalWidth;
       const ih = img.naturalHeight;
       if (!w || !h || !iw || !ih) return false;
-      // Potongan foto yang terlihat, sama dengan object-cover.
+      // Potongan foto yang terlihat: object-cover, digeser sesuai object-position, lalu diperbesar dari titik yang sama.
+      const css = getComputedStyle(img);
+      const [fx, fy] = css.objectPosition.split(" ").map((v) => (v.endsWith("%") ? Number.parseFloat(v) / 100 : 0.5));
+      const zoom = Number.parseFloat(css.scale) || 1;
       const k = Math.max(w / iw, h / ih);
-      const sw = w / k;
-      const sh = h / k;
-      const sx = (iw - sw) / 2;
-      const sy = (ih - sh) * focus;
+      const cw = w / k;
+      const ch = h / k;
+      const sw = cw / zoom;
+      const sh = ch / zoom;
+      const sx = (iw - cw) * fx + (cw - sw) * fx;
+      const sy = (ih - ch) * fy + (ch - sh) * fy;
       const lebar = STEPS[STEPS.length - 1] * 2;
       const tinggi = Math.max(1, Math.round((lebar * h) / w));
       try {
@@ -192,7 +196,7 @@ export function PixelPhoto({ children, focus = 0.5, className = "" }: { children
       stop();
       window.clearTimeout(timer);
     };
-  }, [reduce, focus]);
+  }, [reduce]);
 
   return (
     <div ref={box} data-pt-photo className={className}>

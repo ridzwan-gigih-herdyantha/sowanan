@@ -88,7 +88,7 @@ function HeroPhoto({ inv }: { inv: InvitationView }) {
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name}`, fetchPriority: "high" as const };
   const { props: { srcSet, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1000, height: 1500, sizes: "(min-width: 1024px) 420px, 80vw" });
   // eslint-disable-next-line @next/next/no-img-element
-  return <img {...rest} srcSet={srcSet} alt={common.alt} className="size-full object-cover object-[50%_25%]" />;
+  return <img {...rest} {...inv.frame.hero} style={{ ...rest.style, ...inv.frame.hero.style }} srcSet={srcSet} alt={common.alt} className="size-full object-cover object-[50%_25%]" />;
 }
 
 function Hero({ inv }: { inv: InvitationView }) {
@@ -136,7 +136,7 @@ function Couple({ inv }: { inv: InvitationView }) {
   const back = (p: typeof inv.groom) => (
     <div className="relative flex h-full flex-col">
       <div className="relative h-3/4 shrink-0">
-        <Image src={p.photo} alt={p.full || p.name} fill sizes="(min-width: 640px) 340px, 46vw" className="object-cover object-top" />
+        <Image {...p.frame} src={p.photo} alt={p.full || p.name} fill sizes="(min-width: 640px) 340px, 46vw" className="object-cover object-top" />
       </div>
       <div className="flex flex-1 flex-col items-center justify-center px-2 text-center">
         <p className="font-display text-[clamp(15px,4.2vw,24px)] leading-tight text-inv-ink">{p.full || p.name}</p>
@@ -214,7 +214,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
         </div>
         <div {...reveal(2)} className="mt-12 lg:mt-4">
           <div className="relative aspect-[4/5] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-paper),0_0_0_6px_var(--pk-emas),0_20px_36px_rgba(62,46,34,.18)]">
-            <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 420px, 90vw" className="object-cover" />
+            <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 420px, 90vw" className="object-cover" />
           </div>
           <p className="mt-5 font-display text-[26px] text-inv-ink">{inv.venue.name}</p>
           <p className="mt-1 text-[16px] text-inv-ink/80">{inv.venue.address}</p>

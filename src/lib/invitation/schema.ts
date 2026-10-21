@@ -21,6 +21,8 @@ const storyItem = z.object({
   place: str(),
 });
 
+const frame = z.object({ x: z.number(), y: z.number(), z: z.number() });
+
 const photo = z.object({ src: str(), w: num(), h: num(), alt: str(), caption: str(), no: str() });
 
 export const SECTION_KEYS = [
@@ -133,6 +135,9 @@ export const invitationDataSchema = z.object({
       closing: section({}),
     })
     .prefault({}),
+  // Posisi dan zoom foto utama yang diatur di editor, terpisah untuk HP dan layar lebar. Kunci berupa slot di
+  // lib/invitation/frame.ts. Slot tanpa isian mengikuti bawaan tema.
+  frames: z.record(z.string(), z.object({ hp: frame.optional(), desktop: frame.optional() })).default({}),
   extras: list(
     z.object({
       kind: z.enum(Object.keys(EXTRA_KINDS) as [ExtraKind, ...ExtraKind[]]).catch("bebas"),

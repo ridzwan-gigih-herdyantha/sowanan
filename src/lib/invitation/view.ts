@@ -4,6 +4,7 @@ import { resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
 import { RULE_ICONS, type ExtraAnchor, type ExtraKind, type ExtraTone, type InvitationData, type RuleIcon, type SectionKey } from "./schema";
 import { extraAnchors, HEX } from "./spec";
+import { cleanFrames, frameProps } from "./frame";
 import { streamOf } from "./stream";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
@@ -87,14 +88,15 @@ export function toView(slug: string, d: InvitationData, theme = "") {
   const s = d.sections;
   const palette = resolvePalette(theme, d.style);
   const enabled = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, Boolean(v.enabled)])) as Record<SectionKey, boolean>;
+  const frames = cleanFrames(d.frames);
 
   return {
     slug,
     // Dipakai komponen bersama, misalnya bagian tambahan, untuk menyesuaikan gaya dengan tema.
     theme,
     monogram: d.monogram,
-    groom: { ...d.couple.groom, photo: u(d.couple.groom.photo || d.media.hero) },
-    bride: { ...d.couple.bride, photo: u(d.couple.bride.photo || d.media.hero) },
+    groom: { ...d.couple.groom, photo: u(d.couple.groom.photo || d.media.hero), frame: frameProps(frames, "groom") },
+    bride: { ...d.couple.bride, photo: u(d.couple.bride.photo || d.media.hero), frame: frameProps(frames, "bride") },
     date: d.event.start,
     end: d.event.end,
     tz: d.event.timezone,
@@ -135,6 +137,16 @@ export function toView(slug: string, d: InvitationData, theme = "") {
       detail: u(d.media.detail || d.media.hero),
       rsvp: u(d.media.rsvp || d.media.heroWide),
       qris: u(s.gifts.qris),
+    },
+    // Atribut posisi dan zoom foto untuk disebar ke img. heroArt untuk foto hero yang berganti potret dan lebar.
+    frame: {
+      hero: frameProps(frames, "hero"),
+      heroWide: frameProps(frames, "heroWide"),
+      heroArt: frameProps(frames, "hero", "heroWide"),
+      couple: frameProps(frames, "couple"),
+      venue: frameProps(frames, "venue"),
+      closing: frameProps(frames, "closing"),
+      rsvp: frameProps(frames, "rsvp"),
     },
     giftNote: s.gifts.note,
     music: u(d.media.music || THEME_MUSIC[theme] || ""),

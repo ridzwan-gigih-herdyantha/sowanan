@@ -72,7 +72,7 @@ function Hero({ inv, moon }: { inv: InvitationView; moon: Moon }) {
             <MoonDisc id="rb-hero" age={moon.age} className="size-full" />
           </div>
           <div {...enter(0.35)} className="inv-enter relative aspect-[4/5] overflow-hidden rounded-sm ring-1 ring-inv-gold-light/50 shadow-[0_0_0_8px_color-mix(in_srgb,var(--inv-accent)_6%,transparent),0_0_90px_10px_color-mix(in_srgb,var(--inv-accent)_22%,transparent)]">
-            <Image src={inv.images.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="(min-width: 1024px) 460px, 86vw" priority className="object-cover object-[50%_35%]" />
+            <Image {...inv.frame.hero} src={inv.images.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="(min-width: 1024px) 460px, 86vw" priority className="object-cover object-[50%_35%]" />
             <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-inv-night/70 via-transparent to-inv-night/20" />
           </div>
         </div>
@@ -126,7 +126,7 @@ function Couple({ inv }: { inv: InvitationView }) {
       <div className="mt-14 flex justify-center">
         {people.map(({ p }, i) => (
           <div key={p.name} className={`relative size-[min(44vw,300px)] overflow-hidden rounded-full ring-1 ring-inv-gold-light/60 ${i ? "-ml-[9%] mix-blend-normal" : ""}`}>
-            <Image src={p.photo} alt={`Foto ${p.name}`} fill sizes="300px" className="object-cover object-[50%_28%]" />
+            <Image {...p.frame} src={p.photo} alt={`Foto ${p.name}`} fill sizes="300px" className="object-cover object-[50%_28%]" />
           </div>
         ))}
       </div>
@@ -210,7 +210,7 @@ function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
 
       <div className="mt-16 grid items-center gap-8 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-10">
         <div className="relative size-[min(56vw,220px)] overflow-hidden rounded-full ring-1 ring-inv-gold-light/60">
-          <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="220px" className="object-cover" />
+          <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="220px" className="object-cover" />
         </div>
         <div>
           <Label>Tempat</Label>
@@ -310,7 +310,7 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
 function Closing({ inv, moon }: { inv: InvitationView; moon: Moon }) {
   return (
     <section className="relative overflow-hidden py-28 lg:py-40">
-      <Image src={inv.images.closing} alt="" fill sizes="100vw" className="object-cover" />
+      <Image {...inv.frame.closing} src={inv.images.closing} alt="" fill sizes="100vw" className="object-cover" />
       <div aria-hidden="true" className="absolute inset-0 bg-linear-to-b from-inv-paper via-inv-paper/75 to-inv-paper" />
       <Starfield density={0.4} meteors seed={377} />
       <Wrap className="grid items-end gap-10 md:grid-cols-[minmax(0,1fr)_auto]">

@@ -36,6 +36,15 @@ export function InvitationSlug({ slug, children }: { slug: string; children: Rea
   return <SlugContext.Provider value={slug}>{children}</SlugContext.Provider>;
 }
 
+const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
+
+// Pratinjau untuk mengatur foto di editor langsung menampilkan isi undangan, tanpa loader, pembuka, dan musik.
+const SkipDoorContext = createContext(false);
+export function SkipDoor({ children }: { children: ReactNode }) {
+  return <SkipDoorContext.Provider value>{children}</SkipDoorContext.Provider>;
+}
+export const useSkipDoor = () => useContext(SkipDoorContext);
+
 // Nama tamu dari tautan (?to=) hanya dipakai kalau paket undangan menyertakannya.
 const GuestNamesContext = createContext(true);
 export function GuestNames({ allowed, children }: { allowed: boolean; children: ReactNode }) {
@@ -135,6 +144,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   const namesAllowed = useContext(GuestNamesContext);
   const invited = namesAllowed ? fromLink : "";
   const slug = useContext(SlugContext);
+  const skipDoor = useContext(SkipDoorContext);
 
   // Kode link pribadi dan nama tamu diingat di HP tamu begitu halaman dibuka, supaya saat memindai QR mempelai
   // di lokasi tamu langsung dikenali.
@@ -146,7 +156,7 @@ export function InvitationShell({ door, music, synth, className, style, children
     if (to) remember(GUEST_KEY, to);
   }, [slug, namesAllowed]);
   const [typed, setTyped] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(skipDoor);
   const [content, setContent] = useState<HTMLDivElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
@@ -162,8 +172,9 @@ export function InvitationShell({ door, music, synth, className, style, children
 
   // Loader tetap menutup undangan sampai halaman siap dipakai, huruf termuat, dan foto pembuka selesai diunduh,
   // supaya tamu tidak melihat pembuka yang masih menata diri. Paling lama 4 detik.
-  const [boot, setBoot] = useState<"on" | "leaving" | "gone">("on");
+  const [boot, setBoot] = useState<"on" | "leaving" | "gone">(skipDoor ? "gone" : "on");
   useEffect(() => {
+    if (skipDoor) return;
     let alive = true;
     const pending = [...document.querySelectorAll<HTMLImageElement>("[data-inv-state] img")].filter((img) => img.loading !== "lazy" && !img.complete);
     const wait = [
@@ -188,7 +199,7 @@ export function InvitationShell({ door, music, synth, className, style, children
       alive = false;
       window.clearTimeout(t);
     };
-  }, []);
+  }, [skipDoor]);
 
   // Selagi tamu masih di pembuka, foto di dalam undangan diunduh lebih dulu supaya setelah dibuka tidak ada
   // foto yang baru muncul saat digulir. Ditunda sebentar supaya aset pembuka didahulukan.
@@ -313,8 +324,9 @@ export function InvitationShell({ door, music, synth, className, style, children
       <MediaContext.Provider value={media}>
         <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
           <noscript>
-            <style>{`.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`}</style>
+            <style>{NO_DOOR}</style>
           </noscript>
+          {skipDoor && <style>{NO_DOOR}</style>}
           {boot !== "gone" && <BrandLoader boot leaving={boot === "leaving"} />}
 
           {door.kind === "vellum" && (
@@ -396,6 +408,7 @@ export function InvitationShell({ door, music, synth, className, style, children
               date={door.date}
               portrait={door.portrait}
               wide={door.wide}
+              frame={door.frame}
               invited={invited}
               onOpen={openInvitation}
             />
@@ -404,10 +417,10 @@ export function InvitationShell({ door, music, synth, className, style, children
           {door.kind === "mulai" && <MulaiDoor groom={door.groom} bride={door.bride} monogram={door.monogram} date={door.date} place={door.place} year={door.year} invited={invited} onOpen={openInvitation} />}
 
           {door.kind === "mekar" && (
-            <MekarDoor groom={door.groom} bride={door.bride} date={door.date} place={door.place} photo={door.photo} set={door.set} invited={invited} onOpen={openInvitation} />
+            <MekarDoor groom={door.groom} bride={door.bride} date={door.date} place={door.place} photo={door.photo} frame={door.frame} set={door.set} invited={invited} onOpen={openInvitation} />
           )}
 
-          {door.kind === "tabloid" && <TabloidDoor groom={door.groom} bride={door.bride} date={door.date} photo={door.photo} invited={invited} onOpen={openInvitation} />}
+          {door.kind === "tabloid" && <TabloidDoor groom={door.groom} bride={door.bride} date={door.date} photo={door.photo} frame={door.frame} invited={invited} onOpen={openInvitation} />}
 
           {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" ? null : door.kind === "seal" ? (
             <div
@@ -466,7 +479,7 @@ export function InvitationShell({ door, music, synth, className, style, children
           <div ref={setContent} inert={!open}>
             {children}
           </div>
-          {open && reveal && <AutoReveal root={content} mode={reveal} />}
+          {open && reveal && !skipDoor && <AutoReveal root={content} mode={reveal} />}
 
           {open && hasMusic && (
             <button

@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSkipDoor } from "./shell";
 
 // Menandai elemen data-{attr} yang sudah masuk layar dengan data-{attr}-in, supaya CSS memainkan gerak masuknya.
 // Pengamatan baru dimulai saat undangan dibuka, karena sebelum itu isi undangan tertutup pembuka dan geraknya
 // akan selesai tanpa terlihat. Kelas flag baru dipasang di sini, jadi tanpa JavaScript semua elemen tetap tampil utuh.
 export function ScrollReveal({ attr, flag }: { attr: string; flag: string }) {
+  // Pratinjau atur foto menampilkan semua isi tanpa gerak masuk.
+  const skip = useSkipDoor();
   useEffect(() => {
+    if (skip) return;
     const root = document.documentElement;
     root.classList.add(flag);
     const shell = document.querySelector<HTMLElement>("[data-inv-state]");
@@ -37,6 +41,6 @@ export function ScrollReveal({ attr, flag }: { attr: string; flag: string }) {
       seen.disconnect();
       root.classList.remove(flag);
     };
-  }, [attr, flag]);
+  }, [attr, flag, skip]);
   return null;
 }

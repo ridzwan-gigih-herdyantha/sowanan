@@ -2,14 +2,15 @@
 
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import type { FrameProps } from "@/lib/invitation/frame";
 import { doorFit, useDoorFit } from "../door-fit";
 import { Panel, Rays, Sticker, Title } from "./pop";
 
-export type TabloidProps = { groom: string; bride: string; date: string; photo: string; invited: string; onOpen: () => void };
+export type TabloidProps = { groom: string; bride: string; date: string; photo: string; frame?: FrameProps; invited: string; onOpen: () => void };
 
 // Pembuka Kabar Retro: sampul tabloid edisi spesial di atas sinar matahari, dengan nama tamu di kolom alamat.
 // Saat dibuka, stiker meletup lepas dan sinar berputar, lalu lingkaran iris ala kartun lama terbuka dari tengah foto.
-export function TabloidDoor({ groom, bride, date, photo, invited, onOpen }: TabloidProps) {
+export function TabloidDoor({ groom, bride, date, photo, frame, invited, onOpen }: TabloidProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();
   const cover = useRef<HTMLDivElement>(null);
@@ -71,7 +72,7 @@ export function TabloidDoor({ groom, bride, date, photo, invited, onOpen }: Tabl
             </Title>
             <div className="relative isolate mt-4">
               <Rays />
-              <Panel src={photo} alt={`${groom} dan ${bride}`} sizes="(min-width: 768px) 640px, 92vw" priority className="mx-auto aspect-[4/3] -rotate-2" />
+              <Panel src={photo} frame={frame} alt={`${groom} dan ${bride}`} sizes="(min-width: 768px) 640px, 92vw" priority className="mx-auto aspect-[4/3] -rotate-2" />
               <Sticker shape="burst" fill="pop" className="tp-pop -top-10 -right-10 md:-right-26 md:-top-22 size-32 md:size-48 rotate-12" text="Edisi spesial" textClass="tp-label w-14 text-[18px] md:text-[28px] text-inv-card" />
               <Sticker shape="heart" fill="pink" className="tp-pop bottom-2 left-0 size-14 -rotate-12" />
               <Sticker shape="daisy" fill="card" className="tp-pop -bottom-2 right-6 size-12 rotate-12" />

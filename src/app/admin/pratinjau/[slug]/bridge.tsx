@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useTransition } from "react";
+import { frameVars, type Frame, type FrameDevice } from "@/lib/invitation/frame";
 
 type Props = { texts: Record<string, string>; media: Record<string, string>; sample: string[] };
 
@@ -10,9 +11,46 @@ export type BridgeMessage =
   | { type: "sowanan:commit" }
   | { type: "sowanan:focus"; path: string }
   | { type: "sowanan:ready" }
-  | { type: "sowanan:refreshed" };
+  | { type: "sowanan:refreshed" }
+  | { type: "sowanan:frame-base"; slot: string; device: FrameDevice; x: number; y: number };
+
+// Pesan dari editor ke pratinjau.
+export type EditorMessage =
+  | { type: "sowanan:refresh" }
+  | { type: "sowanan:frame"; slot: string; device: FrameDevice; frame: Frame | null }
+  | { type: "sowanan:frame-show"; slot: string; device: FrameDevice };
 
 const post = (m: BridgeMessage) => window.parent.postMessage(m, window.location.origin);
+
+const ATTR = { hp: "data-frame-m", desktop: "data-frame-d" } as const;
+
+const framed = (slot: string, device: FrameDevice) => [...document.querySelectorAll<HTMLElement>(`[data-frame~="${CSS.escape(`${slot}:${device}`)}"]`)];
+
+// Pengaturan foto dari editor diterapkan langsung ke elemen, tanpa menunggu draf tersimpan dan halaman dimuat ulang.
+function applyFrame(slot: string, device: FrameDevice, frame: Frame | null) {
+  const vars = frameVars(device, frame ?? { x: 50, y: 50, z: 1 });
+  for (const el of framed(slot, device)) {
+    for (const [k, v] of Object.entries(vars)) {
+      if (frame) el.style.setProperty(k, v);
+      else el.style.removeProperty(k);
+    }
+    el.toggleAttribute(ATTR[device], Boolean(frame));
+  }
+}
+
+// Menggulir ke foto slot. Tema yang tidak digulir biasa, misalnya tema game, membatalkan sowanan:reveal lalu memindahkan
+// kameranya sendiri, karena scrollIntoView ikut menggeser wadah tersembunyi di dalamnya. Posisi bawaan tema dikirim balik sebagai titik awal pengaturan. Foto yang tampil di dalam pembuka dilewati
+// karena pratinjau ini tidak menampilkan pembuka.
+function showFrame(slot: string, device: FrameDevice) {
+  const el = framed(slot, device).find((e) => e.getClientRects().length > 0);
+  if (!el) return;
+  if (el.dispatchEvent(new CustomEvent("sowanan:reveal", { bubbles: true, cancelable: true }))) el.scrollIntoView({ block: "center", behavior: "instant" });
+  const was = el.hasAttribute(ATTR[device]);
+  el.toggleAttribute(ATTR[device], false);
+  const [x, y] = getComputedStyle(el).objectPosition.split(" ").map((v) => (v.endsWith("%") ? Number.parseFloat(v) : 50));
+  el.toggleAttribute(ATTR[device], was);
+  post({ type: "sowanan:frame-base", slot, device, x: x ?? 50, y: y ?? 50 });
+}
 
 function imagePath(img: HTMLImageElement, media: Record<string, string>): string | undefined {
   const src = img.currentSrc || img.src;
@@ -48,8 +86,11 @@ export function PreviewBridge({ texts, media, sample }: Props) {
   }, [texts, media, sample]);
 
   useEffect(() => {
-    const onMessage = (e: MessageEvent) => {
-      if (e.origin !== window.location.origin || e.data?.type !== "sowanan:refresh") return;
+    const onMessage = (e: MessageEvent<EditorMessage>) => {
+      if (e.origin !== window.location.origin) return;
+      if (e.data?.type === "sowanan:frame") return applyFrame(e.data.slot, e.data.device, e.data.frame);
+      if (e.data?.type === "sowanan:frame-show") return showFrame(e.data.slot, e.data.device);
+      if (e.data?.type !== "sowanan:refresh") return;
       if (editing.current) pending.current = true;
       else startRefresh(() => router.refresh());
     };

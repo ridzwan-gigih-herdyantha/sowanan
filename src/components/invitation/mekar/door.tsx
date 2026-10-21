@@ -3,10 +3,11 @@
 import { useReducedMotion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import type { FrameProps } from "@/lib/invitation/frame";
 import { doorFit, useDoorFit } from "../door-fit";
 import { Flora, Wash } from "./flora";
 
-export type MekarProps = { groom: string; bride: string; date: string; place: string; photo: string; set: string; invited: string; onOpen: () => void };
+export type MekarProps = { groom: string; bride: string; date: string; place: string; photo: string; frame?: FrameProps; set: string; invited: string; onOpen: () => void };
 
 // Lama hembusan angin. Pembuka memudar di tengahnya, saat kelopak paling rapat melintas.
 const GUST = 2400;
@@ -50,7 +51,7 @@ export function Petals({ count = 6 }: { count?: number }) {
 // Pembuka Mekar Mawar: kartu di atas sapuan cat air, untaian mawar di atas, foto bulat berbingkai emas.
 // Saat dibuka, angin membawa kelopak mawar melintas dari kiri ke kanan. Pembuka memudar di balik kelopak, jadi
 // undangan muncul perlahan sementara kelopak terus terbang keluar layar.
-export function MekarDoor({ groom, bride, date, place, photo, set, invited, onOpen }: MekarProps) {
+export function MekarDoor({ groom, bride, date, place, photo, frame, set, invited, onOpen }: MekarProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();
   const skipped = useRef(false);
@@ -123,7 +124,7 @@ export function MekarDoor({ groom, bride, date, place, photo, set, invited, onOp
           <div ref={fit} {...doorFit({ y: 48 })} className="mm-door-body flex w-[min(86vw,420px)] flex-col items-center text-center">
             <div className="relative">
               <div className="mm-frame relative size-[min(44vw,190px)] overflow-hidden rounded-full">
-                <Image src={photo} alt={`${groom} dan ${bride}`} fill priority sizes="190px" className="object-cover object-[50%_30%]" />
+                <Image {...frame} src={photo} alt={`${groom} dan ${bride}`} fill priority sizes="190px" className="object-cover object-[50%_30%]" />
               </div>
               <Flora set={set} piece="mawar-1" sizes="90px" className="-top-3 -left-6 w-[38%]" />
               <Flora set={set} piece="rangkaian" sizes="180px" className="-right-[30%] -bottom-[12%] w-[78%] -rotate-[18deg]" />

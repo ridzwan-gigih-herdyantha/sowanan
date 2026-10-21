@@ -76,7 +76,7 @@ function Hero({ inv }: { inv: InvitationView }) {
         <p className="tp-label inv-enter mt-3 text-[18px] text-inv-accent [--enter-delay:1.15s]">Undangan pernikahan</p>
         <div className="inv-enter relative isolate mt-12 w-[min(76vw,340px)] [--enter-delay:1.3s] md:w-[420px]">
           <Rays tone="pop2" className="h-[calc(100%+56px)] w-[calc(100%+56px)] rounded-t-full rounded-b-[28px] border-[3px] border-inv-ink" />
-          <Panel src={inv.images.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} sizes="(min-width: 768px) 420px, 76vw" priority round className="aspect-[4/5]" />
+          <Panel src={inv.images.hero} frame={inv.frame.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} sizes="(min-width: 768px) 420px, 76vw" priority round className="aspect-[4/5]" />
           <Sticker shape="scallop" fill="sun" className="inv-enter [--enter-delay:1.6s] -top-4 -right-9 size-24 rotate-12 md:size-28" text="Sah!" textClass="font-display text-[24px] text-inv-accent md:text-[28px]" />
           <Sticker shape="bubble" fill="card" className="inv-enter [--enter-delay:1.75s] top-10 -left-12 size-24 -rotate-6" text="Kami menikah!" textClass="tp-label -mt-3 w-14 text-[14px] text-inv-ink" />
           <Sticker shape="heart" fill="pink" className="inv-enter [--enter-delay:1.9s] -bottom-5 -left-7 size-16 -rotate-12" />
@@ -125,7 +125,7 @@ function Quote({ inv }: { inv: InvitationView }) {
 function PlayerCard({ p, alt, tone, tilt }: { p: InvitationView["groom"]; alt: string; tone: "pop" | "pop2"; tilt: string }) {
   return (
     <div className={`tp-card relative bg-inv-card p-2.5 ${tilt}`}>
-      <Panel src={p.photo} alt={alt} sizes="(min-width: 768px) 340px, 45vw" className="aspect-[4/5]" />
+      <Panel src={p.photo} frame={p.frame} alt={alt} sizes="(min-width: 768px) 340px, 45vw" className="aspect-[4/5]" />
       <div className={`mt-2.5 border-2 border-inv-ink px-3 py-1.5 ${tone === "pop" ? "bg-inv-accent" : "bg-inv-gold"}`}>
         <p className={`${nameFont} font-display text-[26px] leading-tight text-inv-card`}>{p.name}</p>
       </div>
@@ -216,7 +216,7 @@ function Details({ inv }: { inv: InvitationView }) {
         </div>
         <Note className="mt-8">
           <div className="tp-card relative mb-4 overflow-hidden">
-            <Panel src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} sizes="520px" className="aspect-[16/9]" />
+            <Panel src={inv.images.venue} frame={inv.frame.venue} alt={`Suasana ${inv.venue.name}`} sizes="520px" className="aspect-[16/9]" />
           </div>
           <p className="tp-label text-[22px] leading-none">{inv.venue.name}</p>
           <p className="mt-2 text-[15px] leading-relaxed text-inv-ink/85">{inv.venue.address}</p>
@@ -335,7 +335,7 @@ function Closing({ inv }: { inv: InvitationView }) {
       <Wrap className="flex flex-col items-center text-center">
         <div className="relative isolate w-[min(82vw,360px)] md:w-[440px]">
           <Rays tone="pop2" />
-          <Panel src={inv.images.closing} alt="" sizes="(min-width: 768px) 440px, 82vw" round className="aspect-[4/5] rotate-2" />
+          <Panel src={inv.images.closing} frame={inv.frame.closing} alt="" sizes="(min-width: 768px) 440px, 82vw" round className="aspect-[4/5] rotate-2" />
           <Sticker shape="heart" fill="pink" className="-top-2 -right-3 size-16 rotate-12" />
           <Sticker shape="daisy" fill="card" className="bottom-2 -left-4 size-14" />
           <Sticker shape="star" fill="sun" className="top-6 -left-8 size-7" />
@@ -382,7 +382,7 @@ function Footer({ inv }: { inv: InvitationView }) {
 export function GalihArdila({ inv }: { inv: InvitationView }) {
   return (
     <InvitationShell
-      door={{ kind: "tabloid", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateShort, photo: inv.images.heroWide }}
+      door={{ kind: "tabloid", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateShort, photo: inv.images.heroWide, frame: inv.frame.heroWide }}
       music={inv.music}
       className={`${themeFonts} tp-theme tp-bg-krem min-h-dvh overflow-x-clip font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}

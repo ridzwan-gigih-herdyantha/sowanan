@@ -107,7 +107,7 @@ function Hero({ inv, set }: { inv: InvitationView; set: string }) {
       <Wrap className="flex flex-col items-center text-center">
         <div className="relative w-[min(72vw,360px)]">
           <div className="mm-frame relative aspect-[4/5] overflow-hidden rounded-[4px]">
-            <Image src={inv.images.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill priority sizes="(min-width: 640px) 360px, 72vw" className="object-cover object-[50%_30%]" />
+            <Image {...inv.frame.hero} src={inv.images.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill priority sizes="(min-width: 640px) 360px, 72vw" className="object-cover object-[50%_30%]" />
           </div>
           <Flora set={set} piece="buket" sway priority sizes="220px" className="-top-[9%] -left-[24%] w-[56%] -rotate-[10deg]" />
           <Flora set={set} piece="rangkaian" sway sizes="260px" className="-right-[30%] -bottom-[14%] w-[72%] -rotate-[22deg]" />
@@ -139,7 +139,7 @@ function Person({ p, alt, set, mirror }: { p: InvitationView["groom"]; alt: stri
     <div className="flex flex-col items-center text-center">
       <div className="relative">
         <div className="mm-frame relative size-[min(52vw,220px)] overflow-hidden rounded-full">
-          <Image src={p.photo} alt={alt} fill sizes="220px" className="object-cover object-[50%_25%]" />
+          <Image {...p.frame} src={p.photo} alt={alt} fill sizes="220px" className="object-cover object-[50%_25%]" />
         </div>
         <Flora
           set={set}
@@ -244,7 +244,7 @@ function Details({ inv, set }: { inv: InvitationView; set: string }) {
 
           <Divider className="mt-10" />
           <div className="mm-frame relative mx-auto mt-10 aspect-[3/2] w-[min(100%,440px)] overflow-hidden rounded-[4px]">
-            <Image src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="440px" className="object-cover" />
+            <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="440px" className="object-cover" />
           </div>
           <p className="mt-9 font-display text-[clamp(22px,5.6vw,28px)] leading-tight">{inv.venue.name}</p>
           <p className="mx-auto mt-2 max-w-[40ch] text-[14px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>
@@ -367,7 +367,7 @@ function Closing({ inv, set }: { inv: InvitationView; set: string }) {
       <Wrap className="flex flex-col items-center text-center">
         <div className="relative">
           <div className="mm-frame relative size-[min(60vw,260px)] overflow-hidden rounded-full">
-            <Image src={inv.images.closing} alt="" fill sizes="260px" className="object-cover" />
+            <Image {...inv.frame.closing} src={inv.images.closing} alt="" fill sizes="260px" className="object-cover" />
           </div>
           <Flora set={set} piece="buket" sway sizes="200px" className="-bottom-[42%] left-1/2 w-[70%] -translate-x-1/2" />
         </div>
@@ -412,7 +412,7 @@ export function IvanMawar({ inv }: { inv: InvitationView }) {
   const set = setOf(inv);
   return (
     <InvitationShell
-      door={{ kind: "mekar", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateLong, place: `${inv.venue.name}, ${inv.cityShort}`, photo: inv.images.hero, set }}
+      door={{ kind: "mekar", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateLong, place: `${inv.venue.name}, ${inv.cityShort}`, photo: inv.images.hero, frame: inv.frame.hero, set }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}

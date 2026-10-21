@@ -559,6 +559,19 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
   const front = (center: number) => center - (vw * (0.5 - ANCHOR)) / t;
   const goTo = (center: number) => warp.current(front(center));
 
+  // Editor meminta sebuah foto ditampilkan di pratinjau, jadi karakter dipindah ke papan yang memuat foto itu.
+  useEffect(() => {
+    const box = stage.current;
+    if (!box) return;
+    const reveal = (e: Event) => {
+      e.preventDefault();
+      const at = (e.target as HTMLElement).closest<HTMLElement>("[data-at]");
+      if (at) warp.current(Number(at.dataset.at) - (vw * (0.5 - ANCHOR)) / t);
+    };
+    box.addEventListener("sowanan:reveal", reveal);
+    return () => box.removeEventListener("sowanan:reveal", reveal);
+  }, [vw, t]);
+
   // Fokus keyboard ke isi papan memindahkan karakter ke papan itu, karena panggung tidak bisa digulir sendiri.
   const onFocus = (e: React.FocusEvent) => {
     if (stage.current) stage.current.scrollLeft = 0;
