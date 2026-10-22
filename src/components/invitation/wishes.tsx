@@ -4,7 +4,7 @@ import { useId, useRef, useState, useTransition } from "react";
 import { submitWish } from "@/app/[slug]/actions";
 import { GUEST_NAME_MAX, WISH_MAX } from "@/lib/guest-input";
 import type { Wish } from "@/lib/guestbook";
-import { useArchived, useGuest } from "./shell";
+import { useArchived, useGuest, useInactive } from "./shell";
 import { WishSky } from "./rembulan/wish-sky";
 import { sway } from "./sway";
 
@@ -29,6 +29,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const tagTone = ["bg-inv-wash", "bg-[var(--inv-note-a,#E6D8E4)]", "bg-[var(--inv-note-b,#DDE3D3)]"];
   const { guest, setGuest } = useGuest();
   const archived = useArchived();
+  const inactive = useInactive();
   const [mine, setMine] = useState<Wish[]>([]);
   const [shown, setShown] = useState(FIRST);
   const listTop = useRef<HTMLDivElement>(null);
@@ -72,6 +73,8 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
         </p>
       ) : (
       <form action={send} noValidate className="self-start">
+        <fieldset disabled={inactive} className="m-0 min-w-0 border-0 p-0 disabled:[&_button]:cursor-not-allowed disabled:[&_button]:opacity-50">
+        {inactive && <p className="mb-5 rounded-sm border border-inv-line px-4 py-3 text-[14px] leading-relaxed text-inv-ink/75">Undangan ini belum aktif. Ucapan bisa dikirim setelah undangan aktif.</p>}
         <label className="block text-[12px] tracking-[0.14em] text-inv-ink/70">
           NAMAMU
           <input
@@ -131,6 +134,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
         >
           {pending ? (lined || curator || tags || dialog ? "MENGIRIM..." : "MENEMPELKAN...") : tags ? "GANTUNGKAN UCAPAN" : curator ? "SIMPAN CATATAN" : lined || dialog ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
         </button>
+        </fieldset>
       </form>
       )}
 

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DemoViewSwitch } from "@/components/invitation/demo-view-switch";
 import { TrackThemeView } from "@/components/meta-pixel";
-import { Archived, GuestNames, InvitationSlug } from "@/components/invitation/shell";
+import { Archived, GuestNames, Inactive, InvitationSlug } from "@/components/invitation/shell";
 import { Watermark } from "@/components/invitation/watermark";
 import { isDemo } from "@/lib/invitation/archive";
 import { applyPackage, demoHref, demoPackages, TOP_PACKAGE, type DemoDevice, type DemoPackage } from "@/lib/invitation/demo-packages";
@@ -78,11 +78,13 @@ export function InvitationBody({ found }: { found: InvitationPageData }) {
   return (
     <>
       <Archived archived={found.archived}>
-        <GuestNames allowed={found.guestNames}>
-          <InvitationSlug slug={found.demo ? "" : found.view.slug}>
-            <Component inv={found.view} />
-          </InvitationSlug>
-        </GuestNames>
+        <Inactive inactive={!found.paid && !found.demo}>
+          <GuestNames allowed={found.guestNames}>
+            <InvitationSlug slug={found.demo ? "" : found.view.slug}>
+              <Component inv={found.view} />
+            </InvitationSlug>
+          </GuestNames>
+        </Inactive>
       </Archived>
       {!found.paid && <Watermark />}
       {found.demo && found.pkg && (

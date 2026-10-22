@@ -30,6 +30,13 @@ export function Archived({ archived, children }: { archived: boolean; children: 
   return <ArchivedContext.Provider value={archived}>{children}</ArchivedContext.Provider>;
 }
 
+// Undangan yang belum aktif tetap bisa dibuka, tapi RSVP dan ucapan belum bisa dikirim.
+const InactiveContext = createContext(false);
+export const useInactive = () => useContext(InactiveContext);
+export function Inactive({ inactive, children }: { inactive: boolean; children: ReactNode }) {
+  return <InactiveContext.Provider value={inactive}>{children}</InactiveContext.Provider>;
+}
+
 // Slug undangan untuk mengingat tamu di HP-nya: nama dan kode link pribadi (?k=). Kosong di pratinjau admin
 // dan undangan contoh, jadi tidak ada yang dibaca maupun disimpan.
 const SlugContext = createContext("");

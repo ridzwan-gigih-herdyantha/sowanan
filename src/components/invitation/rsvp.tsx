@@ -3,14 +3,14 @@
 import { useId, useRef, useState, useTransition } from "react";
 import { submitRsvp } from "@/app/[slug]/actions";
 import { GUEST_NAME_MAX } from "@/lib/guest-input";
-import { useArchived, useGuest } from "./shell";
+import { useArchived, useGuest, useInactive } from "./shell";
 
 type Step = "attend" | "count" | "name" | "done";
 
 const OFFLINE = "Gagal terhubung. Periksa internet lalu coba lagi.";
 
 const choice =
-  "rounded-sm border border-inv-line px-3 py-4 text-[13px] tracking-[0.1em] transition-colors duration-150 hover:border-inv-accent hover:bg-inv-accent hover:text-inv-paper";
+  "rounded-sm border border-inv-line px-3 py-4 text-[13px] tracking-[0.1em] transition-colors duration-150 enabled:hover:border-inv-accent enabled:hover:bg-inv-accent enabled:hover:text-inv-paper disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
   const { guest, setGuest } = useGuest();
@@ -26,6 +26,7 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
 
   const value = name ?? guest;
   const archived = useArchived();
+  const inactive = useInactive();
 
   const send = () =>
     start(async () => {
@@ -41,7 +42,7 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
   return (
     <div aria-live="polite">
       {step === "attend" && (
-        <fieldset key="attend" className="animate-[inv-pop_.3s_ease-out]">
+        <fieldset key="attend" disabled={inactive} className="animate-[inv-pop_.3s_ease-out]">
           <legend className="font-display text-[32px] leading-tight text-inv-accent">Kamu bisa datang?</legend>
           <p className="mt-2 text-[13px] text-inv-ink/65">Mohon konfirmasi sebelum {deadline}.</p>
           <div className="mt-6 grid grid-cols-2 gap-3">
@@ -52,6 +53,7 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
               BERHALANGAN
             </button>
           </div>
+          {inactive && <p className="mt-4 text-[13px] text-inv-ink/70">Undangan ini belum aktif. Konfirmasi kehadiran bisa dikirim setelah undangan aktif.</p>}
         </fieldset>
       )}
 

@@ -12,6 +12,7 @@ export type ActionResult<T = null> = { ok: true; data: T } | { ok: false; error:
 
 const NOT_READY = "Maaf, penyimpanan sedang tidak tersedia. Coba lagi nanti.";
 const ARCHIVED = "Undangan ini sudah menjadi arsip, jadi tidak lagi menerima konfirmasi kehadiran atau ucapan baru.";
+const INACTIVE = "Undangan ini belum aktif. Konfirmasi kehadiran dan ucapan bisa dikirim setelah undangan aktif.";
 
 const demoMode = () => !hasSupabase() && process.env.NODE_ENV !== "production";
 
@@ -25,19 +26,19 @@ async function retry<T extends { error: { message: string } | null }>(label: str
   return second;
 }
 
-type Target = { id: string; demo: boolean; archived: boolean };
+type Target = { id: string; demo: boolean; archived: boolean; inactive: boolean };
 
 // Dibaca langsung dari database, bukan dari cache halaman. Cache menyimpan hasil gagal selama beberapa menit,
 // jadi satu gangguan sesaat bisa membuat semua RSVP dan ucapan ditolak. Pembekuan arsip juga berlaku tepat waktu.
 // Undangan contoh di homepage hanya peragaan: kiriman tamu dibalas berhasil tapi tidak disimpan.
 async function target(slug: string): Promise<Target | null> {
   const { data, error } = await retry(`Membaca undangan ${slug}`, () =>
-    supabaseAdmin().from("invitations").select("id, slug, theme, data").eq("slug", slug).maybeSingle(),
+    supabaseAdmin().from("invitations").select("id, slug, theme, data, payment_status").eq("slug", slug).maybeSingle(),
   );
   if (error || !data) return null;
   const demo = isDemo(data.slug, data.theme);
   const parsed = invitationDataSchema.safeParse(data.data);
-  return { id: data.id, demo, archived: parsed.success && archiveInfo(parsed.data, Date.now(), demo).archived };
+  return { id: data.id, demo, archived: parsed.success && archiveInfo(parsed.data, Date.now(), demo).archived, inactive: !demo && data.payment_status === "belum_lunas" };
 }
 
 const wishSchema = z.object({
@@ -55,6 +56,7 @@ export async function submitWish(slug: string, input: { name: string; message: s
   if (!inv) return { ok: false, error: NOT_READY };
   if (inv.demo) return { ok: true, data: { id: crypto.randomUUID(), ...parsed.data } };
   if (inv.archived) return { ok: false, error: ARCHIVED };
+  if (inv.inactive) return { ok: false, error: INACTIVE };
 
   const { data, error } = await retry(`Menyimpan ucapan ${slug}`, () =>
     supabaseAdmin().from("wishes").insert({ invitation_id: inv.id, ...parsed.data }).select("id").single(),
@@ -80,6 +82,7 @@ export async function submitRsvp(slug: string, input: z.infer<typeof rsvpSchema>
   if (!inv) return { ok: false, error: NOT_READY };
   if (inv.demo) return { ok: true, data: null };
   if (inv.archived) return { ok: false, error: ARCHIVED };
+  if (inv.inactive) return { ok: false, error: INACTIVE };
 
   const { name, attending, guests } = parsed.data;
   const { error } = await retry(`Menyimpan RSVP ${slug}`, () =>
