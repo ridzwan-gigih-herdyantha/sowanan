@@ -14,6 +14,7 @@ import { FILTERS, type FilterKey } from "./filter-options";
 import { Filters } from "./filters";
 import { PackageSelect } from "./package-select";
 import { PaymentToggle } from "./payment-toggle";
+import { RequirementsBuilder } from "./requirements-builder";
 import { RowMenu } from "./row-menu";
 
 export const metadata: Metadata = {
@@ -121,6 +122,9 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
   return (
     <AdminFrame email={admin.email ?? ""} current="/admin/undangan" title="Undangan">
       <CreateForm packages={packages} themes={themes} />
+      <div className="mt-3 flex justify-end">
+        <RequirementsBuilder packages={packages} themes={themes} matrix={settings.matrix} addons={settings.addons} />
+      </div>
 
       <div className="mt-10 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-serif text-2xl">Daftar undangan</h2>
