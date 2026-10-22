@@ -1,0 +1,199 @@
+{
+  "slug": "bonar-anggi",
+  "theme": "bonar-anggi",
+  "published": true,
+  "data": {
+    "monogram": "B & A",
+    "couple": {
+      "groom": {
+        "name": "Bonar",
+        "full": "Bonar Hasiholan Sinaga",
+        "role": "Putra kedua dari",
+        "parents": "Bapak Jansen Sinaga & Ibu Rosmawati br. Hutabarat",
+        "photo": "bonar-anggi/groom_1.webp?v=mvgadksy"
+      },
+      "bride": {
+        "name": "Anggi",
+        "full": "Anggi Theresia br. Simanjuntak",
+        "role": "Putri pertama dari",
+        "parents": "Bapak Maruli Simanjuntak & Ibu Lestari br. Pardede",
+        "photo": "bonar-anggi/bride_1.webp?v=mvgadlil"
+      }
+    },
+    "event": {
+      "start": "2027-06-12T09:00:00+07:00",
+      "end": "2027-06-12T17:00:00+07:00",
+      "timezone": "WIB",
+      "city": "Balige, Toba",
+      "venue": {
+        "name": "Gedung Serbaguna Balige",
+        "address": "Jl. Sisingamangaraja No. 12, Balige, Kabupaten Toba",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Balige+Toba"
+      },
+      "schedule": [
+        {
+          "time": "09.00",
+          "name": "Pemberkatan Nikah",
+          "until": "10.30"
+        },
+        {
+          "time": "12.00",
+          "name": "Pesta Adat",
+          "until": "17.00"
+        }
+      ],
+      "rsvpDeadline": "29 Mei 2027"
+    },
+    "copy": {
+      "honor": "Dengan kasih dan berkat Tuhan, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari pernikahan kami.",
+      "quote": "Demikianlah mereka bukan lagi dua, melainkan satu. Karena itu, apa yang telah dipersatukan Allah, tidak boleh diceraikan manusia.",
+      "credit": "Foto pasangan dari Pexels. Rumah bolon: Cicinaja, CC BY-SA 4.0 via Wikimedia Commons",
+      "umpasa": "Semoga panjang umur kita bersama,\nsampai pada bahagia dan berkat yang sempurna.",
+      "umpasaArti": ""
+    },
+    "share": {
+      "description": "Dengan kasih dan berkat Tuhan, kami mengundangmu ke pernikahan Bonar & Anggi di Balige, Toba.",
+      "ogDescription": "Kami menantikan kehadiranmu di hari bahagia kami."
+    },
+    "media": {
+      "hero": "bonar-anggi/hero_1.webp?v=mvgadg86",
+      "heroWide": "bonar-anggi/herowide_1.webp?v=mvgadhbe",
+      "og": "bonar-anggi/og_1.jpg?v=mvgadhqh",
+      "music": "",
+      "venue": "bonar-anggi/venue_1.webp?v=mvgadj3b",
+      "closing": "bonar-anggi/closing_1.webp?v=mvgadk6p"
+    },
+    "sections": {
+      "couple": {
+        "enabled": true
+      },
+      "story": {
+        "enabled": true,
+        "items": [
+          {
+            "title": "Bertemu",
+            "date": "2019",
+            "image": "bonar-anggi/story_1.webp?v=mvgadm68",
+            "short": "Satu paduan suara gereja, dua suara yang selalu salah masuk.",
+            "long": "Kami pertama bertemu di latihan paduan suara gereja. Bonar selalu terlambat masuk lagu, Anggi selalu menahan tawa. Sejak itu kami pulang lewat jalan yang sama."
+          },
+          {
+            "title": "Pertemuan Keluarga",
+            "date": "2025",
+            "image": "bonar-anggi/story_2.webp?v=mvgadmw2",
+            "short": "Keluarga kami duduk bersama dan saling mengenal.",
+            "long": "Dua keluarga bertemu dan berbincang panjang. Dari tawa, cerita masa kecil, sampai doa bersama, semuanya terasa seperti pulang."
+          },
+          {
+            "title": "Ikrar Janji",
+            "date": "2027",
+            "image": "bonar-anggi/story_3.webp?v=mvgadnly",
+            "short": "Janji kami diikrarkan di hadapan keluarga dan jemaat.",
+            "long": "Di hadapan keluarga dan jemaat, kami mengikat janji untuk melangkah bersama. Kini kami menantikan hari pemberkatan dan pesta adat bersama kalian."
+          }
+        ]
+      },
+      "event": {
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "gallery": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "bonar-anggi/gallery_1.webp?v=mvgadozr",
+            "w": 1800,
+            "h": 3198,
+            "alt": "Bonar dan Anggi di depan rumah bolon",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "bonar-anggi/gallery_2.webp?v=mvgadq25",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Berbusana adat Batak Toba",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "bonar-anggi/gallery_3.webp?v=mvgadqnk",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Berdiri di bawah gorga rumah bolon",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "bonar-anggi/gallery_4.webp?v=mvgadrrp",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Senyum bersama",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "bonar-anggi/gallery_5.webp?v=mvgadsdz",
+            "w": 1800,
+            "h": 1200,
+            "alt": "Duduk berdampingan",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "bonar-anggi/gallery_6.webp?v=mvgadtlb",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Menuruni tangga",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "bonar-anggi/gallery_7.webp?v=mvgadurw",
+            "w": 1800,
+            "h": 2700,
+            "alt": "Di halaman rumah bolon",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "bonar-anggi/gallery_8.webp?v=mvgadvyt",
+            "w": 1800,
+            "h": 2699,
+            "alt": "Berdua di depan rumah adat",
+            "caption": "",
+            "no": ""
+          }
+        ]
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "gifts": {
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "BCA",
+            "number": "1234567890",
+            "holder": "Bonar Hasiholan Sinaga"
+          },
+          {
+            "bank": "BNI",
+            "number": "0987654321",
+            "holder": "Anggi Theresia Simanjuntak"
+          }
+        ],
+        "qris": "",
+        "note": "Nomor rekening di atas adalah contoh."
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      }
+    }
+  }
+}

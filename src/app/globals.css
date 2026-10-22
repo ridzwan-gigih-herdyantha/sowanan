@@ -2172,3 +2172,388 @@ html.door-wait [data-fit] {
     transform-origin: var(--fd-x) var(--fd-y);
   }
 }
+
+/* Horas (bonar-anggi): ulos Ragi Hotang, ipon-ipon, adegan rumah bolon, dan beras berkat. */
+.hr-ulos {
+  background:
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 0.16) 0 1px, transparent 1px 3px),
+    radial-gradient(circle, var(--inv-gold-light) 1px, transparent 1.7px) 12px 0 / 46px 9px,
+    repeating-linear-gradient(
+      90deg,
+      var(--inv-night) 0 3px,
+      var(--hr-putih) 3px 4px,
+      var(--inv-night) 4px 7px,
+      var(--inv-accent) 7px 18px,
+      var(--inv-gold) 18px 19px,
+      var(--inv-accent) 19px 30px,
+      var(--inv-night) 30px 32px,
+      var(--hr-putih) 32px 33px,
+      var(--inv-night) 33px 36px,
+      var(--hr-merah) 36px 46px
+    );
+}
+.hr-ulos-tegak {
+  background:
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.16) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(
+      180deg,
+      var(--inv-night) 0 3px,
+      var(--hr-putih) 3px 4px,
+      var(--inv-night) 4px 7px,
+      var(--inv-accent) 7px 18px,
+      var(--inv-gold) 18px 19px,
+      var(--inv-accent) 19px 30px,
+      var(--hr-merah) 30px 40px
+    );
+}
+.hr-ipon {
+  background: conic-gradient(from -45deg at 50% 100%, var(--inv-gold) 90deg, transparent 0) 0 0 / 12px 100% repeat-x;
+}
+.hr-rumbai {
+  background: repeating-linear-gradient(180deg, var(--hr-putih) 0 2px, var(--inv-accent) 2px 4px, transparent 4px 7px);
+}
+/* Kilau benang emas yang menyapu pelan di atas ulos pintu. */
+.hr-door .hr-ulos::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 236 190 / 0.18) 50%, transparent 65%) 0 0 / 250% 100%;
+  animation: hr-kilau 4.5s linear infinite;
+}
+@keyframes hr-kilau {
+  to {
+    background-position: -250% 0;
+  }
+}
+
+/* Adegan hero: langit senja, matahari, kabut, dan air danau. */
+.hr-langit {
+  background: linear-gradient(
+    180deg,
+    var(--hr-langit) 0%,
+    color-mix(in srgb, var(--hr-langit) 55%, var(--hr-senja)) 42%,
+    var(--hr-senja) 66%,
+    color-mix(in srgb, var(--hr-senja) 55%, #f6d8a8) 80%
+  );
+}
+.hr-matahari {
+  background: radial-gradient(circle, rgb(255 228 172 / 0.9), rgb(255 190 120 / 0.28) 34%, transparent 64%);
+  animation: hr-napas-cahaya 7s ease-in-out infinite alternate;
+}
+@keyframes hr-napas-cahaya {
+  to {
+    scale: 1.08;
+    opacity: 0.85;
+  }
+}
+.hr-kabut {
+  background: radial-gradient(closest-side, rgb(255 240 226 / 0.42), transparent);
+  filter: blur(6px);
+  animation: hr-kabut 22s ease-in-out infinite alternate;
+}
+.hr-kabut-b {
+  animation-duration: 28s;
+  animation-direction: alternate-reverse;
+}
+@keyframes hr-kabut {
+  from {
+    transform: translateX(-12%);
+  }
+  to {
+    transform: translateX(16%);
+  }
+}
+/* Nada warna tiap kedalaman lapis adegan, diturunkan dari palet. Dibaca filter duotone NadaDefs.
+   Rumah dan tanaman condong ke emas kemerahan. Lembut dan gelap untuk hiasan flora di bagian terang dan gelap. */
+.hr-root {
+  --hr-nada-jauh-a: color-mix(in srgb, var(--hr-senja) 50%, var(--hr-langit));
+  --hr-nada-jauh-b: color-mix(in srgb, var(--inv-gold-light) 60%, #fff3df);
+  --hr-nada-belakang-a: color-mix(in srgb, var(--hr-merah) 50%, var(--inv-night));
+  --hr-nada-belakang-b: color-mix(in srgb, var(--inv-gold) 65%, var(--hr-senja));
+  --hr-nada-tengah-a: color-mix(in srgb, var(--inv-night) 75%, var(--hr-merah));
+  --hr-nada-tengah-b: color-mix(in srgb, var(--inv-gold-light) 85%, #fff);
+  --hr-nada-dekat-a: color-mix(in srgb, var(--inv-night) 85%, var(--hr-merah));
+  --hr-nada-dekat-b: color-mix(in srgb, var(--inv-gold) 70%, var(--inv-accent));
+  --hr-nada-bunga-a: color-mix(in srgb, var(--inv-accent) 80%, var(--inv-night));
+  --hr-nada-bunga-b: var(--inv-gold-light);
+  --hr-nada-lembut-a: color-mix(in srgb, var(--inv-gold) 60%, var(--inv-paper));
+  --hr-nada-lembut-b: color-mix(in srgb, var(--inv-paper) 70%, #fff);
+  --hr-nada-gelap-a: color-mix(in srgb, var(--inv-night) 70%, var(--hr-merah));
+  --hr-nada-gelap-b: color-mix(in srgb, var(--inv-gold) 70%, var(--inv-night));
+}
+.hr-gunung {
+  mask-image: linear-gradient(180deg, transparent 0%, #000 42%, #000 82%, transparent 100%);
+}
+.hr-tanah {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--inv-night) 80%, var(--hr-merah)) 45%, var(--inv-night));
+}
+
+/* Goyang pelan seperti tertiup angin. Memakai properti rotate supaya tidak bentrok dengan transform gerak masuk. */
+.hr-goyang {
+  transform-origin: 50% 100%;
+  animation: hr-goyang 7s ease-in-out infinite alternate;
+  will-change: rotate;
+}
+.hr-goyang-b {
+  animation-duration: 9s;
+  animation-delay: -3s;
+}
+.hr-goyang-c {
+  --hr-amp: 2deg;
+  animation-duration: 6s;
+  animation-delay: -1.5s;
+}
+.hr-goyang-d {
+  --hr-amp: 2.8deg;
+  animation-duration: 4.6s;
+}
+.hr-goyang-e {
+  --hr-amp: 3.6deg;
+  animation-duration: 3.8s;
+  animation-delay: -2s;
+}
+@keyframes hr-goyang {
+  from {
+    rotate: calc(var(--hr-amp, 1.3deg) * -1);
+  }
+  to {
+    rotate: var(--hr-amp, 1.3deg);
+  }
+}
+
+/* Dua helai ulos yang menjuntai membentuk huruf V di atas hero, berayun pelan, dan turun saat undangan dibuka. */
+.hr-juntai {
+  rotate: var(--hr-sudut);
+  animation: hr-ayun 6.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.35));
+}
+.hr-juntai-kiri {
+  --hr-sudut: 16deg;
+  transform-origin: 0 0;
+}
+.hr-juntai-kanan {
+  --hr-sudut: -16deg;
+  transform-origin: 100% 0;
+  animation-delay: -3s;
+}
+@media (min-width: 1024px) {
+  .hr-juntai-kiri {
+    --hr-sudut: 10deg;
+  }
+  .hr-juntai-kanan {
+    --hr-sudut: -10deg;
+  }
+}
+@keyframes hr-ayun {
+  from {
+    rotate: calc(var(--hr-sudut) - 0.9deg);
+  }
+  to {
+    rotate: calc(var(--hr-sudut) + 0.9deg);
+  }
+}
+.hr-rumbai-bawah {
+  background: repeating-linear-gradient(90deg, var(--inv-gold) 0 2px, transparent 2px 7px);
+  mask-image: linear-gradient(180deg, #000, transparent);
+}
+.hr-ulos-turun {
+  transform: translateY(-110%);
+  transition: transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.85s;
+}
+[data-hr-terbuka] .hr-ulos-turun {
+  transform: none;
+}
+
+/* Gerak masuk hero. Pintu ulos memasang data-hr-terbuka setelah tirai benar-benar habis, lalu lapis demi lapis muncul:
+   flora belakang, rumah dan rumpun, flora depan, foto mempelai, ulos menjuntai, lalu teks. Langit dan gunung tidak ikut. */
+.hr-masuk {
+  transition:
+    opacity 1s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 1.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.hr-muncul-1,
+.hr-muncul-2,
+.hr-muncul-3 {
+  opacity: 0;
+  transform: translateY(60px);
+}
+.hr-muncul-2 {
+  transition-delay: 0.18s;
+}
+.hr-muncul-3 {
+  transition-delay: 0.36s;
+}
+.hr-pohon-kiri {
+  transform: translateX(46%) scale(1.25);
+  transition-delay: 0.36s;
+}
+.hr-pohon-kanan {
+  transform: translateX(-46%) scale(1.25);
+  transition-delay: 0.36s;
+}
+.hr-foto {
+  opacity: 0;
+  transform: translateY(50px) scale(0.94);
+  transition-delay: 0.6s;
+}
+.hr-muncul-ulos {
+  opacity: 0;
+  transition-delay: 0.85s;
+}
+.hr-teks-1,
+.hr-teks-2,
+.hr-teks-3 {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.hr-teks-1 {
+  transition-delay: 1.05s;
+}
+.hr-teks-2 {
+  transition-delay: 1.2s;
+}
+.hr-teks-3 {
+  transition-delay: 1.35s;
+}
+[data-hr-terbuka] .hr-masuk {
+  opacity: 1;
+  transform: none;
+}
+/* Latar sudah diperbesar sejak tirai masih menutup, lalu menjauh pelan selama lapis-lapis hero tersusun dan selesai
+   bersamaan dengan teks terakhir. */
+.hr-latar {
+  scale: 1.3;
+  transform-origin: 50% 62%;
+  transition: scale 2.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@media (max-width: 767.98px) {
+  .hr-latar {
+    scale: 1.7;
+  }
+}
+[data-hr-terbuka] .hr-latar {
+  scale: 1;
+}
+.hr-cahaya-foto {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--inv-gold-light) 70%, transparent), transparent);
+  filter: blur(8px);
+  animation: hr-napas-cahaya 6s ease-in-out infinite alternate;
+}
+.hr-bawah-hero {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--inv-night) 80%, transparent) 55%);
+  text-shadow: 0 2px 12px rgb(0 0 0 / 0.6);
+}
+.hr-bayang-teks {
+  background: radial-gradient(60% 70% at 50% 38%, color-mix(in srgb, var(--inv-night) 55%, transparent), transparent 75%);
+}
+
+/* Beras berkat jatuh pelan. Wadahnya container supaya jarak jatuh mengikuti tinggi bagian. */
+.hr-boras {
+  container-type: size;
+}
+.hr-boras span {
+  position: absolute;
+  top: -10px;
+  width: 3px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--hr-putih);
+  box-shadow: 0 0 4px rgb(255 240 210 / 0.6);
+  opacity: 0;
+  animation: hr-jatuh linear infinite;
+}
+.hr-boras[data-jeda] span {
+  animation-play-state: paused;
+}
+@keyframes hr-jatuh {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  88% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(102cqh) translateX(14px);
+    opacity: 0;
+  }
+}
+
+/* Foto bernapas pelan, dan selempang ulos yang meluncur ke kartu mempelai saat terlihat. */
+.hr-napas {
+  animation: hr-napas 18s ease-in-out infinite alternate;
+}
+@keyframes hr-napas {
+  to {
+    scale: 1.06;
+  }
+}
+.hr-selempang {
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.35);
+  transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) 0.35s;
+}
+.hr-kartu-kiri .hr-selempang {
+  transform: translateX(110%) rotate(-10deg);
+}
+.hr-kartu-kanan .hr-selempang {
+  transform: translateX(-110%) rotate(10deg);
+}
+.hr-kartu-kiri.in .hr-selempang {
+  transform: rotate(-10deg);
+}
+.hr-kartu-kanan.in .hr-selempang {
+  transform: rotate(10deg);
+}
+.hr-acara {
+  transition: transform 0.25s ease;
+}
+.hr-acara:hover {
+  transform: translateX(4px);
+}
+.hr-root .hr-gelap a:not([class]) {
+  color: var(--inv-gold-light);
+}
+/* Isian formulir di bagian terang diberi latar penuh, supaya daun hiasan di tepi tidak tembus ke dalamnya. */
+.hr-root .hr-bagian:not(.hr-gelap) :is(input, textarea, select) {
+  background-color: var(--inv-paper);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hr-masuk,
+  .hr-selempang {
+    transition: none;
+  }
+  .hr-latar {
+    scale: 1;
+    transition: none;
+  }
+  .hr-muncul-1,
+  .hr-muncul-2,
+  .hr-muncul-3,
+  .hr-muncul-ulos,
+  .hr-foto,
+  .hr-pohon-kiri,
+  .hr-pohon-kanan,
+  .hr-teks-1,
+  .hr-teks-2,
+  .hr-teks-3 {
+    opacity: 1;
+    transform: none;
+  }
+  .hr-door .hr-ulos::after,
+  .hr-matahari,
+  .hr-kabut,
+  .hr-napas,
+  .hr-goyang,
+  .hr-juntai {
+    animation: none;
+  }
+  .hr-ulos-turun {
+    transform: none;
+  }
+  .hr-boras {
+    display: none;
+  }
+}

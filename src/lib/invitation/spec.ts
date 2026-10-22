@@ -12,6 +12,7 @@ const L = "toni-layla";
 const P = "arkasa-mentari";
 const M = "ivan-mawar";
 const G = "galih-ardila";
+const T = "bonar-anggi";
 
 // when: isian di dalam item daftar yang hanya tampil dan diperiksa untuk jenis item tertentu (lihat Variants).
 type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean; when?: string[] };
@@ -70,10 +71,10 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
 
 const person = (key: "groom" | "bride", title: string): Field[] => [
   { kind: "heading", path: `couple.${key}`, label: title },
-  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S, E, R, L, P, M, G] }),
+  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S, E, R, L, P, M, G, T] }),
   text(`couple.${key}.role`, "Keterangan", 40, { placeholder: key === "groom" ? "Putra dari" : "Putri dari" }),
   area(`couple.${key}.parents`, "Nama orang tua", 160, { placeholder: "Bapak ... & Ibu ..." }),
-  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S, E, R, L, P, M, G], ...optional, hint: "Kosong berarti memakai foto hero." }),
+  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S, E, R, L, P, M, G, T], ...optional, hint: "Kosong berarti memakai foto hero." }),
   text(`couple.${key}.flower`, "Bunga", 60, { themes: [H], ...optional }),
   text(`couple.${key}.latin`, "Nama latin bunga", 80, { themes: [H], ...optional }),
   text(`couple.${key}.aksara`, "Nama dalam aksara Jawa", 80, { themes: [J], ...optional, hint: "Diketik manual dan dicek klien. Tidak diterjemahkan otomatis." }),
@@ -123,7 +124,7 @@ export const GROUPS: Group[] = [
       ...person("groom", "Mempelai pria"),
       ...person("bride", "Mempelai wanita"),
       { kind: "heading", path: "couple", label: "Tambahan" },
-      area("copy.quote", "Kutipan", 300, { themes: [H], ...optional }),
+      area("copy.quote", "Kutipan", 300, { themes: [H, T], ...optional }),
       area("copy.heroQuote", "Kutipan", 300, { themes: [B], ...optional }),
       media("media.couple", "Foto berdua", "couple", { themes: [A, B], ...optional, hint: "Kosong berarti memakai foto hero lebar." }),
     ],
@@ -258,9 +259,11 @@ export const GROUPS: Group[] = [
     title: "Penutup",
     section: "closing",
     fields: [
-      media("media.closing", "Foto penutup", "closing", { themes: [A, E, R, L, P, M, G], ...optional, hint: "Kosong berarti memakai foto hero." }),
+      media("media.closing", "Foto penutup", "closing", { themes: [A, E, R, L, P, M, G, T], ...optional, hint: "Kosong berarti memakai foto hero." }),
       text("copy.sesanti", "Sesanti (pepatah Jawa)", 120, { themes: [J], ...optional, placeholder: "Witing tresna jalaran saka kulina" }),
       text("copy.sesantiArti", "Arti sesanti", 160, { themes: [J], ...optional, placeholder: "Cinta tumbuh karena terbiasa bersama" }),
+      area("copy.umpasa", "Pantun berkat", 200, { themes: [T], ...optional, hint: "Satu baris per larik. Boleh berbahasa Indonesia, atau umpasa Batak yang dipilih atau dicek oleh keluarga." }),
+      text("copy.umpasaArti", "Arti pantun", 200, { themes: [T], ...optional, hint: "Isi bila pantunnya berbahasa daerah." }),
     ],
   },
   {

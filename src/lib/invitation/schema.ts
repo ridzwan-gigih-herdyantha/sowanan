@@ -101,6 +101,9 @@ export const invitationDataSchema = z.object({
       credit: str(),
       sesanti: str(),
       sesantiArti: str(),
+      // Pantun berkat Batak di penutup tema Horas.
+      umpasa: str(),
+      umpasaArti: str(),
       ayat: str(),
       ayatArti: str(),
       ayatSumber: str(),

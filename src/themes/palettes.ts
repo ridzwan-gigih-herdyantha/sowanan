@@ -10,6 +10,7 @@ import { palette as fadhilNayla } from "./fadhil-nayla/palette";
 import { palette as hendrawanLarasati } from "./hendrawan-larasati/palette";
 import { palette as ivanMawar } from "./ivan-mawar/palette";
 import { palette as galihArdila } from "./galih-ardila/palette";
+import { palette as bonarAnggi } from "./bonar-anggi/palette";
 import { CUSTOM, isHex, type ThemePalette, type Vars } from "./palette";
 
 export const PALETTES: Record<string, ThemePalette> = {
@@ -24,6 +25,7 @@ export const PALETTES: Record<string, ThemePalette> = {
   "arkasa-mentari": arkasaMentari,
   "ivan-mawar": ivanMawar,
   "galih-ardila": galihArdila,
+  "bonar-anggi": bonarAnggi,
 };
 
 // Palet yang dipakai undangan: kustom bila ketiga warnanya sah, preset yang dipilih, atau preset pertama sebagai bawaan.

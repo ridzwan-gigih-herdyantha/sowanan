@@ -16,6 +16,7 @@ import { MedaliDoor, type MedaliProps } from "./sutra/door";
 import { MulaiDoor, type MulaiProps } from "./petualang/door";
 import { MekarDoor, type MekarProps } from "./mekar/door";
 import { TabloidDoor, type TabloidProps } from "./tabloid/door";
+import { UlosDoor, type UlosProps } from "./horas/door";
 
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
@@ -36,7 +37,7 @@ export function InvitationSlug({ slug, children }: { slug: string; children: Rea
   return <SlugContext.Provider value={slug}>{children}</SlugContext.Provider>;
 }
 
-const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
+const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door,.hr-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
 
 // Pratinjau untuk mengatur foto di editor langsung menampilkan isi undangan, tanpa loader, pembuka, dan musik.
 const SkipDoorContext = createContext(false);
@@ -104,7 +105,8 @@ type Door =
   | ({ kind: "lensa" } & Omit<LensaProps, "invited" | "onOpen">)
   | ({ kind: "mulai" } & Omit<MulaiProps, "invited" | "onOpen">)
   | ({ kind: "mekar" } & Omit<MekarProps, "invited" | "onOpen">)
-  | ({ kind: "tabloid" } & Omit<TabloidProps, "invited" | "onOpen">);
+  | ({ kind: "tabloid" } & Omit<TabloidProps, "invited" | "onOpen">)
+  | ({ kind: "ulos" } & Omit<UlosProps, "invited" | "onOpen">);
 
 // Musik bawaan yang dibentuk langsung di browser, dipakai bila undangan tidak punya berkas musik.
 const SYNTHS = { gending, chiptune };
@@ -424,7 +426,9 @@ export function InvitationShell({ door, music, synth, className, style, children
 
           {door.kind === "tabloid" && <TabloidDoor groom={door.groom} bride={door.bride} date={door.date} photo={door.photo} frame={door.frame} invited={invited} onOpen={openInvitation} />}
 
-          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" ? null : door.kind === "seal" ? (
+          {door.kind === "ulos" && <UlosDoor groom={door.groom} bride={door.bride} date={door.date} invited={invited} onOpen={openInvitation} />}
+
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" ? null : door.kind === "seal" ? (
             <div
               className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
               aria-hidden={open}

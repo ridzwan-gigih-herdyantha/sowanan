@@ -29,6 +29,7 @@ import { defaultFonts as fadhilNayla } from "./fadhil-nayla/fonts";
 import { defaultFonts as hendrawanLarasati } from "./hendrawan-larasati/fonts";
 import { defaultFonts as ivanMawar } from "./ivan-mawar/fonts";
 import { defaultFonts as galihArdila } from "./galih-ardila/fonts";
+import { defaultFonts as bonarAnggi } from "./bonar-anggi/fonts";
 
 // Font pilihan untuk add-on ganti font. Semua di-host sendiri lewat next/font dan tidak dipreload,
 // jadi berkasnya hanya diunduh bila undangan benar-benar memakainya.
@@ -131,6 +132,12 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
     { id: "modern", name: "DM Serif & DM Sans", display: dmSerif, body: dmSans },
     { id: "tegas", name: "Playfair & Work Sans", display: playfair, body: workSans },
     { id: "bersih", name: "Fraunces & Manrope", display: fraunces, body: manrope },
+  ],
+  "bonar-anggi": [
+    { id: "", name: "Cinzel & Alegreya Sans", ...bonarAnggi },
+    { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
+    { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
+    { id: "lembut", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
   ],
 };
 

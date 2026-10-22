@@ -14,6 +14,7 @@ export const THEME_MEDIA: Record<string, Purpose[]> = {
   "arkasa-mentari": [...BASE, "groom", "bride", "closing"],
   "ivan-mawar": [...BASE, "groom", "bride", "closing"],
   "galih-ardila": [...BASE, "groom", "bride", "closing"],
+  "bonar-anggi": [...BASE, "groom", "bride", "closing"],
 };
 
 export const THEME_NAMES: Record<string, string> = {
@@ -28,6 +29,7 @@ export const THEME_NAMES: Record<string, string> = {
   "arkasa-mentari": "Co-op Adventure",
   "ivan-mawar": "Mekar Mawar",
   "galih-ardila": "Kabar Retro No. 27",
+  "bonar-anggi": "Horas",
 };
 
 // Lagu bawaan tema, dipakai kalau undangan tidak mengunggah musik sendiri.

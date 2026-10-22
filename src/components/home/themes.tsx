@@ -18,6 +18,7 @@ const CARD_BG: Record<string, string> = {
   "arkasa-mentari": "bg-[#f3d9c4]",
   "ivan-mawar": "bg-[#f3dcdc]",
   "galih-ardila": "bg-[#ecd3a8]",
+  "bonar-anggi": "bg-[#e8cfc4]",
 };
 
 // Bingkai ponsel berisi tangkapan layar tema.
