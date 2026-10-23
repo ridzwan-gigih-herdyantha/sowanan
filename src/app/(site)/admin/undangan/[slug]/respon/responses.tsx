@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { rsvpSheet } from "@/lib/export/rsvp-sheet";
 import { useWorking } from "../../../use-working";
 import { markArchiveNotified } from "../../actions";
@@ -13,6 +13,61 @@ export type ArchiveNotice = { archiveAt: string; archived: boolean; notifiedAt: 
 type Props = { slug: string; rsvps: Rsvp[]; wishes: Wish[]; guestNames: string[]; exportLock?: string; notice?: ArchiveNotice };
 
 const PAGE = 50;
+
+const ICONS = {
+  hide: "M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 9 4.5 10 7-.4 1-1.2 2.3-2.4 3.5M6.6 6.6C4.6 7.9 3.1 9.9 2 12c1 2.5 5 7 10 7 1.7 0 3.3-.5 4.6-1.3",
+  show: "M2 12c1-2.5 5-7 10-7s9 4.5 10 7c-1 2.5-5 7-10 7S3 14.5 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
+  trash: "M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3",
+};
+
+// Tombol aksi berupa ikon. Teksnya tetap terbaca pembaca layar dan muncul sebagai tooltip.
+function IconButton({ label, icon, busy, disabled, onClick }: { label: string; icon: keyof typeof ICONS; busy?: boolean; disabled?: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      title={label}
+      className="flex size-8 items-center justify-center rounded-sm text-ink-mute transition-colors duration-150 hover:bg-blush hover:text-wine disabled:opacity-50"
+    >
+      {busy ? (
+        <span className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d={ICONS[icon]} />
+        </svg>
+      )}
+    </button>
+  );
+}
+
+// Jendela detail satu RSVP atau ucapan dari tampilan grid.
+function Detail({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    ref.current?.showModal();
+  }, []);
+  return (
+    <dialog
+      ref={ref}
+      aria-label={title}
+      onClose={onClose}
+      onClick={(e) => e.target === ref.current && ref.current?.close()}
+      className="m-auto w-[min(460px,calc(100vw-32px))] rounded-sm border border-line bg-white p-0 text-ink shadow-[0_20px_60px_rgba(0,0,0,.25)] backdrop:bg-ink/50"
+    >
+      <div className="p-6">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <h3 className="font-serif text-2xl leading-tight">{title}</h3>
+          <button type="button" onClick={() => ref.current?.close()} aria-label="Tutup" className="-mt-1 -mr-2 rounded-sm px-2 py-1 text-[18px] text-ink-mute hover:bg-blush hover:text-ink">
+            &times;
+          </button>
+        </div>
+        {children}
+      </div>
+    </dialog>
+  );
+}
 const field = "block w-full rounded-sm border border-line bg-white px-3 py-2.5 text-base outline-none focus:border-wine";
 const timeFmt = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" });
 const key = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
@@ -37,6 +92,10 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
   const [wishes, setWishes] = useState(initialWishes);
   const [tab, setTab] = useState<"rsvp" | "wish">("rsvp");
   const [filter, setFilter] = useState<"all" | "yes" | "no">("all");
+  // Tampilan daftar: baris (bawaan) atau kartu dalam grid.
+  const [view, setView] = useState<"list" | "grid">("list");
+  // Kotak di grid yang sedang dibuka detailnya.
+  const [opened, setOpened] = useState<{ kind: "rsvp" | "wish"; id: number } | null>(null);
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
   const [error, setError] = useState("");
@@ -57,6 +116,10 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
   const answeredInvited = [...latest.keys()].filter((k) => invited.has(k)).length;
 
   const q = key(query);
+  const grid = view === "grid";
+  // Data yang sudah dihapus otomatis menutup jendelanya, karena tidak ditemukan lagi.
+  const openRsvp = opened?.kind === "rsvp" ? rsvps.find((r) => r.id === opened.id) : undefined;
+  const openWish = opened?.kind === "wish" ? wishes.find((w) => w.id === opened.id) : undefined;
   const rsvpList = rsvps.filter((r) => (filter === "all" || r.attending === (filter === "yes")) && (!q || key(r.name).includes(q)));
   const wishList = wishes.filter((w) => !q || key(w.name).includes(q) || w.message.toLowerCase().includes(q));
   const list = tab === "rsvp" ? rsvpList : wishList;
@@ -186,62 +249,163 @@ export function Responses({ slug, rsvps: initialRsvps, wishes: initialWishes, gu
             {working === "excel" ? "Menyiapkan Excel..." : "Unduh Excel"}
           </button>
         )}
+        <div role="group" aria-label="Tampilan" className="ml-auto flex rounded-sm border border-line bg-white p-0.5">
+          {(
+            [
+              ["list", "List", "M4 6h16M4 12h16M4 18h16"],
+              ["grid", "Grid", "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"],
+            ] as const
+          ).map(([k, label, d]) => (
+            <button
+              key={k}
+              type="button"
+              aria-pressed={view === k}
+              aria-label={label}
+              title={label}
+              onClick={() => setView(k)}
+              className={`flex size-8 items-center justify-center rounded-[3px] ${view === k ? "bg-wine text-white" : "text-ink-soft hover:text-ink"}`}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d={d} />
+              </svg>
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && <p className="mt-3 rounded-sm bg-blush px-4 py-3 text-[14px] text-wine">{error}</p>}
       {!list.length && <p className="mt-6 text-[15px] text-ink-mute">{query ? "Tidak ada yang cocok." : tab === "rsvp" ? "Belum ada konfirmasi kehadiran." : "Belum ada ucapan."}</p>}
 
-      <ul className="mt-4 divide-y divide-line border-y border-line empty:border-0">
-        {tab === "rsvp"
-          ? rsvpList.slice(0, limit).map((r) => {
-              const stale = latest.get(key(r.name))?.id !== r.id;
-              return (
-                <li key={r.id} aria-busy={working === `hapus:rsvp:${r.id}` || undefined} className={`flex flex-wrap items-center gap-x-4 gap-y-1 py-3 transition-opacity duration-150 ${stale || working === `hapus:rsvp:${r.id}` ? "opacity-55" : ""}`}>
-                  <div className="min-w-0 flex-1 basis-40">
-                    <p className="truncate font-medium">{r.name}</p>
-                    <p className="text-[13px] text-ink-mute">
-                      {timeFmt.format(new Date(r.created_at))}
-                      {invited.has(key(r.name)) && " · di daftar tamu"}
-                      {stale && " · diganti konfirmasi terbaru"}
-                    </p>
-                  </div>
-                  <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${r.attending ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>
-                    {r.attending ? `Hadir, ${r.guests} orang` : "Tidak hadir"}
-                  </span>
-                  <button type="button" onClick={() => remove("rsvp", r.id, r.name)} disabled={working !== null} className="text-[14px] text-ink-mute hover:text-wine disabled:opacity-60">
-                    {working === `hapus:rsvp:${r.id}` ? "Menghapus..." : "Hapus"}
+      {grid ? (
+        // Grid: kotak kecil berisi ringkasan dan ikon aksi di pojok. Klik kotaknya untuk membuka detail.
+        <ul className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(96px,1fr))] gap-2 sm:grid-cols-[repeat(auto-fit,minmax(120px,1fr))]">
+          {tab === "rsvp"
+            ? rsvpList.slice(0, limit).map((r) => (
+                <li key={r.id} className={`relative ${latest.get(key(r.name))?.id !== r.id ? "opacity-55" : ""}`}>
+                  <button
+                    type="button"
+                    onClick={() => setOpened({ kind: "rsvp", id: r.id })}
+                    className="flex h-28 w-full flex-col justify-between rounded-sm border border-line bg-white p-2.5 pr-10 text-left transition-colors duration-150 hover:border-wine"
+                  >
+                    <span className="line-clamp-3 text-[13px] leading-snug font-medium">{r.name}</span>
+                    <span className={`self-start rounded-full px-2 py-0.5 text-[11px] ${r.attending ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>{r.attending ? `Hadir ${r.guests}` : "Tidak hadir"}</span>
                   </button>
+                  <span className="absolute right-1 bottom-1">
+                    <IconButton label="Hapus" icon="trash" busy={working === `hapus:rsvp:${r.id}`} disabled={working !== null} onClick={() => remove("rsvp", r.id, r.name)} />
+                  </span>
                 </li>
-              );
-            })
-          : wishList.slice(0, limit).map((w) => {
-              const busy = working === `hapus:wish:${w.id}` || working === `sembunyi:${w.id}`;
-              return (
-                <li key={w.id} aria-busy={busy || undefined} className={`py-4 transition-opacity duration-150 ${busy ? "opacity-55" : ""}`}>
-                  <div className="flex items-baseline justify-between gap-4">
-                    <p className={`min-w-0 truncate font-medium ${w.hidden_at ? "text-ink-mute" : ""}`}>
-                      {w.name}
-                      {w.hidden_at && (
-                        <span className="ml-2 rounded-full bg-blush px-2 py-0.5 text-[11px] font-normal text-ink-soft">
-                          Disembunyikan {w.hidden_by === "mempelai" ? "mempelai" : "admin"}
-                        </span>
-                      )}
-                    </p>
-                    <span className="flex shrink-0 gap-4 text-[14px]">
-                      <button type="button" onClick={() => toggleHidden(w)} disabled={working !== null} className="text-ink-mute hover:text-wine disabled:opacity-60">
-                        {working === `sembunyi:${w.id}` ? "Menyimpan..." : w.hidden_at ? "Tampilkan" : "Sembunyikan"}
-                      </button>
-                      <button type="button" onClick={() => remove("wish", w.id, w.name)} disabled={working !== null} className="text-ink-mute hover:text-wine disabled:opacity-60">
-                        {working === `hapus:wish:${w.id}` ? "Menghapus..." : "Hapus"}
-                      </button>
+              ))
+            : wishList.slice(0, limit).map((w) => (
+                <li key={w.id} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setOpened({ kind: "wish", id: w.id })}
+                    className={`flex h-36 w-full flex-col overflow-hidden rounded-sm border bg-white p-2.5 pb-10 text-left transition-colors duration-150 hover:border-wine ${w.hidden_at ? "border-dashed border-ink-mute/50" : "border-line"}`}
+                  >
+                    <span className={`truncate text-[13px] font-medium ${w.hidden_at ? "text-ink-mute" : ""}`}>{w.name}</span>
+                    <span className={`mt-1 line-clamp-3 text-[12px] leading-snug ${w.hidden_at ? "text-ink-mute" : "text-ink-soft"}`}>{w.message}</span>
+                  </button>
+                  <span className="absolute right-1 bottom-1 flex">
+                    <IconButton
+                      label={w.hidden_at ? "Tampilkan di undangan" : "Sembunyikan dari undangan"}
+                      icon={w.hidden_at ? "show" : "hide"}
+                      busy={working === `sembunyi:${w.id}`}
+                      disabled={working !== null}
+                      onClick={() => toggleHidden(w)}
+                    />
+                    <IconButton label="Hapus" icon="trash" busy={working === `hapus:wish:${w.id}`} disabled={working !== null} onClick={() => remove("wish", w.id, w.name)} />
+                  </span>
+                </li>
+              ))}
+        </ul>
+      ) : (
+        <ul className="mt-4 divide-y divide-line border-y border-line empty:border-0">
+          {tab === "rsvp"
+            ? rsvpList.slice(0, limit).map((r) => {
+                const stale = latest.get(key(r.name))?.id !== r.id;
+                return (
+                  <li key={r.id} aria-busy={working === `hapus:rsvp:${r.id}` || undefined} className={`flex flex-wrap items-center gap-x-4 gap-y-1 py-3 transition-opacity duration-150 ${stale || working === `hapus:rsvp:${r.id}` ? "opacity-55" : ""}`}>
+                    <div className="min-w-0 flex-1 basis-40">
+                      <p className="truncate font-medium">{r.name}</p>
+                      <p className="text-[13px] text-ink-mute">
+                        {timeFmt.format(new Date(r.created_at))}
+                        {invited.has(key(r.name)) && " · di daftar tamu"}
+                        {stale && " · diganti konfirmasi terbaru"}
+                      </p>
+                    </div>
+                    <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${r.attending ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>
+                      {r.attending ? `Hadir, ${r.guests} orang` : "Tidak hadir"}
                     </span>
-                  </div>
-                  <p className={`mt-1 text-[15px] whitespace-pre-line ${w.hidden_at ? "text-ink-mute" : "text-ink-soft"}`}>{w.message}</p>
-                  <p className="mt-1 text-[12px] text-ink-mute">{timeFmt.format(new Date(w.created_at))}</p>
-                </li>
-              );
-            })}
-      </ul>
+                    <IconButton label="Hapus" icon="trash" busy={working === `hapus:rsvp:${r.id}`} disabled={working !== null} onClick={() => remove("rsvp", r.id, r.name)} />
+                  </li>
+                );
+              })
+            : wishList.slice(0, limit).map((w) => {
+                const busy = working === `hapus:wish:${w.id}` || working === `sembunyi:${w.id}`;
+                return (
+                  <li key={w.id} aria-busy={busy || undefined} className={`py-4 transition-opacity duration-150 ${busy ? "opacity-55" : ""}`}>
+                    <div className="flex items-baseline justify-between gap-4">
+                      <p className={`min-w-0 truncate font-medium ${w.hidden_at ? "text-ink-mute" : ""}`}>
+                        {w.name}
+                        {w.hidden_at && (
+                          <span className="ml-2 rounded-full bg-blush px-2 py-0.5 text-[11px] font-normal text-ink-soft">
+                            Disembunyikan {w.hidden_by === "mempelai" ? "mempelai" : "admin"}
+                          </span>
+                        )}
+                      </p>
+                      <span className="-my-1 flex shrink-0 gap-1">
+                        <IconButton
+                          label={w.hidden_at ? "Tampilkan di undangan" : "Sembunyikan dari undangan"}
+                          icon={w.hidden_at ? "show" : "hide"}
+                          busy={working === `sembunyi:${w.id}`}
+                          disabled={working !== null}
+                          onClick={() => toggleHidden(w)}
+                        />
+                        <IconButton label="Hapus" icon="trash" busy={working === `hapus:wish:${w.id}`} disabled={working !== null} onClick={() => remove("wish", w.id, w.name)} />
+                      </span>
+                    </div>
+                    <p className={`mt-1 text-[15px] whitespace-pre-line ${w.hidden_at ? "text-ink-mute" : "text-ink-soft"}`}>{w.message}</p>
+                    <p className="mt-1 text-[12px] text-ink-mute">{timeFmt.format(new Date(w.created_at))}</p>
+                  </li>
+                );
+              })}
+        </ul>
+      )}
+
+      {openRsvp && (
+        <Detail title={openRsvp.name} onClose={() => setOpened(null)}>
+          <span className={`inline-block rounded-full px-2.5 py-0.5 text-[12px] ${openRsvp.attending ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>
+            {openRsvp.attending ? `Hadir, ${openRsvp.guests} orang` : "Tidak hadir"}
+          </span>
+          <p className="mt-3 text-[14px] text-ink-mute">
+            {timeFmt.format(new Date(openRsvp.created_at))}
+            {invited.has(key(openRsvp.name)) && " · di daftar tamu"}
+            {latest.get(key(openRsvp.name))?.id !== openRsvp.id && " · diganti konfirmasi terbaru"}
+          </p>
+          <div className="mt-6 flex justify-end">
+            <button type="button" onClick={() => remove("rsvp", openRsvp.id, openRsvp.name)} disabled={working !== null} className="rounded-sm border border-line px-4 py-2 text-[14px] text-ink-soft hover:border-wine hover:text-wine disabled:opacity-60">
+              {working === `hapus:rsvp:${openRsvp.id}` ? "Menghapus..." : "Hapus"}
+            </button>
+          </div>
+        </Detail>
+      )}
+      {openWish && (
+        <Detail title={openWish.name} onClose={() => setOpened(null)}>
+          {openWish.hidden_at && (
+            <span className="mb-3 inline-block rounded-full bg-blush px-2 py-0.5 text-[12px] text-ink-soft">Disembunyikan {openWish.hidden_by === "mempelai" ? "mempelai" : "admin"}</span>
+          )}
+          <p className={`text-[16px] leading-relaxed whitespace-pre-line ${openWish.hidden_at ? "text-ink-mute" : "text-ink"}`}>{openWish.message}</p>
+          <p className="mt-3 text-[13px] text-ink-mute">{timeFmt.format(new Date(openWish.created_at))}</p>
+          <div className="mt-6 flex justify-end gap-2">
+            <button type="button" onClick={() => toggleHidden(openWish)} disabled={working !== null} className="rounded-sm border border-line px-4 py-2 text-[14px] text-ink-soft hover:border-wine hover:text-wine disabled:opacity-60">
+              {working === `sembunyi:${openWish.id}` ? "Menyimpan..." : openWish.hidden_at ? "Tampilkan" : "Sembunyikan"}
+            </button>
+            <button type="button" onClick={() => remove("wish", openWish.id, openWish.name)} disabled={working !== null} className="rounded-sm border border-line px-4 py-2 text-[14px] text-ink-soft hover:border-wine hover:text-wine disabled:opacity-60">
+              {working === `hapus:wish:${openWish.id}` ? "Menghapus..." : "Hapus"}
+            </button>
+          </div>
+        </Detail>
+      )}
 
       {list.length > limit && (
         <button type="button" onClick={() => setLimit((l) => l + PAGE)} className="mt-4 text-[14px] text-wine underline underline-offset-4">
