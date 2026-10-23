@@ -17,6 +17,8 @@ export function Filters({ shown, total }: { shown: number; total: number }) {
 
   const apply = (key: string, value: string) => {
     const next = new URLSearchParams(params.toString());
+    // Hasil filter baru selalu dimulai dari halaman pertama.
+    next.delete("hal");
     if (value) next.set(key, value);
     else next.delete(key);
     const qs = next.toString();

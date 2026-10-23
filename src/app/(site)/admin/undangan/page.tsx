@@ -13,6 +13,7 @@ import { CreateForm } from "./create-form";
 import { FILTERS, type FilterKey } from "./filter-options";
 import { Filters } from "./filters";
 import { PackageSelect } from "./package-select";
+import { Pagination } from "./pagination";
 import { PaymentToggle } from "./payment-toggle";
 import { RequirementsBuilder } from "./requirements-builder";
 import { RowMenu } from "./row-menu";
@@ -59,6 +60,8 @@ function ArchiveBadge({ slug, info, notified }: { slug: string; info: ArchiveInf
 
 type Query = Partial<Record<FilterKey | "q", string>>;
 
+const PER_PAGE = 20;
+
 const pick = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)?.trim() || undefined;
 
 // Hanya nilai yang dikenal yang dipakai, supaya parameter URL asal-asalan tidak mengosongkan daftar.
@@ -104,7 +107,8 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
   const archive = (r: Row) => archiveFromDates(r.es, r.ee, undefined, isDemo(r.slug, r.theme));
   const toNotify = rows.filter((r) => archive(r).noticeDue && !r.archive_notified_at).length;
 
-  const query = readQuery(await searchParams);
+  const sp = await searchParams;
+  const query = readQuery(sp);
   const needle = query.q?.toLowerCase();
   const shown = rows.filter((r) => {
     if (needle && ![couple(r), r.slug, r.dg, r.db].some((v) => v?.toLowerCase().includes(needle))) return false;
@@ -118,6 +122,10 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
     }
     return true;
   });
+  // Halaman di luar jangkauan, misalnya setelah filter mengecilkan hasil, jatuh ke halaman terdekat.
+  const pages = Math.max(1, Math.ceil(shown.length / PER_PAGE));
+  const page = Math.min(pages, Math.max(1, Math.floor(Number(pick(sp.hal))) || 1));
+  const visible = shown.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
     <AdminFrame email={admin.email ?? ""} current="/admin/undangan" title="Undangan">
@@ -146,7 +154,7 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
       </div>
       <ul className="divide-y divide-line border-b border-line">
         {shown.length === 0 && <li className="py-10 text-center text-[15px] text-ink-mute">{rows.length ? "Tidak ada undangan yang cocok dengan filter." : "Belum ada undangan."}</li>}
-        {shown.map((r) => (
+        {visible.map((r) => (
           <li key={r.slug} className="grid grid-cols-2 items-center gap-x-4 gap-y-3 py-4 lg:grid-cols-[minmax(0,1fr)_140px_140px_80px_100px_110px]">
             <div className="col-span-2 min-w-0 lg:col-span-1">
               <Link href={`/admin/undangan/${r.slug}`} prefetch={false} className="block truncate font-serif text-xl text-ink no-underline hover:text-wine has-[[data-pending]]:opacity-55">
@@ -169,6 +177,7 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
           </li>
         ))}
       </ul>
+      <Pagination page={page} pages={pages} total={shown.length} perPage={PER_PAGE} params={query as Record<string, string>} />
     </AdminFrame>
   );
 }
