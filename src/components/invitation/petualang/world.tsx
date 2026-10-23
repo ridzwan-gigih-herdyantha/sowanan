@@ -184,9 +184,11 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
         const c = r(edge + 2 + HOP_W + STEPS + w / 2);
         const left = r(c - w / 2);
         const hop = r(left - STEPS - HOP_W);
-        // Papan bawah di antara tanah dan lantai dua, papan atas berdiri di lantai dua.
-        spots[i] = { center: c, width: w, lift: LOW_LIFT, base: 2, top: Math.round(vh - (2 + LEDGE - 1.15) * t), flag: st.flag ? { x: r(left + w + 0.6), y: 0 } : undefined };
-        spots[upper] = { center: c, width: w, lift: 2 + LEDGE + 2, base: 2 + LEDGE, top: HUD, flag: stations[upper].flag ? { x: r(left + 0.6), y: LEDGE } : undefined };
+        // Papan atas berdiri di lantai dua, papan bawah di antara tanah dan lantai dua. Cerita dibaca dari atas ke
+        // bawah, jadi cerita pertama dari pasangan ini di papan atas dan berikutnya di papan bawah.
+        const lower = upper;
+        spots[i] = { center: c, width: w, lift: 2 + LEDGE + 2, base: 2 + LEDGE, top: HUD, flag: st.flag ? { x: r(left + 0.6), y: LEDGE } : undefined };
+        spots[lower] = { center: c, width: w, lift: LOW_LIFT, base: 2, top: Math.round(vh - (2 + LEDGE - 1.15) * t), flag: stations[lower].flag ? { x: r(left + w + 0.6), y: 0 } : undefined };
         // Pijakan pertama, anak tangga melayang, lalu lantai dua di atas papan bawah. Koin di atas anak tangga
         // menunjukkan jalannya.
         solids.push({ x: hop, w: HOP_W, y0: HOP - 1, y1: HOP, art: "brick", oneWay: true, hop: true });
