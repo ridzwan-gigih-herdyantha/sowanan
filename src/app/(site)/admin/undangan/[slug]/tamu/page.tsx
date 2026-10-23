@@ -74,7 +74,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         <InvitationTabs slug={slug} current="tamu" />
       </div>
       {!row.published && (
-        <p className="mt-5 rounded-sm bg-blush px-4 py-3 text-[14px]">Undangan belum tayang. Link tamu baru bisa dibuka setelah Tayang dinyalakan di Isi undangan.</p>
+        <p className="mt-5 rounded-sm bg-blush px-4 py-3 text-[14px]">Undangan belum live. Link tamu baru bisa dibuka setelah Live dinyalakan di Editor.</p>
       )}
       <GuestManager
         slug={slug}

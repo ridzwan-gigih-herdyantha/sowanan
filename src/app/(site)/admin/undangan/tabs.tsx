@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Pending } from "@/app/(site)/admin/pending";
 
 const TABS = [
-  { key: "edit", label: "Isi undangan", href: "" },
+  { key: "edit", label: "Editor", href: "" },
   { key: "tamu", label: "Tamu", href: "/tamu" },
   { key: "respon", label: "RSVP & ucapan", href: "/respon" },
   { key: "palet", label: "Palet", href: "/palet" },

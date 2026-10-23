@@ -98,7 +98,7 @@ function MediaInput({ f, path }: { f: Extract<Field, { kind: "media" }>; path: s
           {kind === "audio" && value && <audio src={mediaUrl(value)} controls preload="none" className="mt-1 h-8 w-full" />}
           <span className="mt-1 flex gap-4 text-[13px]">
             <span className="relative cursor-pointer text-wine underline underline-offset-4 focus-within:outline-2 focus-within:outline-wine">
-              {value ? "Ganti" : "Unggah"}
+              {value ? "Ganti" : "Upload"}
               <input
                 type="file"
                 accept={ACCEPT[kind]}
@@ -118,7 +118,7 @@ function MediaInput({ f, path }: { f: Extract<Field, { kind: "media" }>; path: s
             )}
             {value && (
               <button type="button" className="text-ink-mute hover:text-wine" onClick={() => update((d) => unframe(setIn(d, path, "")))}>
-                Kosongkan
+                Hapus
               </button>
             )}
           </span>
@@ -244,7 +244,7 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
         </button>
         {bulkMedia && !full && (
           <span className="relative cursor-pointer text-wine underline underline-offset-4 focus-within:outline-2 focus-within:outline-wine">
-            Unggah beberapa foto
+            Upload beberapa foto
             <input
               type="file"
               multiple

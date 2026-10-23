@@ -93,9 +93,9 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
   };
 
   return (
-    <section className="rounded-sm border border-line bg-white px-4 py-3">
+    <section>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className="font-serif text-xl">Paket</span>
+        <span className="text-[14px] font-medium">Paket</span>
         <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${id ? "bg-blush text-wine" : "bg-amber-100 text-amber-900 ring-1 ring-amber-300"}`}>{id ? PACKAGE_NAMES[id] : "Belum dipilih"}</span>
         {pending && <Spinner className="size-3.5 text-wine" />}
         <span className="ml-auto text-[12px] text-ink-mute">Ganti paket di daftar undangan</span>

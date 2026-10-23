@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { contrast, CUSTOM, isHex, MIN_CONTRAST, type Vars } from "@/themes/palette";
 import { FONT_PRESETS, fontStack, NAME_FONTS } from "@/themes/fonts";
@@ -37,7 +36,6 @@ function Swatch({ vars, keys }: { vars: Vars; keys: string[] }) {
 // Panel gaya: pilih palet jadi tema, buat palet kustom dari tiga warna dasar dengan cek kontras, dan pilih pasangan font.
 export function StylePanel({ theme, style, couple, locked, applying, onChange }: Props) {
   const p = PALETTES[theme];
-  const [open, setOpen] = useState(false);
   if (!p) return null;
 
   const current = style.palette || p.presets[0].id;
@@ -54,23 +52,17 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
   const setBase = (key: (typeof BASE_FIELDS)[number]["key"], value: string) => onChange({ ...style, palette: CUSTOM, custom: { ...base, [key]: value.toUpperCase() } });
 
   return (
-    <section id="g-gaya" className="rounded-sm border border-line bg-white">
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-center gap-3 px-4 py-3 text-left">
-        <span className="font-serif text-xl">Gaya</span>
-        <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-mute">
+    <div id="g-gaya">
+      <div className="mb-5 flex items-center gap-3 rounded-sm bg-ivory px-3 py-2.5">
+        <span className="w-24 shrink-0">
+          <Swatch vars={active} keys={p.swatch} />
+        </span>
+        <span className="inline-flex min-w-0 items-center gap-1.5 text-[13px] text-ink-soft">
           {applying && <Spinner className="size-3.5 text-wine" />}
           {applying ? "Menerapkan..." : `${custom ? "Palet kustom" : p.presets.find((x) => x.id === current)?.name}${font ? ` · ${font.name}` : ""}${nameFont ? ` · ${nameFont.name}` : ""}`}
         </span>
-        <span className="ml-auto w-24">
-          <Swatch vars={active} keys={p.swatch} />
-        </span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 text-ink-mute transition-transform duration-150 ${open ? "rotate-180" : ""}`} aria-hidden="true">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
-
-      {open && (
-        <div className="border-t border-line p-4">
+      </div>
+        <div>
           {locked && (
             <p className={`mb-4 rounded-sm px-3 py-2 text-[13px] ${changed ? "bg-blush/60 text-wine ring-1 ring-wine/40" : "bg-ivory text-ink-mute ring-1 ring-line"}`}>
               {locked}
@@ -242,7 +234,6 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
             </button>
           )}
         </div>
-      )}
-    </section>
+    </div>
   );
 }

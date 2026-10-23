@@ -119,7 +119,7 @@ export async function setPublished(slug: string, published: boolean): Promise<Re
   if (published) {
     const parsed = invitationDataSchema.safeParse(row.data);
     const issues = parsed.success ? await issuesFor(parsed.data, slug, row.theme) : [];
-    if (!parsed.success || issues.length) return { ok: false, error: "Simpan versi lengkap dulu sebelum ditayangkan.", issues };
+    if (!parsed.success || issues.length) return { ok: false, error: "Lengkapi isian lalu Save version dulu sebelum menyalakan Live.", issues };
   }
 
   const { error } = await sb.from("invitations").update({ published }).eq("slug", slug);

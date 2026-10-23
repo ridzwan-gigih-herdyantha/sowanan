@@ -161,7 +161,7 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
             </div>
             <PackageSelect slug={r.slug} value={r.package ?? ""} />
             <PaymentToggle slug={r.slug} paid={r.payment_status !== "belum_lunas"} />
-            <span className={`w-fit rounded-full px-2.5 py-0.5 text-[12px] ${r.published ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>{r.published ? "Tayang" : "Draf"}</span>
+            <span className={`w-fit rounded-full px-2.5 py-0.5 text-[12px] ${r.published ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>{r.published ? "Live" : "Draft"}</span>
             <span className="justify-self-end text-[13px] text-ink-soft lg:justify-self-start">{dateFmt.format(new Date(r.created_at))}</span>
             <span className="col-span-2 lg:col-span-1 lg:justify-self-end">
               <RowMenu slug={r.slug} demo={isDemo(r.slug, r.theme)} />

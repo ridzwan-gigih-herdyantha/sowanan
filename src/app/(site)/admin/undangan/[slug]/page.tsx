@@ -40,7 +40,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
 export default function EditInvitationPage({ params }: PageProps<"/admin/undangan/[slug]">) {
   return (
-    <main className="mx-auto max-w-7xl px-5 pb-24">
+    <main className="mx-auto max-w-[1440px] px-5">
       <Suspense fallback={<p className="py-12 text-ink-mute">Memuat...</p>}>
         <Gate params={params} />
       </Suspense>
