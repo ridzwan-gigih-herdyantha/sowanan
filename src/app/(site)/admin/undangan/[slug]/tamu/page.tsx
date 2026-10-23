@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Pending } from "@/app/(site)/admin/pending";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
@@ -12,7 +10,7 @@ import { toView } from "@/lib/invitation/view";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { invitationLabel, THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../../../login-form";
-import { InvitationTabs } from "../../tabs";
+import { InvitationHeader, PAGE, PageIntro } from "../../tabs";
 import type { Guest } from "./actions";
 import { GuestManager } from "./guest-manager";
 
@@ -29,7 +27,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   const { slug } = await params;
   const sb = supabaseAdmin();
-  const { data: row } = await sb.from("invitations").select("id, slug, theme, published, data, draft, guest_message").eq("slug", slug).maybeSingle();
+  const { data: row } = await sb.from("invitations").select("id, slug, theme, published, data, draft, guest_message, payment_status").eq("slug", slug).maybeSingle();
   if (!row || !THEME_NAMES[row.theme]) notFound();
 
   const rules = (await invitationRules(slug))?.rules;
@@ -37,17 +35,11 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   if (lock) {
     return (
       <>
-        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
-          <div className="min-w-0">
-            <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine has-[[data-pending]]:opacity-55">
-              Semua undangan
-              <Pending />
-            </Link>
-            <h1 className="truncate font-serif text-3xl leading-tight">{invitationLabel(row.slug, row.theme)}</h1>
-          </div>
-          <InvitationTabs slug={slug} current="tamu" />
+        <InvitationHeader slug={slug} label={invitationLabel(row.slug, row.theme)} current="tamu" published={row.published} paid={row.payment_status !== "belum_lunas"} />
+        <div className={PAGE}>
+          <PageIntro title="Tamu">Tambah nama tamu, kirim link undangan pribadi lewat WhatsApp, dan pantau siapa yang sudah hadir.</PageIntro>
+          <p className="rounded-sm bg-blush px-4 py-3 text-[14px]">{lock}</p>
         </div>
-        <p className="mt-5 rounded-sm bg-blush px-4 py-3 text-[14px]">{lock}</p>
       </>
     );
   }
@@ -63,38 +55,32 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
-        <div className="min-w-0">
-          <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine has-[[data-pending]]:opacity-55">
-            Semua undangan
-            <Pending />
-          </Link>
-          <h1 className="truncate font-serif text-3xl leading-tight">{invitationLabel(row.slug, row.theme)}</h1>
-        </div>
-        <InvitationTabs slug={slug} current="tamu" />
+      <InvitationHeader slug={slug} label={invitationLabel(row.slug, row.theme)} current="tamu" published={row.published} paid={row.payment_status !== "belum_lunas"} />
+      <div className={PAGE}>
+        <PageIntro title="Tamu">Tambah nama tamu, kirim link undangan pribadi lewat WhatsApp, dan pantau siapa yang sudah hadir.</PageIntro>
+        {!row.published && (
+          <p className="mb-6 rounded-sm bg-blush px-4 py-3 text-[14px]">Undangan belum live. Link tamu baru bisa dibuka setelah Live dinyalakan di Editor.</p>
+        )}
+        <GuestManager
+          slug={slug}
+          origin={process.env.NEXT_PUBLIC_SITE_URL || "https://sowanan.com"}
+          initial={guests}
+          template={row.guest_message ?? DEFAULT_GUEST_MESSAGE}
+          couple={couple}
+          date={date}
+          excelLock={rules?.locked.ekspor_excel ?? null}
+          window={qr.enabled ? await windowForSlug(slug) : null}
+          qr={qr.enabled ? { on: true } : { on: false, reason: qr.reason ?? null }}
+        />
       </div>
-      {!row.published && (
-        <p className="mt-5 rounded-sm bg-blush px-4 py-3 text-[14px]">Undangan belum live. Link tamu baru bisa dibuka setelah Live dinyalakan di Editor.</p>
-      )}
-      <GuestManager
-        slug={slug}
-        origin={process.env.NEXT_PUBLIC_SITE_URL || "https://sowanan.com"}
-        initial={guests}
-        template={row.guest_message ?? DEFAULT_GUEST_MESSAGE}
-        couple={couple}
-        date={date}
-        excelLock={rules?.locked.ekspor_excel ?? null}
-        window={qr.enabled ? await windowForSlug(slug) : null}
-        qr={qr.enabled ? { on: true } : { on: false, reason: qr.reason ?? null }}
-      />
     </>
   );
 }
 
 export default function GuestsPage({ params }: PageProps<"/admin/undangan/[slug]/tamu">) {
   return (
-    <main className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
-      <Suspense fallback={<p className="text-ink-mute">Memuat...</p>}>
+    <main className="mx-auto max-w-[1440px] px-5">
+      <Suspense fallback={<p className="py-12 text-ink-mute">Memuat...</p>}>
         <Gate params={params} />
       </Suspense>
     </main>

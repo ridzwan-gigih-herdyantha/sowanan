@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { Pending } from "@/app/(site)/admin/pending";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { packageIssues } from "@/lib/invitation/package-check";
@@ -10,7 +8,7 @@ import type { Settings } from "@/lib/settings/schema";
 import { packageRules, type Purchased } from "@/lib/settings/text";
 import type { BridgeMessage } from "@/app/admin/pratinjau/[slug]/bridge";
 import { publishDraft, saveDraft, setPublished, unlockArchive } from "../actions";
-import { InvitationTabs } from "../tabs";
+import { InvitationHeader } from "../tabs";
 import { AddonPanel } from "./addon-panel";
 import { FieldInput, FormProvider } from "./fields";
 import { Spinner } from "./spinner";
@@ -426,33 +424,14 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
 
   return (
     <FormProvider value={{ slug, theme, data, update, errors, focus, names, limits, locks }}>
-      <header className="sticky top-0 z-30 -mx-5 border-b border-line bg-ivory/95 px-5 backdrop-blur">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 py-2.5 xl:h-14 xl:py-0">
-          <div className="flex min-w-0 flex-1 items-center gap-2.5 xl:flex-none">
-            <Link
-              href="/admin/undangan"
-              prefetch={false}
-              aria-label="Semua undangan"
-              title="Semua undangan"
-              className="flex size-8 shrink-0 items-center justify-center rounded-sm text-ink-soft no-underline hover:bg-blush hover:text-wine has-[[data-pending]]:opacity-55"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-              <Pending />
-            </Link>
-            <h1 className="min-w-0 truncate font-serif text-xl leading-tight">{label}</h1>
-            <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] ${published ? "bg-wine text-white" : "bg-blush text-ink-soft"}`}>{published ? "Live" : "Draft"}</span>
-            {!paid && (
-              <span title="Watermark SOWANAN.COM tampil di undangan. Ubah status di daftar undangan." className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-900 ring-1 ring-amber-300">
-                Belum lunas
-              </span>
-            )}
-          </div>
-          <div className="order-last w-full xl:order-none xl:w-auto xl:flex-1">
-            <InvitationTabs slug={slug} current="edit" />
-          </div>
-          <div className="flex items-center gap-x-4">
+      <InvitationHeader
+        slug={slug}
+        label={label}
+        current="edit"
+        published={published}
+        paid={paid}
+        actions={
+          <>
             <span className="hidden text-[12px] text-ink-mute sm:inline" aria-live="polite">
               {draftState === "saving" ? (
                 "Saving..."
@@ -479,9 +458,9 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
             <button type="button" onClick={publish} disabled={busy || locked} className="hidden rounded-sm bg-wine px-4 py-2 text-[14px] text-white transition-colors duration-150 hover:bg-wine-dark disabled:opacity-60 lg:block">
               {saveLabel}
             </button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <div ref={top} className="mt-5 scroll-mt-24 pb-28 lg:mt-0 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-8 lg:pb-0 xl:grid-cols-[200px_minmax(0,1fr)_auto]">
         <nav

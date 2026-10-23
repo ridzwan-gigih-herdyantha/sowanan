@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Pending } from "@/app/(site)/admin/pending";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
@@ -11,7 +9,7 @@ import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { listWishes } from "@/lib/wishes";
 import { invitationLabel, THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../../../login-form";
-import { InvitationTabs } from "../../tabs";
+import { InvitationHeader, PAGE, PageIntro } from "../../tabs";
 import { Responses, type ArchiveNotice } from "./responses";
 
 export const metadata: Metadata = {
@@ -27,7 +25,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   const { slug } = await params;
   const sb = supabaseAdmin();
-  const { data: row } = await sb.from("invitations").select("id, slug, theme, data, archive_notified_at").eq("slug", slug).maybeSingle();
+  const { data: row } = await sb.from("invitations").select("id, slug, theme, data, archive_notified_at, published, payment_status").eq("slug", slug).maybeSingle();
   if (!row || !THEME_NAMES[row.theme]) notFound();
 
   // Pemberitahuan arsip muncul sejak tujuh hari sebelum beku.
@@ -52,25 +50,19 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
-        <div className="min-w-0">
-          <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine has-[[data-pending]]:opacity-55">
-            Semua undangan
-            <Pending />
-          </Link>
-          <h1 className="truncate font-serif text-3xl leading-tight">{invitationLabel(row.slug, row.theme)}</h1>
-        </div>
-        <InvitationTabs slug={slug} current="respon" />
+      <InvitationHeader slug={slug} label={invitationLabel(row.slug, row.theme)} current="respon" published={row.published} paid={row.payment_status !== "belum_lunas"} />
+      <div className={PAGE}>
+        <PageIntro title="RSVP & ucapan">Konfirmasi kehadiran dan ucapan yang masuk dari tamu. Ucapan bisa disembunyikan dari undangan kapan saja.</PageIntro>
+        <Responses slug={slug} notice={notice} exportLock={exportLock} rsvps={rsvps.data ?? []} wishes={wishes} guestNames={(guests.data ?? []).map((g) => g.name)} />
       </div>
-      <Responses slug={slug} notice={notice} exportLock={exportLock} rsvps={rsvps.data ?? []} wishes={wishes} guestNames={(guests.data ?? []).map((g) => g.name)} />
     </>
   );
 }
 
 export default function ResponsesPage({ params }: PageProps<"/admin/undangan/[slug]/respon">) {
   return (
-    <main className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
-      <Suspense fallback={<p className="text-ink-mute">Memuat...</p>}>
+    <main className="mx-auto max-w-[1440px] px-5">
+      <Suspense fallback={<p className="py-12 text-ink-mute">Memuat...</p>}>
         <Gate params={params} />
       </Suspense>
     </main>

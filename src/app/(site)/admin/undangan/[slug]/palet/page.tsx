@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Pending } from "@/app/(site)/admin/pending";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
@@ -10,7 +8,7 @@ import { invitationLabel, THEME_NAMES } from "@/themes/media";
 import { CUSTOM, type Vars } from "@/themes/palette";
 import { PALETTES, resolvePalette } from "@/themes/palettes";
 import { LoginForm } from "../../../login-form";
-import { InvitationTabs } from "../../tabs";
+import { InvitationHeader, PAGE, PageIntro } from "../../tabs";
 import { PaletteSheet, type SheetPalette } from "./palette-sheet";
 
 export const metadata: Metadata = {
@@ -25,7 +23,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   if (!(await currentAdmin())) return <LoginForm />;
 
   const { slug } = await params;
-  const { data: row } = await supabaseAdmin().from("invitations").select("slug, theme, data, draft").eq("slug", slug).maybeSingle();
+  const { data: row } = await supabaseAdmin().from("invitations").select("slug, theme, data, draft, published, payment_status").eq("slug", slug).maybeSingle();
   const p = row && PALETTES[row.theme];
   if (!row || !THEME_NAMES[row.theme] || !p) notFound();
 
@@ -38,28 +36,21 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
-        <div className="min-w-0">
-          <Link href="/admin/undangan" prefetch={false} className="text-[13px] text-ink-mute no-underline hover:text-wine has-[[data-pending]]:opacity-55">
-            Semua undangan
-            <Pending />
-          </Link>
-          <h1 className="truncate font-serif text-3xl leading-tight">{invitationLabel(row.slug, row.theme)}</h1>
-        </div>
-        <InvitationTabs slug={slug} current="palet" />
+      <InvitationHeader slug={slug} label={invitationLabel(row.slug, row.theme)} current="palet" published={row.published} paid={row.payment_status !== "belum_lunas"} />
+      <div className={PAGE}>
+        <PageIntro title="Palet">
+          Semua palet tema {THEME_NAMES[row.theme]} beserta kode warnanya. Unduh untuk dikirim ke klien saat memilih palet. Klik kode hex untuk menyalinnya.
+        </PageIntro>
+        <PaletteSheet theme={THEME_NAMES[row.theme]} palettes={palettes} />
       </div>
-      <p className="mt-5 max-w-[60ch] text-[15px] text-ink-body">
-        Semua palet tema {THEME_NAMES[row.theme]} beserta kode warnanya. Unduh untuk dikirim ke klien saat memilih palet. Klik kode hex untuk menyalinnya.
-      </p>
-      <PaletteSheet theme={THEME_NAMES[row.theme]} palettes={palettes} />
     </>
   );
 }
 
 export default function PalettePage({ params }: PageProps<"/admin/undangan/[slug]/palet">) {
   return (
-    <main className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
-      <Suspense fallback={<p className="text-ink-mute">Memuat...</p>}>
+    <main className="mx-auto max-w-[1440px] px-5">
+      <Suspense fallback={<p className="py-12 text-ink-mute">Memuat...</p>}>
         <Gate params={params} />
       </Suspense>
     </main>
