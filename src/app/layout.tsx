@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Suspense } from "react";
 import { DOOR_FIT_SCRIPT } from "@/lib/door-fit-script";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { MetaPixel } from "@/components/meta-pixel";
@@ -28,7 +29,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Script>
         {children}
         <MetaPixel />
-        <GoogleAnalytics />
+        {/* usePathname di dalamnya menunggu param dinamis seperti /[slug], jadi butuh Suspense supaya prerender jalan. */}
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
       </body>
     </html>
   );
