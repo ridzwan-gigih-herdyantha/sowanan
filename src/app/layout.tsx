@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { DOOR_FIT_SCRIPT } from "@/lib/door-fit-script";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { MetaPixel } from "@/components/meta-pixel";
 import { OG_BASE, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Script>
         {children}
         <MetaPixel />
+        <GoogleAnalytics />
       </body>
     </html>
   );
