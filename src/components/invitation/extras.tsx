@@ -660,10 +660,8 @@ function Body({ e, skin, tone, left }: { e: ExtraView; skin?: Skin; tone: Tone; 
   return <Free e={e} left={left} />;
 }
 
-// Bagian tambahan di luar tema, misalnya susunan acara atau denah parkir.
-// Satu komponen dipakai semua tema lewat token inv-*, dengan judul dan bentuk yang mengikuti gaya tiap tema.
-// only merender satu bagian saja, dan compact memakai jarak dalam yang rapat. Keduanya untuk tema yang menaruh
-// setiap bagian tambahan di dalam papan sendiri, bukan sebagai section halaman.
+// Bagian tambahan di luar tema, misalnya susunan acara atau denah parkir, dipakai semua tema lewat token inv-*.
+// only dan compact untuk tema yang menaruh tiap bagian tambahan di papan sendiri, bukan sebagai section.
 export function Extras({ inv, at, only, compact = false }: { inv: InvitationView; at: ExtraAnchor; only?: number; compact?: boolean }) {
   const items = inv.extras[at];
   if (!items?.length) return null;

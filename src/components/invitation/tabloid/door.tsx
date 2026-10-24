@@ -8,8 +8,8 @@ import { Panel, Rays, Sticker, Title } from "./pop";
 
 export type TabloidProps = { groom: string; bride: string; date: string; photo: string; frame?: FrameProps; invited: string; onOpen: () => void };
 
-// Pembuka Kabar Retro: sampul tabloid edisi spesial di atas sinar matahari, dengan nama tamu di kolom alamat.
-// Saat dibuka, stiker meletup lepas dan sinar berputar, lalu lingkaran iris ala kartun lama terbuka dari tengah foto.
+// Pembuka Kabar Retro: sampul tabloid edisi spesial dengan nama tamu di kolom alamat. Saat dibuka stiker
+// meletup, sinar berputar, lalu lingkaran iris ala kartun lama terbuka dari tengah foto.
 export function TabloidDoor({ groom, bride, date, photo, frame, invited, onOpen }: TabloidProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();

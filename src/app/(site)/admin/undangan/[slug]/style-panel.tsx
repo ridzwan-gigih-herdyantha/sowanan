@@ -33,7 +33,7 @@ function Swatch({ vars, keys }: { vars: Vars; keys: string[] }) {
   );
 }
 
-// Panel gaya: pilih palet jadi tema, buat palet kustom dari tiga warna dasar dengan cek kontras, dan pilih pasangan font.
+// Panel gaya: palet jadi, palet kustom dari tiga warna dasar dengan cek kontras, dan pasangan font.
 export function StylePanel({ theme, style, couple, locked, applying, onChange }: Props) {
   const p = PALETTES[theme];
   if (!p) return null;

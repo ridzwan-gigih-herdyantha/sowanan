@@ -184,7 +184,7 @@ const parseNum = (v: string) => {
   return digits ? Number(digits) : NaN;
 };
 
-// Angka disimpan sebagai bilangan. Isian kosong disimpan NaN supaya validasi server menolaknya dengan pesan yang jelas.
+// Isian angka kosong disimpan NaN supaya validasi server menolaknya dengan pesan yang jelas.
 export function NumberField({ path, label, chip, help, prefix, suffix, rupiah, className }: { path: string; label: string; chip?: "sys" | "view"; help?: ReactNode; prefix?: string; suffix?: string; rupiah?: boolean; className?: string }) {
   const { s, set, errors } = useSettings();
   const value = getIn(s, path) as number | undefined;

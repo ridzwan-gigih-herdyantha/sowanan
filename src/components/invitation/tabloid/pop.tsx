@@ -144,7 +144,7 @@ export function Sticker({ shape, fill = "sun", className = "", text, textClass =
         <path d={SHAPES[shape]} style={{ fill: FILL[fill] }} stroke="var(--inv-ink)" strokeWidth="3" strokeLinejoin="round" />
         {(shape === "daisy" || shape === "clover") && <circle cx="50" cy="50" r="13" style={{ fill: FILL[center ?? "sun"] }} stroke="var(--inv-ink)" strokeWidth="3" />}
       </svg>
-      {/* Teks dipusatkan pada bentuk berwarna, bukan pada kotak yang ikut memuat bayangan, dan ruang kosong huruf dipangkas. */}
+      {/* Teks dipusatkan pada bentuk berwarna, bukan kotak yang memuat bayangan, ruang kosong huruf dipangkas. */}
       {text && (
         <span className="absolute top-[3.6%] right-[7.1%] bottom-[7.1%] left-[3.6%] grid place-items-center">
           <span className={`text-center leading-[0.95] [text-box:trim-both_cap_alphabetic] ${textClass}`}>{text}</span>

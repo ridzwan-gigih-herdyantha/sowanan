@@ -27,7 +27,7 @@ export function highestPrice(s: Settings): number {
 
 const days = (min: number, max: number, sep = " sampai ") => (min === max ? `${min} hari kerja` : `${min} ${sep} ${max} hari kerja`);
 
-// Waktu pengerjaan satu paket. Contoh: "2 sampai 3 hari kerja", atau "2–3 hari kerja" untuk kartu harga yang ringkas.
+// Waktu pengerjaan satu paket, misal "2 sampai 3 hari kerja", atau "2–3 hari kerja" di kartu harga.
 export const slaText = (pk: Settings["packages"][PackageId], compact = false) => days(pk.sla, pk.slaMax ?? pk.sla, compact ? "–" : " sampai ");
 
 // Rentang semua paket yang tampil. Contoh: "1 sampai 7 hari kerja"
@@ -110,14 +110,13 @@ export function fill(text: string, vars: Record<string, string>): string {
   return text.replace(/\{([a-z_]+)\}/g, (m, k: string) => vars[k] ?? m);
 }
 
-// Tujuan tombol: kosong berarti WhatsApp.
 export const resolveHref = (href: string, waHref: string) => href || waHref;
 
 const TIER_RANK: Record<ThemeTier, number> = { semua: 0, lengkap: 1, istimewa: 2 };
 export const themeAllowed = (tier: ThemeTier, p: PackageId) => PACKAGE_IDS.indexOf(p) >= TIER_RANK[tier];
 
-// Tema dibatasi per paket hanya kalau isi paket punya baris jumlah_tema, sama seperti kunci lain:
-// baris dihapus berarti tidak dibatasi, dan kolom Tersedia di paket di tab Tema tidak dipakai.
+// Tema dibatasi per paket hanya kalau isi paket punya baris jumlah_tema, sama seperti kunci lain.
+// Baris dihapus berarti tidak dibatasi, dan kolom Tersedia di paket di tab Tema tidak dipakai.
 export const themesLimited = (s: Pick<Settings, "matrix">) => s.matrix.some((r) => r.key === "jumlah_tema");
 export const themeAvailable = (s: Pick<Settings, "matrix">, tier: ThemeTier, p: PackageId) => !themesLimited(s) || themeAllowed(tier, p);
 
@@ -154,7 +153,7 @@ export type PackageRules = {
 // Huruf awal dikecilkan untuk dipakai di tengah kalimat, kecuali singkatan seperti QR atau RSVP.
 const lowerFirst = (s: string) => (/^[A-Z]{2}/.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
 
-// Aturan isi undangan dari paket ditambah add-on yang sudah dibayar. Paket belum dipilih berarti tanpa batasan.
+// Aturan isi undangan dari paket plus add-on yang sudah dibayar. Paket belum dipilih berarti tanpa batasan.
 export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string | null, bought: Purchased = {}): PackageRules {
   if (!pkg || !(PACKAGE_IDS as readonly string[]).includes(pkg)) return { pkg: null, locked: {} };
   const p = pkg as PackageId;

@@ -6,9 +6,8 @@ import type { Wish } from "@/lib/guestbook";
 const MAX = 120;
 const frac = (n: number) => n - Math.floor(n);
 
-// Ucapan sebagai langit: setiap ucapan satu bintang, dan bintang baru tersambung ke bintang terdekat yang lebih dulu ada,
-// jadi lama-lama membentuk rasi. Posisi memakai deret berjarak rata supaya bintang tidak menumpuk dan tidak berpindah
-// saat ucapan baru masuk.
+// Tiap ucapan satu bintang yang tersambung ke bintang terdekat sebelumnya, jadi lama-lama membentuk rasi.
+// Posisi memakai deret berjarak rata supaya bintang tidak menumpuk dan tidak pindah saat ucapan baru masuk.
 export function WishSky({ wishes, fresh }: { wishes: readonly Wish[]; fresh: ReadonlySet<string> }) {
   const stars = useMemo(() => {
     const oldest = [...wishes].slice(0, MAX).reverse();

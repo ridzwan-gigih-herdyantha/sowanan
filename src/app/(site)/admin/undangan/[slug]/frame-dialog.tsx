@@ -58,8 +58,8 @@ function Slider({ label, value, min, max, step = 1, unit, onChange }: { label: s
   );
 }
 
-// Dialog atur posisi dan zoom satu foto, terpisah untuk HP dan layar lebar. Setiap perubahan langsung diterapkan ke
-// pratinjau lewat pesan, lalu ikut tersimpan ke draf seperti isian lain.
+// Dialog atur posisi dan zoom satu foto, terpisah untuk HP dan layar lebar. Perubahan langsung dikirim
+// ke pratinjau lewat pesan, lalu ikut tersimpan ke draf seperti isian lain.
 export function FrameDialog({ slug, slot, value, onChange, onClose }: { slug: string; slot: FrameSlot; value: Value; onChange: (device: FrameDevice, frame: Frame | null) => void; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const frames = useRef<Partial<Record<FrameDevice, HTMLIFrameElement | null>>>({});

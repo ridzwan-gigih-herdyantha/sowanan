@@ -31,8 +31,7 @@ import { defaultFonts as ivanMawar } from "./ivan-mawar/fonts";
 import { defaultFonts as galihArdila } from "./galih-ardila/fonts";
 import { defaultFonts as bonarAnggi } from "./bonar-anggi/fonts";
 
-// Font pilihan untuk add-on ganti font. Semua di-host sendiri lewat next/font dan tidak dipreload,
-// jadi berkasnya hanya diunduh bila undangan benar-benar memakainya.
+// Font pilihan add-on ganti font. Di-host lewat next/font tanpa preload, jadi hanya diunduh bila dipakai.
 // Argumen font loader harus literal, jadi setiap pemanggilan ditulis lengkap.
 const playfair = Playfair_Display({ subsets: ["latin"], style: ["normal", "italic"], display: "swap", preload: false });
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], style: ["normal", "italic"], display: "swap", preload: false });
@@ -55,7 +54,7 @@ const sacramento = Sacramento({ subsets: ["latin"], weight: "400", display: "swa
 type Font = { style: { fontFamily: string } };
 export type FontPreset = { id: string; name: string; display: Font; body: Font };
 
-// Font skrip untuk nama mempelai saja. Judul lain, angka, dan teks ucapan tetap memakai font judul supaya terbaca.
+// Font skrip khusus nama mempelai. Judul lain, angka, dan teks ucapan tetap font judul supaya terbaca.
 export const NAME_FONTS: { id: string; name: string; font: Font }[] = [
   { id: "klasik", name: "Great Vibes", font: greatVibes },
   { id: "kaligrafi", name: "Pinyon Script", font: pinyon },

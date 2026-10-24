@@ -59,9 +59,8 @@ export function HangingLantern({ chain, className = "", delay = 0, show = true, 
 
 type Person = { name: string; full: string };
 
-// Hero mihrab: foto mempelai di lengkung besar bermahkota tezhip, rumpun bunga di kedua kaki lengkung,
-// lentera tergantung dari tepi atas layar di sisi luar. Desktop: nama mengapit lengkung, ponsel: nama di bawahnya.
-// Masuk: lentera turun, lengkung terbuka dari bawah, mahkota turun, bunga mekar, lalu nama dan tanggal.
+// Hero mihrab: foto di lengkung bermahkota tezhip, bunga di kaki lengkung, lentera dari tepi atas. Desktop: nama
+// mengapit lengkung, ponsel: di bawahnya. Masuk: lentera turun, lengkung terbuka, mahkota, bunga, lalu nama.
 export function SakinahHero({ photo, top, groom, bride, info }: { photo: ReactNode; top: ReactNode; groom: Person; bride: Person; info: ReactNode }) {
   const on = useEntered();
   const reduce = useReducedMotion();
@@ -98,7 +97,7 @@ export function SakinahHero({ photo, top, groom, bride, info }: { photo: ReactNo
       <div className="mx-auto mt-4 grid max-w-[1320px] items-center lg:mt-2 lg:grid-cols-[1fr_auto_1fr] lg:gap-12">
         {side(groom, "l", 1.1)}
 
-        {/* Di ponsel tinggi lengkung memakai sisa layar setelah bismillah dan nama, lebarnya ikut supaya tetap tegak. */}
+        {/* Di ponsel tinggi lengkung memakai sisa layar setelah bismillah dan nama, lebar ikut supaya tegak. */}
         <div className="relative mx-auto w-[min(100%-12px,500px,calc(var(--ah)*0.8))] [--ah:clamp(230px,calc(100svh-440px-env(safe-area-inset-bottom)),600px)] md:[--ah:clamp(250px,calc(100svh-530px),600px)] lg:w-[min(34vw,520px)]">
           <div aria-hidden="true" className="aspect-[4/1]" />
           <motion.div {...fade(0.7, -20)} className="absolute top-0 left-1/2 z-10 w-[66%] -translate-x-1/2">
@@ -150,7 +149,7 @@ export function SakinahHero({ photo, top, groom, bride, info }: { photo: ReactNo
   );
 }
 
-// Hitung mundur di dalam ubin bintang delapan. Ketuk ubin untuk memutarnya dan berganti ke angka Arab.
+// Hitung mundur di dalam ubin bintang delapan. Ubin yang diketuk berputar dan berganti ke angka Arab.
 const STAR_PATH = star8(50, 50, 48);
 const STAR_INNER = star8(50, 50, 42);
 
@@ -216,7 +215,7 @@ export function StarCountdown({ target }: { target: string }) {
 
 type Scene = { title: string; date: string; image: string; short: string; long: string };
 
-// Cerita sebagai serambi (riwaq): deretan lengkung berisi foto. Ketuk satu lengkung untuk membaca babaknya.
+// Cerita sebagai serambi (riwaq): deretan lengkung berisi foto. Lengkung yang diketuk membuka babaknya.
 export function Riwaq({ items }: { items: Scene[] }) {
   const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
@@ -422,7 +421,7 @@ export function Fasad({ photos, note }: { photos: Photo[]; note: ReactNode }) {
 
 type Account = { bank: string; number: string; holder: string };
 
-// Kartu hadiah: sisi depan bermotif zellige dengan segel bintang, ketuk untuk membalik dan melihat rekening.
+// Kartu hadiah: sisi depan bermotif zellige dengan segel bintang, dibalik saat diketuk untuk memperlihatkan rekening.
 export function GiftCard({ account }: { account: Account }) {
   const [flip, setFlip] = useState(false);
   const reduce = useReducedMotion();

@@ -32,7 +32,7 @@ const vars = (c: Hl): Vars => ({
   "--inv-note-b": c.noteB,
 });
 
-// Palet Herbarium. Warna aksen dipakai untuk judul, hijau daun untuk keterangan, dan dua warna pastel untuk label gantung.
+// Palet Herbarium. Aksen untuk judul, hijau daun untuk keterangan, dua warna pastel untuk label gantung.
 export const palette: ThemePalette = {
   presets: [
     {

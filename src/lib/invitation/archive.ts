@@ -1,14 +1,13 @@
 import type { InvitationData } from "./schema";
 
-// Undangan tidak punya masa aktif. Tiga puluh hari setelah acara, undangan dibekukan menjadi arsip permanen:
-// isi dan ucapan yang sudah masuk tetap tampil, sedangkan edit, RSVP, ucapan baru, amplop digital,
-// hitung mundur, dan tautan nama tamu berhenti. Klien diberi tahu tujuh hari sebelumnya.
+// Tiga puluh hari setelah acara undangan dibekukan jadi arsip permanen. Isi dan ucapan tetap tampil, sedangkan
+// edit, RSVP, ucapan baru, amplop digital, hitung mundur, dan link nama tamu berhenti. Klien diberi tahu H-7.
 export const ARCHIVE_AFTER_DAYS = 30;
 export const NOTICE_BEFORE_DAYS = 7;
 const DAY = 86_400_000;
 
 export type ArchiveInfo = {
-  // Tanggal acara yang dipakai. Kosong berarti tanggal acara belum diisi, jadi undangan tidak pernah dibekukan.
+  // Tanggal acara yang dipakai. Kosong berarti belum diisi, jadi undangan tidak pernah dibekukan.
   eventAt: Date | null;
   archiveAt: Date | null;
   noticeAt: Date | null;
@@ -43,7 +42,6 @@ export function archiveFromDates(start: string | null | undefined, end: string |
 export const editLocked = (info: ArchiveInfo, unlockedUntil: string | null | undefined, now = Date.now()) =>
   info.archived && !(unlockedUntil && Date.parse(unlockedUntil) > now);
 
-// Waktu buka kunci yang masih berlaku, atau null kalau sudah lewat.
 export const activeUnlock = (until: string | null | undefined, now = Date.now()) => (until && Date.parse(until) > now ? until : null);
 
 export function formatDateId(d: Date) {

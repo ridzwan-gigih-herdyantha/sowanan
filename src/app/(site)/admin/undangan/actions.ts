@@ -46,7 +46,7 @@ async function issuesFor(data: InvitationData, slug: string, theme: string): Pro
   return [...checkInvitation(data, theme), ...(info ? packageIssues(data, theme, info.rules) : [])];
 }
 
-// Tema hanya boleh dipakai paket yang tercantum di kolom Tersedia di paket, selama baris jumlah_tema ada di isi paket.
+// Tema hanya boleh dipakai paket di kolom Tersedia di paket, selama isi paket punya baris jumlah_tema.
 function themeError(s: Settings, theme: string, pkg: PackageId): string | null {
   const entry = s.themes.find((t) => t.slug === theme);
   if (!entry || themeAvailable(s, entry.tier, pkg)) return null;
@@ -213,7 +213,7 @@ export async function deleteSummary(slug: string): Promise<{ ok: true; data: Del
   return { ok: true, data: { couple, rsvps, wishes, guests, files: files.length } };
 }
 
-// Hapus permanen. RSVP, ucapan, dan daftar tamu ikut terhapus lewat foreign key, berkas di storage dihapus di sini.
+// Hapus permanen. RSVP, ucapan, dan tamu ikut terhapus lewat foreign key, berkas storage dihapus di sini.
 export async function deleteInvitation(slug: string, confirmSlug: string): Promise<{ ok: true; warning?: string } | { ok: false; error: string }> {
   if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
   if (confirmSlug.trim() !== slug) return { ok: false, error: "Ketik slug undangan dengan tepat untuk menghapus." };

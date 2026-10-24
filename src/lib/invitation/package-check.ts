@@ -2,7 +2,7 @@ import type { PackageRules } from "@/lib/settings/text";
 import { countsAsExtra, type InvitationData } from "./schema";
 import { forTheme, GROUPS, type Issue } from "./spec";
 
-// Isian yang melebihi paket ditambah add-on. Dipakai editor dan diperiksa ulang di server saat simpan final dan tayang.
+// Isian yang melebihi paket plus add-on. Dipakai editor dan dicek ulang di server saat simpan final dan tayang.
 export function packageIssues(data: InvitationData, theme: string, rules: PackageRules): Issue[] {
   const out: Issue[] = [];
   const has = (section: string) => forTheme(GROUPS, theme).some((g) => g.section === section);

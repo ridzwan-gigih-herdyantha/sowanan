@@ -3,8 +3,8 @@ import { litPath } from "./moon";
 // Foto bulan purnama, dirasterkan dari SVG aset. Versi kecil untuk ikon fase supaya tidak mengunduh gambar besar.
 export const MOON = { large: "/img/bima-nadia/moon.webp", small: "/img/bima-nadia/moon-sm.webp" };
 
-// Permukaan bulan dengan fase tertentu: foto bulan dipotong mask fase yang tepinya dilembutkan, diberi rona cahaya bulan
-// dari palet. Sisi gelap tetap terlihat samar seperti cahaya bumi. id wajib unik per halaman.
+// Permukaan bulan: foto dipotong mask fase bertepi lembut, diberi rona cahaya bulan dari palet.
+// Sisi gelap tetap samar seperti cahaya bumi. id wajib unik per halaman.
 export function MoonFace({ id, d, small = false, blur = 1.6 }: { id: string; d: string; small?: boolean; blur?: number }) {
   const src = small ? MOON.small : MOON.large;
   return (

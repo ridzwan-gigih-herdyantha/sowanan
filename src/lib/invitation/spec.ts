@@ -14,7 +14,7 @@ const M = "ivan-mawar";
 const G = "galih-ardila";
 const T = "bonar-anggi";
 
-// when: isian di dalam item daftar yang hanya tampil dan diperiksa untuk jenis item tertentu (lihat Variants).
+// when: isian item daftar yang hanya tampil dan diperiksa untuk jenis item tertentu (lihat Variants).
 type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean; when?: string[] };
 // Daftar yang itemnya punya jenis. Jenis dipilih saat menambah item dan tidak berubah sesudahnya.
 // Jenis dengan counted false tidak dihitung dalam batas paket.
@@ -416,7 +416,6 @@ export const forTheme = <T extends { themes?: string[] }>(items: T[], theme: str
 type ListField = Extract<Field, { kind: "list" }>;
 const variantOf = (f: ListField, item: unknown) => (f.variants ? String(getIn(item, f.variants.path) ?? "") : "");
 
-// Isian satu item daftar sesuai tema dan jenis item.
 export function itemFields(f: ListField, item: unknown, theme: string): Field[] {
   const v = variantOf(f, item);
   return forTheme(f.fields, theme).filter((x) => !x.when || x.when.includes(v));

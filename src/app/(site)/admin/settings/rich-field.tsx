@@ -58,7 +58,7 @@ export function RichField({ path, label, chip, help, height = 200 }: { path: str
         disableDragAndDrop: true,
         dialogsInBody: true,
         callbacks: {
-          // Summernote juga memicu onChange saat isinya diisi kode. Kalau isinya sama dengan saat diisi, nilai asli dipakai lagi.
+          // Summernote juga memicu onChange saat diisi kode. Kalau isinya sama, nilai asli dipakai lagi.
           onChange: (html: string) => {
             if (silent.current) return;
             const next = html === base.current.html ? base.current.raw : isEmptyHtml(html) ? "" : html;

@@ -41,8 +41,8 @@ import { chiptune, victory } from "./chiptune";
 import { Img, Land, Pixels, useSize, Zoom } from "./land";
 import { HEART, Sprite } from "./pixel";
 
-// size menentukan lebar papan: compact untuk cerita, wide untuk galeri dan buku tamu. label diisi untuk papan yang
-// muncul di menu peta. story menandai papan cerita, yang di layar tinggi disusun dua lantai.
+// size menentukan lebar papan: compact untuk cerita, wide untuk galeri dan buku tamu. label untuk menu peta.
+// story menandai papan cerita, yang di layar tinggi disusun dua lantai.
 export type Station = { id: string; node: ReactNode; label?: string; flag?: boolean; story?: boolean; size?: "compact" | "normal" | "wide" };
 
 // Satuan fisika dalam ubin per detik. Lompatan setinggi tiga ubin, cukup untuk dua peti atau pijakan pertama.
@@ -58,9 +58,8 @@ const BOARD_LIFT = 4.4;
 const GOAL_LIFT = 2 + CASTLE_H + 0.3;
 // Tangga batu sepuluh tingkat sebelum garis akhir, seperti tangga di ujung level game lama.
 const STAIRS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10];
-// Cerita dua lantai, tinggi dalam ubin dari tanah. Semua bata di sini satu arah, jadi jalan di tanah tetap bebas
-// bolak-balik. Pijakan pertama yang lebar dicapai dengan satu lompatan, lalu anak tangga melayang cukup dilangkahi
-// sampai lantai dua.
+// Cerita dua lantai, tinggi dalam ubin dari tanah. Semua bata satu arah, jadi jalan di tanah tetap bebas.
+// Pijakan pertama dicapai sekali lompat, lalu anak tangga melayang cukup dilangkahi sampai lantai dua.
 const HOP = 2.6;
 const HOP_W = 5;
 const STEPS = 4;
@@ -72,9 +71,8 @@ const UPPER_MIN = 5;
 // Posisi karakter di layar saat kamera mengikutinya, dihitung dari kiri.
 const ANCHOR = 0.32;
 
-// Benda padat dalam ubin, diukur dari permukaan tanah: x kiri, lebar, bawah, dan atas. oneWay hanya bisa dipijak
-// dari atas dan bisa ditembus dari bawah atau samping. step adalah anak tangga yang cukup dilangkahi, hop adalah
-// pijakan pertama yang dilompati otomatis saat berjalan ke arahnya.
+// Benda padat dalam ubin dari permukaan tanah: x kiri, lebar, bawah, atas. oneWay hanya dipijak dari atas.
+// step adalah anak tangga yang cukup dilangkahi, hop pijakan yang dilompati otomatis saat didekati.
 type Solid = { x: number; w: number; y0: number; y1: number; art: "crate" | "stone" | "brick"; oneWay?: boolean; step?: boolean; hop?: boolean };
 type Coin = { x: number; y: number };
 // Tempat papan: tengah, lebar, jarak bawah dari dasar layar dalam ubin, pijakan tiangnya, jarak atas dari puncak
@@ -110,14 +108,8 @@ function blip(freqs: number[]) {
 
 const typing = () => (document.activeElement as HTMLElement | null)?.closest("input, textarea, select, [contenteditable]");
 
-// Dunia Co-op Adventure: seluruh undangan sebagai satu level ke samping. Mempelai pria hanya bergerak dari tombol
-// atau keyboard, kamera mengikutinya, dan semua isi undangan berupa papan di sepanjang jalan. Papan yang isinya
-// panjang bisa digulir di dalam papannya. Setelah melewati puncak tangga batu terakhir, adegan penutup berjalan
-// sendiri: pria menghampiri wanita, kamera mendekat, pria berlutut menyerahkan cincin, kamera menjauh lagi, keduanya
-// masuk istana dan muncul di atasnya, lalu jendela penutup terbuka.
-// Tanpa JavaScript, panggung bisa digeser ke samping seperti biasa.
-// Geser dibulatkan ke piksel layar utuh. Geseran pecahan membuat GPU menghaluskan seni piksel, sehingga tampak
-// buram seperti motion blur saat berjalan dan baru tajam lagi ketika berhenti.
+// Seluruh undangan sebagai satu level ke samping, isinya berupa papan di sepanjang jalan. Tanpa JavaScript
+// panggung bisa digeser biasa. Geser dibulatkan ke piksel utuh, geseran pecahan membuat seni piksel buram.
 function snap(v: number) {
   const d = typeof window === "undefined" ? 1 : window.devicePixelRatio || 1;
   return Math.round(v * d) / d;
@@ -184,13 +176,12 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
         const c = r(edge + 2 + HOP_W + STEPS + w / 2);
         const left = r(c - w / 2);
         const hop = r(left - STEPS - HOP_W);
-        // Papan atas berdiri di lantai dua, papan bawah di antara tanah dan lantai dua. Cerita dibaca dari atas ke
-        // bawah, jadi cerita pertama dari pasangan ini di papan atas dan berikutnya di papan bawah.
+        // Papan atas di lantai dua, papan bawah di antara tanah dan lantai dua. Cerita dibaca dari atas,
+        // jadi cerita pertama pasangan ini di papan atas.
         const lower = upper;
         spots[i] = { center: c, width: w, lift: 2 + LEDGE + 2, base: 2 + LEDGE, top: HUD, flag: st.flag ? { x: r(left + 0.6), y: LEDGE } : undefined };
         spots[lower] = { center: c, width: w, lift: LOW_LIFT, base: 2, top: Math.round(vh - (2 + LEDGE - 1.15) * t), flag: stations[lower].flag ? { x: r(left + w + 0.6), y: 0 } : undefined };
-        // Pijakan pertama, anak tangga melayang, lalu lantai dua di atas papan bawah. Koin di atas anak tangga
-        // menunjukkan jalannya.
+        // Pijakan pertama, anak tangga melayang, lalu lantai dua. Koin di atas anak tangga menunjukkan jalannya.
         solids.push({ x: hop, w: HOP_W, y0: HOP - 1, y1: HOP, art: "brick", oneWay: true, hop: true });
         for (let k = 1; k <= STEPS; k++) {
           const top = r(HOP + k * RISE);
@@ -281,8 +272,8 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
     let raf = 0;
     let last = performance.now();
     const shown: Record<string, string> = {};
-    // Menulis ke elemen hanya bila nilainya berubah. Mengganti atribut atau variabel di elemen karakter memicu
-    // hitung ulang gaya semua kotak pikselnya, jadi penulisan yang sama setiap frame membuat gerak tersendat.
+    // Elemen hanya ditulis bila nilainya berubah. Mengubah atribut di elemen karakter memicu hitung ulang
+    // gaya semua kotak pikselnya, jadi menulis tiap frame membuat gerak tersendat.
     const write = (key: string, value: string, apply: () => void) => {
       if (shown[key] === value) return;
       shown[key] = value;
@@ -347,12 +338,11 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
         const grounded = y <= surface(x, y) + 0.5 && vy <= 0;
         const dir = Math.sign(vx);
         if (Math.abs(vx) > T * 0.5) facing = dir;
-        // Anak tangga bata cukup dilangkahi: begitu badan menyentuh anak tangga yang lebih tinggi paling satu ubin,
-        // karakter langsung berdiri di atasnya.
+        // Anak tangga paling satu ubin lebih tinggi cukup dilangkahi, karakter langsung berdiri di atasnya.
         const step = grounded && Math.abs(vx) > T * 0.3 ? solids.find((s) => s.step && over(x, s) && s.y1 > y + 1 && s.y1 <= y + T * 1.15) : undefined;
         if (step) y = step.y1;
-        // Peti dan tangga batu di depan dilompati otomatis saat berjalan, jadi tamu tidak tersangkut. Pijakan pertama
-        // lantai dua juga, tapi hanya saat berjalan ke kanan dari tanah, jadi jalan kembali ke kiri tetap lurus.
+        // Peti dan tangga batu dilompati otomatis supaya tamu tidak tersangkut. Pijakan lantai dua juga, tapi
+        // hanya saat berjalan ke kanan dari tanah, jadi jalan kembali ke kiri tetap lurus.
         else if (grounded && Math.abs(vx) > T && solids.some((s) => !s.oneWay && over(x + dir * T * 0.9, s) && s.y0 <= y + 1 && s.y1 > y + 1)) vy = JUMP * T;
         else if (grounded && !cut && dir > 0 && vx > T * 4 && y < 1 && solids.some((s) => s.hop && s.x0 - x >= T * 0.5 && s.x0 - x <= T * 1.5)) vy = JUMP * T;
         if (jumpQueued.current) {
@@ -398,7 +388,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       if (cut) {
         const since = now - cut.at;
         if (cut.phase === "toBride" && Math.abs(meetX - x) <= 2 && y <= 1) {
-          // Kamera mendekat ke kedua mempelai. Tepi dunia tetap menutup layar, jadi tanah tidak pernah terpotong.
+          // Kamera mendekat ke mempelai. Tepi dunia tetap menutup layar, jadi tanah tidak terpotong.
           setReached(true);
           const k = Math.min(3, Math.max(2, vh / (T * 7)));
           const px = (x + brideHome) / 2 - camFor(Math.min(x, castleCam));
@@ -533,7 +523,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
         setEnding(false);
         return;
       }
-      // Selama jendela seperti cerita lengkap terbuka, tombol arah dipakai untuk menggulir isinya, bukan berjalan.
+      // Selama jendela seperti cerita lengkap terbuka, tombol arah menggulir isinya, bukan berjalan.
       if (typing() || document.querySelector('[data-inv-state="closed"], dialog[open]')) return;
       if (e.code === "ArrowRight" || e.code === "KeyD") held.current = 1;
       else if (e.code === "ArrowLeft" || e.code === "KeyA") held.current = -1;
@@ -569,7 +559,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
     return () => window.clearInterval(id);
   }, [reduce]);
 
-  // Editor meminta sebuah foto ditampilkan di pratinjau, jadi karakter dipindah ke papan yang memuat foto itu.
+  // Editor meminta foto tertentu tampil di pratinjau, jadi karakter dipindah ke papan foto itu.
   useEffect(() => {
     const box = stage.current;
     if (!box) return;
@@ -582,8 +572,8 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
     return () => box.removeEventListener("sowanan:reveal", reveal);
   }, [vw, t]);
 
-  // Fokus keyboard ke isi papan memindahkan karakter ke papan itu, karena panggung tidak bisa digulir sendiri. Fokus dari
-  // ketukan atau klik, dan fokus di dalam jendela seperti cerita lengkap, tidak memindahkan karakter.
+  // Fokus keyboard ke isi papan memindahkan karakter ke sana, karena panggung tidak bisa digulir sendiri.
+  // Fokus dari ketukan, klik, atau di dalam jendela cerita lengkap tidak memindahkan karakter.
   const onFocus = (e: React.FocusEvent) => {
     if (stage.current) stage.current.scrollLeft = 0;
     const target = e.target as HTMLElement;
@@ -611,7 +601,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
   const archSize = artSize(ARCH);
   const castleSize = artSize(CASTLE);
   const goalSpot: Spot = { center: plan.goalCenter, width: plan.sizes.normal, lift: GOAL_LIFT, base: 2, top: HUD };
-  // Tujuan di menu peta. Garis akhir membawa karakter ke tanah tepat sebelum tangga batu, bukan ke atas tangga.
+  // Tujuan di menu peta. Garis akhir membawa karakter ke tanah sebelum tangga batu, bukan ke atasnya.
   const places = [
     { label: "Mulai", x: (vw * 0.22) / t },
     ...stations.flatMap((st, i) => (st.label ? [{ label: st.label, x: front(plan.spots[i].center) }] : [])),
@@ -623,7 +613,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       <div ref={stage} onFocusCapture={onFocus} className="pt-stage relative h-svh overflow-x-auto overflow-y-hidden text-[#FFF6E5]">
         <Zoom size={size}>
           <div className="relative h-full" style={{ "--t": `${t}px` } as CSSProperties}>
-            {/* Lensa membungkus seluruh dunia supaya kamera bisa mendekat saat lamaran. Papan status dan tombol di luarnya. */}
+            {/* Lensa membungkus dunia supaya kamera bisa mendekat saat lamaran. */}
             <div ref={lens} className="pt-lens absolute inset-0">
               <Land size={size} width={W} layers={layers} decor />
               <div ref={track} className="pt-track absolute inset-y-0 left-0 will-change-transform" style={{ width: W }}>
@@ -667,8 +657,8 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
                     ),
                 )}
 
-                {/* Satu elemen per benda dengan ubin berulang, satu piksel lebih lebar dan lebih tinggi supaya tidak ada
-                    celah di antara benda yang bersebelahan saat layar diperkecil. */}
+                {/* Satu elemen per benda, satu piksel lebih lebar dan tinggi supaya tidak ada celah
+                    di antara benda saat layar diperkecil. */}
                 {plan.solids.map((b, i) => {
                   const rows = Math.max(1, Math.round(b.y1 - b.y0));
                   return (
@@ -785,7 +775,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
                 </div>
               </nav>
             )}
-            {/* Tombol arah menempel di tepi kiri dan kanan layar, tombol lompat di tengah bawah. Setelah tamat,
+            {/* Tombol arah di tepi kiri dan kanan layar, lompat di tengah bawah. Setelah tamat,
                 tombolnya berganti menjadi main lagi dan buka penutup. */}
             {ended ? (
               <div className="pt-controls pointer-events-none absolute inset-x-0 bottom-2 flex justify-center gap-3 px-3 sm:bottom-3">

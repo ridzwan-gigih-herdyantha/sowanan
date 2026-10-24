@@ -20,8 +20,8 @@ const DEVICES = {
 // Hanya undangan contoh, yang slug-nya sama dengan nama tema.
 export const demoSlugs = () => Object.keys(THEME_NAMES).map((slug) => ({ slug }));
 
-// Undangan contoh seukuran layar HP atau tablet di depan foto hero yang di-blur, supaya calon klien di laptop bisa
-// melihat tampilannya di perangkat lain. Halaman terpisah, bukan lapisan di atas undangan, supaya musik latar tidak berbunyi dua kali.
+// Undangan contoh seukuran HP atau tablet di depan foto hero yang di-blur, untuk calon klien di laptop.
+// Halaman terpisah, bukan lapisan di atas undangan, supaya musik latar tidak berbunyi dua kali.
 export async function DevicePreview({ slug, device, pkg = TOP_PACKAGE }: { slug: string; device: keyof typeof DEVICES; pkg?: PackageId }) {
   const inv = await getInvitation(slug);
   if (!inv || !inv.published || !isDemo(inv.slug, inv.theme)) notFound();

@@ -3,9 +3,8 @@
 import { useEffect } from "react";
 import { useSkipDoor } from "./shell";
 
-// Menandai elemen data-{attr} yang sudah masuk layar dengan data-{attr}-in, supaya CSS memainkan gerak masuknya.
-// Pengamatan baru dimulai saat undangan dibuka, karena sebelum itu isi undangan tertutup pembuka dan geraknya
-// akan selesai tanpa terlihat. Kelas flag baru dipasang di sini, jadi tanpa JavaScript semua elemen tetap tampil utuh.
+// Menandai elemen data-{attr} yang masuk layar dengan data-{attr}-in supaya CSS memainkan gerak masuknya.
+// Baru mulai setelah undangan dibuka karena sebelumnya tertutup pembuka. Tanpa JavaScript semua tetap tampil.
 export function ScrollReveal({ attr, flag }: { attr: string; flag: string }) {
   // Pratinjau atur foto menampilkan semua isi tanpa gerak masuk.
   const skip = useSkipDoor();

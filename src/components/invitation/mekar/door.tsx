@@ -48,9 +48,8 @@ export function Petals({ count = 6 }: { count?: number }) {
   );
 }
 
-// Pembuka Mekar Mawar: kartu di atas sapuan cat air, untaian mawar di atas, foto bulat berbingkai emas.
-// Saat dibuka, angin membawa kelopak mawar melintas dari kiri ke kanan. Pembuka memudar di balik kelopak, jadi
-// undangan muncul perlahan sementara kelopak terus terbang keluar layar.
+// Pembuka Mekar Mawar: kartu di atas sapuan cat air, untaian mawar, foto bulat berbingkai emas. Saat dibuka,
+// angin membawa kelopak dari kiri ke kanan dan pembuka memudar di baliknya.
 export function MekarDoor({ groom, bride, date, place, photo, frame, set, invited, onOpen }: MekarProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();

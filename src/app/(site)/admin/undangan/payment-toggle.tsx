@@ -10,7 +10,7 @@ const OPTIONS = [
   { value: "belum", label: "Belum lunas" },
 ];
 
-// Bentuknya sama dengan pilihan paket supaya jelas bisa diubah. Belum lunas diberi warna kuning karena perlu ditagih.
+// Bentuknya sama dengan pilihan paket supaya jelas bisa diubah. Belum lunas kuning karena perlu ditagih.
 export function PaymentToggle({ slug, paid: initial }: { slug: string; paid: boolean }) {
   const [paid, setPaid] = useState(initial);
   const [error, setError] = useState("");

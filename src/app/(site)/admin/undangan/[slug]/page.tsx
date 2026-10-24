@@ -27,7 +27,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   const live = invitationDataSchema.parse(row.data ?? {});
   const draft = row.draft ? invitationDataSchema.parse(row.draft) : live;
-  // Aturan paket dihitung di editor dari isi paket dan add-on di pengaturan, supaya langsung berubah saat add-on dicentang.
+  // Aturan paket dihitung di editor dari isi paket dan add-on, supaya langsung berubah saat add-on dicentang.
   const { matrix, addons, packages, payment } = await getSettingsFresh();
   // Arsip dihitung dari versi yang tayang. unlocked_until kosong berarti tidak sedang dibuka.
   const info = archiveInfo(live, undefined, isDemo(row.slug, row.theme));

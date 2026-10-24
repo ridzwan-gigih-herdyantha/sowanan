@@ -18,8 +18,7 @@ export function WaIcon({ className }: { className?: string }) {
   );
 }
 
-// Poin singkat berbentuk pil di atas latar wine. Di HP selalu satu baris dan bisa digeser ke samping kalau layar
-// terlalu sempit. Di sm ke atas boleh membungkus.
+// Pil poin di atas latar wine. Di HP satu baris yang bisa digeser ke samping, di sm ke atas boleh membungkus.
 export function PointPills({ points, className }: { points: string[]; className?: string }) {
   if (!points.length) return null;
   return (

@@ -21,8 +21,8 @@ function seeded(seed: number) {
   };
 }
 
-// Langit berbintang di canvas: bintang berkelip pelan, sesekali bintang jatuh, dan bergeser berlapis saat halaman digulir. Berhenti menggambar saat
-// tidak terlihat di layar, saat still aktif, dan hanya digambar sekali bila pengunjung memilih kurangi gerak.
+// Langit berbintang di canvas: kelip pelan, sesekali bintang jatuh, dan parallax berlapis saat digulir.
+// Berhenti saat tak terlihat atau still aktif, dan digambar sekali saja bila pengunjung memilih kurangi gerak.
 export function Starfield({ className = "", density = 1, meteors = false, seed = 7, still = false }: { className?: string; density?: number; meteors?: boolean; seed?: number; still?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();

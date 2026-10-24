@@ -9,11 +9,8 @@ type Spot = { x: number; y: number; roaming: boolean };
 // Menjadi true setelah sepasang kolibri bertemu pertama kali. Sejak itu kolibri kecil terbang menemani yang besar.
 type Pair = { together: boolean };
 
-// Kolibri yang selalu ada di layar: melesat ke satu titik, melayang sebentar sambil mengepak cepat, lalu melesat
-// lagi. Titik tujuannya lebih sering di tepi kiri dan kanan supaya tidak menutupi teks. Gambarnya sudah diwarnai
-// per set bunga palet. Saat diketuk, kolibri kabur keluar layar, lalu datang lagi dari sisi berlawanan, membesar tiga
-// kali di tengah layar sebentar, dan terbang menjauh sambil kembali ke ukuran biasa. Posisinya ditulis ke spot supaya
-// pasangannya bisa tahu kapan mereka berdekatan.
+// Kolibri melesat dan melayang bergantian, lebih sering di tepi supaya teks tidak tertutup. Saat diketuk kabur,
+// lalu datang dari sisi lain, membesar sebentar, dan pergi. Posisi ditulis ke spot untuk dibaca pasangannya.
 function Bird({ set, spot, small, leader, pair }: { set: string; spot: Spot; small?: boolean; leader?: Spot; pair: Pair }) {
   const el = useRef<HTMLDivElement>(null);
 

@@ -5,9 +5,8 @@ import { invitationDataSchema, type InvitationData } from "@/lib/invitation/sche
 import { getSettingsFresh, packageRules, type Purchased } from "@/lib/settings";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
-// QR absensi milik mempelai. Satu QR per undangan dipasang di lokasi, berisi link /absen/<checkin_token>.
-// Tamu memindainya dengan HP sendiri. Tamu yang pernah membuka link pribadinya (?k=) langsung dikenali,
-// yang lain mengetik nama. Nama di luar daftar tamu dicatat sebagai datang langsung (walk_in).
+// QR absensi mempelai dipasang di lokasi, berisi link /absen/<checkin_token>. Tamu yang pernah buka link
+// pribadinya (?k=) langsung dikenali, sisanya mengetik nama. Nama di luar daftar tamu dicatat sebagai walk_in.
 
 export type CheckinResult =
   | { status: "ok" | "already"; name: string; at: string }
@@ -19,7 +18,8 @@ type InvitationRow = { id: string; slug: string; theme: string; data: unknown; p
 const ROW_COLS = "id, slug, theme, data, package, addons, checkin_opened_at";
 
 const HOUR = 3_600_000;
-// Absensi dibuka 3 jam sebelum acara sampai 3 jam setelah selesai, supaya foto QR yang tersebar tidak bisa dipakai dari rumah.
+// Absensi buka 3 jam sebelum sampai 3 jam setelah acara,
+// supaya foto QR yang tersebar tidak bisa dipakai dari rumah.
 const OPEN_BEFORE = 3 * HOUR;
 const CLOSE_AFTER = 3 * HOUR;
 
@@ -27,7 +27,8 @@ export const newCheckinToken = () => randomBytes(18).toString("base64url");
 export const validGuestToken = (k: string) => /^[a-z0-9]{8,32}$/i.test(k);
 const normalizeName = (s: string) => s.replace(/\s+/g, " ").trim();
 
-// openedAt: admin menekan Buka sekarang. Absensi langsung terbuka, dan tutup sesuai jadwal atau 12 jam setelah dibuka, mana yang lebih lama.
+// openedAt diisi saat admin menekan Buka sekarang. Absensi langsung buka dan tutup sesuai jadwal
+// atau 12 jam setelah dibuka, mana yang lebih lama.
 export function checkinWindow(data: InvitationData, openedAt?: string | null): { from: Date; until: Date; manual: boolean } | null {
   const start = Date.parse(data.event.start);
   if (!Number.isFinite(start)) return null;
@@ -53,7 +54,6 @@ async function bySlug(slug: string): Promise<InvitationRow | null> {
   return (data as unknown as InvitationRow) ?? null;
 }
 
-// Untuk halaman admin: apakah paket menyertakan QR absensi.
 export async function qrEnabled(slug: string): Promise<{ enabled: boolean; reason?: string }> {
   const row = await bySlug(slug);
   if (!row) return { enabled: false };
@@ -89,7 +89,6 @@ export async function checkinPage(token: string, now = Date.now()): Promise<Chec
 
 const result = (status: "ok" | "already", g: { name: string; checked_in_at: string | null }): CheckinResult => ({ status, name: g.name, at: g.checked_in_at ?? new Date().toISOString() });
 
-// Tamu yang dikenali dari kode link pribadinya.
 export async function checkInByToken(invitationId: string, k: string): Promise<CheckinResult> {
   if (!validGuestToken(k)) return { status: "unknown" };
   const sb = supabaseAdmin();
@@ -107,7 +106,7 @@ export async function checkInByToken(invitationId: string, k: string): Promise<C
   return known ? result("already", known) : { status: "unknown" };
 }
 
-// Tamu yang mengetik nama. Nama yang sama persis dengan daftar tamu dicatat sebagai tamu itu, sisanya datang langsung.
+// Nama yang sama persis dengan daftar tamu dicatat sebagai tamu itu, sisanya datang langsung.
 export async function checkInByName(invitationId: string, raw: string): Promise<CheckinResult & { k?: string }> {
   const name = normalizeName(raw).slice(0, 80);
   if (name.length < 2) return { status: "unknown" };

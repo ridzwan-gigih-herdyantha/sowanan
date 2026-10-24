@@ -38,9 +38,8 @@ function Video({ src, poster }: ExtraView["videos"][number]) {
   );
 }
 
-// Siaran YouTube. Iframe baru dimuat setelah diketuk supaya undangan tetap ringan. Status pemutar dibaca lewat
-// postMessage: saat diputar musik latar meredup, saat dijeda atau selesai musik kembali, dan media lain yang
-// diputar akan menjeda siaran ini.
+// Siaran YouTube, iframe baru dimuat setelah diketuk. Status pemutar dibaca lewat postMessage untuk
+// meredam atau menyalakan lagi musik latar, dan siaran dijeda saat media lain diputar.
 export function YoutubeStream({ id, title }: { id: string; title: string }) {
   const media = useInvitationMedia();
   const key = useId();

@@ -1,8 +1,8 @@
 import type { CSSProperties } from "react";
 import { shapes } from "./runs";
 
-// Ikon piksel tema Co-op Adventure. Setiap sprite ditulis sebagai baris huruf, satu huruf satu piksel, titik berarti
-// kosong. Digambar sebagai SVG dengan tepi tajam, jadi tetap kotak-kotak rapi di ukuran berapa pun.
+// Ikon piksel Co-op Adventure. Tiap sprite berupa baris huruf, satu huruf satu piksel, titik berarti kosong.
+// Digambar sebagai SVG bertepi tajam, jadi tetap rapi di ukuran berapa pun.
 
 const COLORS: Record<string, string> = {
   o: "#261B33",

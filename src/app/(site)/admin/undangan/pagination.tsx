@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Pending } from "@/app/(site)/admin/pending";
 
-// Nomor halaman yang ditampilkan: halaman pertama, terakhir, dan dua di sekitar halaman aktif. Celah diisi elipsis.
+// Nomor halaman yang tampil: pertama, terakhir, dan dua di sekitar halaman aktif. Celah diisi elipsis.
 function numbers(page: number, pages: number): (number | "...")[] {
   const set = new Set([1, pages, page - 1, page, page + 1].filter((n) => n >= 1 && n <= pages));
   const sorted = [...set].sort((a, b) => a - b);

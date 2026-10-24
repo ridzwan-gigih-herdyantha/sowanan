@@ -156,8 +156,8 @@ type Scene = { title: string; date: string; image: string; short: string; long: 
 const BABAK = ["Jejer", "Pathet Nem", "Pathet Sanga", "Pathet Manyura", "Tancep Kayon"];
 const BABAK_MOTIF: MotifName[] = ["kawung", "truntum", "ceplok", "sekar", "wajik"];
 
-// Lakon kami: tiap kisah adalah satu babak pagelaran. Foto berganti dari warna soga ke warna asli saat terlihat,
-// ketuk tombolnya untuk membuka kisah lengkap.
+// Lakon kami: tiap kisah satu babak pagelaran. Foto berganti dari warna soga ke warna asli saat terlihat,
+// tombolnya membuka kisah lengkap.
 export function BabakList({ items }: { items: Scene[] }) {
   const [open, setOpen] = useState<number | null>(null);
   return (
@@ -298,7 +298,7 @@ const AUTO_MS = 3000;
 const RESUME_MS = 5000;
 
 // Galeri simpingan: foto berdiri berjajar di atas gedebog seperti wayang yang disimping di tepi kelir.
-// Geser atau ketuk foto samping untuk memajukannya, ketuk foto depan untuk memperbesar.
+// Foto samping maju saat digeser atau diketuk, foto depan diperbesar saat diketuk.
 export function Simpingan({ photos }: { photos: Photo[] }) {
   const n = photos.length;
   const [active, setActive] = useState(0);

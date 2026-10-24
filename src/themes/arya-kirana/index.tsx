@@ -101,7 +101,7 @@ function Hero({ inv }: { inv: InvitationView }) {
         <div {...enter(0.6)} className="inv-enter relative row-start-2 mx-auto w-full max-w-[460px] pt-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:max-w-none">
           <Bow className="absolute top-0 left-1/2 z-10 w-24 -translate-x-1/2 drop-shadow-[0_4px_6px_rgba(60,45,25,.25)] sm:w-28" />
           <OrnateFrame corners={false} className={card} inner="p-3 sm:p-4">
-            {/* Foto sedikit lebih besar dari bingkainya dan bergeser pelan saat digulir, seperti dilihat dari balik bingkai. */}
+            {/* Foto lebih besar dari bingkainya dan bergeser pelan saat digulir, seperti dilihat dari balik bingkai. */}
             <div className="relative aspect-[4/5] overflow-hidden">
               <Parallax speed={0.08} max={22} className="absolute -inset-[6%]">
                 <HeroPhoto inv={inv} />

@@ -14,8 +14,8 @@ const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 const ease = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2);
 const span = (t: number, from: number, length: number) => ease(Math.min(1, Math.max(0, (t - from) / length)));
 
-// Waktu dalam detik. Tulisan mulai berkedip cepat sebagai tanda tombol diterima, kotak menutup layar dari tepi,
-// layar judul dilepas saat tertutup penuh, lalu kotak membuka dari tengah dan hero sudah ada di baliknya.
+// Waktu dalam detik. Tulisan berkedip tanda tombol diterima, kotak menutup layar dari tepi, layar judul
+// dilepas saat tertutup penuh, lalu kotak membuka dari tengah dengan hero di baliknya.
 const COVER = [0.42, 0.5] as const;
 const SWAP = 0.96;
 const UNCOVER = [1.02, 0.58] as const;
@@ -44,7 +44,7 @@ export function MulaiDoor({ groom, bride, monogram, date, place, year, invited, 
     const cx = (cols - 1) / 2;
     const cy = (rows - 1) / 2;
     const far = Math.hypot(cx, cy) || 1;
-    // Menutup dari tepi ke tengah, membuka dari tengah ke tepi. Matriks Bayer mengacak sedikit urutan dalam satu cincin.
+    // Menutup dari tepi ke tengah, membuka dari tengah ke tepi. Matriks Bayer mengacak urutan per cincin.
     const cells = Array.from({ length: cols * rows }, (_, i) => {
       const x = i % cols;
       const y = Math.floor(i / cols);

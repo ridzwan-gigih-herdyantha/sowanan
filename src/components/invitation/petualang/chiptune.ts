@@ -1,6 +1,6 @@
 import { audio } from "../pakeliran/gamelan";
 
-// Lagu chiptune untuk tema Co-op Adventure, karangan sendiri. Dibentuk langsung dari Web Audio seperti konsol lama:
+// Lagu chiptune Co-op Adventure, karangan sendiri, dibentuk langsung dari Web Audio:
 // melodi gelombang pulsa, bas gelombang segitiga, dan desis pendek sebagai hi-hat.
 
 // Nada dalam nomor MIDI, null berarti jeda, 0 berarti nada sebelumnya ditahan. Satu ketukan seperdelapan.

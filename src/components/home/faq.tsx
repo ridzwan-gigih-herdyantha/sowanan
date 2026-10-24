@@ -4,9 +4,8 @@ import { Container, SectionSub, SectionTitle, reveal, sectionPad } from "@/compo
 import { LineArt } from "./line-art";
 import { fill, type Settings } from "@/lib/settings";
 
-// Dua kolom di layar lebar: judul dan ajakan bertanya di kiri (menempel saat digulir), daftar pertanyaan bernomor di kanan.
-// Accordion dari elemen details bawaan. Atribut name yang sama membuat browser hanya membuka satu
-// pertanyaan sekaligus, tanpa JavaScript. Semua tertutup saat halaman dibuka.
+// Dua kolom di layar lebar: judul menempel di kiri, pertanyaan bernomor di kanan. Accordion pakai details
+// dengan name yang sama, jadi browser hanya membuka satu pertanyaan tanpa JavaScript.
 type FaqItem = { id: string; on: boolean; q: string; a: string };
 
 // items, title, dan sub dipakai halaman tema untuk tanya jawab khusus tema dengan tampilan yang sama.

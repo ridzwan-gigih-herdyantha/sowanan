@@ -4,9 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 import { isDemo } from "@/lib/invitation/archive";
 import { supabaseAdmin, supabaseUrl } from "@/lib/supabase/admin";
 
-// Akun mempelai untuk dashboard. Login memakai slug undangan sebagai username, jadi email di Supabase Auth
-// hanya alamat internal yang tidak pernah dipakai mengirim surat. Akun dicari lewat invitation_members,
-// bukan lewat email, supaya login tetap jalan walau slug undangan diganti.
+// Login memakai slug undangan sebagai username, jadi email di Supabase Auth cuma alamat internal.
+// Akun dicari lewat invitation_members, bukan email, supaya login tetap jalan walau slug diganti.
 const EMAIL_DOMAIN = "akun.sowanan.com";
 
 export type CoupleAccount = { userId: string; email: string; createdAt: string; lastSignIn: string | null; passwordSetAt: string | null };

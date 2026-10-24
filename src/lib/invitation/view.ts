@@ -42,7 +42,7 @@ export type ExtraView = {
   youtube: { id: string; title: string }[];
 };
 
-// Bagian tambahan dikelompokkan per posisi. Posisi yang tidak ada di tema (misalnya setelah ganti tema) tampil sebelum Penutup.
+// Dikelompokkan per posisi. Posisi yang tidak ada di tema (misal setelah ganti tema) tampil sebelum Penutup.
 function groupExtras(d: InvitationData, theme: string) {
   const known = new Set(extraAnchors(theme).map((a) => a.value));
   const out: Partial<Record<ExtraAnchor, ExtraView[]>> = {};
@@ -140,7 +140,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
       rsvp: u(d.media.rsvp || d.media.heroWide),
       qris: u(s.gifts.qris),
     },
-    // Atribut posisi dan zoom foto untuk disebar ke img. heroArt untuk foto hero yang berganti potret dan lebar.
+    // Atribut posisi dan zoom foto untuk img. heroArt untuk foto hero yang berganti potret dan lebar.
     frame: {
       hero: frameProps(frames, "hero"),
       heroWide: frameProps(frames, "heroWide"),

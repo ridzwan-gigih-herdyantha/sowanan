@@ -3,9 +3,8 @@
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, type ReactNode } from "react";
 
-// Isi bergeser lebih lambat dari halaman saat digulir, seperti benda jauh di langit. speed 0,2 berarti tertinggal
-// 20% dari gerak gulir, dihitung dari tengah layar, dan geserannya dibatasi max piksel supaya tidak menabrak teks.
-// Gerakannya diperhalus dengan lerp dan hanya berjalan saat terlihat.
+// Isi bergeser lebih lambat dari gulir. speed 0,2 berarti tertinggal 20%, diukur dari tengah layar dan dibatasi
+// max piksel supaya tidak menabrak teks. Diperhalus dengan lerp dan hanya jalan saat terlihat.
 export function Parallax({ children, speed = 0.2, max = 70, className = "" }: { children: ReactNode; speed?: number; max?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();

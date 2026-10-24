@@ -1,6 +1,5 @@
-// Aset piksel dunia game Co-op Adventure: karakter dengan bingkai animasi, ubin tanah, peti, dan hiasan latar.
-// Karakter ditulis tangan, satu huruf satu piksel. Pohon, semak, awan, dan gapura dibentuk dari gabungan
-// lingkaran dengan bayangan dari kiri atas dan tepi bergaris, jadi detailnya konsisten tanpa digambar satu per satu.
+// Aset piksel Co-op Adventure: karakter beranimasi, ubin, peti, dan hiasan latar.
+// Pohon, semak, awan, dan gapura dari gabungan lingkaran supaya detail dan bayangannya konsisten.
 
 import { runs } from "./runs";
 
@@ -30,7 +29,7 @@ const GROOM_HEAD = [
   "....oCCCTCo.....",
 ];
 
-// Badan dan kaki dibuat tebal, dengan sol sepatu di baris terbawah supaya kaki menapak tanah.
+// Badan dan kaki tebal, sol sepatu di baris terbawah supaya kaki menapak tanah.
 export const GROOM_IDLE: Art = [
   ...GROOM_HEAD,
   "...oKKCTCKKo....",
@@ -107,8 +106,7 @@ export const GROOM_JUMP: Art = [
   "................",
 ];
 
-// Berlutut dengan satu tangan terulur ke depan untuk menyerahkan cincin. Lutut belakang dan sepatu depan sama-sama
-// menapak di baris terbawah.
+// Berlutut menyerahkan cincin. Lutut belakang dan sepatu depan menapak di baris terbawah.
 export const GROOM_KNEEL: Art = [
   "................",
   "................",
@@ -380,10 +378,8 @@ export const CLOUD_COLORS: Palette = { o: "#DCE6F4", d: "#E6EEF8", b: "#FFFFFF",
 
 const FLOWERS = ["F", "W", "Y"];
 
-// Istana di ujung level, 144 x 176 piksel gambar atau 9 x 11 ubin. Dua menara beratap runcing dengan bola emas dan
-// bendera, bangunan tengah dengan jendela mawar dan jalan di atasnya tempat kedua mempelai muncul di akhir, dinding
-// depan dengan panji dan hati di atas pintu, serta semak berbunga di kaki dinding. Hanya separuh kiri yang menentukan, separuh kanan dicerminkan supaya
-// kedua sisi persis sama.
+// Istana di ujung level, 144 x 176 piksel gambar (9 x 11 ubin). Kedua mempelai muncul di jalan atas
+// bangunan tengah. Hanya separuh kiri yang digambar, separuh kanan dicerminkan.
 export const CASTLE_W = 9;
 export const CASTLE_H = 11;
 // Tinggi jalan di atas bangunan tengah dari tanah, dalam ubin.
@@ -468,7 +464,6 @@ export const CASTLE: Art = (() => {
     for (let y = top; y < h; y++) grid[y][x] = y === top ? "d" : hash(x, y, 5) > 0.84 ? FLOWERS[Math.floor(hash(x, y, 6) * 3)] : (x + y) % 5 === 0 ? "g" : "G";
   }
 
-  // Separuh kanan adalah cermin separuh kiri.
   for (const row of grid) for (let x = 0; x < mid; x++) row[w - 1 - x] = row[x];
   // Tepi bergaris di setiap batas dengan ruang kosong, kecuali dasar yang menyatu dengan tanah.
   return grid.map((row, y) =>
@@ -505,8 +500,7 @@ export const CASTLE_COLORS: Palette = {
   d: "#24452A",
 };
 
-// Pintu istana yang terbuka: daun pintu terdorong ke dalam di kedua sisi, ruang dalam gelap. Ukurannya sama dengan
-// pintu tertutup di gambar istana.
+// Pintu istana terbuka, daun pintu terdorong ke dalam. Ukurannya sama dengan pintu di gambar istana.
 export const DOOR_OPEN: Art = Array.from({ length: 34 }, (_, y) => {
   const dy = Math.max(0, 12 - y - 0.5);
   const half = dy >= 12 ? 0 : Math.round(Math.sqrt(144 - dy * dy));

@@ -3,9 +3,8 @@
 import { useLinkStatus } from "next/link";
 import { createPortal } from "react-dom";
 
-// Dipasang di dalam Link admin. Tautan admin tidak di-prefetch, jadi tanpa ini klik terasa tidak bereaksi
-// sampai halaman tujuan selesai dimuat. Selama menunggu, garis berjalan muncul di tepi atas layar dan
-// link yang diklik meredup lewat kelas has-[[data-pending]] di Link. Keduanya tidak menggeser layout.
+// Tautan admin tidak di-prefetch, jadi tanpa ini klik terasa diam sampai halaman tujuan selesai dimuat.
+// Garis berjalan di atas layar dan link meredup lewat has-[[data-pending]], tanpa menggeser layout.
 export function Pending() {
   const { pending } = useLinkStatus();
   if (!pending) return null;

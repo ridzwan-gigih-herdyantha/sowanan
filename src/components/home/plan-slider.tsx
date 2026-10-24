@@ -11,9 +11,8 @@ const chevron = (dir: "l" | "r") => (
 const arrow =
   "absolute top-[220px] z-10 flex size-11 items-center justify-center rounded-full bg-paper text-ink shadow-[0_8px_20px_rgba(0,0,0,.35)] transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper lg:hidden";
 
-// Di bawah lg kartu paket digeser menyamping: langsung dengan jari (scroll-snap), lewat tombol melayang di kiri
-// dan kanan, atau lewat titik di bawah. Tombol sejajar area harga supaya terlihat begitu kartu muncul, karena kartu
-// lebih tinggi dari layar HP. Ujung kartu berikutnya mengintip sebagai petunjuk. Di lg ke atas tetap grid.
+// Di bawah lg kartu paket digeser menyamping lewat jari (scroll-snap), tombol melayang, atau titik. Tombol
+// sejajar area harga karena kartu lebih tinggi dari layar HP. Ujung kartu berikutnya mengintip.
 export function PlanSlider({ labels, columns, children }: { labels: string[]; columns: string; children: ReactNode }) {
   const track = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);

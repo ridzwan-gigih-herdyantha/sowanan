@@ -3,7 +3,7 @@ import { fieldPatterns, patternOf } from "./spec.ts";
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
 
-// Isian kosong di draf diisi contoh dari undangan demo tema supaya preview tetap utuh. Path yang diisi dicatat.
+// Isian kosong di draf diisi contoh dari demo tema supaya preview tetap utuh. Path yang diisi dicatat.
 export function fillPreview(draft: InvitationData, sample: InvitationData | null): { data: InvitationData; filled: string[] } {
   const filled: string[] = [];
   if (!sample) return { data: draft, filled };

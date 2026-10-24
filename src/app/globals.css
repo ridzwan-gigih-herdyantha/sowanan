@@ -146,9 +146,8 @@
   --color-sk-tex: var(--sk-tex);
 }
 
-/* Font skrip nama mempelai. Huruf bersambung putus kalau diberi jarak huruf atau dimiringkan paksa,
-   dan butuh ruang baris untuk kapital dan ekor huruf. Hanya aktif saat font nama dipilih,
-   jadi tampilan bawaan tema tidak berubah. */
+/* Font skrip nama mempelai. Huruf sambung putus kalau diberi jarak huruf atau dimiringkan, dan butuh ruang
+   baris untuk kapital dan ekor huruf. Hanya aktif saat font nama dipilih. */
 [style*="--inv-script"] .font-script {
   letter-spacing: normal;
   font-style: normal;
@@ -362,7 +361,7 @@
 .pt-on-sky {
   text-shadow: 2px 2px 0 var(--inv-night);
 }
-/* Font nama pilihan di editor biasanya hanya punya satu ketebalan, jadi tidak ditebalkan, dan bayangan pikselnya
+/* Font nama pilihan biasanya hanya punya satu ketebalan, jadi tidak ditebalkan, dan bayangan pikselnya
    dibuat tipis supaya huruf bersambungnya tetap rapi. */
 .pt-skin[style*="--inv-script"] .font-script {
   font-weight: 400;
@@ -460,7 +459,7 @@
     visibility: visible;
   }
 }
-/* Semua bingkai langkah ditumpuk di satu sel grid dan hanya yang aktif terlihat. Berganti visibility tidak mengubah
+/* Semua bingkai langkah ditumpuk di satu sel grid dan hanya yang aktif terlihat. visibility tidak mengubah
    ukuran apa pun, jadi langkah karakter tidak memicu hitung ulang tata letak setiap beberapa frame. */
 .pt-frames {
   display: grid;
@@ -614,8 +613,8 @@
 .pt-modal {
   animation: pt-pop-in 0.3s steps(4);
 }
-/* Semua koin berputar bersama lewat satu atribut di lintasan yang diganti setiap 0,6 detik (world.tsx), bukan animasi
-   CSS sendiri-sendiri yang membuat setiap koin menjadi lapisan terpisah. */
+/* Semua koin berputar lewat satu atribut lintasan yang diganti tiap 0,6 detik (world.tsx). Animasi CSS per koin
+   membuat setiap koin jadi lapisan terpisah. */
 .pt-track[data-spin] .pt-coin:not([data-taken]) {
   transform: scaleX(0.55);
 }
@@ -693,7 +692,7 @@
   }
 }
 
-/* Halaman undangan tanpa scrollbar, supaya lebar halaman tidak berubah saat undangan dibuka dan kunci gulir dilepas. */
+/* Halaman undangan tanpa scrollbar, supaya lebarnya tidak berubah saat dibuka dan kunci gulir dilepas. */
 html[data-invitation] {
   scrollbar-width: none;
 }
@@ -701,7 +700,7 @@ html[data-invitation]::-webkit-scrollbar {
   display: none;
 }
 
-/* Undangan contoh di dalam layar HP atau tablet (/[slug]/hp, /[slug]/tablet): scrollbar disembunyikan seperti di perangkat sungguhan. */
+/* Undangan contoh di layar HP atau tablet (/[slug]/hp, /[slug]/tablet) tanpa scrollbar seperti perangkat asli. */
 html[data-device-frame] {
   scrollbar-width: none;
 }
@@ -1406,7 +1405,7 @@ html:has(.sk-root) {
   background: linear-gradient(90deg, transparent, var(--sk-emas) 30%, transparent 44%, transparent 56%, var(--sk-emas) 70%, transparent);
 }
 
-/* Kolom galeri Sakinah bergeser pelan mengikuti gulir. Hanya transform, dikerjakan peramban tanpa JavaScript. */
+/* Kolom galeri Sakinah bergeser pelan mengikuti gulir. Hanya transform, tanpa JavaScript. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .sk-drift {
@@ -1650,12 +1649,12 @@ html:has(.sk-root) {
 .tp-sunburst {
   background: var(--inv-paper);
 }
-/* Selama undangan belum dibuka halaman tidak bisa digulir, sudah berlaku sejak tampilan pertama sebelum skrip jalan. */
+/* Selama undangan belum dibuka halaman tidak bisa digulir, sejak tampilan pertama sebelum skrip jalan. */
 html:has([data-inv-state="closed"]) {
   overflow: hidden;
 }
 
-/* Isi pembuka ditahan sampai huruf dan fotonya siap, lalu muncul perlahan. Kelasnya dipasang skrip ukuran pembuka. */
+/* Isi pembuka ditahan sampai huruf dan foto siap, lalu muncul perlahan. Kelasnya dari skrip ukuran pembuka. */
 [data-fit] {
   transition: opacity 0.35s ease-out;
 }
@@ -1786,11 +1785,10 @@ html.door-wait [data-fit] {
   border: 3px solid var(--inv-ink);
   box-shadow: 5px 5px 0 var(--inv-ink);
 }
-/* Stiker bisa diketuk. */
 .tp-theme .tp-stk {
   cursor: pointer;
 }
-/* Kamera kenangan: letupan blitz ala komik, foto keluar dari celah, lalu gambarnya muncul perlahan seperti film instan. */
+/* Kamera kenangan: blitz ala komik, foto keluar dari celah, lalu gambarnya muncul pelan seperti film instan. */
 @keyframes tp-blitz {
   0% {
     transform: scale(0.2);
@@ -1981,7 +1979,7 @@ html.door-wait [data-fit] {
     3px 3px 0 var(--inv-accent),
     5px 5px 0 var(--inv-ink);
 }
-/* Semua judul Kabar Retro: garis tepi gelap dan bayangan padat yang ikut besar huruf supaya menonjol di latar apa pun. */
+/* Judul Kabar Retro: garis tepi gelap dan bayangan padat seukuran huruf supaya menonjol di latar apa pun. */
 .tp-offset.tp-title-pop {
   -webkit-text-stroke: 0.05em var(--inv-ink);
   paint-order: stroke fill;
@@ -2149,9 +2147,8 @@ html.door-wait [data-fit] {
   }
 }
 
-/* Posisi dan zoom foto yang diatur di editor (lib/invitation/frame.ts). Batasnya sama dengan pergantian foto hero
-   potret ke lebar. Zoom memakai properti scale supaya tidak bentrok dengan transform animasi tema, dan pembungkus
-   fotonya dipotong supaya foto yang diperbesar tidak keluar dari kotaknya. */
+/* Posisi dan zoom foto dari editor (lib/invitation/frame.ts). Breakpoint sama dengan hero potret ke lebar.
+   Zoom pakai scale supaya tidak bentrok dengan transform tema, pembungkusnya dipotong agar foto tak keluar. */
 @media (max-width: 759.98px) {
   :where(:has(> [data-frame-m])) {
     overflow: clip;
@@ -2288,7 +2285,7 @@ html.door-wait [data-fit] {
   background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--inv-night) 80%, var(--hr-merah)) 45%, var(--inv-night));
 }
 
-/* Goyang pelan seperti tertiup angin. Memakai properti rotate supaya tidak bentrok dengan transform gerak masuk. */
+/* Goyang pelan seperti tertiup angin. Pakai properti rotate supaya tidak bentrok dengan transform gerak masuk. */
 .hr-goyang {
   transform-origin: 50% 100%;
   animation: hr-goyang 7s ease-in-out infinite alternate;
@@ -2321,7 +2318,7 @@ html.door-wait [data-fit] {
   }
 }
 
-/* Dua helai ulos yang menjuntai membentuk huruf V di atas hero, berayun pelan, dan turun saat undangan dibuka. */
+/* Dua helai ulos menjuntai membentuk V di atas hero, berayun pelan, lalu turun saat undangan dibuka. */
 .hr-juntai {
   rotate: var(--hr-sudut);
   animation: hr-ayun 6.5s ease-in-out infinite alternate;
@@ -2364,8 +2361,8 @@ html.door-wait [data-fit] {
   transform: none;
 }
 
-/* Gerak masuk hero. Pintu ulos memasang data-hr-terbuka setelah tirai benar-benar habis, lalu lapis demi lapis muncul:
-   flora belakang, rumah dan rumpun, flora depan, foto mempelai, ulos menjuntai, lalu teks. Langit dan gunung tidak ikut. */
+/* Gerak masuk hero setelah tirai habis (data-hr-terbuka): flora belakang, rumah dan rumpun, flora depan,
+   foto mempelai, ulos menjuntai, lalu teks. Langit dan gunung tidak ikut. */
 .hr-masuk {
   transition:
     opacity 1s cubic-bezier(0.22, 0.61, 0.36, 1),
@@ -2419,7 +2416,7 @@ html.door-wait [data-fit] {
   opacity: 1;
   transform: none;
 }
-/* Latar sudah diperbesar sejak tirai masih menutup, lalu menjauh pelan selama lapis-lapis hero tersusun dan selesai
+/* Latar sudah diperbesar sejak tirai menutup, lalu menjauh pelan selama lapis hero tersusun dan selesai
    bersamaan dengan teks terakhir. */
 .hr-latar {
   scale: 1.3;

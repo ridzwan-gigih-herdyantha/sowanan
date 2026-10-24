@@ -35,8 +35,8 @@ export function Boras({ count = 22, className = "" }: { count?: number; classNam
   );
 }
 
-// Filter duotone yang mewarnai ulang lapis gambar ke palet: gelap untuk bayangan, terang untuk cahaya. Warnanya dibaca
-// dari CSS variable lewat style, jadi ikut berganti saat palet diganti. Dipasang sekali di akar tema.
+// Filter duotone yang mewarnai ulang lapis gambar ke palet. Warnanya dari CSS variable lewat style,
+// jadi ikut berganti saat palet diganti. Dipasang sekali di akar tema.
 const NADA = ["jauh", "belakang", "tengah", "dekat", "bunga", "lembut", "gelap"] as const;
 type Nada = (typeof NADA)[number];
 
@@ -117,11 +117,8 @@ function Juntai() {
   );
 }
 
-// Adegan berlapis di hero, seperti kolase: lukisan pegunungan di kejauhan, rumpun kelapa, bambu, dan pisang di belakang
-// rumah, dua rumah bolon yang sama di kiri dan kanan, rumpun di kaki rumah, foto mempelai berbingkai ulos di depan,
-// semak dan bunga di bawah, daun pisang besar di sudut, dan dua helai ulos menjuntai di atas. Semua lapis diwarnai ulang
-// ke palet dan bergoyang pelan. Selain langit dan gunung, semuanya baru muncul setelah tirai pembuka habis
-// (data-hr-terbuka, lihat .hr-muncul di globals.css).
+// Adegan hero berlapis seperti kolase, semua lapis diwarnai ulang ke palet dan bergoyang pelan. Selain
+// langit dan gunung, lapis baru muncul setelah tirai habis (data-hr-terbuka, .hr-muncul di globals.css).
 export function HeroScene({ text, bawah, foto, frame, alt }: { text: ReactNode; bawah: ReactNode; foto: string; frame?: FrameProps; alt: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
@@ -256,8 +253,8 @@ export function HeroScene({ text, bawah, foto, frame, alt }: { text: ReactNode; 
   );
 }
 
-// Hiasan flora bergoyang untuk bagian lain: di dua sudut atas, dua sudut bawah, atau di kedua sisi. Nada lembut untuk
-// latar terang, gelap untuk latar gelap dan merah. Konten bagian tetap di atasnya.
+// Flora bergoyang untuk bagian lain, di sudut atas, sudut bawah, atau kedua sisi.
+// Nada lembut untuk latar terang, gelap untuk latar gelap dan merah. Konten bagian tetap di atasnya.
 export function Hias({ letak, nada = "lembut", className = "" }: { letak: "atas" | "bawah" | "sisi"; nada?: "lembut" | "gelap"; className?: string }) {
   const kecil = "(min-width: 1024px) 14vw, 34vw";
   return (
@@ -291,8 +288,8 @@ export function Hias({ letak, nada = "lembut", className = "" }: { letak: "atas"
   );
 }
 
-// Pita ulos pembatas antar bagian. Rumpun bunga di kedua ujungnya melintang ke bagian di atas dan di bawahnya, jadi
-// hiasan antar bagian terasa menyambung.
+// Pita ulos pembatas antar bagian. Rumpun bunga di ujungnya melintang ke bagian atas dan bawah,
+// jadi hiasan antar bagian terasa menyambung.
 export function UlosPita() {
   const sizes = "(min-width: 1024px) 12vw, 32vw";
   return (

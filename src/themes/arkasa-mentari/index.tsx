@@ -19,8 +19,8 @@ import type { ExtraAnchor } from "@/lib/invitation/schema";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { themeFonts } from "./fonts";
 
-// Co-op Adventure: undangan sebagai game piksel 16-bit. Judul dan label memakai huruf piksel, isi tetap huruf biasa
-// supaya mudah dibaca semua tamu. Foto asli tidak dipikselkan, hanya bingkai dan hiasannya. Warna dari palette.ts.
+// Co-op Adventure: undangan sebagai game piksel 16-bit. Judul dan label huruf piksel, isi huruf biasa.
+// Foto asli tidak dipikselkan, hanya bingkai dan hiasannya. Warna dari palette.ts.
 const vars = {
   "--inv-display": "var(--font-pt-display), 'Courier New', monospace",
   "--inv-body": "var(--font-pt-body), 'Helvetica Neue', Arial, sans-serif",

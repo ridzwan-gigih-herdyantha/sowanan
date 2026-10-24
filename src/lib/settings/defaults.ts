@@ -354,7 +354,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "qr", label: "QR absensi tamu di lokasi", kind: "check", unit: "", key: "qr_absensi", cells: cells(false, false, true) },
     { id: "arsip", label: "Arsip permanen setelah acara", kind: "check", unit: "", key: "", cells: all },
   ],
-  // Add-on lama yang tidak dijual lagi disembunyikan, bukan dihapus, supaya undangan yang sudah membelinya tetap terhitung.
+  // Add-on yang tidak dijual lagi disembunyikan, bukan dihapus, supaya undangan pembelinya tetap terhitung.
   addons: [
     { id: "foto", on: true, name: "Tambah 10 foto galeri", price: 25000, scope: "Dasar dan Lengkap", unlock: "galeri_foto", amount: 10 },
     { id: "musik", on: true, name: "Musik latar pilihan sendiri", price: 25000, scope: "Dasar", unlock: "musik_sendiri", amount: 0 },

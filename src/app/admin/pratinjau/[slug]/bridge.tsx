@@ -26,7 +26,7 @@ const ATTR = { hp: "data-frame-m", desktop: "data-frame-d" } as const;
 
 const framed = (slot: string, device: FrameDevice) => [...document.querySelectorAll<HTMLElement>(`[data-frame~="${CSS.escape(`${slot}:${device}`)}"]`)];
 
-// Pengaturan foto dari editor diterapkan langsung ke elemen, tanpa menunggu draf tersimpan dan halaman dimuat ulang.
+// Pengaturan foto dari editor langsung diterapkan ke elemen, tanpa menunggu draf tersimpan dan reload.
 function applyFrame(slot: string, device: FrameDevice, frame: Frame | null) {
   const vars = frameVars(device, frame ?? { x: 50, y: 50, z: 1 });
   for (const el of framed(slot, device)) {
@@ -38,9 +38,8 @@ function applyFrame(slot: string, device: FrameDevice, frame: Frame | null) {
   }
 }
 
-// Menggulir ke foto slot. Tema yang tidak digulir biasa, misalnya tema game, membatalkan sowanan:reveal lalu memindahkan
-// kameranya sendiri, karena scrollIntoView ikut menggeser wadah tersembunyi di dalamnya. Posisi bawaan tema dikirim balik sebagai titik awal pengaturan. Foto yang tampil di dalam pembuka dilewati
-// karena pratinjau ini tidak menampilkan pembuka.
+// Tema tanpa gulir biasa, misalnya game, membatalkan sowanan:reveal dan menggerakkan kameranya sendiri
+// karena scrollIntoView menggeser wadah tersembunyinya. Posisi bawaan dikirim balik, foto di pembuka dilewati.
 function showFrame(slot: string, device: FrameDevice) {
   const el = framed(slot, device).find((e) => e.getClientRects().length > 0);
   if (!el) return;

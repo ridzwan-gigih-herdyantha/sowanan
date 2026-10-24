@@ -32,7 +32,7 @@ export function InvitationTabs({ slug, current }: { slug: string; current: strin
   );
 }
 
-// Kepala semua halaman satu undangan: kembali ke daftar, nama dan status undangan, menu tab, dan aksi halaman di kanan.
+// Kepala semua halaman satu undangan: kembali ke daftar, nama, status, menu tab, dan aksi di kanan.
 export function InvitationHeader({ slug, label, current, published, paid, actions }: { slug: string; label: string; current: string; published: boolean; paid: boolean; actions?: ReactNode }) {
   return (
     <header className="sticky top-0 z-30 -mx-5 border-b border-line bg-ivory/95 px-5 backdrop-blur">

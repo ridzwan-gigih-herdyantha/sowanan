@@ -16,7 +16,7 @@ const INACTIVE = "Undangan ini belum aktif. Konfirmasi kehadiran dan ucapan bisa
 
 const demoMode = () => !hasSupabase() && process.env.NODE_ENV !== "production";
 
-// Gangguan sesaat ke database dicoba ulang sekali. Penyebab aslinya dicatat di log server supaya bisa ditelusuri.
+// Gangguan sesaat ke database dicoba ulang sekali. Penyebab aslinya dicatat di log server.
 async function retry<T extends { error: { message: string } | null }>(label: string, run: () => PromiseLike<T>): Promise<T> {
   const first = await run();
   if (!first.error) return first;
@@ -28,9 +28,8 @@ async function retry<T extends { error: { message: string } | null }>(label: str
 
 type Target = { id: string; demo: boolean; archived: boolean; inactive: boolean };
 
-// Dibaca langsung dari database, bukan dari cache halaman. Cache menyimpan hasil gagal selama beberapa menit,
-// jadi satu gangguan sesaat bisa membuat semua RSVP dan ucapan ditolak. Pembekuan arsip juga berlaku tepat waktu.
-// Undangan contoh di homepage hanya peragaan: kiriman tamu dibalas berhasil tapi tidak disimpan.
+// Dibaca langsung dari database, bukan cache halaman yang menyimpan hasil gagal beberapa menit dan bisa
+// menolak semua RSVP. Pembekuan arsip juga tepat waktu. Undangan contoh dibalas berhasil tanpa disimpan.
 async function target(slug: string): Promise<Target | null> {
   const { data, error } = await retry(`Membaca undangan ${slug}`, () =>
     supabaseAdmin().from("invitations").select("id, slug, theme, data, payment_status").eq("slug", slug).maybeSingle(),

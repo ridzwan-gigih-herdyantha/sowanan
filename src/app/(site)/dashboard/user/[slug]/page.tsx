@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   referrer: "no-referrer",
 };
 
-// Hanya undangan milik akun yang masuk. Belum masuk diarahkan ke halaman masuk, undangan orang lain ke dashboard sendiri.
+// Hanya undangan milik akun ini. Belum masuk ke halaman masuk, undangan orang lain ke dashboard sendiri.
 async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const found = await coupleInvitation(slug);

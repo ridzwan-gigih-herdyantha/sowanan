@@ -54,8 +54,8 @@ type Input = { theme: string; themeName: string; pkgName: string; rules: Package
 
 const family = (f: { style: { fontFamily: string } }) => f.style.fontFamily.split(",")[0].replace(/['"]/g, "").trim();
 
-// Pilihan palet dan font tema, hanya bila paket atau add-on membuka ganti palet dan font. Contoh tulisan memakai font
-// aslinya dari Google Fonts supaya klien bisa membandingkan.
+// Pilihan palet dan font tema, hanya bila paket atau add-on membuka ganti palet dan font.
+// Contoh tulisan memakai font asli dari Google Fonts supaya klien bisa membandingkan.
 function styleChoices(theme: string, couple: string) {
   const palette = PALETTES[theme];
   const fonts = FONT_PRESETS[theme] ?? [];
@@ -114,8 +114,8 @@ ${automatic.length ? `<p class="auto"><b>Tidak perlu data:</b> ${esc(automatic.j
 </body></html>`;
 }
 
-// Daftar kebutuhan data dicetak lewat dialog cetak peramban, lalu disimpan sebagai PDF. Tidak ada halaman yang bisa
-// dibuka klien, isinya dibuat dari pilihan admin saat tombol ditekan.
+// Daftar kebutuhan data dicetak lewat dialog cetak peramban lalu disimpan sebagai PDF.
+// Tidak ada halaman untuk klien, isinya dibuat dari pilihan admin saat tombol ditekan.
 export async function printRequirements(input: Input) {
   const html = await requirementsHtml(input);
   const frame = document.createElement("iframe");

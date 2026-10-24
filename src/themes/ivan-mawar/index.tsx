@@ -69,9 +69,8 @@ function Heading({ label, children }: { label: string; children: ReactNode }) {
 // ke font judul yang dimiringkan.
 const nameFont = "font-script font-light italic";
 
-// Kluster mawar di tepi bagian, disusun dari potongan bunga: mawar besar bertumpuk menempel di tepi, buket kecil
-// di tengah, dan tangkai daun menyembul ke arah isi. Ukuran tiap potongan relatif terhadap lebar kluster. Sisi kanan
-// adalah cermin sisi kiri.
+// Kluster mawar dari potongan bunga: mawar besar di tepi, buket kecil di tengah, tangkai daun ke arah isi.
+// Ukuran potongan relatif terhadap lebar kluster, sisi kanan adalah cermin sisi kiri.
 function Cluster({ set, right = false, className = "" }: { set: string; right?: boolean; className?: string }) {
   return (
     <div aria-hidden="true" className={`pointer-events-none absolute aspect-[1/2.2] ${right ? "-scale-x-100" : ""} ${className}`}>
@@ -86,9 +85,8 @@ function Cluster({ set, right = false, className = "" }: { set: string; right?: 
   );
 }
 
-// Setiap bagian diapit kluster mawar di kiri dan kanan yang ikut tergulir bersama bagiannya. Letaknya berselang
-// mengikuti flip, jadi bagian yang berurutan tidak tampak sama. Di HP kluster lebih kecil dan sebagian keluar
-// layar, jadi mawarnya hanya mengintip dari tepi dan tidak menutupi isi.
+// Kluster mawar mengapit tiap bagian, letaknya berselang mengikuti flip supaya bagian berurutan tidak sama.
+// Di HP kluster lebih kecil dan sebagian keluar layar, jadi mawar hanya mengintip dari tepi tanpa menutupi isi.
 function Section({ children, set, tone = "paper", flip = "", className = "" }: { children: ReactNode; set: string; tone?: "paper" | "wash"; flip?: "" | "x" | "y" | "xy"; className?: string }) {
   const low = flip === "y" || flip === "xy";
   return (

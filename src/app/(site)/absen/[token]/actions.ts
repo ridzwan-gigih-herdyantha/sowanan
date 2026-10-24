@@ -3,7 +3,7 @@
 import { checkInByName, checkInByToken, checkinPage, type CheckinResult } from "@/lib/checkin";
 import { isDemo } from "@/lib/invitation/archive";
 
-// Tiap aksi memeriksa ulang kode QR dan jam absensi, jadi QR yang sudah diganti admin langsung berhenti bekerja.
+// Tiap aksi memeriksa ulang kode QR dan jam absensi, jadi QR lama yang diganti admin langsung mati.
 async function open(token: string): Promise<{ id: string; demo: boolean } | { reason: string }> {
   const page = await checkinPage(token);
   if (!page) return { reason: "QR ini sudah tidak berlaku. Tanyakan ke penerima tamu." };

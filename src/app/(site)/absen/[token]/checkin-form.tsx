@@ -37,7 +37,7 @@ export function CheckinForm({ token, slug, demo }: { token: string; slug: string
   async function self() {
     setBusy(true);
     setError("");
-    // Kode link pribadi paling pasti. Tanpa kode, dipakai nama yang tersimpan saat tamu membuka undangan atau mengisi RSVP.
+    // Kode link pribadi paling pasti. Tanpa kode, pakai nama tersimpan dari undangan atau RSVP.
     const res = await (code ? checkInSelf(token, code) : checkInName(token, remembered)).catch(() => ({ status: "closed" as const, reason: "Gagal terhubung. Periksa internet lalu coba lagi." }));
     setBusy(false);
     finish(res);

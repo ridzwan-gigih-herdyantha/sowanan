@@ -48,7 +48,7 @@ export async function coupleLogin(_prev: LoginState, form: FormData): Promise<Lo
   redirect(`/dashboard/user/${parsed.data.username}`);
 }
 
-// Mempelai boleh menyembunyikan dan menampilkan lagi ucapan di undangannya sendiri, kecuali yang disembunyikan admin.
+// Mempelai boleh menyembunyikan dan menampilkan lagi ucapan di undangannya, kecuali yang disembunyikan admin.
 export async function coupleHideWish(slug: string, wishId: number, hidden: boolean): Promise<HideResult> {
   const found = await coupleInvitation(slug);
   if (!found) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
@@ -58,7 +58,7 @@ export async function coupleHideWish(slug: string, wishId: number, hidden: boole
   return setWishHidden(slug, found.invitation.id, wishId, hidden, "mempelai");
 }
 
-// Tamu ditandai sudah dikirimi link saat mempelai membuka WhatsApp dari dashboard, sama seperti di halaman admin.
+// Tamu ditandai sudah dikirimi link saat mempelai membuka WhatsApp dari dashboard, sama seperti di admin.
 export async function coupleMarkSent(slug: string, guestId: number): Promise<{ ok: true; data: string } | { ok: false; error: string }> {
   const found = await coupleInvitation(slug);
   if (!found) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };

@@ -14,8 +14,8 @@ export type UlosProps = {
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 
-// Pintu pembuka: dua helai ulos Ragi Hotang menutup layar dengan medali HORAS di tengah. Saat dibuka, ulos
-// tersibak ke kiri dan kanan seperti ulos yang dibentangkan saat mangulosi, beras berkat ditaburkan, lalu pintu terangkat.
+// Pintu pembuka: dua helai ulos Ragi Hotang dengan medali HORAS di tengah. Saat dibuka ulos tersibak
+// seperti saat mangulosi, beras berkat ditaburkan, lalu pintu terangkat.
 export function UlosDoor({ groom, bride, date, invited, onOpen }: UlosProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const [scope, animate] = useAnimate();

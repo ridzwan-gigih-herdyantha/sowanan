@@ -1,5 +1,5 @@
-// Tanya jawab bawaan di halaman tema. Dipisah dari defaults.ts supaya skema bisa memakainya sebagai nilai awal
-// untuk pengaturan lama yang belum punya daftar ini.
+// Tanya jawab bawaan di halaman tema. Dipisah dari defaults.ts supaya skema bisa memakainya
+// sebagai nilai awal untuk pengaturan lama yang belum punya daftar ini.
 export const THEME_FAQ = [
   { id: "ganti-warna", on: true, q: "Bisa ganti warna tema?", a: "Bisa. Setiap tema punya beberapa pilihan palet, dan di paket Lengkap ke atas warnanya kami sesuaikan dengan tema acara kalian." },
   { id: "ganti-tema", on: true, q: "Kalau mau ganti tema di tengah jalan?", a: "Boleh, selama undangan belum disebar. Data yang sudah dikirim tetap dipakai, jadi tidak perlu mengisi ulang." },

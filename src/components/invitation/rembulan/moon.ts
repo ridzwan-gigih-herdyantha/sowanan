@@ -32,7 +32,7 @@ export function moonOf(at: Date | number) {
 }
 
 // Bagian bulan yang terang sebagai path SVG pada lingkaran berjari-jari r di titik (0, 0).
-// Saat membesar terang mulai dari sisi kanan, saat mengecil yang tersisa sisi kiri, seperti terlihat dari belahan bumi utara.
+// Terang mulai dari kanan saat membesar dan tersisa di kiri saat mengecil, seperti dilihat dari belahan utara.
 export function litPath(age: number, r: number): string {
   const a = ((age % 1) + 1) % 1;
   if (a < 0.0005 || a > 0.9995) return "";

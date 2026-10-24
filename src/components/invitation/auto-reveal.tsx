@@ -17,10 +17,8 @@ function strip(el: HTMLElement) {
   return null;
 }
 
-// Reveal bawaan semua tema: elemen di dalam section memudar naik saat digulir masuk layar, sama seperti di homepage.
-// Mode images hanya untuk foto, dipakai tema yang teksnya sudah punya gerak sendiri. Dipasang setelah undangan
-// dibuka. Elemen yang sudah terlihat saat dipasang tidak disembunyikan, jadi isi yang sedang dibaca tidak pernah
-// berkedip. Section pertama (hero) dilewati karena punya gerak masuk sendiri.
+// Reveal bawaan semua tema: elemen section memudar naik saat masuk layar. Mode images hanya untuk foto.
+// Elemen yang sudah terlihat tidak disembunyikan supaya tidak berkedip. Section pertama (hero) dilewati.
 export function AutoReveal({ root, mode = "all" }: { root: HTMLElement | null; mode?: RevealMode }) {
   useEffect(() => {
     if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

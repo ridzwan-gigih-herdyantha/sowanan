@@ -4,7 +4,6 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 
 type Row = { theme: string; package: string | null; addons: Purchased | null };
 
-// Aturan paket satu undangan.
 export async function invitationRules(slug: string): Promise<{ theme: string; rules: PackageRules } | null> {
   const { data } = await supabaseAdmin().from("invitations").select("theme, package, addons").eq("slug", slug).maybeSingle();
   if (!data) return null;

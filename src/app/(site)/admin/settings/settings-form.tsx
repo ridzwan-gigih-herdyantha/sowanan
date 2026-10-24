@@ -22,7 +22,7 @@ const TABS = [
 type TabKey = (typeof TABS)[number]["key"];
 const tabOf = (path: string) => TABS.find((t) => (t.paths as readonly string[]).includes(path.split(".")[0]))?.key;
 
-// Angka kosong disimpan NaN di form. Dikirim sebagai teks kosong supaya server menolaknya dengan pesan yang jelas.
+// Angka kosong disimpan NaN di form. Dikirim sebagai teks kosong supaya server menolak dengan pesan jelas.
 const serialize = (s: Settings) => JSON.stringify(s, (_, v) => (typeof v === "number" && Number.isNaN(v) ? "" : v));
 
 export function SettingsForm({ initial }: { initial: Settings }) {

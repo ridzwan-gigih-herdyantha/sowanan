@@ -21,8 +21,8 @@ import { getWishes } from "@/lib/guestbook";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { themeFonts } from "./fonts";
 
-// Rembulan: undangan sebagai almanak langit malam. Bulan yang tampil adalah bulan sungguhan pada malam pernikahan,
-// dan setiap section memakai fase bulan yang makin penuh menuju malam itu. Warna dari palette.ts, di sini hanya font.
+// Rembulan: undangan sebagai almanak langit malam. Bulan yang tampil adalah bulan asli malam pernikahan,
+// dan fase bulan tiap section makin penuh menuju malam itu. Warna dari palette.ts, di sini hanya font.
 const vars = {
   "--inv-display": "var(--font-rb-display), 'Times New Roman', serif",
   "--inv-body": "var(--font-rb-body), Georgia, serif",

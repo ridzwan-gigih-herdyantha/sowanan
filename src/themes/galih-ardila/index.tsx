@@ -19,9 +19,8 @@ import { getWishes } from "@/lib/guestbook";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { themeFonts } from "./fonts";
 
-// Kabar Retro No. 27: undangan sebagai tabloid dan poster pop 60 sampai 70-an. Kertas kraft bertekstur, foto
-// berwarna asli, panel komik bergaris tebal, sinar matahari, papan catur, pita gelombang, dan pelangi. Teks
-// panjang selalu di kotak krem polos supaya tetap mudah dibaca di atas latar yang ramai.
+// Kabar Retro No. 27: tabloid dan poster pop 60 sampai 70-an di kertas kraft, dengan panel komik dan pelangi.
+// Teks panjang selalu di kotak krem polos supaya tetap terbaca di atas latar yang ramai.
 const vars = {
   "--inv-display": "var(--font-tp-display), Georgia, serif",
   "--inv-body": "var(--font-tp-body), 'Helvetica Neue', Arial, sans-serif",

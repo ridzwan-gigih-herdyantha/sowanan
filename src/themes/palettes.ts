@@ -28,7 +28,7 @@ export const PALETTES: Record<string, ThemePalette> = {
   "bonar-anggi": bonarAnggi,
 };
 
-// Palet yang dipakai undangan: kustom bila ketiga warnanya sah, preset yang dipilih, atau preset pertama sebagai bawaan.
+// Palet undangan: kustom bila ketiga warnanya sah, lalu preset yang dipilih, lalu preset pertama.
 export function resolvePalette(theme: string, style?: InvitationData["style"]): Vars {
   const p = PALETTES[theme];
   if (!p) return {};

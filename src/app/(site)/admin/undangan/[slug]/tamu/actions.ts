@@ -98,7 +98,6 @@ export async function saveGuestMessage(slug: string, text: string): Promise<Resu
   return { ok: true, data: null };
 }
 
-// Tandai hadir atau batalkan dari halaman admin.
 export async function setGuestCheckin(slug: string, guestId: number, present: boolean): Promise<Result<string | null>> {
   const id = await invitationId(slug);
   if (!id) return { ok: false, error: SESSION_ENDED };

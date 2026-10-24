@@ -15,20 +15,19 @@ const MORPH = ["city", "names", "mono", "date"] as const;
 const ease = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2);
 const span = (t: number, from: number, length: number) => ease(Math.min(1, Math.max(0, (t - from) / length)));
 
-// Waktu dalam detik. Foto dan teks utama tiba bersamaan, lalu lapisan langsung dilepas karena hero di baliknya sama persis.
+// Waktu dalam detik. Foto dan teks tiba bersamaan, lalu lapisan dilepas karena hero di baliknya sama persis.
 const FADE = [0, 0.35] as const;
 const LENS = [0, 1.5] as const;
 const MOVE = [0.08, 1.42] as const;
 // Pergantian huruf terjadi di awal perpindahan, sebelum huruf lama sempat membesar dan terlihat buram.
 const SWAP = [0.04, 0.34] as const;
 
-// from dan to adalah skala awal dan akhir. Teks yang membesar dipindah ke salinan berukuran akhir, supaya tetap tajam.
-// fade diisi saat jenis huruf awal dan akhir berbeda: versi lama memudar, versi baru muncul, keduanya di jalur yang sama.
+// from dan to adalah skala awal dan akhir. Teks yang membesar dipindah ke salinan berukuran akhir supaya tajam.
+// fade dipakai saat jenis huruf awal dan akhir berbeda, versi lama memudar dan versi baru muncul.
 type Move = { el: HTMLElement; dx: number; dy: number; from: number; to: number; fade?: "out" | "in" };
 
-// Pembuka Lensa: foto hero diburamkan dan sedikit diperbesar, dengan judul kota yang sangat besar. Saat dibuka,
-// foto menjadi tajam dan kembali ke ukuran asli, sementara setiap teks bergeser dan mengecil atau membesar ke
-// tempatnya di hero, seperti transisi morph. Di akhir lapisan ini dilepas, dan hero yang identik ada di baliknya.
+// Pembuka Lensa: foto hero buram dan sedikit diperbesar dengan judul kota besar. Saat dibuka foto menajam
+// dan tiap teks bergeser ke tempatnya di hero seperti morph, lalu lapisan dilepas di atas hero yang identik.
 export function LensaDoor({ headline, groom, bride, monogram, date, portrait, wide, frame: photoFrame, invited, onOpen }: LensaProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();
@@ -90,8 +89,8 @@ export function LensaDoor({ headline, groom, bride, monogram, date, portrait, wi
         const scale = b.width / a.width;
         const look = getComputedStyle(to);
         if (getComputedStyle(el).fontFamily !== look.fontFamily) {
-          // Huruf berganti: aslinya bergerak ke kotak tujuan sambil memudar, dan salinan dari hero (huruf akhir,
-          // ukuran akhir) mulai dari kotak asal sambil muncul. Keduanya disejajarkan di tengah tinggi masing-masing.
+          // Huruf berganti: aslinya bergerak ke kotak tujuan sambil memudar, salinan dari hero muncul dari kotak asal.
+          // Keduanya disejajarkan di tengah tinggi masing-masing.
           const copy = to.cloneNode(true) as HTMLElement;
           const start = a.width / b.width;
           Object.assign(copy.style, { position: "fixed", left: `${a.left}px`, top: `${a.top + (a.height - b.height * start) / 2}px`, margin: "0", fontSize: look.fontSize, transformOrigin: "0 0", willChange: "transform, opacity", opacity: "0", transform: `scale(${start})` });
@@ -126,7 +125,7 @@ export function LensaDoor({ headline, groom, bride, monogram, date, portrait, wi
 
   return (
     <div ref={root} className="ls-door fixed inset-0 z-50 overflow-hidden bg-inv-night text-white">
-      {/* Perbesaran awal lewat transform, sama dengan yang dianimasikan, supaya di akhir benar-benar kembali ke ukuran asli. */}
+      {/* Perbesaran awal lewat transform, sama dengan yang dianimasikan, supaya akhirnya tepat di ukuran asli. */}
       <div ref={frame} className="absolute inset-0 will-change-transform" style={{ transform: "scale(1.08)" }}>
         <LensaPhoto portrait={portrait} wide={wide} frame={photoFrame} alt="" priority />
         <div ref={blur} className="absolute inset-0 will-change-[opacity]">
@@ -136,7 +135,7 @@ export function LensaDoor({ headline, groom, bride, monogram, date, portrait, wi
       <div aria-hidden="true" className="absolute inset-0" style={{ background: SCRIM }} />
       <div ref={tint} aria-hidden="true" className="absolute inset-0 bg-black/30" />
 
-      {/* Di HP semua bertumpuk di tengah. Di layar lebar judul kota memenuhi lebar, keterangan di bawahnya kiri dan kanan. */}
+      {/* Di HP semua bertumpuk di tengah. Di layar lebar judul kota selebar layar, keterangan di kiri dan kanan. */}
       <div className="relative flex h-full flex-col items-center justify-center px-6 text-center sm:px-[6vw]">
         <div className="w-full max-w-[1400px]">
           <p data-ls-fade className="text-[13px] sm:text-left sm:text-[15px]">

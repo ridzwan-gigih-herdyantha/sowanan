@@ -46,8 +46,8 @@ export function frameVars(device: FrameDevice, f: Frame): Record<string, string>
   return { [`--f${k}-x`]: `${x}%`, [`--f${k}-y`]: `${y}%`, [`--f${k}-z`]: String(z) };
 }
 
-// Atribut untuk elemen img sebuah slot. Foto hero yang berganti antara potret dan lebar memakai slot berbeda untuk
-// HP dan layar lebar. Elemen tanpa pengaturan tetap ditandai supaya editor bisa menemukan dan mengubahnya langsung.
+// Atribut img untuk satu slot. Foto hero yang berganti potret dan lebar memakai slot berbeda untuk HP
+// dan layar lebar. Elemen tanpa pengaturan tetap ditandai supaya editor bisa menemukan dan mengubahnya.
 export function frameProps(frames: Frames | undefined, hp: FrameSlot, desktop: FrameSlot = hp) {
   const m = frames?.[hp]?.hp;
   const d = frames?.[desktop]?.desktop;

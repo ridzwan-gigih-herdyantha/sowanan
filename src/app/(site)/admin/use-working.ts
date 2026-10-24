@@ -4,9 +4,8 @@ import { useRef, useState } from "react";
 
 export const OFFLINE = "Gagal terhubung. Cek koneksi lalu coba lagi.";
 
-// Aksi admin yang menunggu server. key menandai tombol yang sedang memproses, supaya hanya tombol itu
-// yang menampilkan teks memuat. Selama satu aksi berjalan, klik lain diabaikan supaya tidak terkirim dua kali.
-// Koneksi putus membuat aksi server melempar error, jadi ditangkap dan diteruskan sebagai pesan.
+// key menandai tombol yang sedang memproses, jadi hanya tombol itu yang tampil memuat. Klik lain diabaikan
+// selama aksi berjalan supaya tidak terkirim dua kali. Error karena koneksi putus ditangkap jadi pesan.
 export function useWorking(onError: (message: string) => void) {
   const [working, setWorking] = useState<string | null>(null);
   const busy = useRef(false);

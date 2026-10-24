@@ -15,7 +15,7 @@ export function DeleteButton({ slug, children }: { slug: string; children: (open
   const [typed, setTyped] = useState("");
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
-  // Dialog dibuka lewat effect, supaya fungsi open bisa diberikan ke pemicu di luar tanpa menyentuh ref saat render.
+  // Dibuka lewat effect, supaya open bisa diberikan ke pemicu di luar tanpa menyentuh ref saat render.
   const [opened, setOpened] = useState(0);
   useEffect(() => {
     if (opened) dialog.current?.showModal();

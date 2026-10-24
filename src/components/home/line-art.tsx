@@ -36,7 +36,7 @@ const ART = {
   },
 } as const;
 
-// Garis coretan bersambung yang masuk dari satu tepi bagian dan keluar di tepi lain, sebagai hiasan samar di latar.
+// Garis coretan samar di latar yang masuk dari satu tepi bagian dan keluar di tepi lain.
 // "atas" dari tepi kanan naik ke tepi atas, "bawah" dari tepi kiri turun ke tepi bawah.
 const SCRIBBLE = {
   atas: "M400 240 C340 250 300 222 310 182 C318 150 362 152 356 180 C350 208 300 200 270 170 C240 140 262 92 222 72 C190 56 160 80 176 100 C192 120 222 92 202 60 C187 36 162 20 150 0",

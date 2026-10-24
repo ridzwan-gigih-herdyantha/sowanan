@@ -5,9 +5,8 @@ const LEFT = "M0 224V86A86 86 0 0 1 67 2.13V224Z";
 const RIGHT = "M105 2.13A86 86 0 0 1 172 86V224H105Z";
 const ARCH = "M0 224V86A86 86 0 0 1 172 86V224Z";
 
-// Tampilan memuat halaman: dua daun pintu lengkung logo terbuka dari engselnya, cahaya hangat terlihat di
-// baliknya, lalu menutup kembali. Muncul sedikit terlambat supaya perpindahan halaman yang cepat tidak berkedip.
-// boot dipakai undangan: langsung tampil tanpa jeda dan memudar keluar saat leaving, menyambung loader halaman.
+// Daun pintu logo terbuka dari engselnya dengan cahaya hangat di baliknya, lalu menutup. Muncul agak telat
+// supaya pindah halaman cepat tidak berkedip. boot untuk undangan, langsung tampil dan memudar saat leaving.
 export function BrandLoader({ boot, leaving = false }: { boot?: boolean; leaving?: boolean }) {
   return (
     <div role="status" aria-live="polite" className={`fixed inset-0 z-[90] grid place-items-center bg-ivory ${boot ? `sw-boot ${leaving ? "sw-boot-out" : ""}` : "sw-loader"}`}>

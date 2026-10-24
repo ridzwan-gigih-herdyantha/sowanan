@@ -24,10 +24,10 @@ export type IconId = keyof typeof ICONS;
 // Paket paling rendah yang boleh memakai sebuah tema.
 export const THEME_TIERS = { semua: "Semua paket", lengkap: "Lengkap dan Istimewa", istimewa: "Istimewa" } as const;
 export type ThemeTier = keyof typeof THEME_TIERS;
-// Kategori untuk filter di section Tema. Urutan di sini adalah urutan chip di homepage.
 // Jumlah tema yang tampil di section tema beranda.
 export const HOME_THEMES = 4;
 
+// Kategori untuk filter di section Tema. Urutan di sini adalah urutan chip di homepage.
 export const THEME_CATEGORIES = {
   minimalis: "Minimalis",
   elegan: "Elegan",

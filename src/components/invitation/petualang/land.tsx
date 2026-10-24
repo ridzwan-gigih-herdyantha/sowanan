@@ -9,9 +9,8 @@ export function tileFor(w: number, h: number) {
   return 16 * Math.min(4, Math.max(2, Math.floor(Math.min(h / 14, w / 7) / 16)));
 }
 
-// w dan h adalah ukuran panggung sebelum diperkecil. Di layar HP seluruh panggung diperkecil sedikit (zoom),
-// jadi dunia yang terlihat lebih luas dan papan tidak terasa terlalu besar. ready menandai ukuran yang sudah diukur
-// dari layar sungguhan, bukan ukuran cadangan dari server.
+// w dan h adalah ukuran panggung sebelum diperkecil. Di HP panggung di-zoom keluar supaya dunia lebih luas.
+// ready menandai ukuran dari layar sungguhan, bukan ukuran cadangan dari server.
 export type Size = { w: number; h: number; t: number; zoom: number; ready: boolean };
 const ZOOM = 0.86;
 const FLOORS = 19;
@@ -20,7 +19,7 @@ function sizeFor(w: number, h: number): Size {
   const zoom = w < 640 ? ZOOM : 1;
   const vw = Math.round(w / zoom);
   const vh = Math.round(h / zoom);
-  // Di layar lebar ubin dibatasi supaya tinggi layar muat paling sedikit FLOORS ubin, cukup untuk cerita dua lantai.
+  // Di layar lebar ubin dibatasi supaya tinggi layar muat minimal FLOORS ubin untuk cerita dua lantai.
   const fit = Math.max(32, 16 * Math.floor(vh / FLOORS / 16));
   return { w: vw, h: vh, t: zoom < 1 ? 32 : Math.min(tileFor(vw, vh), fit), zoom, ready: true };
 }
@@ -32,7 +31,7 @@ export function useSize(ref: RefObject<HTMLElement | null>) {
     const el = ref.current;
     if (!el) return;
     const read = () => {
-      // Saat tamu mengetik, keyboard layar mengecilkan tinggi layar. Ukuran ubin ditahan supaya level tidak bergeser.
+      // Saat mengetik, keyboard layar mengecilkan tinggi. Ukuran ubin ditahan supaya level tidak bergeser.
       if (document.activeElement?.closest("input, textarea, select")) return;
       const next = sizeFor(el.clientWidth, el.clientHeight);
       setSize((s) => (s.ready && s.w === next.w && s.h === next.h ? s : next));
@@ -88,8 +87,8 @@ export function groundStyle(t: number): CSSProperties {
   };
 }
 
-// Gunung bertangga dengan sisi terang dan sisi bayangan serta puncak bersalju, satuan dalam piksel gambar. Setiap warna
-// menjadi satu path.
+// Gunung bertangga dengan sisi terang, sisi bayangan, dan puncak bersalju, dalam piksel gambar.
+// Setiap warna menjadi satu path.
 function mountains(width: number, height: number) {
   const out = { a: "", b: "", c: "" };
   const add = (x: number, y: number, w: number, tone: keyof typeof out) => (out[tone] += `M${x} ${y}h${w}v2h-${w}z`);
@@ -119,8 +118,7 @@ function hillPath(width: number, height: number, base: number, amp: number, seed
   return `${d} L${width + 4} ${height} Z`;
 }
 
-// Latar dunia game: langit bertingkat, matahari, gunung dan bukit berlapis, awan, pepohonan, dan tanah.
-// cam adalah posisi kamera dalam piksel layar. Lapisan jauh bergeser lebih lambat dari lapisan dekat.
+// Latar dunia game. cam adalah posisi kamera dalam piksel layar, lapisan jauh bergeser lebih lambat.
 // Bila layers diberi, transform tiap lapisan diatur dari luar tanpa merender ulang.
 export function Land({ size, width, layers, decor = true }: { size: Size; width: number; layers?: RefObject<(HTMLElement | null)[]>; decor?: boolean }) {
   const { w: vw, h: vh, t } = size;
@@ -153,8 +151,8 @@ export function Land({ size, width, layers, decor = true }: { size: Size; width:
 
   return (
     <div aria-hidden="true" className="pt-sky pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Bintang digambar sebagai bayangan kotak di tiga elemen dengan jeda kedip berbeda, bukan satu elemen beranimasi
-          per bintang yang masing-masing menjadi lapisan terpisah. */}
+      {/* Bintang digambar sebagai bayangan kotak di tiga elemen, bukan satu elemen beranimasi per bintang
+          yang masing-masing menjadi lapisan terpisah. */}
       <div className="absolute inset-0" style={{ opacity: "var(--inv-stars, 1)" }}>
         {[0, 1, 2].map((g) => (
           <span
@@ -203,8 +201,8 @@ export function Land({ size, width, layers, decor = true }: { size: Size; width:
   );
 }
 
-// Panggung yang diperkecil sesuai zoom. Isinya disusun di ukuran sebelum diperkecil. Sebelum layar terukur, isinya
-// disembunyikan supaya susunan ukuran HP dari server tidak sempat terlihat di layar lebar.
+// Panggung yang diperkecil sesuai zoom. Sebelum layar terukur isinya disembunyikan, supaya susunan HP
+// dari server tidak sempat terlihat di layar lebar.
 export function Zoom({ size, children }: { size: Size; children: ReactNode }) {
   return (
     <div className={`absolute top-0 left-0 ${size.ready ? "" : "pt-wait"}`} style={{ width: size.w, height: size.h, transform: size.zoom === 1 ? undefined : `scale(${size.zoom})`, transformOrigin: "0 0" }}>

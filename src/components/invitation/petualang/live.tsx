@@ -23,7 +23,7 @@ function whenOpen(cb: () => void) {
   return () => watch.disconnect();
 }
 
-// Mengamati el sampai masuk layar setelah undangan dibuka. hidden dipanggil bila saat mulai diamati el belum terlihat.
+// Mengamati el sampai masuk layar setelah undangan dibuka. hidden dipanggil bila el belum terlihat di awal.
 function onEnter(el: Element, enter: () => void, hidden?: () => void) {
   let first = true;
   const io = new IntersectionObserver(
@@ -45,9 +45,8 @@ function onEnter(el: Element, enter: () => void, hidden?: () => void) {
 
 const CPS = 38;
 
-// Teks dialog yang muncul huruf demi huruf seperti kotak percakapan game. Ketukan langsung menampilkan semuanya.
-// Sisa teks tetap ada tapi tidak terlihat, jadi tinggi kotak tidak berubah selama mengetik. Pembaca layar
-// selalu menerima teks utuh.
+// Teks dialog yang muncul huruf demi huruf, ketukan langsung menampilkan semuanya. Sisa teks tetap ada
+// tapi tak terlihat, jadi tinggi kotak tidak berubah. Pembaca layar selalu menerima teks utuh.
 export function Typewriter({ text, className = "" }: { text: string; className?: string }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const [shown, setShown] = useState<number | null>(null);
@@ -102,8 +101,8 @@ export function Typewriter({ text, className = "" }: { text: string; className?:
 const STEPS = [5, 8, 12, 18, 28, 44, 70];
 const STEP_MS = 85;
 
-// Foto yang muncul seperti dimuat game lama: kotak-kotak besar yang makin halus sampai foto aslinya tajam.
-// Mosaik digambar dari foto yang sama di kanvas, mengikuti potongan object-cover, object-position, dan zoom fotonya.
+// Foto yang muncul seperti dimuat game lama, dari kotak besar makin halus sampai tajam. Mosaik digambar
+// dari foto yang sama di kanvas, mengikuti object-cover, object-position, dan zoom fotonya.
 export function PixelPhoto({ children, className = "" }: { children: ReactNode; className?: string }) {
   const box = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -114,7 +113,7 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
     const c = canvas.current;
     const img = el?.querySelector("img");
     if (!el || !c || !img) return;
-    // Setelah memudar, kanvas mosaik disembunyikan total supaya tidak lagi menjadi lapisan yang ikut disusun tiap frame.
+    // Setelah memudar, kanvas disembunyikan total supaya tidak lagi jadi lapisan yang disusun tiap frame.
     let hide = 0;
     const done = () => {
       el.setAttribute("data-pt-photo-done", "");
@@ -124,8 +123,8 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
     let timer = 0;
     let gone = false;
 
-    // Foto di-decode dan dipotong sekali menjadi bitmap kecil secara asinkron, lalu setiap langkah mosaik digambar
-    // dari bitmap itu. Foto ukuran penuh tidak lagi diolah di thread utama saat bagiannya masuk layar.
+    // Foto di-decode dan dipotong sekali jadi bitmap kecil secara asinkron, tiap langkah mosaik digambar dari situ.
+    // Foto ukuran penuh tidak diolah di thread utama saat bagiannya masuk layar.
     let sumber: CanvasImageSource | null = null;
     const kecil = document.createElement("canvas");
     const siapkan = async () => {
@@ -135,7 +134,7 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
       const iw = img.naturalWidth;
       const ih = img.naturalHeight;
       if (!w || !h || !iw || !ih) return false;
-      // Potongan foto yang terlihat: object-cover, digeser sesuai object-position, lalu diperbesar dari titik yang sama.
+      // Potongan yang terlihat: object-cover, digeser sesuai object-position, lalu diperbesar dari titik yang sama.
       const css = getComputedStyle(img);
       const [fx, fy] = css.objectPosition.split(" ").map((v) => (v.endsWith("%") ? Number.parseFloat(v) / 100 : 0.5));
       const zoom = Number.parseFloat(css.scale) || 1;
@@ -216,8 +215,8 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
 
 type StoryEntry = { title: string; date: string; image: string; long: string; place?: string; video?: { src: string; poster: string } };
 
-// Tombol di papan cerita yang membuka cerita lengkap dalam jendela bergaya kotak dialog game. Memakai dialog bawaan
-// peramban supaya tampil di atas panggung yang diperkecil dan digeser.
+// Tombol papan cerita yang membuka cerita lengkap di kotak dialog game. Memakai dialog bawaan peramban
+// supaya tampil di atas panggung yang diperkecil dan digeser.
 export function StoryDetail({ s, no }: { s: StoryEntry; no: number }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
@@ -239,7 +238,7 @@ export function StoryDetail({ s, no }: { s: StoryEntry; no: number }) {
         onClick={(e) => e.target === ref.current && close()}
         className="m-auto max-h-[calc(100dvh-32px)] w-[min(520px,calc(100%-32px))] overflow-visible bg-transparent p-2 text-inv-ink backdrop:bg-[#1E1830]/60"
       >
-        {/* Bingkai piksel di elemen dalam, karena gaya pt-box mengubah posisi dan akan menggeser dialog dari tengah layar. */}
+        {/* Bingkai piksel di elemen dalam, karena pt-box mengubah posisi dan menggeser dialog dari tengah layar. */}
         {open && (
           <div className="pt-box pt-modal flex max-h-[calc(100dvh-48px)] flex-col">
             <div className="pt-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">

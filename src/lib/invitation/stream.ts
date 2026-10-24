@@ -1,5 +1,5 @@
-// Kenali platform siaran dari tautannya. Video YouTube dengan id yang jelas bisa diputar langsung di undangan,
-// sedangkan tautan saluran, Zoom, Instagram, dan lainnya dibuka di tab baru.
+// Platform siaran dikenali dari tautannya. Video YouTube dengan id jelas diputar langsung di undangan,
+// tautan saluran, Zoom, Instagram, dan lainnya dibuka di tab baru.
 export function streamOf(url: string, time: string, timezone: string) {
   let link: URL;
   try {

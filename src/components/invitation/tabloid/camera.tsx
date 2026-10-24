@@ -28,10 +28,8 @@ function Print({ p, no, stamp, square, fresh, eager }: { p: Photo; no: number; s
 
 const frame = "flex flex-col border border-inv-ink/25 bg-[#fbf7ee] px-2 pt-2 shadow-[0_6px_14px_rgba(0,0,0,.22)]";
 
-// Galeri Kabar Retro sebagai kamera instan. Tombol merah menjepret: layar berkilat, foto berikutnya keluar dari
-// celah kamera, muncul perlahan seperti film instan, lalu menumpuk di bawah kamera. Pita film di atas kamera
-// menunjukkan sisa jepretan. Setelah semua tercetak, cetakan dari tumpukan teratas terbang lebih dulu ke slotnya
-// di strip. Foto dicetak berurutan sehingga tidak ada yang ganda.
+// Galeri sebagai kamera instan. Tiap jepretan mencetak foto berikutnya, pita film menunjukkan sisa jepretan.
+// Setelah semua tercetak, cetakan teratas terbang lebih dulu ke slotnya di strip.
 export function CameraGallery({ photos, stamp }: { photos: readonly Photo[]; stamp: string }) {
   const [printed, setPrinted] = useState(0);
   const [fresh, setFresh] = useState<number | null>(null);
@@ -46,7 +44,7 @@ export function CameraGallery({ photos, stamp }: { photos: readonly Photo[]; sta
   const full = printed >= total;
   const shown = active === null ? null : photos[active];
 
-  // Tunggu cetakan terakhir sempat muncul, lalu catat posisi cetakan teratas sebelum tumpukannya diganti strip.
+  // Tunggu cetakan terakhir muncul, lalu catat posisi cetakan teratas sebelum tumpukan diganti strip.
   useEffect(() => {
     if (!total || !full || arranged) return;
     const t = setTimeout(() => {
@@ -170,7 +168,7 @@ export function CameraGallery({ photos, stamp }: { photos: readonly Photo[]; sta
           </button>
         </div>
         <span aria-hidden="true" className="absolute inset-x-8 -bottom-1 h-2 rounded-full bg-inv-ink" />
-        {/* Blitz ala komik: bintang kilau melebar dari jendela lampu kilat dan tulisan klik di dekat tombol. */}
+        {/* Blitz ala komik: bintang kilau dari jendela lampu kilat dan tulisan klik di dekat tombol. */}
         {flash > 0 && (
           <>
             <span key={`b${flash}`} aria-hidden="true" className="tp-blitz pointer-events-none absolute -top-[42px] -left-[52px] z-20 h-36 w-50">

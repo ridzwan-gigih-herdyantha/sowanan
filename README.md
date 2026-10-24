@@ -2,6 +2,8 @@
 
 Website jasa undangan pernikahan digital | sowanan.com. Next.js 16 (App Router, Cache Components) + Supabase + Tailwind v4.
 
+Developer baru: baca [docs/HANDOFF.md](docs/HANDOFF.md) untuk cara kerja aplikasi, alur data, dan cara menambah tema.
+
 ## Setup
 
 ```bash
@@ -10,7 +12,7 @@ cp .env.example .env.local   # isi kredensial Supabase & Meta Pixel
 pnpm dev
 ```
 
-Tanpa env Supabase, homepage tetap jalan dengan `DEFAULT_SETTINGS` di `src/lib/settings.ts`.
+Tanpa env Supabase, homepage tetap jalan dengan `DEFAULT_SETTINGS` di `src/lib/settings/defaults.ts`.
 
 ### Supabase
 
@@ -20,7 +22,7 @@ Tanpa env Supabase, homepage tetap jalan dengan `DEFAULT_SETTINGS` di `src/lib/s
 
 ### Data undangan
 
-Isi undangan (mempelai, acara, cerita, galeri, rekening, section aktif) disimpan di kolom `invitations.data` dengan skema `src/lib/invitation/schema.ts`. Tiga undangan contoh ada di `supabase/seed/invitations/*.json`.
+Isi undangan (mempelai, acara, cerita, galeri, rekening, section aktif) disimpan di kolom `invitations.data` dengan skema `src/lib/invitation/schema.ts`. Undangan contoh per tema ada di `supabase/seed/invitations/*.json`.
 
 ```bash
 pnpm seed-invitations            # semua
@@ -31,7 +33,7 @@ Seed memvalidasi data dengan skema yang sama, lalu upsert per slug. Ucapan conto
 
 ### Menambah undangan
 
-Lewat admin: `/admin/undangan`, isi link dan tema, lalu lengkapi di editor. Draf tersimpan otomatis. Tombol Simpan versi final hanya jalan kalau isian wajib lengkap (aturannya di `src/lib/invitation/spec.ts`), dan switch Tayang membuka undangan ke publik. Daftar tamu ada di tab Tamu (tempel daftar atau import .xlsx/.csv).
+Lewat admin: `/admin/undangan`, isi link dan tema, lalu lengkapi di editor. Draf tersimpan otomatis. Tombol Save version hanya jalan kalau isian wajib lengkap (aturannya di `src/lib/invitation/spec.ts`), dan switch Live membuka undangan ke publik. Daftar tamu ada di tab Tamu (tempel daftar atau import .xlsx/.csv).
 
 Lewat terminal, membuat draf kosong:
 
@@ -46,11 +48,12 @@ Slug divalidasi dulu (`src/lib/reserved-slugs.ts`): 3 sampai 60 karakter, huruf 
 
 | Path | Isi |
 | --- | --- |
-| `src/app/page.tsx` | Homepage, static; nilai dari `getSettings()` |
+| `src/app/(site)/page.tsx` | Homepage, static, nilai dari `getSettings()` |
 | `src/app/[slug]` | Halaman undangan (noindex) |
-| `src/app/ketentuan` | Ketentuan layanan |
-| `src/app/admin` | Pengaturan admin (noindex) |
-| `src/lib/settings.ts` | Pengaturan + cache (`cacheTag("settings")`, invalidate dengan `updateTag`) |
+| `src/app/(site)/ketentuan` | Ketentuan layanan |
+| `src/app/(site)/admin` | Admin: undangan, editor, media, pengaturan (noindex) |
+| `src/app/(site)/dashboard/user` | Dashboard mempelai |
+| `src/lib/settings/` | Pengaturan + cache (`cacheTag("settings")`, invalidate dengan `updateTag`) |
 | `src/lib/reserved-slugs.ts` | Slug terlarang + validasi |
 | `src/components/meta-pixel.tsx` | Meta Pixel + event Lead/Contact untuk semua link `wa.me` |
 | `supabase/migrations/` | Skema database, dijalankan berurutan |

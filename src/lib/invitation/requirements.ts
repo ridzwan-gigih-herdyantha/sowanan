@@ -3,8 +3,8 @@ import type { PackageRules } from "@/lib/settings/text";
 import { EXTRA_KINDS, limitExtras, type InvitationData } from "./schema";
 import { forTheme, GROUPS, type Field } from "./spec";
 
-// Daftar kebutuhan data untuk klien, disusun dari isian editor sesuai tema, paket, bagian yang dipakai, dan bagian
-// tambahan yang dipilih admin. key adalah jalur isian, dipakai untuk melewatkan isian opsional yang tidak diminta.
+// Kebutuhan data klien dari isian editor sesuai tema, paket, bagian yang dipakai, dan bagian tambahan pilihan
+// admin. key adalah jalur isian, dipakai untuk melewatkan isian opsional yang tidak diminta.
 
 export type ReqRow = { key: string; label: string; type: string; note?: string; required: boolean; depth: number; heading?: boolean };
 export type ReqSection = { key: string; title: string; note?: string; section?: string; rows: ReqRow[] };
@@ -48,8 +48,8 @@ function typeOf(f: Field): { type: string; note?: string } {
   }
 }
 
-// Isian yang ditentukan tim, bukan data dari klien. Deskripsi mesin pencari tidak ditanyakan karena undangan tidak
-// diindeks, dan kredit foto diisi tim dari sumber fotonya.
+// Isian yang ditentukan tim, bukan data klien. Deskripsi mesin pencari tidak ditanyakan karena undangan
+// tidak diindeks, dan kredit foto diisi tim dari sumber fotonya.
 const TEAM = new Set(["tone", "copy.credit", "share.description"]);
 const internal = (f: Field) => f.kind === "anchor" || TEAM.has(f.path);
 
@@ -86,7 +86,7 @@ function rowsOf(fields: Field[], ctx: Ctx, depth: number, prefix = "", parentOpt
   return out.filter((r, i) => !r.heading || r.type || (out[i + 1] && out[i + 1].depth >= r.depth && !(out[i + 1].heading && !out[i + 1].type && out[i + 1].depth === r.depth)));
 }
 
-// Isian setiap bagian tambahan yang sudah ditambahkan, sesuai jenisnya. Judul yang sudah diisi admin tidak ditanyakan lagi.
+// Isian tiap bagian tambahan sesuai jenisnya. Judul yang sudah diisi admin tidak ditanyakan lagi.
 function extraRows(list: Extract<Field, { kind: "list" }>, data: InvitationData, ctx: Ctx): ReqRow[] {
   const items = ctx.rules.extras ? limitExtras(data.extras, ctx.rules.extras.max) : data.extras;
   return items.flatMap((e, i) => [

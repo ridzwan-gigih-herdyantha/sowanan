@@ -30,7 +30,7 @@ export function parseGuestText(text: string): GuestInput[] {
 const NAME_HEADER = /nama|name|tamu|guest/i;
 const PHONE_HEADER = /hp|wa|whatsapp|telp|telepon|phone|nomor|no\.?\s*hp/i;
 
-// Baris dari Excel atau CSV. Kolom nama dan nomor ditebak dari judul kolom, kalau tidak ada pakai kolom 1 dan 2.
+// Baris dari Excel atau CSV. Kolom nama dan nomor ditebak dari judul, kalau tidak ada pakai kolom 1 dan 2.
 export function parseGuestRows(rows: unknown[][]): GuestInput[] {
   const cells = rows.map((r) => r.map((c) => (c == null ? "" : String(c).trim())));
   const head = cells[0] ?? [];

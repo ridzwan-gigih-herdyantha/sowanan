@@ -23,7 +23,7 @@ function legacyHours(v: unknown): [string, string] | null {
   return m ? [`${m[1].padStart(2, "0")}:${m[2]}`, `${m[3].padStart(2, "0")}:${m[4]}`] : null;
 }
 
-// Pengaturan versi 1 berbentuk datar (priceDasar, waNumber, dan seterusnya). Nilainya dipindahkan ke bentuk baru.
+// Pengaturan versi 1 berbentuk datar (priceDasar, waNumber, dst). Nilainya dipindahkan ke bentuk baru.
 export function fromLegacy(d: Legacy): Settings {
   const s = structuredClone(DEFAULT_SETTINGS);
   for (const p of PACKAGE_IDS) {
@@ -75,7 +75,7 @@ export function withSystemKeys(s: Settings): Settings {
   return { ...s, matrix, addons };
 }
 
-// Bagian yang tidak lolos validasi diganti nilai bawaan, supaya satu isian rusak tidak menjatuhkan seluruh halaman.
+// Bagian yang gagal validasi diganti nilai bawaan, supaya satu isian rusak tidak menjatuhkan seluruh halaman.
 export function normalizeSettings(raw: unknown): Settings {
   if (!raw || typeof raw !== "object") return DEFAULT_SETTINGS;
   const d = raw as Legacy;

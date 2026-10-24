@@ -31,7 +31,7 @@ const vars = (c: Pk): Vars => ({
   "--pk-tex": c.tex,
 });
 
-// Palet Pakeliran. Emas, kulit wayang, dan batik parang tetap, jadi tiap palet dirancang supaya serasi dengan ketiganya.
+// Palet Pakeliran. Emas, kulit wayang, dan batik parang tetap, jadi tiap palet dibuat serasi dengan ketiganya.
 export const palette: ThemePalette = {
   presets: [
     {

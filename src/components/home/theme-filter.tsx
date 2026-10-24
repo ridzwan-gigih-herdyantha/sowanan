@@ -6,9 +6,8 @@ type Item = { id: string; category: string; node: ReactNode };
 
 type Props = { items: Item[]; categories: [string, string][]; waHref: string; initial?: string; onPick?: (category: string) => void };
 
-// Chip kategori di atas daftar tema. Kartu yang tidak cocok disembunyikan, bukan dicabut, supaya animasi
-// muncul saat digulir tetap jalan ketika filter diganti. initial dan onPick dipakai halaman tema untuk
-// menyimpan kategori di alamat halaman.
+// Kartu yang tidak cocok disembunyikan, bukan dicabut, supaya animasi muncul saat digulir tetap jalan.
+// initial dan onPick dipakai halaman tema untuk menyimpan kategori di alamat halaman.
 export function ThemeFilter({ items, categories, waHref, initial = "", onPick }: Props) {
   const [picked, setPicked] = useState(initial);
   const pick = (k: string) => {

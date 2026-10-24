@@ -32,8 +32,8 @@ function Phone({ src, alt, className }: { src: string; alt: string; className: s
   );
 }
 
-// Seluruh kartu satu tautan ke demo tema. Paket lain bisa dipilih dari halaman demonya. animate false untuk kartu di
-// dalam batas Suspense, karena animasi muncul saat digulir mengubah class kartu sebelum bagian itu selesai dimuat.
+// Seluruh kartu satu tautan ke demo tema. animate false untuk kartu di dalam Suspense, karena animasi muncul
+// saat digulir mengubah class kartu sebelum bagian itu selesai dimuat.
 export function ThemeCard({ theme, index, waHref, animate = true }: { theme: ThemeEntry; index: number; waHref: string; animate?: boolean }) {
   const demo = Boolean(theme.demo);
   return (

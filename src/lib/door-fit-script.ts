@@ -1,6 +1,3 @@
-// Skala isi pembuka supaya muat di layar disimpan di variabel --door-fit pada elemen html.
-// Skrip ini dijalankan sejak HTML dibaca, sebelum JavaScript halaman siap, sehingga pembuka langsung tampil
-// dengan ukuran yang benar tanpa terlihat mengecil. Isi pembuka ditahan sebentar sampai huruf dan fotonya siap
-// (paling lama 2,5 detik) supaya tidak tampak berganti huruf, lalu muncul perlahan. Setelah halaman siap,
-// useDoorFit mengambil alih.
+// Skala pembuka di --door-fit dihitung sejak HTML dibaca, jadi langsung pas tanpa terlihat mengecil.
+// Isi ditahan sampai huruf dan foto siap (maks 2,5 detik), lalu muncul perlahan dan useDoorFit mengambil alih.
 export const DOOR_FIT_SCRIPT = `(function(){var h=document.documentElement;h.classList.add("door-wait");function fit(){var el=document.querySelector("[data-fit]");if(!el||!el.offsetHeight)return;var d=el.dataset,y=+(innerWidth<640&&d.fitYSm?d.fitYSm:d.fitY)||0,x=+d.fitX||0,s=Math.min(1,(innerHeight-y)/el.offsetHeight,x?(innerWidth-x)/el.offsetWidth:1);h.style.setProperty("--door-fit",String(s))}function done(){fit();h.classList.remove("door-wait")}var mo=new MutationObserver(fit);mo.observe(h,{childList:true,subtree:true});function start(){fit();mo.disconnect();var el=document.querySelector("[data-fit]");if(!el)return done();var wait=[document.fonts?document.fonts.ready:0];el.querySelectorAll("img").forEach(function(i){if(!i.complete)wait.push(new Promise(function(r){i.addEventListener("load",r);i.addEventListener("error",r)}))});Promise.race([Promise.all(wait),new Promise(function(r){setTimeout(r,2500)})]).then(done)}if(document.readyState==="loading")addEventListener("DOMContentLoaded",start);else start()})();`;

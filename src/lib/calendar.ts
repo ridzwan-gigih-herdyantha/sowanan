@@ -3,7 +3,7 @@ type CalendarEvent = { title: string; start: string; end: string; location: stri
 const stamp = (iso: string) => new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 const escape = (s: string) => s.replace(/[\\,;]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
 
-// Baris iCalendar maksimal 75 byte. Sisanya dilanjutkan di baris baru yang diawali spasi, tanpa memotong huruf multibyte.
+// Baris iCalendar maksimal 75 byte, sisanya lanjut di baris baru berawalan spasi tanpa memotong huruf multibyte.
 const bytes = new TextEncoder();
 function fold(line: string) {
   const out: string[] = [];

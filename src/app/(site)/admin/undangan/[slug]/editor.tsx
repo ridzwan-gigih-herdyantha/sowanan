@@ -31,7 +31,7 @@ type Props = {
 };
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
-// Ukuran layar HP yang benar-benar terlihat di peramban: lebar HP umum, tinggi layar dikurangi status bar dan bar
+// Ukuran layar HP yang benar-benar terlihat: lebar HP umum, tinggi layar dikurangi status bar dan bar
 // alamat peramban. Pratinjau digambar di ukuran ini lalu diperkecil supaya muat.
 const PHONE = { w: 390, h: 760 };
 

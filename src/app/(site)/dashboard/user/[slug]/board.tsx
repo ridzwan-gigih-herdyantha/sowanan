@@ -17,7 +17,7 @@ type Props = {
   rsvps: BoardRsvp[];
   wishes: BoardWish[];
   guests: BoardGuest[];
-  // Fitur paket. Yang tidak termasuk paket disembunyikan tanpa keterangan, karena alasan kunci ditulis untuk admin.
+  // Fitur paket. Yang tidak termasuk disembunyikan tanpa keterangan, karena alasan kunci ditulis untuk admin.
   excel: boolean;
   qr: boolean;
   personalLinks: boolean;

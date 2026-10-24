@@ -14,7 +14,7 @@ const vars = (c: Su): Vars => ({
   "--inv-card": c.card,
 });
 
-// Palet Sutra. Gading selalu mendominasi, aksen dipakai untuk nama dan tombol, sampanye hanya untuk garis dan ornamen tipis.
+// Palet Sutra. Ivory selalu dominan, aksen untuk nama dan tombol, sampanye hanya untuk garis dan ornamen.
 export const palette: ThemePalette = {
   presets: [
     {

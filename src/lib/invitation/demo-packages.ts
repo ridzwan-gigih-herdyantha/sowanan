@@ -27,8 +27,8 @@ export function demoPackages(s: Settings, theme: string): DemoPackage[] {
   });
 }
 
-// Isi undangan contoh disesuaikan aturan paket, supaya calon klien melihat apa yang didapat di tiap paket:
-// bagian yang tidak termasuk disembunyikan, jumlah dipotong sesuai batas, musik dan gaya kembali ke bawaan tema.
+// Isi undangan contoh disesuaikan aturan paket supaya calon klien melihat isi tiap paket. Bagian di luar
+// paket disembunyikan, jumlah dipotong sesuai batas, musik dan gaya kembali ke bawaan tema.
 export function applyPackage(d: InvitationData, rules: PackageRules): InvitationData {
   let out = d;
   if (rules.locked.cerita) out = { ...out, sections: { ...out.sections, story: { ...out.sections.story, enabled: false } } };

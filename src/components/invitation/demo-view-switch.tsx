@@ -48,11 +48,8 @@ const item = "flex size-10 flex-col items-center justify-center gap-0.5 rounded-
 const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 const tone = (on: boolean) => (on ? "bg-paper text-night" : "text-white/75 hover:bg-white/10 hover:text-white");
 
-// Undangan contoh: pilih paket (isi undangan mengikuti aturan paket itu) dan, di layar lebar, pilih tampilan desktop,
-// tablet, atau HP. Di mode desktop menempel di tepi kanan layar, di mode tablet dan HP menempel di samping layar
-// perangkatnya (attached, posisinya diatur induk). Disembunyikan di dalam layar perangkat supaya tidak muncul dua kali.
-// Dibuat kecil dan agak transparan supaya tidak menutupi undangan.
-// Memakai <a> biasa, bukan Link, karena Link menyimpan halaman sebelumnya secara tersembunyi sehingga musik latarnya bisa tetap berbunyi.
+// Pilih paket dan tampilan desktop, tablet, atau HP. Disembunyikan di dalam layar perangkat supaya tidak dobel.
+// <a> biasa, bukan Link, karena Link menyimpan halaman lama sehingga musik latarnya bisa tetap berbunyi.
 export function DemoViewSwitch({ packages = [], devices, attached }: { packages?: PackageLink[]; devices: DeviceLink[]; attached?: boolean }) {
   // null sampai hidrasi selesai, supaya tidak sempat muncul di dalam layar perangkat.
   const framed = useSyncExternalStore(noop, inFrame, () => null);

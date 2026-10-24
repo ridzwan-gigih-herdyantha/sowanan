@@ -7,9 +7,8 @@ import { MoonFace } from "./moon-disc";
 
 const FROM = 0.06;
 
-// Satu bulan yang menempel di kiri atas sejak bagian pertama almanak sampai akhir undangan. Fasenya mengikuti posisi
-// gulir: dari sabit muda di awal sampai bulan malam pernikahan di akhir, dan berkurang lagi saat digulir ke atas.
-// Fase mengejar posisi gulir dengan lerp, jadi perubahannya halus walau gulirnya tersendat.
+// Bulan yang menempel di kiri atas dari almanak sampai akhir. Fasenya mengikuti gulir, dari sabit muda sampai
+// bulan malam pernikahan, dikejar dengan lerp supaya halus walau gulirnya tersendat.
 export function ScrollMoon({ age }: { age: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();

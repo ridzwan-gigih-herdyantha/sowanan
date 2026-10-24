@@ -59,8 +59,8 @@ export function GuestNames({ allowed, children }: { allowed: boolean; children: 
   return <GuestNamesContext.Provider value={allowed}>{children}</GuestNamesContext.Provider>;
 }
 
-// Video dan lagu di bagian tambahan. Saat salah satu diputar, media lain berhenti dan musik latar meredup lalu berhenti.
-// Setelah semuanya berhenti, musik latar menyala lagi pelan-pelan kalau tadinya sedang menyala.
+// Saat video atau lagu bagian tambahan diputar, media lain berhenti dan musik latar meredup lalu berhenti.
+// Setelah semuanya berhenti, musik latar menyala lagi pelan-pelan kalau tadinya menyala.
 type MediaCtx = { claim: (id: string, stop: () => void) => void; release: (id: string) => void };
 const MediaContext = createContext<MediaCtx>({ claim: () => {}, release: () => {} });
 export const useInvitationMedia = () => useContext(MediaContext);
@@ -71,7 +71,7 @@ const FADE_IN = 1.4;
 
 type Fader = { ctx: AudioContext; gain: GainNode };
 
-// Volume elemen audio tidak bisa diubah di iOS, jadi fade memakai Web Audio. Elemen audio wajib crossOrigin anonymous.
+// Volume elemen audio tidak bisa diubah di iOS, jadi fade lewat Web Audio. Audio wajib crossOrigin anonymous.
 function connectFader(el: HTMLAudioElement): Fader | null {
   const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   if (!AC) return null;
@@ -121,7 +121,6 @@ const SYNTHS = { gending, chiptune };
 type Props = {
   door: Door;
   music: string;
-  // Musik bawaan yang dimainkan langsung di browser bila undangan tidak punya berkas musik.
   synth?: keyof typeof SYNTHS;
   className: string;
   style: CSSProperties;

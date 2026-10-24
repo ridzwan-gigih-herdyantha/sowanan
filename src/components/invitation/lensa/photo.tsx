@@ -1,8 +1,8 @@
 import { getImageProps } from "next/image";
 import type { FrameProps } from "@/lib/invitation/frame";
 
-// Foto layar penuh Lensa: potret di HP, lebar di layar besar. Dipakai pembuka dan hero dengan susunan sama persis,
-// supaya saat pembuka dilepas tidak ada pergeseran sedikit pun.
+// Foto layar penuh Lensa: potret di HP, lebar di layar besar. Pembuka dan hero memakai susunan yang sama
+// supaya tidak ada pergeseran saat pembuka dilepas.
 export function LensaPhoto({ portrait, wide, frame, alt, className = "", priority = false }: { portrait: string; wide: string; frame?: FrameProps; alt: string; className?: string; priority?: boolean }) {
   const common = { alt, sizes: "100vw", ...(priority ? { fetchPriority: "high" as const, loading: "eager" as const } : {}) };
   const { props: { srcSet: wideSet } } = getImageProps({ ...common, src: wide, width: 2400, height: 1600 });

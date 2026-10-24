@@ -286,7 +286,7 @@ function GallerySection({ inv }: { inv: InvitationView }) {
   );
 }
 
-// Konfirmasi kehadiran sebagai kartu balasan: foto venue dengan judul di satu panel, formulir di kertas berbingkai di panel lain.
+// Konfirmasi kehadiran sebagai kartu balasan: foto venue dan judul di satu panel, formulir di panel lain.
 function RsvpSection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="pasir" tex={["lingkar", 0.09]}>

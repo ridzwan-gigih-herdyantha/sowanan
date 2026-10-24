@@ -18,9 +18,8 @@ export type KelirProps = {
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 const KAWUNG = texture("kawung", "var(--pk-tex)", 0.1);
 
-// Pintu pembuka: nama mempelai besar di atas, panggung kecil di bawahnya dengan gunungan tertancap di gedebog.
-// Tamu menggeser gunungan atau menekan tombol, gunungan dikebut ke samping, bayangan wayang masuk lalu berubah prada,
-// kemudian seluruh layar terangkat ke hero.
+// Pintu pembuka: nama mempelai di atas, gunungan di gedebog. Saat digeser atau tombol ditekan, gunungan dikebut,
+// bayangan wayang masuk lalu berubah prada, kemudian seluruh layar terangkat ke hero.
 export function KelirDoor({ groom, bride, groomAksara, brideAksara, date, invited, onOpen }: KelirProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const [scope, animate] = useAnimate();
