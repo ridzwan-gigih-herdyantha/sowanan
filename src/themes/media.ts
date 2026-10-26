@@ -16,6 +16,7 @@ export const THEME_MEDIA: Record<string, Purpose[]> = {
   "galih-ardila": [...BASE, "groom", "bride", "closing"],
   "bonar-anggi": [...BASE, "groom", "bride", "closing"],
   elaris: [...BASE, "groom", "bride", "closing"],
+  nocturne: [...BASE, "groom", "bride", "closing"],
 };
 
 export const THEME_NAMES: Record<string, string> = {
@@ -32,6 +33,7 @@ export const THEME_NAMES: Record<string, string> = {
   "galih-ardila": "Kabar Retro No. 27",
   "bonar-anggi": "Horas",
   elaris: "Elaris",
+  nocturne: "Nocturne",
 };
 
 // Lagu bawaan tema, dipakai kalau undangan tidak mengunggah musik sendiri.
@@ -44,6 +46,10 @@ export const THEME_MUSIC: Record<string, string> = {
   "bima-nadia": "bima-nadia/music_1.mp3?v=mv50biaj",
   "toni-layla": "toni-layla/music_1.mp3?v=mv62kl8d",
   "galih-ardila": "galih-ardila/music_1.mp3?v=mv9adhb5",
+  // Nuansa instrumental gelap Rembulan menjadi musik bawaan Nocturne.
+  nocturne: "bima-nadia/music_1.mp3?v=mv50biaj",
+  // Alunan lembut Sutra selaras dengan nuansa elegan Elaris.
+  elaris: "arya-kirana/music_1.mp3?v=mv4z7a8w",
 };
 
 export function invitationLabel(slug: string, theme: string): string {
