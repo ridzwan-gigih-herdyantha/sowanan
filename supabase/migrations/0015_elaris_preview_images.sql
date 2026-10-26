@@ -1,4 +1,4 @@
-﻿-- Point the catalog mockups at real Elaris artwork and show its photo after opening.
+-- Point the catalog mockups at real Elaris artwork and show its photo after opening.
 update public.settings s
 set data = jsonb_set(
   s.data,
@@ -6,7 +6,7 @@ set data = jsonb_set(
   (
     select jsonb_agg(
       case when e ->> 'slug' = 'elaris' or e ->> 'id' = 'elaris'
-        then e || '{"image":"/img/elaris/cover.webp","screen":"/img/elaris/hero.webp"}'::jsonb
+        then e || '{"image":"/img/elaris/cover.webp","screen":"/img/elaris/hero.webp","tier":"semua"}'::jsonb
         else e
       end
       order by ord
