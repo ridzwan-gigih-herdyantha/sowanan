@@ -1,6 +1,6 @@
 {
   "slug": "damar-elara",
-  "theme": "nocturne",
+  "theme": "damar-elara",
   "published": true,
   "package": "istimewa",
   "data": {
@@ -44,15 +44,15 @@
       "rsvpDeadline": "17 Oktober 2027"
     },
     "media": {
-      "og": "/img/nocturne/og.jpg",
-      "hero": "/img/nocturne/hero.webp",
+      "og": "/img/damar-elara/og.jpg",
+      "hero": "/img/damar-elara/hero.webp",
       "rsvp": "",
       "music": "",
-      "venue": "/img/nocturne/venue.webp",
+      "venue": "/img/damar-elara/venue.webp",
       "couple": "",
       "detail": "",
-      "closing": "/img/nocturne/closing.webp",
-      "heroWide": "/img/nocturne/hero-wide.webp"
+      "closing": "/img/damar-elara/closing.webp",
+      "heroWide": "/img/damar-elara/hero-wide.webp"
     },
     "share": {
       "description": "Dengan hangat, kami mengundang Anda ke pernikahan Damar dan Elara di Bandung.",
@@ -74,7 +74,7 @@
         "name": "Elara",
         "role": "Putri dari",
         "latin": "",
-        "photo": "/img/nocturne/bride.webp",
+        "photo": "/img/damar-elara/bride.webp",
         "aksara": "",
         "flower": "",
         "parents": "Bapak Bima Mahendra & Ibu Nirmala Putri"
@@ -84,7 +84,7 @@
         "name": "Damar",
         "role": "Putra dari",
         "latin": "",
-        "photo": "/img/nocturne/groom.webp",
+        "photo": "/img/damar-elara/groom.webp",
         "aksara": "",
         "flower": "",
         "parents": "Bapak Hendra Pradana & Ibu Ratih Kusuma"
@@ -125,7 +125,7 @@
             "no": "",
             "date": "14.02.2019",
             "long": "Sebuah perkenalan sederhana berubah menjadi cerita yang ingin kami jaga.",
-            "image": "/img/nocturne/gallery-1.webp",
+            "image": "/img/damar-elara/gallery-1.webp",
             "place": "Bandung",
             "short": "Sebuah perkenalan sederhana berubah menjadi cerita yang ingin kami jaga.",
             "title": "Pertemuan yang tak direncanakan"
@@ -134,7 +134,7 @@
             "no": "",
             "date": "21.09.2021",
             "long": "Kami menemukan rumah di antara jalan pulang dan obrolan yang tak kunjung usai.",
-            "image": "/img/nocturne/gallery-2.webp",
+            "image": "/img/damar-elara/gallery-2.webp",
             "place": "Bandung",
             "short": "Kami menemukan rumah di antara jalan pulang dan obrolan yang tak kunjung usai.",
             "title": "Kota dan percakapan panjang"
@@ -143,7 +143,7 @@
             "no": "",
             "date": "16.10.2024",
             "long": "Di hadapan keluarga, satu pertanyaan dijawab dengan sepenuh hati.",
-            "image": "/img/nocturne/gallery-1.webp",
+            "image": "/img/damar-elara/gallery-1.webp",
             "place": "Bandung",
             "short": "Di hadapan keluarga, satu pertanyaan dijawab dengan sepenuh hati.",
             "title": "Satu jawaban untuk selamanya"
@@ -152,7 +152,7 @@
             "no": "",
             "date": "19.06.2027",
             "long": "Kini kami memulai bab baru, ditemani orang-orang tersayang.",
-            "image": "/img/nocturne/gallery-2.webp",
+            "image": "/img/damar-elara/gallery-2.webp",
             "place": "Bandung",
             "short": "Kini kami memulai bab baru, ditemani orang-orang tersayang.",
             "title": "Malam yang kami nantikan"
@@ -181,7 +181,7 @@
             "w": 1200,
             "no": "102",
             "alt": "Damar dan Elara dalam potret hitam-putih yang intim",
-            "src": "/img/nocturne/gallery-1.webp",
+            "src": "/img/damar-elara/gallery-1.webp",
             "caption": "berdampingan"
           },
           {
@@ -189,7 +189,7 @@
             "w": 1200,
             "no": "108",
             "alt": "Damar dan Elara berbagi momen di ruang temaram",
-            "src": "/img/nocturne/gallery-2.webp",
+            "src": "/img/damar-elara/gallery-2.webp",
             "caption": "bergandengan"
           },
           {
@@ -197,7 +197,7 @@
             "w": 1200,
             "no": "115",
             "alt": "Damar dan Elara dalam potret hitam-putih yang intim",
-            "src": "/img/nocturne/gallery-1.webp",
+            "src": "/img/damar-elara/gallery-1.webp",
             "caption": "jalan setapak"
           },
           {
@@ -205,7 +205,7 @@
             "w": 1200,
             "no": "121",
             "alt": "Damar dan Elara berbagi momen di ruang temaram",
-            "src": "/img/nocturne/gallery-2.webp",
+            "src": "/img/damar-elara/gallery-2.webp",
             "caption": "di mulut gua"
           },
           {
@@ -213,7 +213,7 @@
             "w": 1200,
             "no": "129",
             "alt": "Damar dan Elara dalam potret hitam-putih yang intim",
-            "src": "/img/nocturne/gallery-1.webp",
+            "src": "/img/damar-elara/gallery-1.webp",
             "caption": "menunggu"
           },
           {
@@ -221,7 +221,7 @@
             "w": 1200,
             "no": "134",
             "alt": "Damar dan Elara berbagi momen di ruang temaram",
-            "src": "/img/nocturne/gallery-2.webp",
+            "src": "/img/damar-elara/gallery-2.webp",
             "caption": "langkah kecil"
           }
         ],

@@ -1,6 +1,6 @@
 {
   "slug": "raka-anindya",
-  "theme": "elaris",
+  "theme": "raka-anindya",
   "published": true,
   "package": "istimewa",
   "data": {
@@ -8,7 +8,7 @@
       "ayat": "",
       "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
       "quote": "",
-      "credit": "Foto oleh Mehmet Alt?nta? di Pexels",
+      "credit": "Foto oleh Mehmet di Pexels",
       "sesanti": "",
       "tagline": "Dua nama, satu janji yang kami jaga sepanjang usia.",
       "ayatArti": "",
@@ -44,15 +44,15 @@
       "rsvpDeadline": "31 Januari 2027"
     },
     "media": {
-      "og": "/img/elaris/og.jpg",
-      "hero": "/img/elaris/hero.webp",
+      "og": "/img/raka-anindya/og.jpg",
+      "hero": "/img/raka-anindya/hero.webp",
       "rsvp": "",
       "music": "",
-      "venue": "/img/elaris/venue.webp",
+      "venue": "/img/raka-anindya/venue.webp",
       "couple": "",
       "detail": "",
-      "closing": "/img/elaris/closing.webp",
-      "heroWide": "/img/elaris/hero-wide.webp"
+      "closing": "/img/raka-anindya/closing.webp",
+      "heroWide": "/img/raka-anindya/hero-wide.webp"
     },
     "share": {
       "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Raka & Anindya di Sleman.",
@@ -74,7 +74,7 @@
         "name": "Anindya",
         "role": "Putri dari",
         "latin": "",
-        "photo": "/img/elaris/bride.webp",
+        "photo": "/img/raka-anindya/bride.webp",
         "aksara": "",
         "flower": "",
         "parents": "Bapak Bambang Sudarmo & Ibu Endang Widowati"
@@ -84,7 +84,7 @@
         "name": "Raka",
         "role": "Putra dari",
         "latin": "",
-        "photo": "/img/elaris/groom.webp",
+        "photo": "/img/raka-anindya/groom.webp",
         "aksara": "",
         "flower": "",
         "parents": "Bapak Hartono Wibowo & Ibu Sri Rahayu"
@@ -158,7 +158,7 @@
             "no": "",
             "date": "09.11.2019",
             "long": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
-            "image": "/img/elaris/gallery-1.webp",
+            "image": "/img/raka-anindya/gallery-1.webp",
             "place": "Sleman",
             "short": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
             "title": "Pertama Bertemu"
@@ -167,7 +167,7 @@
             "no": "",
             "date": "17.03.2021",
             "long": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
-            "image": "/img/elaris/gallery-2.webp",
+            "image": "/img/raka-anindya/gallery-2.webp",
             "place": "Sleman",
             "short": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
             "title": "Saling Mengenal"
@@ -176,7 +176,7 @@
             "no": "",
             "date": "06.12.2025",
             "long": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
-            "image": "/img/elaris/gallery-3.webp",
+            "image": "/img/raka-anindya/gallery-3.webp",
             "place": "Sleman",
             "short": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
             "title": "Lamaran"
@@ -185,7 +185,7 @@
             "no": "",
             "date": "14.02.2027",
             "long": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
-            "image": "/img/elaris/gallery-1.webp",
+            "image": "/img/raka-anindya/gallery-1.webp",
             "place": "Sleman",
             "short": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
             "title": "Hari Pernikahan"
@@ -210,7 +210,7 @@
       "gallery": {
         "photos": [
           {
-            "src": "/img/elaris/gallery-1.webp",
+            "src": "/img/raka-anindya/gallery-1.webp",
             "w": 1200,
             "h": 1500,
             "alt": "Raka dan Anindya berdiri bersama di halaman taman",
@@ -218,7 +218,7 @@
             "caption": ""
           },
           {
-            "src": "/img/elaris/gallery-2.webp",
+            "src": "/img/raka-anindya/gallery-2.webp",
             "w": 1200,
             "h": 1500,
             "alt": "Raka dan Anindya berbagi momen di taman klasik",
@@ -226,7 +226,7 @@
             "caption": ""
           },
           {
-            "src": "/img/elaris/gallery-3.webp",
+            "src": "/img/raka-anindya/gallery-3.webp",
             "w": 1200,
             "h": 1500,
             "alt": "Raka dan Anindya menikmati suasana kebun yang rimbun",
@@ -234,7 +234,7 @@
             "caption": ""
           },
           {
-            "src": "/img/elaris/gallery-4.webp",
+            "src": "/img/raka-anindya/gallery-4.webp",
             "w": 1200,
             "h": 1500,
             "alt": "Raka dan Anindya berdiri bersama di halaman taman",
@@ -242,7 +242,7 @@
             "caption": ""
           },
           {
-            "src": "/img/elaris/gallery-5.webp",
+            "src": "/img/raka-anindya/gallery-5.webp",
             "w": 1200,
             "h": 1500,
             "alt": "Raka dan Anindya berbagi momen di taman klasik",
@@ -250,7 +250,7 @@
             "caption": ""
           },
           {
-            "src": "/img/elaris/gallery-6.webp",
+            "src": "/img/raka-anindya/gallery-6.webp",
             "w": 1200,
             "h": 1500,
             "alt": "Raka dan Anindya menikmati suasana kebun yang rimbun",

@@ -30,8 +30,8 @@ import { defaultFonts as hendrawanLarasati } from "./hendrawan-larasati/fonts";
 import { defaultFonts as ivanMawar } from "./ivan-mawar/fonts";
 import { defaultFonts as galihArdila } from "./galih-ardila/fonts";
 import { defaultFonts as bonarAnggi } from "./bonar-anggi/fonts";
-import { defaultFonts as elaris } from "./elaris/fonts";
-import { defaultFonts as nocturne } from "./nocturne/fonts";
+import { defaultFonts as elaris } from "./raka-anindya/fonts";
+import { defaultFonts as nocturne } from "./damar-elara/fonts";
 
 // Font pilihan add-on ganti font. Di-host lewat next/font tanpa preload, jadi hanya diunduh bila dipakai.
 // Argumen font loader harus literal, jadi setiap pemanggilan ditulis lengkap.
@@ -140,13 +140,13 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
     { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
     { id: "lembut", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
   ],
-  elaris: [
+  "raka-anindya": [
     { id: "", name: "Cormorant & Jost", ...elaris },
     { id: "tegas", name: "Cinzel & DM Sans", display: cinzel, body: dmSans },
     { id: "romantis", name: "Playfair & Work Sans", display: playfair, body: workSans },
     { id: "klasik", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
   ],
-  nocturne: [
+  "damar-elara": [
     { id: "", name: "Cinzel & DM Sans", ...nocturne },
     { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
     { id: "romantis", name: "Playfair & DM Sans", display: playfair, body: dmSans },
