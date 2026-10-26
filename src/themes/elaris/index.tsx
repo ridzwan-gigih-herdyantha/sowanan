@@ -45,7 +45,7 @@ function Hero({ inv }: { inv: InvitationView }) {
         <p className="mx-auto mt-7 max-w-[34ch] font-display text-[22px] italic leading-snug text-inv-ink/75 lg:mx-0">{inv.tagline || "Dengan penuh syukur, kami mengundang Anda."}</p>
         <p className="mt-5 text-[13px] leading-relaxed text-inv-ink/65">{inv.venue.name}<br />{inv.city}</p>
         <Greeting className="mt-6 text-[13px] text-inv-accent" />
-        <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start"><a className={btn} href="#acara">Lihat undangan <span aria-hidden="true" className="ml-2">↓</span></a></div>
+        <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start"><a className={btn} href="#acara">Lihat undangan <span aria-hidden="true" className="ml-2">â†“</span></a></div>
       </div>
       <div className="relative order-1 mx-auto w-full max-w-[520px] lg:order-2">
         <div aria-hidden="true" className="absolute -inset-3 border border-inv-gold/70 sm:-inset-5" />
@@ -56,7 +56,7 @@ function Hero({ inv }: { inv: InvitationView }) {
         </div>
       </div>
     </Frame>
-    {inv.quote && <Frame className="relative mt-16 text-center sm:mt-24"><p className="mx-auto max-w-[38ch] font-display text-[clamp(24px,5vw,36px)] italic leading-tight">“{inv.quote}”</p></Frame>}
+    {inv.quote && <Frame className="relative mt-16 text-center sm:mt-24"><p className="mx-auto max-w-[38ch] font-display text-[clamp(24px,5vw,36px)] italic leading-tight">â€œ{inv.quote}â€</p></Frame>}
   </section>;
 }
 
@@ -72,7 +72,7 @@ function Couple({ inv }: { inv: InvitationView }) {
 function Story({ inv }: { inv: InvitationView }) {
   if (!inv.story.length) return null;
   return <section className="bg-inv-paper py-20 sm:py-28"><Frame><Heading overline="CATATAN PERJALANAN">Kisah yang membawa kami ke sini</Heading>
-    <ol className="mx-auto mt-14 max-w-[780px] divide-y divide-inv-line">{inv.story.map((s, i) => <li key={`${s.title}-${i}`} className="grid gap-5 py-8 sm:grid-cols-[90px_1fr] sm:gap-10"><span className="font-display text-3xl text-inv-gold">{String(i + 1).padStart(2, "0")}</span><div><p className="text-[10px] tracking-[.22em] text-inv-accent uppercase">{s.date} {s.place && `· ${s.place}`}</p><h3 className="mt-2 font-display text-3xl">{s.title}</h3><p className="mt-3 max-w-[60ch] text-[14px] leading-relaxed text-inv-ink/70">{s.long || s.short}</p>{s.image && <div className="relative mt-5 aspect-[16/9] max-w-[480px]"><Image src={s.image} alt={s.title} fill sizes="480px" className="object-cover" /></div>}</div></li>)}</ol>
+    <ol className="mx-auto mt-14 max-w-[780px] divide-y divide-inv-line">{inv.story.map((s, i) => <li key={`${s.title}-${i}`} className="grid gap-5 py-8 sm:grid-cols-[90px_1fr] sm:gap-10"><span className="font-display text-3xl text-inv-gold">{String(i + 1).padStart(2, "0")}</span><div><p className="text-[10px] tracking-[.22em] text-inv-accent uppercase">{s.date} {s.place && `Â· ${s.place}`}</p><h3 className="mt-2 font-display text-3xl">{s.title}</h3><p className="mt-3 max-w-[60ch] text-[14px] leading-relaxed text-inv-ink/70">{s.long || s.short}</p>{s.image && <div className="relative mt-5 aspect-[16/9] max-w-[480px]"><Image src={s.image} alt={s.title} fill sizes="480px" className="object-cover" /></div>}</div></li>)}</ol>
   </Frame></section>;
 }
 
@@ -80,7 +80,7 @@ function Event({ inv }: { inv: InvitationView }) {
   const calendar = calendarEventOf(inv);
   return <section id="acara" className="scroll-mt-8 bg-inv-accent py-20 text-inv-paper sm:py-28"><Frame><div className="mx-auto max-w-[850px] text-center"><p className="text-[10px] tracking-[.3em] text-inv-gold-light uppercase">SIMPAN TANGGALNYA</p><p className="mt-5 font-display text-[clamp(38px,8vw,70px)] leading-none">{inv.dayLabel}</p><p className="mt-2 font-body text-[12px] tracking-[.25em] text-inv-gold-light uppercase">{inv.dateLong}</p>
     {inv.on.countdown && <Countdown target={inv.date} className="mx-auto mt-9 grid max-w-[460px] grid-cols-3 gap-3" cellClassName="border border-white/20 px-3 py-4 font-display text-3xl text-inv-paper [&>span:last-child]:font-body [&>span:last-child]:text-inv-gold-light" />}
-    <div className="mx-auto mt-12 grid max-w-[760px] gap-4 text-left sm:grid-cols-2">{inv.events.map((e) => <article key={e.name} className="border border-white/20 p-6"><p className="text-[10px] tracking-[.24em] text-inv-gold-light uppercase">{e.name}</p><p className="mt-3 font-display text-3xl">{e.time}{e.until && ` — ${e.until}`}</p><p className="mt-1 text-[12px] text-white/70">{inv.tz}</p></article>)}</div>
+    <div className="mx-auto mt-12 grid max-w-[760px] gap-4 text-left sm:grid-cols-2">{inv.events.map((e) => <article key={e.name} className="border border-white/20 p-6"><p className="text-[10px] tracking-[.24em] text-inv-gold-light uppercase">{e.name}</p><p className="mt-3 font-display text-3xl">{e.time}{e.until && ` â€” ${e.until}`}</p><p className="mt-1 text-[12px] text-white/70">{inv.tz}</p></article>)}</div>
     <div className="mx-auto mt-8 max-w-[760px] border border-white/20 p-6 text-left sm:p-8"><p className="text-[10px] tracking-[.24em] text-inv-gold-light uppercase">TEMPAT</p><h3 className="mt-3 font-display text-3xl">{inv.venue.name}</h3><p className="mt-2 max-w-[48ch] text-[13px] leading-relaxed text-white/75">{inv.venue.address}</p><div className="mt-6 flex flex-wrap gap-3">{inv.venue.mapUrl && <a className="border border-white/45 px-4 py-3 text-[10px] tracking-[.18em] uppercase" href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}<CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className="border border-white/45 px-4 py-3 text-[10px] tracking-[.18em] uppercase">Simpan tanggal</CalendarButton></div></div>
   </div></Frame></section>;
 }
@@ -106,8 +106,8 @@ function Closing({ inv }: { inv: InvitationView }) {
 }
 
 export function Elaris({ inv }: { inv: InvitationView }) {
-  return <InvitationShell door={{ kind: "seal", couple: `${inv.groom.name} & ${inv.bride.name}`, monogram: inv.monogram, seal: "E" }} music={inv.music} className={`${themeFonts} min-h-dvh overflow-x-clip bg-inv-paper font-body text-inv-ink`} style={{ ...vars, ...inv.palette, ...inv.fonts }}>
+  return <InvitationShell door={{ kind: "seal", couple: `${inv.groom.name} & ${inv.bride.name}`, monogram: inv.monogram, seal: "/img/elaris-seal.svg" }} music={inv.music} className={`${themeFonts} min-h-dvh overflow-x-clip bg-inv-paper font-body text-inv-ink`} style={{ ...vars, ...inv.palette, ...inv.fonts }}>
     <main><Hero inv={inv} /><Extras inv={inv} at="hero" />{inv.on.couple && <Couple inv={inv} />}<Extras inv={inv} at="couple" />{inv.on.story && <Story inv={inv} />}<Extras inv={inv} at="story" />{inv.on.event && <Event inv={inv} />}<Extras inv={inv} at="event" />{inv.on.gallery && <GallerySection inv={inv} />}<Extras inv={inv} at="gallery" />{inv.on.rsvp && <section className="bg-inv-paper py-20 sm:py-28"><Frame className="max-w-[650px]"><Heading overline="MOHON BALASAN">Konfirmasi kehadiran</Heading><div className="mt-8 border border-inv-line bg-inv-card p-6 sm:p-10"><Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /></div></Frame></section>}<Extras inv={inv} at="rsvp" />{inv.on.gifts && <Gifts inv={inv} />}<Extras inv={inv} at="gifts" />{inv.on.wishes && <Guestbook inv={inv} />}<Extras inv={inv} at="wishes" />{inv.on.closing && <Closing inv={inv} />}<Extras inv={inv} at="closing" /></main>
-    <footer className="bg-inv-paper py-7 text-center text-[10px] tracking-[.18em] text-inv-ink/55 uppercase">Disusun dengan penuh perhatian · <Link href="/" className="text-inv-accent underline underline-offset-4">Sowanan</Link>{inv.credit && <span> · {inv.credit}</span>}</footer>
+    <footer className="bg-inv-paper py-7 text-center text-[10px] tracking-[.18em] text-inv-ink/55 uppercase">Disusun dengan penuh perhatian Â· <Link href="/" className="text-inv-accent underline underline-offset-4">Sowanan</Link>{inv.credit && <span> Â· {inv.credit}</span>}</footer>
   </InvitationShell>;
 }

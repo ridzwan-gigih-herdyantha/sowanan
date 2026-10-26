@@ -1,305 +1,272 @@
 {
-    "slug": "elaris",
-    "theme": "elaris",
-    "published": true,
-    "package": "istimewa",
-    "data": {
-        "copy": {
-            "ayat": "",
-            "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
-            "quote": "",
-            "credit": "Foto oleh Widyaditya Hidayat di Pexels",
-            "sesanti": "",
-            "tagline": "Dua nama, satu janji yang kami jaga sepanjang usia.",
-            "ayatArti": "",
-            "heroQuote": "",
-            "latinPair": "",
-            "rsvpQuote": "",
-            "ayatSumber": "",
-            "collection": "",
-            "sesantiArti": ""
+  "slug": "elaris",
+  "theme": "elaris",
+  "published": true,
+  "package": "istimewa",
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "",
+      "credit": "Foto oleh Mehmet Alt?nta? di Pexels",
+      "sesanti": "",
+      "tagline": "Dua nama, satu janji yang kami jaga sepanjang usia.",
+      "ayatArti": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-02-14T21:00:00+07:00",
+      "city": "Sleman, DI Yogyakarta",
+      "start": "2027-02-14T08:00:00+07:00",
+      "venue": {
+        "name": "Larasati Garden House",
+        "address": "Jl. Kaliurang Km 9, Sleman, DI Yogyakarta",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Jl.+Kaliurang+Km+9%2C+Sleman%2C+DI+Yogyakarta"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "08.00",
+          "until": "09.30"
         },
-        "event": {
-            "end": "2027-02-14T21:00:00+07:00",
-            "city": "Yogyakarta",
-            "start": "2027-02-14T08:00:00+07:00",
-            "venue": {
-                "name": "Hotel Tentrem",
-                "mapUrl": "https://www.google.com/maps/search/?api=1\u0026query=Hotel+Tentrem+Yogyakarta",
-                "address": "Jl. P. Mangkubumi No. 72A, Yogyakarta"
-            },
-            "schedule": [
-                {
-                    "name": "Akad Nikah",
-                    "time": "08.00",
-                    "until": "09.30"
-                },
-                {
-                    "name": "Resepsi",
-                    "time": "19.00",
-                    "until": "21.00"
-                }
-            ],
-            "timezone": "WIB",
-            "rsvpDeadline": "31 Januari 2027"
-        },
-        "media": {
-            "og": "arya-kirana/og_1.jpg?v=mvafvctj",
-            "hero": "arya-kirana/hero_1.webp?v=mvafvb4j",
-            "rsvp": "",
-            "music": "",
-            "venue": "arya-kirana/venue_1.webp?v=mvafvdmp",
-            "couple": "",
-            "detail": "",
-            "closing": "arya-kirana/closing_1.webp?v=mvafvet6",
-            "heroWide": "arya-kirana/herowide_1.webp?v=mvafvchg"
-        },
-        "share": {
-            "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Arya \u0026 Kirana di Yogyakarta.",
-            "ogDescription": "Undangan pernikahan Arya \u0026 Kirana, Sabtu 14 Februari 2027."
-        },
-        "style": {
-            "font": "",
-            "custom": {
-                "ink": "",
-                "paper": "",
-                "accent": ""
-            },
-            "palette": "",
-            "nameFont": ""
-        },
-        "couple": {
-            "bride": {
-                "full": "Kirana Paramitha",
-                "name": "Kirana",
-                "role": "Putri dari",
-                "latin": "",
-                "photo": "arya-kirana/bride_1.webp?v=mvafvg8i",
-                "aksara": "",
-                "flower": "",
-                "parents": "Bapak Bambang Sudarmo \u0026 Ibu Endang Widowati"
-            },
-            "groom": {
-                "full": "Arya Pradipta",
-                "name": "Arya",
-                "role": "Putra dari",
-                "latin": "",
-                "photo": "arya-kirana/groom_1.webp?v=mvafyj8o",
-                "aksara": "",
-                "flower": "",
-                "parents": "Bapak Hartono Wibowo \u0026 Ibu Sri Rahayu"
-            }
-        },
-        "extras": [
-            {
-                "body": "",
-                "kind": "dresscode",
-                "note": "Tolong ya guys",
-                "plan": {
-                    "h": 0,
-                    "w": 0,
-                    "src": ""
-                },
-                "tone": "paper",
-                "after": "gallery",
-                "rules": [],
-                "title": "Dress Code",
-                "colors": [
-                    {
-                        "hex": "#FBF8F2",
-                        "name": "Sage"
-                    },
-                    {
-                        "hex": "#B49A6A",
-                        "name": "Sage Tua"
-                    }
-                ],
-                "photos": [],
-                "stream": {
-                    "url": "",
-                    "time": ""
-                },
-                "tracks": [],
-                "videos": [],
-                "rundown": []
-            }
-        ],
-        "monogram": "A \u0026 K",
-        "sections": {
-            "quiz": {
-                "enabled": true
-            },
-            "rsvp": {
-                "enabled": true
-            },
-            "event": {
-                "enabled": true
-            },
-            "gifts": {
-                "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
-                "qris": "arya-kirana/qris_1.webp?v=mv4xdcz4",
-                "enabled": true,
-                "accounts": [
-                    {
-                        "bank": "Bank Contoh",
-                        "holder": "Arya Pradipta",
-                        "number": "0000 1402 2027"
-                    },
-                    {
-                        "bank": "Bank Contoh",
-                        "holder": "Kirana Paramitha",
-                        "number": "2222 1402 2027"
-                    }
-                ]
-            },
-            "story": {
-                "items": [
-                    {
-                        "no": "",
-                        "date": "09.11.2019",
-                        "long": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
-                        "image": "arya-kirana/story_1.webp?v=mvafvh0n",
-                        "place": "",
-                        "short": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
-                        "title": "Pertama Bertemu"
-                    },
-                    {
-                        "no": "",
-                        "date": "17.03.2021",
-                        "long": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
-                        "image": "arya-kirana/story_2.webp?v=mvafvhsd",
-                        "place": "",
-                        "short": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
-                        "title": "Saling Mengenal"
-                    },
-                    {
-                        "no": "",
-                        "date": "06.12.2025",
-                        "long": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
-                        "image": "arya-kirana/story_3.webp?v=mvafvinm",
-                        "place": "",
-                        "short": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
-                        "title": "Lamaran"
-                    },
-                    {
-                        "no": "",
-                        "date": "14.02.2027",
-                        "long": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
-                        "image": "arya-kirana/story_4.webp?v=mvafvjkm",
-                        "place": "",
-                        "short": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
-                        "title": "Hari Pernikahan"
-                    }
-                ],
-                "enabled": true
-            },
-            "couple": {
-                "photos": [],
-                "enabled": true
-            },
-            "wishes": {
-                "enabled": true
-            },
-            "closing": {
-                "enabled": true
-            },
-            "collage": {
-                "enabled": true,
-                "polaroids": []
-            },
-            "gallery": {
-                "photos": [
-                    {
-                        "src": "arya-kirana/gallery_1.webp?v=mvafvkpi",
-                        "w": 1800,
-                        "h": 1200,
-                        "alt": "Arya dan Kirana berdiri di padang rumput berkabut",
-                        "no": "",
-                        "caption": ""
-                    },
-                    {
-                        "src": "arya-kirana/gallery_2.webp?v=mvafvmg0",
-                        "w": 1800,
-                        "h": 2700,
-                        "alt": "Arya dan Kirana di tengah lembah pegunungan",
-                        "no": "",
-                        "caption": ""
-                    },
-                    {
-                        "src": "arya-kirana/gallery_3.webp?v=mvafvo5a",
-                        "w": 1800,
-                        "h": 2700,
-                        "alt": "Arya memeluk Kirana di padang rumput pagi hari",
-                        "no": "",
-                        "caption": ""
-                    },
-                    {
-                        "src": "arya-kirana/gallery_4.webp?v=mvafvpnk",
-                        "w": 1800,
-                        "h": 2700,
-                        "alt": "Arya dan Kirana diterpa cahaya matahari pagi",
-                        "no": "",
-                        "caption": ""
-                    },
-                    {
-                        "src": "arya-kirana/gallery_5.webp?v=mvafvqfn",
-                        "w": 1800,
-                        "h": 1200,
-                        "alt": "Arya dan Kirana di padang rumput dengan kabut tipis",
-                        "no": "",
-                        "caption": ""
-                    },
-                    {
-                        "src": "arya-kirana/gallery_6.webp?v=mvafvrlh",
-                        "w": 1800,
-                        "h": 2700,
-                        "alt": "Arya dan Kirana berdampingan di bawah langit pagi",
-                        "no": "",
-                        "caption": ""
-                    }
-                ],
-                "enabled": true
-            },
-            "countdown": {
-                "enabled": true
-            },
-            "specimens": {
-                "items": [
-                    {
-                        "h": 589,
-                        "w": 600,
-                        "no": "042",
-                        "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
-                        "latin": "Rosa chinensis",
-                        "local": "mawar"
-                    },
-                    {
-                        "h": 600,
-                        "w": 600,
-                        "no": "057",
-                        "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
-                        "latin": "Phalaenopsis amabilis",
-                        "local": "anggrek bulan"
-                    },
-                    {
-                        "h": 675,
-                        "w": 600,
-                        "no": "063",
-                        "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
-                        "latin": "Rosa \u0026 Phalaenopsis",
-                        "local": "buket pengantin"
-                    },
-                    {
-                        "h": 436,
-                        "w": 600,
-                        "no": "071",
-                        "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
-                        "latin": "Phalaenopsis amabilis",
-                        "local": "anggrek putih"
-                    }
-                ],
-                "enabled": true
-            }
+        {
+          "name": "Resepsi",
+          "time": "19.00",
+          "until": "21.00"
         }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "31 Januari 2027"
+    },
+    "media": {
+      "og": "/img/elaris/og.jpg",
+      "hero": "/img/elaris/hero.webp",
+      "rsvp": "",
+      "music": "",
+      "venue": "/img/elaris/venue.webp",
+      "couple": "",
+      "detail": "",
+      "closing": "/img/elaris/closing.webp",
+      "heroWide": "/img/elaris/hero-wide.webp"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Raka & Anindya di Sleman.",
+      "ogDescription": "Undangan pernikahan Raka & Anindya, Minggu 14 Februari 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Anindya Paramitha",
+        "name": "Anindya",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "/img/elaris/bride.webp",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Bambang Sudarmo & Ibu Endang Widowati"
+      },
+      "groom": {
+        "full": "Raka Pradipta",
+        "name": "Raka",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "/img/elaris/groom.webp",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Hartono Wibowo & Ibu Sri Rahayu"
+      }
+    },
+    "extras": [
+      {
+        "body": "",
+        "kind": "dresscode",
+        "note": "Tolong ya guys",
+        "plan": {
+          "h": 0,
+          "w": 0,
+          "src": ""
+        },
+        "tone": "paper",
+        "after": "gallery",
+        "rules": [],
+        "title": "Dress Code",
+        "colors": [
+          {
+            "hex": "#FBF8F2",
+            "name": "Sage"
+          },
+          {
+            "hex": "#B49A6A",
+            "name": "Sage Tua"
+          }
+        ],
+        "photos": [],
+        "stream": {
+          "url": "",
+          "time": ""
+        },
+        "tracks": [],
+        "videos": [],
+        "rundown": []
+      }
+    ],
+    "monogram": "R & A",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
+        "qris": "",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Raka Pradipta",
+            "number": "0000 1402 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Anindya Paramitha",
+            "number": "2222 1402 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "09.11.2019",
+            "long": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
+            "image": "/img/elaris/gallery-1.webp",
+            "place": "Sleman",
+            "short": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
+            "title": "Pertama Bertemu"
+          },
+          {
+            "no": "",
+            "date": "17.03.2021",
+            "long": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
+            "image": "/img/elaris/gallery-2.webp",
+            "place": "Sleman",
+            "short": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
+            "title": "Saling Mengenal"
+          },
+          {
+            "no": "",
+            "date": "06.12.2025",
+            "long": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
+            "image": "/img/elaris/gallery-3.webp",
+            "place": "Sleman",
+            "short": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
+            "title": "Lamaran"
+          },
+          {
+            "no": "",
+            "date": "14.02.2027",
+            "long": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
+            "image": "/img/elaris/gallery-1.webp",
+            "place": "Sleman",
+            "short": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
+            "title": "Hari Pernikahan"
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "src": "/img/elaris/gallery-1.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya berdiri bersama di halaman taman",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/elaris/gallery-2.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya berbagi momen di taman klasik",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/elaris/gallery-3.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya menikmati suasana kebun yang rimbun",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/elaris/gallery-4.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya berdiri bersama di halaman taman",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/elaris/gallery-5.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya berbagi momen di taman klasik",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/elaris/gallery-6.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya menikmati suasana kebun yang rimbun",
+            "no": "",
+            "caption": ""
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [],
+        "enabled": false
+      }
     }
+  }
 }
