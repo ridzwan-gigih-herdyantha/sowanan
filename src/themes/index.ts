@@ -13,6 +13,7 @@ import { IvanMawar } from "./ivan-mawar";
 import { GalihArdila } from "./galih-ardila";
 import { BonarAnggi } from "./bonar-anggi";
 import { Elaris } from "./elaris";
+import { Nocturne } from "./nocturne";
 import { THEME_NAMES } from "./media";
 
 export type Theme = { name: string; Component: ComponentType<{ inv: InvitationView }>; themeColor: string };
@@ -31,4 +32,5 @@ export const THEMES: Record<string, Theme> = {
   "galih-ardila": { name: THEME_NAMES["galih-ardila"], Component: GalihArdila, themeColor: "#F8EEDB" },
   "bonar-anggi": { name: THEME_NAMES["bonar-anggi"], Component: BonarAnggi, themeColor: "#1C1211" },
   "elaris": { name: THEME_NAMES.elaris, Component: Elaris, themeColor: "#F5F2E9" },
+  "nocturne": { name: THEME_NAMES.nocturne, Component: Nocturne, themeColor: "#160F12" },
 };

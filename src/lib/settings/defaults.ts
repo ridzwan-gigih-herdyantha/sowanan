@@ -219,7 +219,7 @@ export const DEFAULT_SETTINGS: Settings = {
     cta1Href: "",
     cta2: "Lihat pilihan tema",
     cta2Href: "#tema",
-    note: "Dibalas dalam 1 jam, jam {jam} Â· Bisa disebar ke berapa pun tamu",
+    note: "Dibalas dalam 1 jam, jam {jam} Ã‚Â· Bisa disebar ke berapa pun tamu",
   },
   sections: {
     tema: {
@@ -293,8 +293,9 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "kelir", on: true, name: "Pakeliran", slug: "danang-kinanthi", demo: "/danang-kinanthi", tier: "lengkap", category: "adat", style: "jawa / wayang", image: "/img/tema-danang-kinanthi-buka.webp", screen: "" },
     { id: "sakinah", on: true, name: "Sakinah", slug: "fadhil-nayla", demo: "/fadhil-nayla", tier: "lengkap", category: "islami", style: "islami / geometri", image: "/img/tema-fadhil-nayla-buka.webp", screen: "" },
     { id: "sutra", on: true, name: "Sutra", slug: "arya-kirana", demo: "/arya-kirana", tier: "lengkap", category: "elegan", style: "gading / pita emas", image: "/img/tema-arya-kirana-buka.webp", screen: "" },
-    { id: "elaris", on: true, name: "Elaris", slug: "elaris", demo: "/elaris", tier: "semua", category: "elegan", style: "editorial / zaitun", image: "/img/elaris/cover.webp", screen: "/img/elaris/hero.webp" },
+    { id: "elaris", on: true, name: "Elaris", slug: "raka-anindya", demo: "/raka-anindya", tier: "semua", category: "elegan", style: "editorial / zaitun", image: "/img/elaris/cover.webp", screen: "/img/elaris/hero.webp" },
     { id: "rembulan", on: true, name: "Rembulan", slug: "bima-nadia", demo: "/bima-nadia", tier: "lengkap", category: "gelap", style: "langit malam / bulan", image: "/img/tema-bima-nadia-buka.webp", screen: "" },
+    { id: "nocturne", on: true, name: "Nocturne", slug: "damar-elara", demo: "/damar-elara", tier: "lengkap", category: "gelap", style: "burgundy / candlelight", image: "/img/nocturne/cover.webp", screen: "/img/nocturne/hero.webp" },
     { id: "lensa", on: true, name: "Lensa", slug: "toni-layla", demo: "/toni-layla", tier: "lengkap", category: "minimalis", style: "foto penuh / editorial", image: "/img/tema-toni-layla-buka.webp", screen: "" },
     { id: "petualang", on: true, name: "Co-op Adventure", slug: "arkasa-mentari", demo: "/arkasa-mentari", tier: "lengkap", category: "game", style: "piksel / game 16-bit", image: "/img/tema-arkasa-mentari-buka.webp", screen: "" },
     { id: "mekar-mawar", on: true, name: "Mekar Mawar", slug: "ivan-mawar", demo: "/ivan-mawar", tier: "lengkap", category: "floral", style: "cat air / mawar", image: "/img/tema-ivan-mawar-buka.webp", screen: "" },
