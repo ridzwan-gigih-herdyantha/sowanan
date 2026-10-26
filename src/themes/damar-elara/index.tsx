@@ -22,8 +22,8 @@ const vars = {
 } as CSSProperties;
 const button = "inline-flex items-center justify-center gap-2 border border-inv-gold/60 px-5 py-3 text-[10px] tracking-[.2em] text-inv-ink uppercase transition-colors hover:bg-inv-accent hover:text-white";
 
-function Frame({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mx-auto w-full max-w-[1160px] px-5 sm:px-8 ${className}`}>{children}</div>;
+function Frame({ children, className = "", style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
+  return <div className={`mx-auto w-full max-w-[1160px] px-5 sm:px-8 ${className}`} style={style}>{children}</div>;
 }
 
 function Label({ children }: { children: ReactNode }) {
@@ -103,7 +103,7 @@ function Gifts({ inv }: { inv: InvitationView }) {
 
 async function Guestbook({ inv }: { inv: InvitationView }) {
   const wishes = await getWishes(inv.slug);
-  return <section className="bg-inv-paper py-20 sm:py-28"><Frame className="max-w-[790px]"><Heading eyebrow="UCAPAN DAN DOA">Tinggalkan sepatah kata</Heading><div className="mt-10 border border-inv-line bg-inv-card p-5 sm:p-10"><Wishes slug={inv.slug} initial={wishes} variant="lined" /></div></Frame></section>;
+  return <section className="bg-inv-paper py-20 sm:py-28"><Frame className="max-w-[790px]" style={{ maxWidth: 790 }}><Heading eyebrow="UCAPAN DAN DOA">Tinggalkan sepatah kata</Heading><div className="mt-10 border border-inv-line bg-inv-card p-5 sm:p-10"><Wishes slug={inv.slug} initial={wishes} variant="lined" desktop="stack-when-empty" /></div></Frame></section>;
 }
 
 function Closing({ inv }: { inv: InvitationView }) {
