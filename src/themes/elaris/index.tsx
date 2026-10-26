@@ -104,7 +104,7 @@ function Event({ inv }: { inv: InvitationView }) {
         {inv.on.countdown && <Countdown target={inv.date} className="mx-auto mt-9 grid max-w-[460px] grid-cols-3 gap-3" cellClassName="border border-white/20 px-3 py-4 font-display text-3xl text-inv-paper [&>span:last-child]:font-body [&>span:last-child]:text-inv-gold-light" />}
         <div className="mx-auto mt-12 grid max-w-[760px] gap-4 text-left sm:grid-cols-2">{inv.events.map((e) => <article key={e.name} className="border border-white/20 p-6">
           <p className="text-[10px] tracking-[.24em] text-inv-gold-light uppercase">{e.name}</p>
-          <p className="mt-3 font-display text-3xl">{e.time}{e.until && ` && ${e.until}`}</p>
+          <p className="mt-3 font-display text-3xl">{e.time}{e.until && ` - ${e.until}`}</p>
           <p className="mt-1 text-[12px] text-white/70">{inv.tz}</p></article>)}</div>
         <div className="mx-auto mt-8 max-w-[760px] border border-white/20 p-6 text-left sm:p-8">
           <p className="text-[10px] tracking-[.24em] text-inv-gold-light uppercase">TEMPAT</p>
