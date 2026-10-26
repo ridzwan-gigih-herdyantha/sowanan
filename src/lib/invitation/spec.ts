@@ -6,6 +6,7 @@ const B = "bagas-sekar";
 const H = "hendrawan-larasati";
 const J = "danang-kinanthi";
 const S = "fadhil-nayla";
+const F = "faris-najwa";
 const E = "arya-kirana";
 const EL = "raka-anindya";
 const N = "damar-elara";
@@ -73,10 +74,10 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
 
 const person = (key: "groom" | "bride", title: string): Field[] => [
   { kind: "heading", path: `couple.${key}`, label: title },
-  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S, E, EL, N, R, L, P, M, G, T] }),
+  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S, F, E, EL, N, R, L, P, M, G, T] }),
   text(`couple.${key}.role`, "Keterangan", 40, { placeholder: key === "groom" ? "Putra dari" : "Putri dari" }),
   area(`couple.${key}.parents`, "Nama orang tua", 160, { placeholder: "Bapak ... & Ibu ..." }),
-  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S, E, EL, N, R, L, P, M, G, T], ...optional, hint: "Kosong berarti memakai foto hero." }),
+  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S, F, E, EL, N, R, L, P, M, G, T], ...optional, hint: "Kosong berarti memakai foto hero." }),
   text(`couple.${key}.flower`, "Bunga", 60, { themes: [H], ...optional }),
   text(`couple.${key}.latin`, "Nama latin bunga", 80, { themes: [H], ...optional }),
   text(`couple.${key}.aksara`, "Nama dalam aksara Jawa", 80, { themes: [J], ...optional, hint: "Diketik manual dan dicek klien. Tidak diterjemahkan otomatis." }),
@@ -102,9 +103,9 @@ export const GROUPS: Group[] = [
       media("media.hero", "Foto hero (potret)", "hero"),
       media("media.heroWide", "Foto hero lebar", "herowide", { hint: "Tampil di layar lebar." }),
       media("media.music", "Musik latar", "music", { ...optional, hint: "Kosong berarti memakai lagu bawaan tema." }),
-      area("copy.ayat", "Ayat (teks Arab)", 600, { themes: [S], ...optional, hint: "Kosong berarti memakai QS. Ar-Rum ayat 21." }),
-      area("copy.ayatArti", "Arti ayat", 600, { themes: [S], ...optional }),
-      text("copy.ayatSumber", "Sumber ayat", 60, { themes: [S], ...optional, placeholder: "QS. Ar-Rum: 21" }),
+      area("copy.ayat", "Ayat (teks Arab)", 600, { themes: [S, F], ...optional, hint: "Kosong berarti memakai QS. Ar-Rum ayat 21." }),
+      area("copy.ayatArti", "Arti ayat", 600, { themes: [S, F], ...optional }),
+      text("copy.ayatSumber", "Sumber ayat", 60, { themes: [S, F], ...optional, placeholder: "QS. Ar-Rum: 21" }),
       {
         kind: "list",
         path: "sections.specimens.items",

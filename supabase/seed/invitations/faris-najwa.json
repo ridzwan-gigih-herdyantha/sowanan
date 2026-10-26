@@ -1,0 +1,199 @@
+{
+  "slug": "faris-najwa",
+  "theme": "faris-najwa",
+  "published": true,
+  "data": {
+    "monogram": "F & N",
+    "couple": {
+      "groom": {
+        "name": "Faris",
+        "full": "Faris Akbar Pratama",
+        "role": "Putra pertama dari",
+        "parents": "Bapak Ahmad Pratama & Ibu Siti Rahmah",
+        "photo": "/img/faris-najwa/groom.webp"
+      },
+      "bride": {
+        "name": "Najwa",
+        "full": "Najwa Azzahra Putri",
+        "role": "Putri kedua dari",
+        "parents": "Bapak Yusuf Hidayat & Ibu Nur Aini",
+        "photo": "/img/faris-najwa/bride.webp"
+      }
+    },
+    "event": {
+      "start": "2027-11-21T08:00:00+07:00",
+      "end": "2027-11-21T14:00:00+07:00",
+      "timezone": "WIB",
+      "city": "Yogyakarta, DI Yogyakarta",
+      "venue": {
+        "name": "Masjid Gedhe Kauman",
+        "address": "Jl. Kauman, Ngupasan, Gondomanan, Kota Yogyakarta, DI Yogyakarta",
+        "mapUrl": "https://maps.google.com/?q=Masjid+Gedhe+Kauman+Yogyakarta"
+      },
+      "schedule": [
+        {
+          "time": "08.00",
+          "name": "Akad Nikah",
+          "until": "09.30"
+        },
+        {
+          "time": "11.00",
+          "name": "Walimatul ‘Ursy",
+          "until": "14.00"
+        }
+      ],
+      "rsvpDeadline": "10 November 2027"
+    },
+    "copy": {
+      "honor": "Dengan memohon rahmat dan ridha Allah, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan mendoakan pernikahan kami.",
+      "credit": "Foto oleh Casper Somia di Pexels",
+      "tagline": "Dengan ridha Allah, dua hati menapaki satu ibadah.",
+      "ayat": "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً",
+      "ayatArti": "Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu agar kamu merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.",
+      "ayatSumber": "QS. Ar-Rum: 21"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat dan ridha Allah, kami mengundang Anda ke pernikahan Faris & Najwa di Yogyakarta.",
+      "ogDescription": "Assalamu’alaikum. Dengan izin Allah, kami akan menikah."
+    },
+    "media": {
+      "hero": "/img/faris-najwa/hero.webp",
+      "heroWide": "/img/faris-najwa/hero-wide.webp",
+      "og": "/img/faris-najwa/og.jpg",
+      "music": "",
+      "venue": "/img/faris-najwa/venue.webp",
+      "closing": "/img/faris-najwa/closing.webp"
+    },
+    "sections": {
+      "couple": {
+        "enabled": true
+      },
+      "story": {
+        "enabled": true,
+        "items": [
+          {
+            "title": "Satu pertemuan",
+            "date": "09.2021",
+            "image": "/img/faris-najwa/gallery-1.webp",
+            "short": "Kami berkenalan dalam kegiatan sosial masjid.",
+            "long": "Kami berkenalan dalam kegiatan sosial masjid. Semoga setiap langkah menjadi jalan kebaikan dan keberkahan."
+          },
+          {
+            "title": "Menjaga niat",
+            "date": "03.2025",
+            "image": "/img/faris-najwa/gallery-2.webp",
+            "short": "Dengan pendampingan keluarga, kami saling mengenal lebih dekat.",
+            "long": "Dengan pendampingan keluarga, kami saling mengenal lebih dekat. Semoga setiap langkah menjadi jalan kebaikan dan keberkahan."
+          },
+          {
+            "title": "Meminta restu",
+            "date": "02.2026",
+            "image": "/img/faris-najwa/gallery-3.webp",
+            "short": "Keluarga bertemu dan menyatukan doa.",
+            "long": "Keluarga bertemu dan menyatukan doa. Semoga setiap langkah menjadi jalan kebaikan dan keberkahan."
+          },
+          {
+            "title": "Menuju akad",
+            "date": "11.2027",
+            "image": "/img/faris-najwa/gallery-4.webp",
+            "short": "Bismillah, kami melangkah menuju ibadah bersama.",
+            "long": "Bismillah, kami melangkah menuju ibadah bersama. Semoga setiap langkah menjadi jalan kebaikan dan keberkahan."
+          }
+        ]
+      },
+      "event": {
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "gallery": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "/img/faris-najwa/gallery-1.webp",
+            "w": 1600,
+            "h": 1150,
+            "alt": "Faris dan Najwa dalam sesi foto pernikahan, potret 1",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/faris-najwa/gallery-2.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Faris dan Najwa dalam sesi foto pernikahan, potret 2",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/faris-najwa/gallery-3.webp",
+            "w": 1100,
+            "h": 1400,
+            "alt": "Faris dan Najwa dalam sesi foto pernikahan, potret 3",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/faris-najwa/gallery-4.webp",
+            "w": 1100,
+            "h": 1400,
+            "alt": "Faris dan Najwa dalam sesi foto pernikahan, potret 4",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/faris-najwa/gallery-5.webp",
+            "w": 1500,
+            "h": 950,
+            "alt": "Faris dan Najwa dalam sesi foto pernikahan, potret 5",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/faris-najwa/gallery-6.webp",
+            "w": 1200,
+            "h": 1350,
+            "alt": "Faris dan Najwa dalam sesi foto pernikahan, potret 6",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/faris-najwa/gallery-7.webp",
+            "w": 1800,
+            "h": 1300,
+            "alt": "Faris dan Najwa dalam sesi foto pernikahan, potret 7",
+            "caption": "",
+            "no": ""
+          }
+        ]
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "gifts": {
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Syariah Indonesia",
+            "number": "2344622425",
+            "holder": "Faris Akbar Pratama"
+          },
+          {
+            "bank": "Bank Mandiri",
+            "number": "3456789012",
+            "holder": "Najwa Azzahra Putri"
+          }
+        ],
+        "qris": "",
+        "note": "Nomor rekening di atas adalah contoh."
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      }
+    }
+  }
+}

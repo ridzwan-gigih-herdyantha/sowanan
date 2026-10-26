@@ -32,6 +32,7 @@ import { defaultFonts as galihArdila } from "./galih-ardila/fonts";
 import { defaultFonts as bonarAnggi } from "./bonar-anggi/fonts";
 import { defaultFonts as elaris } from "./raka-anindya/fonts";
 import { defaultFonts as nocturne } from "./damar-elara/fonts";
+import { defaultFonts as mawaddah } from "./faris-najwa/fonts";
 
 // Font pilihan add-on ganti font. Di-host lewat next/font tanpa preload, jadi hanya diunduh bila dipakai.
 // Argumen font loader harus literal, jadi setiap pemanggilan ditulis lengkap.
@@ -144,6 +145,11 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
     { id: "", name: "Cormorant & Jost", ...elaris },
     { id: "tegas", name: "Cinzel & DM Sans", display: cinzel, body: dmSans },
     { id: "romantis", name: "Playfair & Work Sans", display: playfair, body: workSans },
+    { id: "klasik", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
+  ],
+  "faris-najwa": [
+    { id: "", name: "Cormorant & Figtree", ...mawaddah },
+    { id: "anggun", name: "Playfair & DM Sans", display: playfair, body: dmSans },
     { id: "klasik", name: "EB Garamond & Karla", display: ebGaramond, body: karla },
   ],
   "damar-elara": [
