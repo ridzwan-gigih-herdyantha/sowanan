@@ -24,7 +24,7 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-3 right-3 flex size-10 items-center justify-center rounded-full bg-inv-night/80 text-inv-paper"
+        className="absolute top-3 right-3 z-20 flex size-11 items-center justify-center rounded-full border border-[#d9cbbb] bg-[#f3e9df] text-[#171012] shadow-[0_4px_18px_rgba(0,0,0,.5)] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         aria-label="Tutup"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
