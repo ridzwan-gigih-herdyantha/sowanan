@@ -4,6 +4,7 @@ import { Container, SectionSub, SectionTitle, Sprig, cx, reveal, sectionPad } fr
 import { fill, HOME_THEMES, themeScreen, type Settings, type ThemeEntry } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { OfferCard } from "./offer-card";
+import { Corner } from "@/components/invitation/sutra/ornaments";
 
 // Warna latar kartu mengikuti nuansa tiap tema.
 const CARD_BG: Record<string, string> = {
@@ -13,6 +14,7 @@ const CARD_BG: Record<string, string> = {
   "danang-kinanthi": "bg-[#eadfc8]",
   "fadhil-nayla": "bg-[#e3e0cc]",
   "arya-kirana": "bg-[#ece2cf]",
+  "raka-anindya": "bg-[#e9e0d2]",
   "bima-nadia": "bg-[#c9ccd6]",
   "toni-layla": "bg-[#dcd6cc]",
   "arkasa-mentari": "bg-[#f3d9c4]",
@@ -22,11 +24,41 @@ const CARD_BG: Record<string, string> = {
 };
 
 // Bingkai ponsel berisi tangkapan layar tema.
-function Phone({ src, alt, className }: { src: string; alt: string; className: string }) {
+function Phone({ src, alt, className, elaris = false, elarisCover = false }: { src: string; alt: string; className: string; elaris?: boolean; elarisCover?: boolean }) {
   return (
     <div className={cx("aspect-[390/844] rounded-[20px] bg-ink p-[4px] shadow-[0_14px_30px_rgba(31,26,23,.22)] transition-transform duration-300 motion-reduce:transform-none", className)}>
-      <div className="relative size-full overflow-hidden rounded-[16px] bg-blush">
-        <Image src={mediaUrl(src)} alt={alt} fill loading="eager" sizes="(min-width: 640px) 170px, 34vw" className="object-cover object-top" />
+      <div className={cx("relative size-full overflow-hidden rounded-[16px] bg-blush", elaris && "flex flex-col bg-[#f5f2e9]", elarisCover && "bg-[#fbf8f0] p-[5px]")}>
+        {elarisCover ? (
+          <div className="relative flex size-full flex-col items-center border border-[#b49a63]/80 px-1.5 text-center text-[#493b23]">
+            <div aria-hidden="true" className="absolute inset-[3px] border border-[#b49a63]/35" />
+            {(["tl", "tr", "bl", "br"] as const).map((at, i) => <Corner key={at} at={at} size="size-5 sm:size-8" className="m-1.5 text-[#b49a63]" order={i} />)}
+            <span className="relative mt-[24%] text-[5px] tracking-[.28em] uppercase">Undangan Pernikahan</span>
+            <span className="relative mt-[15%] grid size-[27%] place-items-center rounded-full border border-[#b49a63] font-serif text-[10px] text-[#493b23] shadow-[inset_0_0_0_3px_#fbf8f0,inset_0_0_0_4px_#b49a63]/45">R<span className="text-[7px]">&amp;</span>A</span>
+            <span className="relative mt-[12%] text-[4px] tracking-[.24em] text-[#9a8357] uppercase">Dengan penuh syukur</span>
+            <span className="relative mt-[5%] font-serif text-[clamp(10px,1.55vw,16px)] leading-[1.15] italic">Raka &amp; Anindya</span>
+            <span aria-hidden="true" className="relative mt-[10%] h-px w-[58%] bg-[#b49a63]/70" />
+            <span className="relative mt-[8%] text-[4px] tracking-[.18em] uppercase">Minggu · 14 Februari 2027</span>
+            <span className="relative mt-[4%] max-w-[20ch] font-serif text-[6px] leading-[1.35]">Taman Sari · Sleman</span>
+            <span className="relative mt-auto mb-[18%] border border-[#b49a63]/75 px-2 py-1 text-[4px] tracking-[.2em] uppercase">Buka Undangan</span>
+          </div>
+        ) : elaris ? (
+          <>
+            <div className="relative h-[54%] shrink-0 overflow-hidden">
+              <Image src={mediaUrl(src)} alt={alt} fill loading="eager" sizes="(min-width: 640px) 170px, 34vw" className="object-cover object-[50%_32%]" />
+            </div>
+            <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center border-t border-[#b49a63]/55 px-1.5 text-center text-[#263d2a]">
+              <span aria-hidden="true" className="absolute inset-[5px] border border-[#b49a63]/35" />
+              <span className="relative text-[5px] tracking-[.22em] uppercase">Undangan Pernikahan</span>
+              <span className="relative mt-[7%] font-serif text-[clamp(8px,1.35vw,14px)] leading-none">Raka &amp; Anindya</span>
+              <span aria-hidden="true" className="relative mt-[7%] h-px w-1/2 bg-[#b49a63]/70" />
+              <span className="relative mt-[6%] max-w-[18ch] font-serif text-[clamp(5px,.72vw,8px)] italic leading-[1.5]">Dengan penuh syukur, kami mengundang Anda untuk merayakan hari bahagia kami.</span>
+              <span className="relative mt-[7%] text-[4px] tracking-[.18em] uppercase">Minggu · 14 Februari 2027</span>
+              <span className="relative mt-[4%] text-[4px] tracking-[.14em] uppercase">Sleman · Yogyakarta</span>
+            </div>
+          </>
+        ) : (
+          <Image src={mediaUrl(src)} alt={alt} fill loading="eager" sizes="(min-width: 640px) 170px, 34vw" className="object-cover object-top" />
+        )}
       </div>
     </div>
   );
@@ -51,8 +83,8 @@ export function ThemeCard({ theme, index, waHref, animate = true }: { theme: The
       >
         {theme.image ? (
           <>
-            <Phone src={themeScreen(theme)} alt="" className="absolute top-1/2 right-[5%] w-[45%] -translate-y-[44%] rotate-[4deg] group-hover:translate-x-1 group-hover:rotate-[6deg]" />
-            <Phone src={theme.image} alt={`Contoh undangan tema ${theme.name}`} className="absolute top-1/2 left-[5%] z-10 w-[50%] -translate-y-[54%] -rotate-[3deg] group-hover:-translate-y-[56%]" />
+            <Phone src={themeScreen(theme)} alt="" elaris={theme.slug === "raka-anindya"} className="absolute top-1/2 right-[5%] w-[45%] -translate-y-[44%] rotate-[4deg] group-hover:translate-x-1 group-hover:rotate-[6deg]" />
+            <Phone src={theme.image} alt={`Contoh undangan tema ${theme.name}`} elarisCover={theme.slug === "raka-anindya"} className="absolute top-1/2 left-[5%] z-10 w-[50%] -translate-y-[54%] -rotate-[3deg] group-hover:-translate-y-[56%]" />
           </>
         ) : (
           <span>{theme.name}</span>
