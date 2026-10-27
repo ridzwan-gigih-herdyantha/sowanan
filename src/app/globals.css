@@ -259,6 +259,14 @@
 .mawaddah-door {
   transition: visibility 0s linear 1s;
 }
+.nocturne-door {
+  transition: opacity 0.75s ease 0.08s, visibility 0s linear 0.85s;
+}
+[data-inv-state="open"] .nocturne-door {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
 .mawaddah-door__page {
   transform-origin: left center;
   transform-style: preserve-3d;
