@@ -16,7 +16,7 @@ import { hijri } from "@/lib/hijri";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { googleCalendarUrl } from "@/lib/calendar";
 import { themeFonts } from "./fonts";
-import { Arch, Hias, Pattern, Pita } from "@/components/invitation/sakinah/ornaments";
+import { Arch, Hias, Pattern, Pita, star8 } from "@/components/invitation/sakinah/ornaments";
 
 const vars = {
   "--inv-display": "var(--font-fw-display), Georgia, serif",
@@ -50,8 +50,8 @@ function IslamicMedallion({ light = false, className = "" }: { light?: boolean; 
   return <svg aria-hidden="true" viewBox="0 0 180 180" fill="none" className={`pointer-events-none absolute ${light ? "text-inv-gold-light" : "text-inv-gold"} ${className}`}>
     <circle cx="90" cy="90" r="78" stroke="currentColor" strokeOpacity=".55" />
     <circle cx="90" cy="90" r="66" stroke="currentColor" strokeOpacity=".42" strokeDasharray="2 4" />
-    <path d="m90 18 16 31 34-11-18 31 25 25-36 1-11 34-10-34-36-1 25-25-18-31 34 11 15-31Z" stroke="currentColor" strokeOpacity=".7" />
-    <path d="m90 42 11 22 24-8-13 22 18 18-25 1-7 24-8-24-25-1 18-18-13-22 24 8 11-22Z" stroke="currentColor" strokeOpacity=".62" />
+    <path d={star8(90, 90, 72)} stroke="currentColor" strokeOpacity=".7" />
+    <path d={star8(90, 90, 52, Math.PI / 8)} stroke="currentColor" strokeOpacity=".62" />
     <circle cx="90" cy="90" r="5" fill="currentColor" fillOpacity=".75" />
     <path d="M90 3v14m0 146v14M3 90h14m146 0h14M28 28l10 10m104 104 10 10m0-124-10 10M38 142l-10 10" stroke="currentColor" strokeOpacity=".7" />
   </svg>;
