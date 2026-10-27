@@ -24,11 +24,25 @@ const CARD_BG: Record<string, string> = {
 };
 
 // Bingkai ponsel berisi tangkapan layar tema.
-function Phone({ src, alt, className, elaris = false, elarisCover = false }: { src: string; alt: string; className: string; elaris?: boolean; elarisCover?: boolean }) {
+function Phone({ src, alt, className, elaris = false, elarisCover = false, mawaddahDoor = false }: { src: string; alt: string; className: string; elaris?: boolean; elarisCover?: boolean; mawaddahDoor?: boolean }) {
   return (
     <div className={cx("aspect-[390/844] rounded-[20px] bg-ink p-[4px] shadow-[0_14px_30px_rgba(31,26,23,.22)] transition-transform duration-300 motion-reduce:transform-none", className)}>
-      <div className={cx("relative size-full overflow-hidden rounded-[16px] bg-blush", elaris && "flex flex-col bg-[#f5f2e9]", elarisCover && "bg-[#fbf8f0] p-[5px]")}>
-        {elarisCover ? (
+      <div className={cx("relative size-full overflow-hidden rounded-[16px] bg-blush", elaris && "flex flex-col bg-[#f5f2e9]", elarisCover && "bg-[#fbf8f0] p-[5px]", mawaddahDoor && "bg-[#143e42]")}>
+        {mawaddahDoor ? (
+          <div className="relative size-full overflow-hidden rounded-[16px] bg-[#143e42] text-center text-[#f6e7c7]">
+            <div aria-hidden="true" className="absolute inset-0 opacity-50" style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent 0 17px, rgba(216,188,134,.16) 18px 19px), radial-gradient(circle, rgba(216,188,134,.12) 1px, transparent 1.5px)", backgroundSize: "auto, 18px 18px" }} />
+            <div aria-hidden="true" className="absolute inset-[4%] border border-[#55a0a0]/65" />
+            <div aria-hidden="true" className="absolute inset-[6%] border border-[#55a0a0]/30" />
+            <div aria-hidden="true" className="absolute left-1/2 top-[50%] aspect-square w-[86%] -translate-x-1/2 -translate-y-1/2 rotate-45 border border-[#b96f4e]/55" />
+            <div aria-hidden="true" className="absolute left-1/2 top-[50%] aspect-square w-[62%] -translate-x-1/2 -translate-y-1/2 rotate-45 border border-[#55a0a0]/55" />
+            <div aria-hidden="true" className="absolute left-1/2 top-[50%] aspect-square w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#55a0a0]/20" />
+            <div aria-hidden="true" className="absolute left-1/2 top-[50%] aspect-square w-[54%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#55a0a0]/25" />
+            <p className="absolute left-0 right-0 top-[31%] text-[5px] tracking-[.25em] text-[#f6e7c7] uppercase">Mawaddah · Walimatul &lsquo;Ursy</p>
+            <span className="absolute left-1/2 top-[50%] grid size-[28%] -translate-x-1/2 -translate-y-1/2 place-items-center border border-[#55a0a0]/60 font-serif text-[clamp(18px,2.2vw,28px)] tracking-[.12em] text-[#f6e7c7]">F <span className="text-[.6em]">&amp;</span> N</span>
+            <p className="absolute left-1/2 top-[68%] w-[72%] -translate-x-1/2 font-serif text-[clamp(8px,1.1vw,12px)] italic leading-snug text-[#f6e7c7]/90">Sebuah ikrar, dalam kasih dan rahmat-Nya.</p>
+            <p className="absolute left-0 right-0 top-[77%] text-[5px] tracking-[.18em] text-[#f6e7c7]/85 uppercase">22 Jumadil Akhir 1449 H</p>
+          </div>
+        ) : elarisCover ? (
           <div className="relative flex size-full flex-col items-center border border-[#b49a63]/80 px-1.5 text-center text-[#493b23]">
             <div aria-hidden="true" className="absolute inset-[3px] border border-[#b49a63]/35" />
             {(["tl", "tr", "bl", "br"] as const).map((at, i) => <Corner key={at} at={at} size="size-5 sm:size-8" className="m-1.5 text-[#b49a63]" order={i} />)}
@@ -83,8 +97,8 @@ export function ThemeCard({ theme, index, waHref, animate = true }: { theme: The
       >
         {theme.image ? (
           <>
-            <Phone src={themeScreen(theme)} alt="" elaris={theme.slug === "raka-anindya"} className="absolute top-1/2 right-[5%] w-[45%] -translate-y-[44%] rotate-[4deg] group-hover:translate-x-1 group-hover:rotate-[6deg]" />
-            <Phone src={theme.image} alt={`Contoh undangan tema ${theme.name}`} elarisCover={theme.slug === "raka-anindya"} className="absolute top-1/2 left-[5%] z-10 w-[50%] -translate-y-[54%] -rotate-[3deg] group-hover:-translate-y-[56%]" />
+            <Phone src={theme.slug === "faris-najwa" ? theme.image : themeScreen(theme)} alt={theme.slug === "faris-najwa" ? `Tampilan undangan setelah dibuka: foto dan nama pasangan ${theme.name}` : ""} elaris={theme.slug === "raka-anindya"} className="absolute top-1/2 right-[5%] w-[45%] -translate-y-[44%] rotate-[4deg] group-hover:translate-x-1 group-hover:rotate-[6deg]" />
+            <Phone src={theme.image} alt={`Cover pembuka tema ${theme.name}`} elarisCover={theme.slug === "raka-anindya"} mawaddahDoor={theme.slug === "faris-najwa"} className="absolute top-1/2 left-[5%] z-10 w-[50%] -translate-y-[54%] -rotate-[3deg] group-hover:-translate-y-[56%]" />
           </>
         ) : (
           <span>{theme.name}</span>
