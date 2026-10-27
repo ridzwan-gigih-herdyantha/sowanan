@@ -16,6 +16,7 @@ import { hijri } from "@/lib/hijri";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { googleCalendarUrl } from "@/lib/calendar";
 import { themeFonts } from "./fonts";
+import { Arch } from "@/components/invitation/sakinah/ornaments";
 
 const vars = {
   "--inv-display": "var(--font-fw-display), Georgia, serif",
@@ -131,14 +132,21 @@ function Couple({ inv }: { inv: InvitationView }) {
 function Story({ inv }: { inv: InvitationView }) {
   if (!inv.story.length) return null;
   return <section className="relative isolate overflow-hidden bg-inv-paper py-20 sm:py-28">
-    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.1]" /><IslamicCorners />
-    <Frame className="relative max-w-[900px]"><Heading arabic="رِحْلَتُنَا" kicker="LANGKAH-LANGKAH KECIL">Menuju hari yang dijanjikan</Heading>
-      <ol className="relative mx-auto max-w-[820px]">{inv.story.map((item, i) => <li key={`${item.title}-${i}`} className="relative grid gap-4 border-b border-inv-line py-8 first:border-t sm:grid-cols-[110px_1fr] sm:gap-8 sm:py-10">
-        <div className="flex items-center gap-3 sm:block"><span className="font-display text-3xl text-inv-gold/75">{String(i + 1).padStart(2, "0")}</span><span className="h-px w-8 bg-inv-gold/55 sm:my-3 sm:block sm:w-10" /><p className="text-[9px] tracking-[.16em] text-inv-accent uppercase">{item.date}</p></div>
-        <div className={item.image ? "grid gap-5 sm:grid-cols-[1fr_220px] sm:items-center sm:gap-8" : ""}><div><p className="text-[9px] tracking-[.24em] text-inv-gold uppercase">MAWADDAH · CATATAN {String(i + 1).padStart(2, "0")}</p><h3 className="mt-2 font-display text-[clamp(27px,4vw,38px)] leading-tight text-inv-accent">{item.title}</h3><p className="mt-3 max-w-[58ch] text-[14px] leading-[1.8] text-inv-ink/70">{item.long || item.short}</p></div>
-          {item.image && <div className="relative aspect-[4/3] overflow-hidden border border-inv-gold/45 bg-inv-wash p-1"><div className="relative size-full overflow-hidden"><Image src={item.image} alt={item.title} fill sizes="(min-width: 640px) 220px, 90vw" className="object-cover" /></div></div>}
-        </div>
-      </li>)}</ol>
+    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.08]" /><IslamicCorners />
+    <Frame className="relative max-w-[1160px]"><Heading arabic="رِحْلَةُ الْمَوَدَّةِ" kicker="KISAH YANG KAMI SYUKURI">Menuju hari yang dijanjikan</Heading>
+      <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
+        {inv.story.map((item, i) => <article key={`${item.title}-${i}`} className="w-[76vw] max-w-[310px] shrink-0 snap-center border border-inv-gold/45 bg-inv-wash p-2 shadow-[0_10px_28px_rgba(22,62,67,.08)] sm:w-auto sm:max-w-none sm:p-2.5">
+          <Arch className="aspect-[4/3.5] w-full" line="var(--sk-emas)" gap="var(--inv-wash)">
+            {item.image ? <Image src={item.image} alt={item.title} fill sizes="(min-width: 1024px) 250px, 76vw" className="object-cover" /> : <div className="mw-geometry absolute inset-0 bg-inv-accent" />}
+          </Arch>
+          <div className="px-2 pb-3 pt-3 text-center sm:px-2.5 sm:pb-4">
+            <div className="flex items-center justify-between gap-2"><span className="text-[9px] tracking-[.17em] text-inv-gold uppercase">BAB {String(i + 1).padStart(2, "0")}</span><span className="border-b border-inv-gold/50 pb-1 text-[9px] tracking-[.12em] text-inv-accent">{item.date}</span></div>
+            <MawaddahDivider className="mt-3 w-24 gap-2" />
+            <h3 className="mt-3 font-display text-[clamp(22px,2vw,27px)] leading-tight text-inv-accent">{item.title}</h3>
+            <p className="mx-auto mt-2 max-w-[30ch] text-[12px] leading-[1.7] text-inv-ink/70">{item.short || item.long}</p>
+          </div>
+        </article>)}
+      </div>
     </Frame>
   </section>;
 }
@@ -167,7 +175,7 @@ function Event({ inv }: { inv: InvitationView }) {
 
 function GallerySection({ inv }: { inv: InvitationView }) {
   if (!inv.gallery.length) return null;
-  return <section className="relative isolate overflow-hidden bg-inv-wash py-20 sm:py-28"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.14]" /><IslamicCorners /><Frame><Heading arabic="ذِكْرَيَاتُنَا" kicker="POTRET KASIH">Ruang kecil untuk kenangan</Heading><div className="relative mx-auto max-w-[1040px] border border-inv-gold/70 bg-inv-paper/60 p-2 shadow-[0_18px_50px_rgba(22,62,67,.08)] sm:p-4"><IslamicCorners /><div className="relative border border-inv-line bg-inv-paper p-4 sm:p-7"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.12]" /><div className="relative"><Gallery photos={inv.gallery} stamp={inv.dateShort} variant="grid" /></div></div></div></Frame></section>;
+  return <section className="relative isolate overflow-hidden bg-inv-wash py-20 sm:py-28"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.1]" /><IslamicCorners /><Frame className="relative max-w-[1120px]"><Heading arabic="ذِكْرَيَاتُنَا" kicker="POTRET KASIH">Ruang kecil untuk kenangan</Heading><div className="relative"><Gallery photos={inv.gallery} variant="mawaddah" /></div></Frame></section>;
 }
 
 function RsvpSection({ inv }: { inv: InvitationView }) {
