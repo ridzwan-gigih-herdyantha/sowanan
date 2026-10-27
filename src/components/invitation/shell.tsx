@@ -17,10 +17,11 @@ import { MulaiDoor, type MulaiProps } from "./petualang/door";
 import { MekarDoor, type MekarProps } from "./mekar/door";
 import { TabloidDoor, type TabloidProps } from "./tabloid/door";
 import { UlosDoor, type UlosProps } from "./horas/door";
+import { ElarisDoor, type ElarisDoorProps } from "./elaris-door";
 
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
-const GuestContext = createContext<GuestCtx>({ guest: "", setGuest: () => {} });
+const GuestContext = createContext<GuestCtx>({ guest: "", setGuest: () => { } });
 export const useGuest = () => useContext(GuestContext);
 
 // Undangan yang sudah dibekukan menjadi arsip: formulir RSVP dan ucapan ditutup, ucapan yang ada tetap tampil.
@@ -44,7 +45,7 @@ export function InvitationSlug({ slug, children }: { slug: string; children: Rea
   return <SlugContext.Provider value={slug}>{children}</SlugContext.Provider>;
 }
 
-const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door,.hr-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
+const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.elaris-door,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door,.hr-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
 
 // Pratinjau untuk mengatur foto di editor langsung menampilkan isi undangan, tanpa loader, pembuka, dan musik.
 const SkipDoorContext = createContext(false);
@@ -62,7 +63,7 @@ export function GuestNames({ allowed, children }: { allowed: boolean; children: 
 // Saat video atau lagu bagian tambahan diputar, media lain berhenti dan musik latar meredup lalu berhenti.
 // Setelah semuanya berhenti, musik latar menyala lagi pelan-pelan kalau tadinya menyala.
 type MediaCtx = { claim: (id: string, stop: () => void) => void; release: (id: string) => void };
-const MediaContext = createContext<MediaCtx>({ claim: () => {}, release: () => {} });
+const MediaContext = createContext<MediaCtx>({ claim: () => { }, release: () => { } });
 export const useInvitationMedia = () => useContext(MediaContext);
 
 // Detik.
@@ -92,7 +93,7 @@ function ramp({ ctx, gain }: Fader, to: number, seconds: number) {
   gain.gain.linearRampToValueAtTime(to, t + Math.max(0.01, seconds));
 }
 
-const noop = () => () => {};
+const noop = () => () => { };
 function readGuestParam() {
   const to = new URLSearchParams(window.location.search).get("to");
   return to ? to.trim().slice(0, GUEST_NAME_MAX) : "";
@@ -102,6 +103,7 @@ const readStoredGuest = () => recall(GUEST_KEY);
 const storeGuest = (name: string) => remember(GUEST_KEY, name);
 
 type Door =
+  | ({ kind: "elaris" } & Omit<ElarisDoorProps, "invited" | "open" | "onOpen">)
   | { kind: "seal"; couple: string; monogram: string; seal: string }
   | { kind: "walls"; groom: string; bride: string; date: string }
   | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string }
@@ -433,8 +435,9 @@ export function InvitationShell({ door, music, synth, className, style, children
           {door.kind === "tabloid" && <TabloidDoor groom={door.groom} bride={door.bride} date={door.date} photo={door.photo} frame={door.frame} invited={invited} onOpen={openInvitation} />}
 
           {door.kind === "ulos" && <UlosDoor groom={door.groom} bride={door.bride} date={door.date} invited={invited} onOpen={openInvitation} />}
+          {door.kind === "elaris" && <ElarisDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
 
-          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" ? null : door.kind === "seal" ? (
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" || door.kind === "elaris" ? null : door.kind === "seal" ? (
             <div
               className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
               aria-hidden={open}
