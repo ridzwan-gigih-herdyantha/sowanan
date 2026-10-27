@@ -18,6 +18,7 @@ import { MekarDoor, type MekarProps } from "./mekar/door";
 import { TabloidDoor, type TabloidProps } from "./tabloid/door";
 import { UlosDoor, type UlosProps } from "./horas/door";
 import { ElarisDoor, type ElarisDoorProps } from "./elaris-door";
+import { MawaddahDoor, type MawaddahDoorProps } from "./mawaddah-door";
 
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
@@ -45,7 +46,7 @@ export function InvitationSlug({ slug, children }: { slug: string; children: Rea
   return <SlugContext.Provider value={slug}>{children}</SlugContext.Provider>;
 }
 
-const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.elaris-door,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door,.hr-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
+const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.elaris-door,.mawaddah-door,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door,.hr-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
 
 // Pratinjau untuk mengatur foto di editor langsung menampilkan isi undangan, tanpa loader, pembuka, dan musik.
 const SkipDoorContext = createContext(false);
@@ -103,6 +104,7 @@ const readStoredGuest = () => recall(GUEST_KEY);
 const storeGuest = (name: string) => remember(GUEST_KEY, name);
 
 type Door =
+  | ({ kind: "mawaddah" } & Omit<MawaddahDoorProps, "invited" | "open" | "onOpen">)
   | ({ kind: "elaris" } & Omit<ElarisDoorProps, "invited" | "open" | "onOpen">)
   | { kind: "seal"; couple: string; monogram: string; seal: string }
   | { kind: "walls"; groom: string; bride: string; date: string }
@@ -436,8 +438,9 @@ export function InvitationShell({ door, music, synth, className, style, children
 
           {door.kind === "ulos" && <UlosDoor groom={door.groom} bride={door.bride} date={door.date} invited={invited} onOpen={openInvitation} />}
           {door.kind === "elaris" && <ElarisDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
+          {door.kind === "mawaddah" && <MawaddahDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
 
-          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" || door.kind === "elaris" ? null : door.kind === "seal" ? (
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" || door.kind === "elaris" || door.kind === "mawaddah" ? null : door.kind === "seal" ? (
             <div
               className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
               aria-hidden={open}

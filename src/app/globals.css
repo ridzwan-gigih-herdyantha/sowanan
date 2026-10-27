@@ -256,6 +256,30 @@
   opacity: 0;
 }
 
+.mawaddah-door {
+  transition: visibility 0s linear 1s;
+}
+.mawaddah-door__page {
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 0.95s cubic-bezier(0.68, 0, 0.25, 1), opacity 0.5s ease 0.55s;
+  will-change: transform, opacity;
+}
+.mw-geometry {
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent 0 24%, color-mix(in srgb, var(--inv-gold-light) 13%, transparent) 24.2% 24.5%, transparent 24.8% 39%, color-mix(in srgb, var(--inv-gold-light) 10%, transparent) 39.2% 39.5%, transparent 39.8%),
+    repeating-linear-gradient(45deg, transparent 0 26px, color-mix(in srgb, var(--inv-gold-light) 5%, transparent) 27px 28px);
+}
+[data-inv-state="open"] .mawaddah-door {
+  visibility: hidden;
+  pointer-events: none;
+}
+[data-inv-state="open"] .mawaddah-door__page {
+  transform: rotateY(-100deg);
+  opacity: 0;
+}
+
 .inv-enter {
   opacity: 0;
   transform: translateY(24px);
@@ -274,9 +298,11 @@
   .inv-door,
   .inv-seal,
   .elaris-door,
+  .mawaddah-door,
   .elaris-door__ground,
   .elaris-door__wing,
   .elaris-door__card,
+  .mawaddah-door__page,
   .inv-enter {
     transition: none;
   }

@@ -20,9 +20,9 @@ const vars = (c: Mawaddah): Vars => ({
 
 export const palette: ThemePalette = {
   presets: [
-    { id: "zamrud", name: "Zamrud & Gading", vars: vars({ paper: "#F5F1E7", wash: "#FCFAF4", sand: "#E9E2D1", night: "#173C32", night2: "#294C3F", accent: "#2F6653", ink: "#202C27", line: "#D9D1BD", gold: "#A7834F", glow: "#E9D8AF" }) },
-    { id: "pirus", name: "Pirus Safir", vars: vars({ paper: "#F1F3ED", wash: "#FBFCF8", sand: "#E0E9E3", night: "#183B43", night2: "#244D51", accent: "#2C6970", ink: "#1D2C2C", line: "#CCD8D2", gold: "#B39157", glow: "#E9D9B5" }) },
-    { id: "mawar", name: "Mawar Gurun", vars: vars({ paper: "#F6F0E8", wash: "#FCF8F2", sand: "#EBDDD2", night: "#51343A", night2: "#61464A", accent: "#86525C", ink: "#302528", line: "#DCCBC2", gold: "#AD875B", glow: "#F0DDB8" }) },
+    { id: "zamrud", name: "Laguna & Tembaga", vars: vars({ paper: "#F4EEE2", wash: "#FCF9F2", sand: "#E7D8C4", night: "#163E43", night2: "#24565A", accent: "#397477", ink: "#243232", line: "#D8C8B2", gold: "#B96F4E", glow: "#EBC8A5" }) },
+    { id: "pirus", name: "Safir & Pasir", vars: vars({ paper: "#F0F0E9", wash: "#FAFAF5", sand: "#DDE3DF", night: "#20374A", night2: "#304E60", accent: "#4A7882", ink: "#202B32", line: "#CBD4D2", gold: "#B97858", glow: "#E8CEB2" }) },
+    { id: "mawar", name: "Mawar Bata", vars: vars({ paper: "#F4ECE6", wash: "#FBF7F2", sand: "#E9D8CF", night: "#493139", night2: "#604047", accent: "#925E66", ink: "#30272A", line: "#DCC8BE", gold: "#B77859", glow: "#EBCBB0" }) },
   ],
   derive: ({ paper, accent, ink }) => vars({
     paper, ink, accent,
@@ -38,11 +38,11 @@ export const palette: ThemePalette = {
     { key: "--inv-paper", label: "Latar" },
     { key: "--inv-wash", label: "Kertas terang" },
     { key: "--sk-pasir", label: "Pasir" },
-    { key: "--inv-accent", label: "Aksen zamrud" },
+    { key: "--inv-accent", label: "Aksen teal" },
     { key: "--inv-ink", label: "Teks" },
     { key: "--inv-night", label: "Bagian gelap" },
     { key: "--sk-night2", label: "Hijau kedua" },
-    { key: "--sk-emas", label: "Emas" },
+    { key: "--sk-emas", label: "Tembaga" },
     { key: "--inv-gold-light", label: "Emas terang" },
     { key: "--inv-line", label: "Garis" },
   ],
