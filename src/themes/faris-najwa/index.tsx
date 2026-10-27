@@ -16,7 +16,7 @@ import { hijri } from "@/lib/hijri";
 import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { googleCalendarUrl } from "@/lib/calendar";
 import { themeFonts } from "./fonts";
-import { Arch } from "@/components/invitation/sakinah/ornaments";
+import { Arch, Hias, Pattern, Pita } from "@/components/invitation/sakinah/ornaments";
 
 const vars = {
   "--inv-display": "var(--font-fw-display), Georgia, serif",
@@ -43,23 +43,49 @@ function Heading({ kicker, arabic, children, light = false }: { kicker: string; 
 }
 
 function MawaddahDivider({ light = false, className = "" }: { light?: boolean; className?: string }) {
-  return <div aria-hidden="true" className={`mx-auto flex w-48 items-center gap-3 ${light ? "text-inv-gold-light" : "text-inv-gold"} ${className}`}><span className="h-px flex-1 bg-current/70" /><svg viewBox="0 0 32 32" className="size-5 shrink-0" fill="none"><path d="M16 1 19.8 12.2 31 16l-11.2 3.8L16 31l-3.8-11.2L1 16l11.2-3.8L16 1Z" stroke="currentColor"/><path d="m16 7 2.2 6.8L25 16l-6.8 2.2L16 25l-2.2-6.8L7 16l6.8-2.2L16 7Z" fill="currentColor"/></svg><span className="h-px flex-1 bg-current/70" /></div>;
+  return <div aria-hidden="true" className={`relative mx-auto flex w-56 items-center justify-center ${light ? "text-inv-gold-light" : "text-inv-gold"} ${className}`}><Pita className="h-[14px] w-full opacity-90" /><svg viewBox="0 0 32 32" className="absolute size-7 shrink-0" fill="none"><path d="M16 1 19.8 12.2 31 16l-11.2 3.8L16 31l-3.8-11.2L1 16l11.2-3.8L16 1Z" stroke="currentColor" /><path d="m16 7 2.2 6.8L25 16l-6.8 2.2L16 25l-2.2-6.8L7 16l6.8-2.2L16 7Z" fill="currentColor" /></svg></div>;
+}
+
+function IslamicMedallion({ light = false, className = "" }: { light?: boolean; className?: string }) {
+  return <svg aria-hidden="true" viewBox="0 0 180 180" fill="none" className={`pointer-events-none absolute ${light ? "text-inv-gold-light" : "text-inv-gold"} ${className}`}>
+    <circle cx="90" cy="90" r="78" stroke="currentColor" strokeOpacity=".55" />
+    <circle cx="90" cy="90" r="66" stroke="currentColor" strokeOpacity=".42" strokeDasharray="2 4" />
+    <path d="m90 18 16 31 34-11-18 31 25 25-36 1-11 34-10-34-36-1 25-25-18-31 34 11 15-31Z" stroke="currentColor" strokeOpacity=".7" />
+    <path d="m90 42 11 22 24-8-13 22 18 18-25 1-7 24-8-24-25-1 18-18-13-22 24 8 11-22Z" stroke="currentColor" strokeOpacity=".62" />
+    <circle cx="90" cy="90" r="5" fill="currentColor" fillOpacity=".75" />
+    <path d="M90 3v14m0 146v14M3 90h14m146 0h14M28 28l10 10m104 104 10 10m0-124-10 10M38 142l-10 10" stroke="currentColor" strokeOpacity=".7" />
+  </svg>;
+}
+
+function MihrabMotif({ light = false, className = "" }: { light?: boolean; className?: string }) {
+  return <svg aria-hidden="true" viewBox="0 0 240 320" fill="none" className={`pointer-events-none absolute ${light ? "text-inv-gold-light" : "text-inv-gold"} ${className}`}>
+    <path d="M16 304V132C16 69 63 18 120 18s104 51 104 114v172H16Z" stroke="currentColor" strokeOpacity=".56" />
+    <path d="M32 304V134c0-53 39-96 88-96s88 43 88 96v170H32Z" stroke="currentColor" strokeOpacity=".34" />
+    <path d="m120 3 7 14 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2 7-14Z" stroke="currentColor" strokeOpacity=".66" />
+    <path d="M42 270c23-7 37-22 43-46m113 46c-23-7-37-22-43-46M49 287c17-6 28-17 33-34m109 34c-17-6-28-17-33-34" stroke="currentColor" strokeOpacity=".48" />
+  </svg>;
 }
 
 function IslamicCorners({ light = false }: { light?: boolean }) {
   const corners = ["left-3 top-3", "right-3 top-3 -scale-x-100", "bottom-3 left-3 -scale-y-100", "bottom-3 right-3 -scale-100"];
   return <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${light ? "text-inv-gold-light/70" : "text-inv-gold/75"}`}>
+    <Pattern name="zellige" color="var(--inv-gold-light)" opacity={light ? 0.17 : 0.13} scale={1.15} />
+    {(["tl", "tr", "bl", "br"] as const).map((corner) => <Hias key={corner} name="sudut" corner={corner} className="m-2 w-24 opacity-90 sm:m-3 sm:w-32 md:w-40 lg:w-48" />)}
     {corners.map((position) => <svg key={position} viewBox="0 0 72 72" className={`absolute size-14 sm:size-[72px] ${position}`} fill="none" stroke="currentColor" strokeWidth="1">
       <path d="M4 68V27C4 14 14 4 27 4h41M12 68V29c0-9 8-17 17-17h39" />
       <path d="m27 4 5 5-5 5-5-5 5-5Zm0 8 5 5-5 5-5-5 5-5Z" />
       <path d="M4 46c8 0 12-4 12-12M12 54c8 0 12-4 12-12" />
+      <path d="m27 27 3.2 6 6.7-2.1-3.5 6.1 4.8 5.2-7 .1-2.3 6.6-2.3-6.6-7-.1 4.8-5.2-3.5-6.1 6.7 2.1L27 27Z" />
+      <circle cx="27" cy="38" r="2.2" />
     </svg>)}
   </div>;
 }
 
 function Hero({ inv }: { inv: InvitationView }) {
   return <section className="relative isolate overflow-hidden bg-inv-paper text-inv-ink">
-    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.18]" /><IslamicCorners />
+    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.24]" /><IslamicCorners />
+    <MihrabMotif className="-right-20 top-8 h-[84%] w-auto opacity-30 sm:right-[3%]" />
+    <IslamicMedallion className="-bottom-16 left-[4%] size-48 opacity-30 sm:size-60" />
     <Frame className="relative grid min-h-[88svh] items-center gap-10 py-16 sm:py-20 lg:min-h-[86svh] lg:grid-cols-[.9fr_1.1fr] lg:gap-16 lg:py-24">
       <div className="relative z-10 order-2 lg:order-1">
         <p lang="ar" dir="rtl" className="font-arab text-[clamp(26px,5vw,36px)] leading-loose text-inv-accent">{bismillah}</p>
@@ -91,14 +117,17 @@ function Hero({ inv }: { inv: InvitationView }) {
 function Ayat() {
   return <section id="ayat" className="relative isolate scroll-mt-8 overflow-hidden bg-inv-night py-20 text-inv-wash sm:py-28">
     <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-35" />
+    <IslamicCorners light />
+    <IslamicMedallion light className="-left-20 top-1/2 size-64 -translate-y-1/2 opacity-25 sm:left-[3%] sm:size-80" />
+    <IslamicMedallion light className="-right-20 top-1/2 size-64 -translate-y-1/2 opacity-25 sm:right-[3%] sm:size-80" />
     <Frame className="max-w-[920px]">
       <div className="relative border-y border-inv-gold/45 py-10 sm:py-14">
-      <div className="relative grid gap-7 sm:grid-cols-[150px_1fr] sm:gap-12">
+        <div className="relative grid gap-7 sm:grid-cols-[150px_1fr] sm:gap-12">
           <div className="text-center sm:pt-2"><p lang="ar" dir="rtl" className="font-arab text-2xl text-inv-gold-light">بِسْمِ اللَّهِ</p><p className="mt-4 font-display text-6xl leading-none text-inv-gold-light/80">٢١</p><p className="mt-1 text-[10px] tracking-[.2em] text-inv-gold-light uppercase">QS. AR-RUM</p></div>
           <div className="text-center sm:text-right">
-          <p lang="ar" dir="rtl" className="font-arab text-[clamp(25px,5vw,38px)] leading-[2] text-inv-gold-light">{verse}</p>
-          <p className="mx-auto mt-6 max-w-[66ch] text-[14px] leading-[1.9] text-inv-wash/80 sm:ml-auto">“{verseMeaning}”</p>
-          <p className="mt-4 text-[10px] tracking-[.2em] text-inv-gold-light uppercase">Ar-Rum · Ayat 21</p>
+            <p lang="ar" dir="rtl" className="font-arab text-[clamp(25px,5vw,38px)] leading-[2] text-inv-gold-light">{verse}</p>
+            <p className="mx-auto mt-6 max-w-[66ch] text-[14px] leading-[1.9] text-inv-wash/80 sm:ml-auto">“{verseMeaning}”</p>
+            <p className="mt-4 text-[10px] tracking-[.2em] text-inv-gold-light uppercase">Ar-Rum · Ayat 21</p>
           </div>
         </div>
       </div>
@@ -108,7 +137,9 @@ function Ayat() {
 
 function Couple({ inv }: { inv: InvitationView }) {
   return <section className="relative isolate overflow-hidden bg-sk-pasir py-20 sm:py-28">
-    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.16]" /><IslamicCorners />
+    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.2]" /><IslamicCorners />
+    <MihrabMotif className="-left-24 top-1/2 h-[88%] w-auto -translate-y-1/2 opacity-25 sm:left-[1%]" />
+    <IslamicMedallion className="-right-16 bottom-2 size-56 opacity-25 sm:right-[4%] sm:size-72" />
     <Frame className="relative">
       <div className="mx-auto mb-10 max-w-[720px] text-center">
         <p lang="ar" dir="rtl" className="font-arab text-[clamp(22px,5vw,30px)] leading-loose text-inv-accent">{salam}</p>
@@ -132,7 +163,9 @@ function Couple({ inv }: { inv: InvitationView }) {
 function Story({ inv }: { inv: InvitationView }) {
   if (!inv.story.length) return null;
   return <section className="relative isolate overflow-hidden bg-inv-paper py-20 sm:py-28">
-    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.08]" /><IslamicCorners />
+    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.13]" /><IslamicCorners />
+    <IslamicMedallion className="-left-24 top-1/2 size-72 -translate-y-1/2 opacity-25 sm:left-[2%] sm:size-96" />
+    <IslamicMedallion className="-right-24 top-1/2 size-72 -translate-y-1/2 opacity-25 sm:right-[2%] sm:size-96" />
     <Frame className="relative max-w-[1160px]"><Heading arabic="رِحْلَةُ الْمَوَدَّةِ" kicker="KISAH YANG KAMI SYUKURI">Menuju hari yang dijanjikan</Heading>
       <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
         {inv.story.map((item, i) => <article key={`${item.title}-${i}`} className="w-[76vw] max-w-[310px] shrink-0 snap-center border border-inv-gold/45 bg-inv-wash p-2 shadow-[0_10px_28px_rgba(22,62,67,.08)] sm:w-auto sm:max-w-none sm:p-2.5">
@@ -154,8 +187,11 @@ function Story({ inv }: { inv: InvitationView }) {
 function Event({ inv }: { inv: InvitationView }) {
   const calendar = calendarEventOf(inv);
   return <section className="relative isolate overflow-hidden bg-inv-paper py-20 text-inv-ink sm:py-28">
-    <IslamicCorners /><Frame><Heading arabic="بَارَكَ اللَّهُ لَكُمَا" kicker="CATAT TANGGALNYA">Hari untuk mengucap janji</Heading>
-      {inv.on.countdown && <Countdown target={inv.date} className="mx-auto mb-12 grid max-w-[460px] grid-cols-3 gap-3" cellClassName="border border-inv-line bg-inv-wash px-3 py-4 font-display text-3xl text-inv-accent [&>span:last-child]:font-body [&>span:last-child]:text-[10px] [&>span:last-child]:tracking-[.14em] [&>span:last-child]:text-inv-gold" />}
+    <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.14]" /><IslamicCorners />
+    <MihrabMotif className="-left-20 top-1/2 h-[82%] w-auto -translate-y-1/2 opacity-25 sm:left-[1%]" />
+    <IslamicMedallion className="-right-20 top-1/2 size-72 -translate-y-1/2 opacity-25 sm:right-[3%] sm:size-80" />
+    <Frame className="relative"><Heading arabic="بَارَكَ اللَّهُ لَكُمَا" kicker="CATAT TANGGALNYA">Hari untuk mengucap janji</Heading>
+      {inv.on.countdown && <Countdown target={inv.date} className="mx-auto mb-12 grid w-full max-w-[680px] grid-cols-3 gap-3 sm:gap-5" cellClassName="border border-inv-line bg-inv-wash px-3 py-5 font-display text-4xl text-inv-accent shadow-[0_10px_28px_rgba(22,62,67,.06)] sm:px-6 sm:py-7 sm:text-5xl [&>span:last-child]:font-body [&>span:last-child]:text-[10px] [&>span:last-child]:tracking-[.16em] [&>span:last-child]:text-inv-gold sm:[&>span:last-child]:text-xs" />}
       <div className="mx-auto grid max-w-[1000px] gap-10 lg:grid-cols-[1fr_.9fr] lg:items-center">
         <div className="border-y border-inv-line py-6">
           <p className="text-center font-display text-[clamp(30px,6vw,46px)] text-inv-accent lg:text-left">{inv.dateLong}</p>
@@ -175,11 +211,11 @@ function Event({ inv }: { inv: InvitationView }) {
 
 function GallerySection({ inv }: { inv: InvitationView }) {
   if (!inv.gallery.length) return null;
-  return <section className="relative isolate overflow-hidden bg-inv-wash py-20 sm:py-28"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.1]" /><IslamicCorners /><Frame className="relative max-w-[1120px]"><Heading arabic="ذِكْرَيَاتُنَا" kicker="POTRET KASIH">Ruang kecil untuk kenangan</Heading><div className="relative"><Gallery photos={inv.gallery} variant="mawaddah" /></div></Frame></section>;
+  return <section className="relative isolate overflow-hidden bg-inv-wash py-20 sm:py-28"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.16]" /><IslamicCorners /><MihrabMotif className="-left-20 top-1/2 h-[88%] w-auto -translate-y-1/2 opacity-20 sm:left-[1%]" /><MihrabMotif className="-right-20 top-1/2 h-[88%] w-auto -translate-y-1/2 -scale-x-100 opacity-20 sm:right-[1%]" /><Frame className="relative max-w-[1120px]"><Heading arabic="ذِكْرَيَاتُنَا" kicker="POTRET KASIH">Ruang kecil untuk kenangan</Heading><div className="relative"><Gallery photos={inv.gallery} variant="mawaddah" /></div></Frame></section>;
 }
 
 function RsvpSection({ inv }: { inv: InvitationView }) {
-  return <section className="bg-inv-paper py-20 sm:py-28"><Frame className="max-w-[860px]"><div className="grid overflow-hidden border border-inv-line bg-inv-wash md:grid-cols-[.85fr_1.15fr]">
+  return <section className="relative isolate overflow-hidden bg-inv-paper py-20 sm:py-28"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.12]" /><IslamicCorners /><IslamicMedallion className="-left-20 top-1/2 size-72 -translate-y-1/2 opacity-20 sm:left-[2%] sm:size-96" /><IslamicMedallion className="-right-20 top-1/2 size-72 -translate-y-1/2 opacity-20 sm:right-[2%] sm:size-96" /><Frame className="relative max-w-[860px]"><div className="relative grid overflow-hidden border border-inv-line bg-inv-wash md:grid-cols-[.85fr_1.15fr]">
     <div className="relative isolate flex min-h-[250px] flex-col justify-end overflow-hidden bg-inv-accent px-7 py-8 text-inv-wash sm:px-10"><Image {...inv.frame.heroWide} src={inv.images.heroWide} alt="" fill sizes="(min-width: 768px) 340px, 90vw" className="absolute inset-0 object-cover opacity-40" /><div aria-hidden="true" className="absolute inset-0 bg-inv-night/45" /><div aria-hidden="true" className="mw-geometry absolute inset-0 opacity-35" /><div className="relative"><Label light>KABAR KEHADIRAN</Label><h2 className="mt-3 font-display text-[clamp(34px,6vw,48px)] leading-tight">Bersama dalam doa</h2><MawaddahDivider light /><p className="mt-3 max-w-[30ch] text-[13px] leading-relaxed text-inv-wash/75">Kami menantikan kabar baik dan doa dari Anda.</p></div></div>
     <div className="p-6 sm:p-10"><Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /></div>
   </div></Frame></section>;
@@ -187,7 +223,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
 
 function Gifts({ inv }: { inv: InvitationView }) {
   if (!inv.gifts.length && !inv.images.qris) return null;
-  return <section className="relative isolate overflow-hidden bg-inv-paper py-20 sm:py-28"><IslamicCorners /><Frame><Heading arabic="جَزَاكُمُ اللَّهُ خَيْرًا" kicker="TANDA KASIH">Doa yang paling kami harapkan</Heading>
+  return <section className="relative isolate overflow-hidden bg-inv-paper py-20 sm:py-28"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.14]" /><IslamicCorners /><MihrabMotif className="-left-20 top-1/2 h-[88%] w-auto -translate-y-1/2 opacity-20 sm:left-[1%]" /><IslamicMedallion className="-right-20 top-1/2 size-72 -translate-y-1/2 opacity-20 sm:right-[2%] sm:size-80" /><Frame className="relative"><Heading arabic="جَزَاكُمُ اللَّهُ خَيْرًا" kicker="TANDA KASIH">Doa yang paling kami harapkan</Heading>
     <div className="mx-auto grid max-w-[900px] grid-cols-1 gap-5 sm:grid-cols-2">{inv.gifts.map((gift) => <article key={gift.number} className={`relative isolate overflow-hidden border border-inv-gold/55 bg-inv-night px-6 py-8 text-center text-inv-wash shadow-[0_14px_36px_rgba(22,62,67,.12)] sm:px-8 ${inv.gifts.length === 1 ? "sm:col-span-2 sm:w-[calc(50%-0.625rem)] sm:justify-self-center" : ""}`}><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-45" /><IslamicCorners light /><div className="relative"><p lang="ar" dir="rtl" className="font-arab text-xl text-inv-gold-light">هَدِيَّةٌ بِمَوَدَّةٍ</p><p className="mt-2 text-[9px] tracking-[.24em] text-inv-gold-light uppercase">{gift.bank}</p><MawaddahDivider light className="mt-5" /><p className="mt-5 break-all font-display text-[clamp(20px,4vw,28px)] tracking-[.08em] text-inv-wash">{gift.number}</p><p className="mt-2 text-[12px] text-inv-wash/70">a.n. {gift.holder}</p><div className="mt-5 [&_button]:!border-inv-gold-light [&_button]:!text-inv-gold-light [&_button:hover]:!bg-inv-gold-light [&_button:hover]:!text-inv-night"><CopyButton value={gift.number} label={`nomor rekening ${gift.holder}`} /></div></div></article>)}
       {inv.images.qris && <div className="relative isolate overflow-hidden border border-inv-gold/55 bg-inv-night p-6 text-center text-inv-wash"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-35" /><IslamicCorners light /><div className="relative"><p lang="ar" dir="rtl" className="font-arab text-xl text-inv-gold-light">هَدِيَّةٌ بِمَوَدَّةٍ</p><Label light>QRIS</Label><div className="mx-auto mt-4 inline-block border border-inv-gold/45 bg-white p-2"><Image src={inv.images.qris} alt="Kode QRIS" width={160} height={160} className="size-40" /></div><div className="mt-3 [&_button]:!border-inv-gold-light [&_button]:!text-inv-gold-light [&_button:hover]:!bg-inv-gold-light [&_button:hover]:!text-inv-night"><QrisDownload src={inv.images.qris} slug={inv.slug} /></div></div></div>}
     </div>{inv.giftNote && <p className="mt-6 text-center text-xs text-inv-ink/65">{inv.giftNote}</p>}
@@ -196,12 +232,15 @@ function Gifts({ inv }: { inv: InvitationView }) {
 
 async function Guestbook({ inv }: { inv: InvitationView }) {
   const wishes = await getWishes(inv.slug);
-  return <section className="relative isolate overflow-hidden bg-inv-wash py-20 sm:py-28"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.14]" /><IslamicCorners /><Frame className="max-w-[850px]"><Heading arabic="دُعَاءٌ وَمَوَدَّةٌ" kicker="DOA DAN UCAPAN">Titipkan doa untuk kami</Heading><div className="relative border border-inv-gold/65 bg-inv-paper p-2 shadow-[0_16px_44px_rgba(22,62,67,.08)] sm:p-3"><IslamicCorners /><div className="relative border border-inv-line bg-inv-paper p-5 sm:p-9"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.12]" /><div className="relative"><p lang="ar" dir="rtl" className="mb-5 text-center font-arab text-xl text-inv-accent">بَارَكَ اللَّهُ فِيكُمْ</p><Wishes slug={inv.slug} initial={wishes} variant="lined" desktop="stack-when-empty" /></div></div></div></Frame></section>;
+  return <section className="relative isolate overflow-hidden bg-inv-wash py-20 sm:py-28"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.18]" /><IslamicCorners /><MihrabMotif className="-left-14 top-1/2 h-[75%] w-auto -translate-y-1/2 opacity-[.16] sm:left-[2%]" /><MihrabMotif className="-right-14 top-1/2 h-[75%] w-auto -translate-y-1/2 -scale-x-100 opacity-[.16] sm:right-[2%]" /><Frame className="relative max-w-[850px]"><Heading arabic="دُعَاءٌ وَمَوَدَّةٌ" kicker="DOA DAN UCAPAN">Titipkan doa untuk kami</Heading><div className="relative border border-inv-gold/65 bg-inv-paper p-2 shadow-[0_16px_44px_rgba(22,62,67,.08)] sm:p-3"><IslamicCorners /><div className="relative border border-inv-line bg-inv-paper p-5 sm:p-9"><div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-[.12]" /><div className="relative"><p lang="ar" dir="rtl" className="mb-5 text-center font-arab text-xl text-inv-accent">بَارَكَ اللَّهُ فِيكُمْ</p><Wishes slug={inv.slug} initial={wishes} variant="lined" desktop="stack-when-empty" /></div></div></div></Frame></section>;
 }
 
 function Closing({ inv }: { inv: InvitationView }) {
   return <section className="relative isolate overflow-hidden bg-inv-night py-24 text-center text-inv-wash sm:py-32">
     <div aria-hidden="true" className="mw-geometry pointer-events-none absolute inset-0 opacity-60" />
+    <IslamicCorners light />
+    <IslamicMedallion light className="-left-20 top-1/2 size-72 -translate-y-1/2 opacity-25 sm:left-[2%] sm:size-96" />
+    <IslamicMedallion light className="-right-20 top-1/2 size-72 -translate-y-1/2 opacity-25 sm:right-[2%] sm:size-96" />
     <Frame className="relative max-w-[760px]"><p lang="ar" dir="rtl" className="font-arab text-[clamp(30px,8vw,46px)] leading-loose text-inv-gold-light">جَزَاكُمُ اللَّهُ خَيْرًا</p><Label light>JAZAKUMULLAHU KHAIRAN</Label>
       <p className="mx-auto mt-6 max-w-[48ch] font-display text-[clamp(25px,4vw,36px)] italic leading-snug text-inv-wash/85">Semoga Allah membalas setiap doa dengan kebaikan yang berlipat.</p>
       <MawaddahDivider light className="mt-8" /><p className="mt-7 font-display text-[clamp(42px,9vw,72px)] leading-none">{inv.groom.name} <span className="text-inv-gold-light">&amp;</span> {inv.bride.name}</p><p className="mt-5 text-[10px] tracking-[.2em] text-inv-gold-light uppercase">{inv.dateLong}</p>
