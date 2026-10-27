@@ -108,19 +108,23 @@ function Event({ inv }: { inv: InvitationView }) {
           {inv.dateLong}
         </p>
         {inv.on.countdown && <Countdown target={inv.date} className="mx-auto mt-9 grid max-w-[460px] grid-cols-3 gap-3" cellClassName="border border-white/20 px-3 py-4 font-display text-3xl text-inv-paper [&>span:last-child]:font-body [&>span:last-child]:text-inv-gold-light" />}
-        <div className="mx-auto mt-12 grid max-w-[760px] gap-4 text-left sm:grid-cols-2">{inv.events.map((e) => <ElarisFrame key={e.name} corners={false} className="bg-inv-accent p-1">
-          <article className="p-6"><p className="text-[10px] tracking-[.24em] text-inv-gold-light uppercase">{e.name}</p>
-            <p className="mt-3 font-display text-3xl">{e.time}{e.until && ` - ${e.until}`}</p>
-            <p className="mt-1 text-[12px] text-white/70">{inv.tz}</p></article>
+        <div className="mx-auto mt-12 grid max-w-[760px] gap-5 text-left sm:grid-cols-2">{inv.events.map((e, i) => <ElarisFrame key={e.name} corners className="bg-inv-paper text-inv-ink shadow-[0_18px_42px_rgba(0,0,0,.12)]">
+          <article className="relative flex min-h-[220px] flex-col items-center justify-center px-6 py-8 text-center sm:px-8">
+            <span className="font-display text-[13px] italic text-inv-gold">{String(i + 1).padStart(2, "0")}</span>
+            <p className="mt-3 text-[10px] tracking-[.25em] text-inv-accent uppercase">{e.name}</p>
+            <Flourish className="mt-3 w-24 text-inv-gold" />
+            <p className="mt-4 font-display text-[clamp(26px,4vw,34px)] leading-tight text-inv-accent">{e.time}{e.until && <><span className="px-2 text-inv-gold">—</span>{e.until}</>}</p>
+            <p className="mt-2 text-[11px] tracking-[.16em] text-inv-ink/60">{inv.tz}</p>
+          </article>
         </ElarisFrame>)}</div>
-        <ElarisFrame corners={false} className="mx-auto mt-8 max-w-[760px] bg-inv-accent p-1">
-          <div className="p-6 text-left sm:p-8">
-            <p className="text-[10px] tracking-[.24em] text-inv-gold-light uppercase">TEMPAT</p>
-            <h3 className="mt-3 font-display text-3xl">{inv.venue.name}</h3>
-            <p className="mt-2 max-w-[48ch] text-[13px] leading-relaxed text-white/75">{inv.venue.address}</p>
+        <ElarisFrame corners className="mx-auto mt-8 max-w-[760px] bg-inv-paper text-inv-ink shadow-[0_18px_42px_rgba(0,0,0,.12)]">
+          <div className="p-6 text-center sm:p-8">
+            <p className="text-[10px] tracking-[.25em] text-inv-accent uppercase">TEMPAT PERAYAAN</p>
+            <h3 className="mt-3 font-display text-3xl text-inv-accent">{inv.venue.name}</h3>
+            <p className="mx-auto mt-2 max-w-[48ch] text-[13px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              {inv.venue.mapUrl && <a className="border border-white/45 px-4 py-3 text-[10px] tracking-[.18em] uppercase text-white/75" href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
-              <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className="border border-white/45 px-4 py-3 text-[10px] tracking-[.18em] uppercase text-white/75">Simpan tanggal</CalendarButton>
+              {inv.venue.mapUrl && <a className={`${btn} px-4 py-3`} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
+              <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className={`${btn} px-4 py-3`}>Simpan tanggal</CalendarButton>
             </div>
           </div>
         </ElarisFrame>
@@ -132,7 +136,7 @@ function Event({ inv }: { inv: InvitationView }) {
 function GallerySection({ inv }: { inv: InvitationView }) {
   if (!inv.gallery.length && !inv.couplePhotos.length) return null;
   const photos = inv.gallery.length ? inv.gallery : inv.couplePhotos.map((p) => ({ ...p, w: 1600, h: 1200 }));
-  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.04} /><Frame className="relative"><Heading overline="KILASAN HARI KAMI">Dalam bingkai kenangan</Heading><div className="mt-12"><Gallery photos={photos} stamp={inv.dateShort} variant="bleed" /></div></Frame></section>;
+  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.04} /><Frame className="relative"><Heading overline="KILASAN HARI KAMI">Dalam bingkai kenangan</Heading><div className="mt-14 sm:mt-16"><Gallery photos={photos} stamp={inv.dateShort} variant="bleed" /></div></Frame></section>;
 }
 
 function Gifts({ inv }: { inv: InvitationView }) {
@@ -142,7 +146,7 @@ function Gifts({ inv }: { inv: InvitationView }) {
 
 async function Guestbook({ inv }: { inv: InvitationView }) {
   const wishes = await getWishes(inv.slug);
-  return <section className="bg-inv-paper py-20 sm:py-28"><Frame className="max-w-[790px]" style={{ maxWidth: 790 }}><Heading overline="DOA DAN UCAPAN">Sampaikan doa untuk kami</Heading><ElarisFrame corners={false} className="mt-10 bg-inv-card"><div className="p-5 sm:p-10"><Wishes slug={inv.slug} initial={wishes} variant="lined" desktop="stack-when-empty" /></div></ElarisFrame></Frame></section>;
+  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.035} /><Frame className="relative max-w-[900px]" style={{ maxWidth: 900 }}><Heading overline="DOA DAN UCAPAN">Sampaikan doa untuk kami</Heading><p className="mx-auto mt-5 max-w-[44ch] text-center text-[13px] leading-relaxed text-inv-ink/70">Setiap doa dan kata baik dari Anda akan menjadi kenangan berharga bagi kami.</p><ElarisFrame className="mt-10 bg-inv-card shadow-[0_18px_48px_rgba(38,42,34,.08)]"><div className="p-5 sm:p-10"><Wishes slug={inv.slug} initial={wishes} variant="elaris" desktop="stack-when-empty" /></div></ElarisFrame></Frame></section>;
 }
 
 function Closing({ inv }: { inv: InvitationView }) {

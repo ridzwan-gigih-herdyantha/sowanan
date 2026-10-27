@@ -57,24 +57,29 @@ export function Gallery({ photos, stamp, variant = "collage" }: Props) {
   if (variant === "bleed") {
     return (
       <>
-        <ul className="mx-auto grid max-w-[1000px] gap-3 lg:grid-cols-3 lg:gap-4">
+        <ul className="mx-auto grid max-w-[1000px] grid-cols-2 items-stretch gap-4 sm:gap-5 lg:grid-cols-3 lg:gap-7">
           {photos.map((p, i) => {
-            const wide = [0, 3, 4].includes(i % 6);
             return (
-              <li key={p.src} className={wide ? "lg:col-span-2" : ""}>
+              <li key={p.src} className="min-w-0">
                 <button
                   type="button"
                   onClick={() => setActive(i)}
-                  className={`clip-inset relative block w-full overflow-hidden ${wide ? "aspect-[3/2]" : "aspect-[4/5] lg:aspect-[3/4]"}`}
+                  className="group relative block w-full border border-inv-gold/55 bg-inv-paper p-1.5 text-left shadow-[0_10px_28px_rgba(38,42,34,.10)] transition-shadow duration-300 hover:shadow-[0_16px_36px_rgba(38,42,34,.16)] sm:p-2"
                   aria-label={`Buka foto: ${p.alt}`}
                 >
-                  <Image
-                    src={p.src}
-                    alt={p.alt}
-                    fill
-                    sizes={wide ? "(min-width: 980px) 660px, 100vw" : "(min-width: 980px) 330px, 100vw"}
-                    className="object-cover transition-transform duration-700 hover:scale-[1.03]"
-                  />
+                  <span className="relative block aspect-[4/5] overflow-hidden border border-inv-gold/30 bg-inv-wash">
+                    <Image
+                      src={p.src}
+                      alt={p.alt}
+                      fill
+                      sizes="(min-width: 1024px) 300px, (min-width: 640px) 42vw, 44vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+                    />
+                  </span>
+                  <span className="flex items-center justify-between gap-2 px-1 pt-2.5 text-[9px] tracking-[.18em] text-inv-accent uppercase sm:px-1.5 sm:pt-3 sm:text-[10px]">
+                    <span className="truncate">{p.caption || p.alt}</span>
+                    <span className="shrink-0 font-display text-[13px] italic tracking-normal text-inv-gold">{String(i + 1).padStart(2, "0")}</span>
+                  </span>
                 </button>
               </li>
             );

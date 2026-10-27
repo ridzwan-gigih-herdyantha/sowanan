@@ -32,6 +32,7 @@ const SKINS: Record<string, Skin> = {
   "danang-kinanthi": "pakeliran",
   "fadhil-nayla": "sakinah",
   "arya-kirana": "sutra",
+  "raka-anindya": "sutra",
   "bima-nadia": "rembulan",
   // Lensa memakai gaya editorial hitam putih yang sama dengan Ruang.
   "toni-layla": "ruang",
