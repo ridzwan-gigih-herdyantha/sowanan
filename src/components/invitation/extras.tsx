@@ -11,7 +11,7 @@ import { rows } from "./rows";
 import { RuleIconSvg } from "./rule-icons";
 import { Pita, Star } from "./sakinah/ornaments";
 import { Chip, Sticker, Title } from "./tabloid/pop";
-import { Flourish } from "./sutra/ornaments";
+import { Corner, Flourish, Pattern } from "./sutra/ornaments";
 
 // Warna latar mengikuti palet tema yang aktif, termasuk palet kustom dari tab Palet.
 // bg dipakai sebagai celah antara isi dan bingkai emas supaya bingkainya tampak lepas dari isi.
@@ -670,12 +670,22 @@ export function Extras({ inv, at, only, compact = false }: { inv: InvitationView
   const left = isLeft(skin);
   return items.map((e, i) => {
     if (only !== undefined && i !== only) return null;
-    const tone = TONES[e.tone] ?? TONES.paper;
+    // Elaris menjaga bidang setelah galeri hingga konfirmasi kehadiran tetap pada kertas gading yang sama.
+    const tone = inv.theme === "raka-anindya" && at === "gallery" ? TONES.paper : TONES[e.tone] ?? TONES.paper;
     const space = compact ? "px-4 py-6 sm:px-6" : `px-5 py-20 sm:px-8 lg:py-28 ${skin === "film" ? "torn-top relative -mt-3.5" : ""}`;
     const tabloid = skin === "tabloid";
+    const elarisDressCode = inv.theme === "raka-anindya" && e.kind === "dresscode";
     return (
       // Senja Kota memakai tepi kertas sobek di setiap pergantian section.
-      <section key={`${at}-${i}`} className={`${tabloid ? `${TABLOID_BG[e.tone] ?? TABLOID_BG.paper} relative overflow-hidden` : tone.section} ${space}`}>
+      <section key={`${at}-${i}`} className={`${tabloid ? `${TABLOID_BG[e.tone] ?? TABLOID_BG.paper} relative overflow-hidden` : `${tone.section} ${elarisDressCode ? "relative overflow-hidden" : ""}`} ${space}`}>
+        {elarisDressCode && <>
+          <Pattern opacity={0.035} />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-4 border border-inv-gold/20 sm:inset-6" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-6 border border-inv-gold/10 sm:inset-8" />
+          {(["tl", "tr", "br", "bl"] as const).map((at, n) => <Corner key={at} at={at} order={n} size="size-16 sm:size-20" className="m-2.5 text-inv-gold" />)}
+          <Flourish className="pointer-events-none absolute top-1/2 left-0 w-20 -translate-x-[36%] -translate-y-1/2 rotate-90 text-inv-gold/45 sm:w-28" />
+          <Flourish className="pointer-events-none absolute top-1/2 right-0 w-20 translate-x-[36%] -translate-y-1/2 -rotate-90 text-inv-gold/45 sm:w-28" />
+        </>}
         {tabloid && (
           <>
             <Sticker shape="daisy" fill="card" className="top-10 -left-8 size-20 -rotate-12" />
