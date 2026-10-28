@@ -13,7 +13,7 @@ const vars = {
 export function RafiKayla({ inv }: { inv: InvitationView }) {
   return (
     <InvitationShell
-      door={{ kind: "gedung", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateLong, place: `${inv.venue.name}, ${inv.cityShort}` }}
+      door={{ kind: "gedung", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateLong, place: inv.venue.name }}
       music={inv.music}
       className={`${themeFonts} min-h-dvh bg-inv-paper font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}

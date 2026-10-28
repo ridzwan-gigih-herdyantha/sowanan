@@ -15,10 +15,16 @@ export type GedungProps = {
 
 // Peta cover berukuran 1672 x 941. Pintu gedung ada di sekitar 61,5% x 40% gambar.
 const RATIO = 1672 / 941;
-const DOOR = { x: 61.5, y: 40 };
+const DOOR = { x:61.5, y: 40 };
 // Titik gambar yang diusahakan tetap terlihat di tengah layar sempit, antara gapura dan pintu.
 const FOCUS = 0.54;
 const ZOOM_MS = 950;
+// Balok gapura pada gambar: pusatnya di sekitar 50,4% x 51,5%, lebar papan 11,6%, dan miring 27 derajat ke kanan bawah
+// (garis isometrik 2:1), jadi tulisan dimiringkan dengan sudut yang sama supaya terlihat menempel di balok.
+const BEAM = { x: 50, y: 50, w: 13.6, h: 7.4, tilt: 27 };
+// Jumlah huruf yang muat di papan pada ukuran penuh. Teks yang lebih panjang dikecilkan.
+const NAME_FIT = 13;
+const PLACE_FIT = 24;
 
 // Cover berupa peta isometrik: pintu gedung di atas sebagai tombol buka, papan nama di tengah, dan pasangan
 // yang baru turun di parkiran. Saat dibuka, kamera mendekat ke pintu lalu isi undangan terbuka.
@@ -36,6 +42,8 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   };
 
   // Peta menutupi seluruh layar. Di layar sempit, bagian yang terlihat digeser ke arah pintu.
+  const name = `${groom} & ${bride}`;
+  const fit = (size: number, text: string, max: number) => `calc(var(--gd-w) * ${(size * Math.min(1, max / text.length)).toFixed(5)})`;
   const w = `max(100vw, calc(100dvh * ${RATIO}))`;
   const stage = {
     "--gd-w": w,
@@ -50,6 +58,26 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
     <div className="gd-door fixed inset-0 z-50 overflow-hidden bg-inv-sky text-inv-ink" role="dialog" aria-label="Sampul undangan" data-entering={entering}>
       <div className="gd-stage absolute" style={stage}>
         <Image src="/img/rafi-kayla/cover-map.webp" alt="" fill priority sizes="(min-width: 900px) 100vw, 160vw" className="object-cover" />
+        <div
+          className="absolute flex flex-col items-center justify-center whitespace-nowrap rounded-[0.25em] border-[0.12em] border-[#4a2c17] bg-[#9a6a3f] text-center text-[#fff4dc] shadow-[0_0.18em_0_rgba(40,20,8,.45)] [text-shadow:0_0.07em_0_rgba(40,20,8,.55)]"
+          style={{
+            left: `${BEAM.x}%`,
+            top: `${BEAM.y}%`,
+            width: `${BEAM.w}%`,
+            height: `${BEAM.h}%`,
+            transform: `translate(-50%, -50%) skewY(${BEAM.tilt}deg)`,
+          }}
+        >
+          <h1 className="font-display leading-none font-semibold" style={{ fontSize: fit(0.0135, name, NAME_FIT) }}>
+            {name}
+          </h1>
+          <p className="mt-[0.3em] leading-none font-bold opacity-90" style={{ fontSize: fit(0.0082, place, PLACE_FIT) }}>
+            {place}
+          </p>
+          <p className="mt-[0.25em] leading-none font-bold text-[#ffd98a]" style={{ fontSize: fit(0.0082, date, PLACE_FIT) }}>
+            {date}
+          </p>
+        </div>
         <div className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${DOOR.x}%`, top: `${DOOR.y}%` }}>
           <button
             type="button"
@@ -71,17 +99,13 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
 
       <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-[max(14px,2.4dvh)]">
         <section className="gd-board w-full max-w-[420px] rounded-[22px] border-[3px] border-inv-line bg-inv-card px-5 pt-4 pb-4 text-center shadow-[0_7px_0_rgba(0,0,0,.28)]">
-          <h1 className="font-display text-[clamp(30px,9vw,46px)] leading-[.95] font-semibold text-inv-accent">
-            {groom}
-            <span className="mx-2 text-[.6em] text-inv-ink">&amp;</span>
-            {bride}
-          </h1>
-          <p className="mt-2 text-[13px] font-bold">{date}</p>
-          <p className="text-[12px] text-inv-gold">{place}</p>
-          {invited && (
-            <p className="mt-2.5 border-t-2 border-dashed border-inv-line/25 pt-2 text-[12px] text-inv-gold">
-              Kepada Yth. <span className="font-bold text-inv-ink">{invited}</span>
+          {invited ? (
+            <p className="text-[13px] text-inv-gold">
+              Kepada Yth.
+              <span className="mt-0.5 block font-display text-[clamp(22px,6.4vw,28px)] leading-tight font-semibold text-inv-ink">{invited}</span>
             </p>
+          ) : (
+            <p className="font-display text-[clamp(17px,5vw,21px)] leading-snug font-semibold">Ketuk pintu gedung untuk masuk</p>
           )}
         </section>
         <Walker className="gd-arrive -mt-1 w-[clamp(96px,26vw,128px)]" />
