@@ -302,6 +302,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "mekar-mawar", on: true, name: "Mekar Mawar", slug: "ivan-mawar", demo: "/ivan-mawar", tier: "lengkap", category: "floral", style: "cat air / mawar", image: "/img/tema-ivan-mawar-buka.webp", screen: "" },
     { id: "kabar-retro", on: true, name: "Kabar Retro No. 27", slug: "galih-ardila", demo: "/galih-ardila", tier: "lengkap", category: "vintage", style: "tabloid / retro pop", image: "/img/tema-galih-ardila-buka.webp", screen: "" },
     { id: "horas", on: true, name: "Horas", slug: "bonar-anggi", demo: "/bonar-anggi", tier: "lengkap", category: "adat", style: "batak toba / ulos", image: "/img/tema-bonar-anggi-buka.webp", screen: "" },
+    { id: "rafi-kayla", on: true, name: "Isometrik", slug: "rafi-kayla", demo: "/rafi-kayla", tier: "lengkap", category: "game", style: "peta isometrik / gedung", image: "/img/rafi-kayla/cover.webp", screen: "/img/rafi-kayla/hero.webp" },
   ],
   themeFaq: THEME_FAQ,
   homeThemes: ["senja", "ruang", "herba", "kelir"],

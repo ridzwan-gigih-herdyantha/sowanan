@@ -1,0 +1,191 @@
+{
+  "slug": "rafi-kayla",
+  "theme": "rafi-kayla",
+  "published": true,
+  "data": {
+    "monogram": "R & K",
+    "couple": {
+      "groom": {
+        "name": "Rafi",
+        "full": "Rafi Pratama Wijaya",
+        "role": "Putra pertama dari",
+        "parents": "Bapak Hendra Wijaya & Ibu Sari Lestari",
+        "photo": ""
+      },
+      "bride": {
+        "name": "Kayla",
+        "full": "Kayla Anindita Putri",
+        "role": "Putri kedua dari",
+        "parents": "Bapak Agus Santoso & Ibu Maya Kusuma",
+        "photo": ""
+      }
+    },
+    "event": {
+      "start": "2027-11-20T11:00:00+07:00",
+      "end": "2027-11-20T15:00:00+07:00",
+      "timezone": "WIB",
+      "city": "Bandung, Jawa Barat",
+      "venue": {
+        "name": "Gedung Serbaguna Merdeka",
+        "address": "Jl. Merdeka No. 12, Citarum, Bandung Wetan, Kota Bandung, Jawa Barat",
+        "mapUrl": "https://maps.google.com/?q=Gedung+Merdeka+Bandung"
+      },
+      "schedule": [
+        {
+          "time": "11.00",
+          "name": "Akad Nikah",
+          "until": "12.00"
+        },
+        {
+          "time": "12.30",
+          "name": "Resepsi",
+          "until": "15.00"
+        }
+      ],
+      "rsvpDeadline": "10 November 2027"
+    },
+    "copy": {
+      "honor": "Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu di hari bahagia kami.",
+      "credit": "Foto contoh dari tema Senja Kota",
+      "tagline": "Dari parkiran sampai pelaminan, kami menunggu kehadiranmu.",
+      "ayat": "",
+      "ayatArti": "",
+      "ayatSumber": ""
+    },
+    "share": {
+      "description": "Kami mengundang Anda ke pernikahan Rafi & Kayla di Bandung.",
+      "ogDescription": "Masuk ke gedung dan temukan semua kabar bahagia kami."
+    },
+    "media": {
+      "hero": "/img/rafi-kayla/hero-photo.webp",
+      "heroWide": "/img/rafi-kayla/hero-wide.webp",
+      "og": "/img/rafi-kayla/og.jpg",
+      "music": "",
+      "venue": "/img/rafi-kayla/venue.webp",
+      "closing": "/img/rafi-kayla/closing.webp"
+    },
+    "sections": {
+      "couple": {
+        "enabled": true
+      },
+      "story": {
+        "enabled": true,
+        "items": [
+          {
+            "title": "Bertemu di kampus",
+            "date": "08.2020",
+            "image": "/img/rafi-kayla/story-1.webp",
+            "short": "Kami berkenalan di kegiatan kampus dan cepat akrab.",
+            "long": "Kami berkenalan di kegiatan kampus dan cepat akrab. Terima kasih sudah menjadi bagian dari cerita kami."
+          },
+          {
+            "title": "Mulai dekat",
+            "date": "02.2022",
+            "image": "/img/rafi-kayla/story-2.webp",
+            "short": "Obrolan panjang berubah jadi perjalanan berdua.",
+            "long": "Obrolan panjang berubah jadi perjalanan berdua. Terima kasih sudah menjadi bagian dari cerita kami."
+          },
+          {
+            "title": "Lamaran",
+            "date": "05.2026",
+            "image": "/img/rafi-kayla/story-3.webp",
+            "short": "Keluarga bertemu dan menyatukan doa.",
+            "long": "Keluarga bertemu dan menyatukan doa. Terima kasih sudah menjadi bagian dari cerita kami."
+          },
+          {
+            "title": "Menuju hari H",
+            "date": "11.2027",
+            "image": "/img/rafi-kayla/story-4.webp",
+            "short": "Kami melangkah bersama menuju pelaminan.",
+            "long": "Kami melangkah bersama menuju pelaminan. Terima kasih sudah menjadi bagian dari cerita kami."
+          }
+        ]
+      },
+      "event": {
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "gallery": {
+        "enabled": true,
+        "photos": [
+          {
+            "src": "/img/rafi-kayla/gallery-1.webp",
+            "w": 1200,
+            "h": 800,
+            "alt": "Rafi dan Kayla, potret 1",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/rafi-kayla/gallery-2.webp",
+            "w": 1400,
+            "h": 933,
+            "alt": "Rafi dan Kayla, potret 2",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/rafi-kayla/gallery-3.webp",
+            "w": 1200,
+            "h": 1800,
+            "alt": "Rafi dan Kayla, potret 3",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/rafi-kayla/gallery-4.webp",
+            "w": 1200,
+            "h": 1192,
+            "alt": "Rafi dan Kayla, potret 4",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/rafi-kayla/gallery-5.webp",
+            "w": 1200,
+            "h": 1165,
+            "alt": "Rafi dan Kayla, potret 5",
+            "caption": "",
+            "no": ""
+          },
+          {
+            "src": "/img/rafi-kayla/gallery-6.webp",
+            "w": 1200,
+            "h": 1171,
+            "alt": "Rafi dan Kayla, potret 6",
+            "caption": "",
+            "no": ""
+          }
+        ]
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "gifts": {
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank BCA",
+            "number": "1234567890",
+            "holder": "Rafi Pratama Wijaya"
+          },
+          {
+            "bank": "Bank Mandiri",
+            "number": "3456789012",
+            "holder": "Kayla Anindita Putri"
+          }
+        ],
+        "qris": "",
+        "note": "Nomor rekening di atas adalah contoh."
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      }
+    }
+  }
+}

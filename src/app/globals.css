@@ -3056,3 +3056,109 @@ html.door-wait [data-fit] {
     display: none;
   }
 }
+
+/* Isometrik: cover peta gedung. Kamera mendekat ke pintu saat undangan dibuka. */
+.gd-door {
+  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+}
+.gd-stage {
+  transform: translateY(-50%);
+  transition: transform 0.95s cubic-bezier(0.55, 0, 0.8, 0.4);
+}
+.gd-door[data-entering="true"] .gd-stage {
+  transform: translateY(-50%) scale(2.6);
+}
+.gd-fade {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.gd-door[data-entering="true"] .gd-fade {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.gd-door[data-entering="true"] .gd-pill {
+  opacity: 0;
+}
+[data-inv-state="open"] .gd-door {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.gd-ring {
+  animation: gd-ring 1.8s ease-out infinite;
+}
+.gd-pill {
+  animation: gd-hop 1.4s ease-in-out infinite;
+}
+.gd-board {
+  animation: gd-rise 0.6s cubic-bezier(0.22, 0.9, 0.3, 1.2) 0.15s both;
+  pointer-events: auto;
+}
+.gd-arrive {
+  animation: gd-walk-in 1.6s cubic-bezier(0.3, 0.7, 0.3, 1) 0.5s both;
+}
+.gd-step {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: gd-step 0.5s ease-in-out infinite alternate;
+}
+.gd-step--b {
+  animation-delay: 0.25s;
+}
+.gd-bob {
+  animation: gd-bob 2.4s ease-in-out infinite;
+}
+@keyframes gd-ring {
+  from {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+@keyframes gd-hop {
+  50% {
+    transform: translate(-50%, -6px);
+  }
+}
+@keyframes gd-rise {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+}
+@keyframes gd-walk-in {
+  from {
+    opacity: 0;
+    transform: translateX(-70vw);
+  }
+  15% {
+    opacity: 1;
+  }
+}
+@keyframes gd-step {
+  to {
+    transform: translateY(-3px);
+  }
+}
+@keyframes gd-bob {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gd-door,
+  .gd-stage,
+  .gd-fade {
+    transition: none;
+  }
+  .gd-ring,
+  .gd-pill,
+  .gd-board,
+  .gd-arrive,
+  .gd-step,
+  .gd-bob {
+    animation: none;
+  }
+}
