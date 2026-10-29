@@ -55,6 +55,8 @@ export const THEME_MUSIC: Record<string, string> = {
   // Alunan lembut Sutra selaras dengan nuansa elegan Elaris.
   "raka-anindya": "arya-kirana/music_1.mp3?v=mv4z7a8w",
   "faris-najwa": "fadhil-nayla/music_1.mp3?v=mupcmw7s",
+  // Bossa Town karya KarateStudios (CC0, opengameart.org/content/bossa-town): bossa santai untuk resepsi di gedung.
+  "rafi-kayla": "/audio/isometrik/bossa-town.mp3",
 };
 
 export function invitationLabel(slug: string, theme: string): string {

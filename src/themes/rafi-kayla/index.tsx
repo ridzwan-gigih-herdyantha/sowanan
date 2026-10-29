@@ -260,6 +260,7 @@ export async function RafiKayla({ inv }: { inv: InvitationView }) {
     <InvitationShell
       door={{ kind: "gedung", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateLong, place: inv.venue.name }}
       music={inv.music}
+      musicOnDoor
       className={`${themeFonts} min-h-dvh bg-inv-paper font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { Joystick } from "./joystick";
+import { useButtonSfx } from "./sfx";
 import { ARCH_BEAM, behindArch, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, reachable, SPAWN, SPEED, type Point } from "./world";
 
 export type GedungProps = {
@@ -76,6 +77,8 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const bodyRef = useRef<HTMLDivElement>(null);
   const archRef = useRef<HTMLDivElement>(null);
   const joyRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  useButtonSfx(rootRef);
   const pos = useRef<Point>({ ...SPAWN });
   const target = useRef<Point | null>(null);
   const keys = useRef(new Set<string>());
@@ -262,7 +265,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const heroW = `calc(var(--gd-w) * ${((HERO_H * CELL.w) / CELL.h / MAP_W).toFixed(5)})`;
 
   return (
-    <div className="gd-door fixed inset-0 z-50 overflow-hidden bg-inv-sky text-inv-ink" role="dialog" aria-label="Sampul undangan" data-entering={entering}>
+    <div ref={rootRef} className="gd-door fixed inset-0 z-50 overflow-hidden bg-inv-sky text-inv-ink" role="dialog" aria-label="Sampul undangan" data-entering={entering}>
       <div ref={stageRef} className="gd-stage absolute touch-none" style={stage} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
         <Image src="/img/rafi-kayla/cover-map.webp" alt="" fill priority draggable={false} sizes="(min-width: 900px) 100vw, 160vw" className="pointer-events-none object-cover select-none" />
         <div ref={archRef} className="pointer-events-none absolute inset-0 z-[1]">
@@ -304,6 +307,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
           <button
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
+            data-sfx="open"
             onClick={enter}
             // Posisinya tidak ikut berubah saat hover: tombol yang bergeser keluar dari bawah kursor akan bergetar
             // bolak-balik. Hover cukup mencerahkan warna; saat ditekan bayangannya menipis. Tombol menempel di tengah
@@ -347,7 +351,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
                 </div>
               </>
             ) : null}
-            <button type="button" onClick={enter} className={`${link} mt-3 inline-block`}>
+            <button type="button" data-sfx="open" onClick={enter} className={`${link} mt-3 inline-block`}>
               Langsung buka
             </button>
           </section>
@@ -370,7 +374,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
               <button type="button" onClick={() => setChoosing(true)} className={pill}>
                 Ganti karakter
               </button>
-              <button type="button" onClick={() => enter()} className={pill}>
+              <button type="button" data-sfx="open" onClick={() => enter()} className={pill}>
                 Langsung buka
               </button>
             </div>

@@ -137,6 +137,9 @@ type Props = {
   reveal?: RevealMode | false;
   // Posisi tombol musik. "top" untuk tema yang memakai sudut bawah layar sebagai tombol kontrol.
   musicAt?: "bottom" | "top";
+  // Lagu mulai pada sentuhan atau tombol pertama di sampul, tidak menunggu undangan dibuka. Untuk sampul yang
+  // dijelajahi lama, seperti peta game. Browser tidak mengizinkan suara sebelum ada interaksi.
+  musicOnDoor?: boolean;
 };
 
 function GuestField({ invited, greeting, className = "" }: { invited: string; greeting: string; className?: string }) {
@@ -155,7 +158,7 @@ const arrow = (
   </svg>
 );
 
-export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom" }: Props) {
+export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom", musicOnDoor = false }: Props) {
   const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
   const namesAllowed = useContext(GuestNamesContext);
   const invited = namesAllowed ? fromLink : "";
@@ -321,6 +324,23 @@ export function InvitationShell({ door, music, synth, className, style, children
     handlers.current = { claim, release };
   });
   const media = useMemo<MediaCtx>(() => ({ claim: (id, stop) => handlers.current.claim(id, stop), release: (id) => handlers.current.release(id) }), []);
+
+  const playRef = useRef(play);
+  useEffect(() => {
+    playRef.current = play;
+  });
+  useEffect(() => {
+    if (!musicOnDoor || open || !hasMusic) return;
+    const start = () => {
+      if (!playingRef.current) playRef.current();
+    };
+    window.addEventListener("pointerdown", start, { once: true });
+    window.addEventListener("keydown", start, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", start);
+      window.removeEventListener("keydown", start);
+    };
+  }, [musicOnDoor, open, hasMusic]);
 
   const openInvitation = () => {
     const name = guest || (slug && namesAllowed ? readStoredGuest() : "");

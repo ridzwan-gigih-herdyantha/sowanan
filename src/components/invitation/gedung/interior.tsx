@@ -8,6 +8,7 @@ import { Booth, BOOTH, type BoothKind } from "./booth";
 import { type BoothArt, COUPLE, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, poiDistance, type PoiId, STAGE } from "./interior-world";
 import { NPC_CELL, NPC_SHEETS, NPCS, npcStart, stepNpc, type NpcState } from "./interior-npcs";
 import { Joystick } from "./joystick";
+import { useButtonSfx } from "./sfx";
 import { SPEED, type Point } from "./world";
 
 // label dan icon menimpa nama dan ikon kios bawaan pos, dipakai pos bagian tambahan yang isinya berubah-ubah.
@@ -61,6 +62,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
   const [debug, setDebug] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  useButtonSfx(rootRef);
   const heroRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const joyRef = useRef<HTMLDivElement>(null);
@@ -387,6 +389,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
               key={p.id}
               type="button"
               onPointerDown={(e) => e.stopPropagation()}
+              data-sfx={here ? "open" : "tap"}
               onClick={() => (here ? setPanel(p.id) : (target.current = worldRef.current.reachable(pos.current, p.at)))}
               className={`${here ? "gd-pill bg-inv-accent text-inv-paper" : "bg-inv-card/90 text-inv-ink"} absolute z-[2000] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3.5 py-1.5 font-display text-[clamp(11px,3vw,15px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
               style={{ left: `${(tag.x / IN_W) * 100}%`, top: `${(tag.y / IN_H) * 100}%` }}

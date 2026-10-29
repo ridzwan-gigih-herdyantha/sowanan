@@ -24,6 +24,7 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
       <button
         type="button"
         onClick={onClose}
+        data-sfx="close"
         className="absolute top-3 right-3 z-20 flex size-11 items-center justify-center rounded-full border border-[#d9cbbb] bg-[#f3e9df] text-[#171012] shadow-[0_4px_18px_rgba(0,0,0,.5)] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         aria-label="Tutup"
       >
