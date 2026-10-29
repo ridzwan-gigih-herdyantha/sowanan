@@ -305,7 +305,9 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
             onClick={enter}
-            className="gd-pill absolute z-[4] -translate-x-1/2  whitespace-nowrap rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[clamp(14px,3.8vw,18px)] leading-none text-inv-paper shadow-[0_5px_0_rgba(0,0,0,.28)] transition-transform hover:-translate-y-[calc(100%+4px)] active:translate-y-[calc(-100%+2px)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            // Posisinya tidak ikut berubah saat hover: tombol yang bergeser keluar dari bawah kursor akan bergetar
+            // bolak-balik. Hover cukup mencerahkan warna; saat ditekan tombol turun sedikit dan bayangannya menipis.
+            className="gd-pill absolute z-[4] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[clamp(14px,3.8vw,18px)] leading-none text-inv-paper shadow-[0_5px_0_rgba(0,0,0,.28)] transition-[filter,box-shadow] hover:brightness-110 active:shadow-[0_2px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             style={{ left: `${DOOR.x}%`, top: `${DOOR.y - 6}%` }}
           >
             Masuk
