@@ -13,7 +13,7 @@ const FIRST = 4;
 const STEP = 6;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
-type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" | "doa" | "langit" | "dialog" | "elaris"; desktop?: "split" | "stack-when-empty" };
+type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" | "doa" | "langit" | "dialog" | "elaris"; desktop?: "split" | "stack-when-empty" | "stack" };
 
 export function Wishes({ slug, initial, variant = "notes", desktop = "split" }: Props) {
   // Langit memakai daftar bergaris yang sama, dengan langit bintang ucapan di atasnya.
@@ -49,6 +49,8 @@ export function Wishes({ slug, initial, variant = "notes", desktop = "split" }: 
   const all = [...unsynced, ...initial];
   const full = message.length >= WISH_MAX;
   const emptyStack = desktop === "stack-when-empty" && all.length === 0;
+  // "stack" selalu menyusun formulir di atas daftar, untuk wadah sempit seperti panel modal.
+  const stacked = desktop === "stack" || emptyStack;
 
   const send = (form: FormData) => {
     const missing = { name: nameValue.trim() ? "" : "Tulis namamu dulu.", message: message.trim() ? "" : "Tulis ucapanmu dulu." };
@@ -68,7 +70,7 @@ export function Wishes({ slug, initial, variant = "notes", desktop = "split" }: 
   };
 
   return (
-    <div className={emptyStack ? "" : "lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"}>
+    <div className={stacked ? "" : "lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"}>
       {archived ? (
         <p className="self-start rounded-sm border border-inv-line px-4 py-3.5 text-[14px] leading-relaxed text-inv-ink/75">
           Undangan ini sudah menjadi arsip. Ucapan baru tidak lagi diterima, ucapan yang sudah masuk tetap tersimpan di sini.
@@ -140,7 +142,7 @@ export function Wishes({ slug, initial, variant = "notes", desktop = "split" }: 
         </form>
       )}
 
-      <div className={emptyStack ? "hidden" : "mt-12 lg:mt-0"}>
+      <div className={emptyStack || (stacked && all.length === 0) ? "hidden" : stacked ? "mt-10" : "mt-12 lg:mt-0"}>
         <div ref={listTop} className="scroll-mt-24" />
         {langit && <WishSky wishes={all} fresh={new Set(unsynced.map((w) => w.id))} />}
         <ul className={dialog ? "flex flex-col gap-7 pt-3" : elaris ? "flex flex-col gap-3" : serat || doa ? "columns-1 gap-4 sm:columns-2" : lontar ? "inv-lontar-list relative flex flex-col gap-3" : lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">

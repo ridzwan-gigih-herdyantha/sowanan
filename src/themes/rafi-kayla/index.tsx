@@ -172,7 +172,12 @@ function Pelaminan({ inv, wishes }: { inv: InvitationView; wishes: Awaited<Retur
           </div>
         </article>
       )}
-      {wishes && <Wishes slug={inv.slug} initial={wishes} variant="dialog" />}
+      {wishes && (
+        <section className={`${card} gd-wishes px-4 pt-4 pb-5`}>
+          <p className="mb-4 text-center font-display text-[18px] font-semibold text-inv-accent">Buku ucapan</p>
+          <Wishes slug={inv.slug} initial={wishes} variant="dialog" desktop="stack" />
+        </section>
+      )}
       <p className="text-center text-[11px] text-inv-ink/55">
         Dibuat dengan{" "}
         <Link href="/" className="underline underline-offset-4">

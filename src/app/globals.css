@@ -3085,6 +3085,34 @@ html.door-wait [data-fit] {
 .gd-pill {
   animation: gd-pop 0.4s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
+/* Buku ucapan di panel pelaminan Isometrik: kolom isian bergaris tebal dan tombol pil seperti tombol game. */
+.gd-wishes input:not([type="hidden"]),
+.gd-wishes textarea {
+  border: 3px solid var(--inv-line);
+  border-radius: 14px;
+  background: var(--inv-paper);
+}
+.gd-wishes input:focus,
+.gd-wishes textarea:focus {
+  border-color: var(--inv-accent);
+}
+.gd-wishes form button[type="submit"] {
+  display: block;
+  width: 100%;
+  border: 3px solid var(--inv-line);
+  border-radius: 999px;
+  background: var(--inv-accent);
+  color: var(--inv-paper);
+  font-family: var(--font-display, inherit);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.28);
+}
+.gd-wishes form button[type="submit"]:active {
+  translate: 0 2px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+}
 .gd-board {
   animation: gd-rise 0.6s cubic-bezier(0.22, 0.9, 0.3, 1.2) 0.15s both;
   pointer-events: auto;
