@@ -15,7 +15,8 @@ export const NEAR_RADIUS = 80;
 // Tiang kanan gapura, tiang lampu, dan spanduknya (blok x 898-1002, y 548-655) serta semua yang di luar area ini dianggap rintangan.
 const AREAS: [number, number][][] = [
   [[230, 705], [300, 642], [487, 545], [500, 535], [610, 578], [700, 622], [790, 672], [867, 714], [960, 765], [1067, 832], [1170, 900], [570, 900], [548, 830], [485, 790], [410, 778], [330, 790], [255, 765]],
-  [[797, 708], [797, 615], [797, 560], [800, 527], [840, 507], [900, 495], [960, 482], [1020, 484], [1042, 505], [1100, 562], [1210, 615], [1290, 656], [1303, 672], [1250, 684], [1200, 693], [1150, 674], [1100, 656], [1050, 638], [1002, 622], [1002, 548], [898, 548], [898, 655], [888, 690], [886, 722], [850, 738]],
+  [[790, 712], [790, 615], [790, 560], [795, 527], [840, 507], [900, 495], [960, 482], [1020, 484], [1042, 505], [1100, 562], [1210, 615], [1290, 656], [1303, 672], [1250, 684], [1200, 693], [1150, 674], [1100, 656], [1050, 638], [1002, 622], [1002, 548], [898, 548], [898, 655], [888, 690], [886, 722], [850, 738]],
+  [[756, 644], [792, 626], [815, 640], [815, 700], [780, 690], [756, 664]],
 ];
 
 function inside(p: Point, poly: [number, number][]) {
@@ -31,7 +32,7 @@ function inside(p: Point, poly: [number, number][]) {
 export const walkable = (p: Point) => AREAS.some((a) => inside(p, a));
 
 // Badan karakter selebar dua kali BODY_R, jadi titik di kiri dan kanan kakinya juga harus berada di area.
-const BODY_R = 16;
+const BODY_R = 11;
 export const canStand = (p: Point) => walkable(p) && walkable({ x: p.x - BODY_R, y: p.y }) && walkable({ x: p.x + BODY_R, y: p.y });
 
 // Kecepatan jalan dalam piksel gambar per detik.
@@ -39,7 +40,7 @@ export const SPEED = 300;
 
 // Arah yang dicoba berurutan saat terhalang: lurus, lalu membelok makin tajam ke dua sisi supaya karakter
 // meluncur di sepanjang dinding (gapura, semak) dan tidak macet di sudut.
-const SLIDES = [0, 0.6, -0.6, 1.2, -1.2, Math.PI / 2, -Math.PI / 2];
+const SLIDES = [0, 0.4, -0.4, 0.8, -0.8, 1.2, -1.2, Math.PI / 2, -Math.PI / 2];
 
 // Menggeser p sejauh (dx, dy) dalam langkah kecil supaya tidak melompati rintangan tipis. Mengembalikan true
 // bila bergerak.
