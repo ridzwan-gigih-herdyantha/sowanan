@@ -186,6 +186,48 @@
       "closing": {
         "enabled": true
       }
-    }
+    },
+    "extras": [
+      {
+        "body": "",
+        "kind": "dresscode",
+        "note": "Nuansa hangat seperti gedungnya. Hindari putih polos.",
+        "plan": {
+          "h": 0,
+          "w": 0,
+          "src": ""
+        },
+        "tone": "paper",
+        "after": "gallery",
+        "rules": [],
+        "title": "Dress Code",
+        "colors": [
+          {
+            "hex": "#C8553D",
+            "name": "Terakota"
+          },
+          {
+            "hex": "#E8C39E",
+            "name": "Pasir"
+          },
+          {
+            "hex": "#8E7CC3",
+            "name": "Lavender"
+          },
+          {
+            "hex": "#3E5C3A",
+            "name": "Hijau Daun"
+          }
+        ],
+        "photos": [],
+        "stream": {
+          "url": "",
+          "time": ""
+        },
+        "tracks": [],
+        "videos": [],
+        "rundown": []
+      }
+    ]
   }
 }

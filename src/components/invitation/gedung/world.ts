@@ -19,7 +19,7 @@ const AREAS: [number, number][][] = [
   [[756, 644], [792, 626], [815, 640], [815, 700], [780, 690], [756, 664]],
 ];
 
-function inside(p: Point, poly: [number, number][]) {
+export function inside(p: Point, poly: [number, number][]) {
   let hit = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
     const [xi, yi] = poly[i];
@@ -29,54 +29,62 @@ function inside(p: Point, poly: [number, number][]) {
   return hit;
 }
 
-export const walkable = (p: Point) => AREAS.some((a) => inside(p, a));
-
-// Badan karakter selebar dua kali BODY_R, jadi titik di kiri dan kanan kakinya juga harus berada di area.
-const BODY_R = 11;
-export const canStand = (p: Point) => walkable(p) && walkable({ x: p.x - BODY_R, y: p.y }) && walkable({ x: p.x + BODY_R, y: p.y });
-
-// Kecepatan jalan dalam piksel gambar per detik.
-export const SPEED = 300;
+export type Area = [number, number][];
 
 // Arah yang dicoba berurutan saat terhalang: lurus, lalu membelok makin tajam ke dua sisi supaya karakter
 // meluncur di sepanjang dinding (gapura, semak) dan tidak macet di sudut.
 const SLIDES = [0, 0.4, -0.4, 0.8, -0.8, 1.2, -1.2, Math.PI / 2, -Math.PI / 2];
 
-// Menggeser p sejauh (dx, dy) dalam langkah kecil supaya tidak melompati rintangan tipis. Mengembalikan true
-// bila bergerak.
-export function move(p: Point, dx: number, dy: number) {
-  const len = Math.hypot(dx, dy);
-  if (!len) return false;
-  const n = Math.ceil(len / 3);
-  const base = Math.atan2(dy, dx);
-  const step = len / n;
-  let moved = false;
-  for (let i = 0; i < n; i++) {
-    let ok = false;
-    for (const turn of SLIDES) {
-      const a = base + turn;
-      const next = { x: p.x + Math.cos(a) * step * Math.cos(turn), y: p.y + Math.sin(a) * step * Math.cos(turn) };
-      if (!canStand(next)) continue;
-      p.x = next.x;
-      p.y = next.y;
-      ok = moved = true;
-      break;
+// Dunia berisi himpunan area yang boleh dilalui. bodyR adalah setengah lebar badan karakter: titik di kiri dan
+// kanan kakinya juga harus berada di area. holes adalah rintangan di dalam area, misalnya kios.
+export function makeWorld(areas: Area[], bodyR = 11, holes: Area[] = []) {
+  const walkable = (p: Point) => areas.some((a) => inside(p, a)) && !holes.some((h) => inside(p, h));
+  const canStand = (p: Point) => walkable(p) && walkable({ x: p.x - bodyR, y: p.y }) && walkable({ x: p.x + bodyR, y: p.y });
+
+  // Menggeser p sejauh (dx, dy) dalam langkah kecil supaya tidak melompati rintangan tipis. Mengembalikan true
+  // bila bergerak.
+  function move(p: Point, dx: number, dy: number) {
+    const len = Math.hypot(dx, dy);
+    if (!len) return false;
+    const n = Math.ceil(len / 3);
+    const base = Math.atan2(dy, dx);
+    const step = len / n;
+    let moved = false;
+    for (let i = 0; i < n; i++) {
+      let ok = false;
+      for (const turn of SLIDES) {
+        const a = base + turn;
+        const next = { x: p.x + Math.cos(a) * step * Math.cos(turn), y: p.y + Math.sin(a) * step * Math.cos(turn) };
+        if (!canStand(next)) continue;
+        p.x = next.x;
+        p.y = next.y;
+        ok = moved = true;
+        break;
+      }
+      if (!ok) break;
     }
-    if (!ok) break;
+    return moved;
   }
-  return moved;
+
+  // Titik tujuan yang bisa dicapai: kalau yang diketuk rintangan, ambil titik berjalan terdekat di garis dari
+  // karakter ke titik itu.
+  function reachable(from: Point, to: Point): Point {
+    if (canStand(to)) return to;
+    for (let t = 0.02; t <= 1; t += 0.02) {
+      const p = { x: to.x + (from.x - to.x) * t, y: to.y + (from.y - to.y) * t };
+      if (canStand(p)) return p;
+    }
+    return from;
+  }
+
+  return { walkable, canStand, move, reachable };
 }
 
-// Titik tujuan yang bisa dicapai: kalau yang diketuk rintangan, ambil titik berjalan terdekat di garis dari
-// karakter ke titik itu.
-export function reachable(from: Point, to: Point): Point {
-  if (canStand(to)) return to;
-  for (let t = 0.02; t <= 1; t += 0.02) {
-    const p = { x: to.x + (from.x - to.x) * t, y: to.y + (from.y - to.y) * t };
-    if (canStand(p)) return p;
-  }
-  return from;
-}
+// Kecepatan jalan dalam piksel gambar per detik.
+export const SPEED = 300;
+
+const cover = makeWorld(AREAS);
+export const { walkable, canStand, move, reachable } = cover;
 
 // Garis dasar gapura: menghubungkan tengah alas dua tiangnya. Karakter yang kakinya di atas garis ini berada di
 // belakang bidang gapura, jadi balok dan papannya harus menutupi dia. Di bawah garis dia berada di depan gapura.

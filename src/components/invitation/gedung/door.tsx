@@ -14,7 +14,7 @@ export type GedungProps = {
   onOpen: () => void;
 };
 
-type Pick = "groom" | "bride";
+export type Pick = "groom" | "bride";
 
 // Peta cover berukuran 1672 x 941. Pintu gedung ada di sekitar 61,5% x 40% gambar.
 const RATIO = MAP_W / MAP_H;
@@ -35,14 +35,14 @@ const PLACE_FIT = 24;
 // Lembar sprite 3 x 3 (sel 130 x 215): baris menghadap bawah, samping kanan, dan atas. Kolom pertama diam,
 // dua kolom lain langkah kaki.
 const SPRITES: Record<Pick, string> = { groom: "/img/rafi-kayla/male-guest.webp", bride: "/img/rafi-kayla/female-guest.webp" };
-const CELL = { w: 130, h: 215 };
-const HERO_H = 120;
-const STEPS = [1, 0, 2, 0];
-const STEP_FPS = 8;
+export const CELL = { w: 130, h: 215 };
+export const HERO_H = 120;
+export const STEPS = [1, 0, 2, 0];
+export const STEP_FPS = 8;
 // Seberapa cepat kamera menyusul karakter (per detik).
 const FOLLOW = 4;
 
-const KEYS: Record<string, [number, number]> = {
+export const KEYS: Record<string, [number, number]> = {
   ArrowLeft: [-1, 0],
   ArrowRight: [1, 0],
   ArrowUp: [0, -1],
@@ -53,13 +53,13 @@ const KEYS: Record<string, [number, number]> = {
   s: [0, 1],
 };
 
-const sprite = (pick: Pick, col = 0, row = 0): CSSProperties => ({
+export const sprite = (pick: Pick, col = 0, row = 0): CSSProperties => ({
   backgroundImage: `url(${SPRITES[pick]})`,
   backgroundSize: "300% 300%",
   backgroundPosition: `${col * 50}% ${row * 50}%`,
 });
 
-const pill = "rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-2 font-display text-[13px] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.25)] transition-transform active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2";
+export const pill = "rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-2 font-display text-[13px] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.25)] transition-transform active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2";
 const link = "pointer-events-auto text-[12px] font-bold text-inv-gold underline underline-offset-4 hover:text-inv-ink focus-visible:outline-2 focus-visible:outline-offset-2";
 
 // Cover berupa peta isometrik: tamu memilih karakter mempelai, lalu berjalan dari parkiran lewat gapura menuju
@@ -235,6 +235,9 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const onUp = () => (dragging.current = false);
 
   const pickHero = (who: Pick) => {
+    try {
+      window.sessionStorage.setItem("gd-hero", who);
+    } catch {}
     setChosen(who);
     setChoosing(false);
     setNearDoor(false);
