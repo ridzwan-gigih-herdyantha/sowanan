@@ -5,9 +5,9 @@ export type BoothTone = "accent" | "gold" | "roof";
 
 // Ukuran kios dalam piksel peta. Kios digambar isometrik 2:1, sama dengan peta: sumbu a ke kanan atas, sumbu b
 // ke kanan bawah, z ke atas.
-export const BOOTH = { w: 200, h: 160, cx: 100, cy: 118, halfA: 42, halfB: 25 };
-// Kios digambar dalam satuan bebas lalu diperkecil supaya sebanding dengan perabot di peta.
-const S = 0.65;
+export const BOOTH = { w: 152, h: 130, cx: 76, cy: 100, halfA: 39, halfB: 23 };
+// Kios digambar dalam satuan bebas lalu diskalakan supaya mejanya sebesar meja pada kios gambar jadi.
+const S = 0.6;
 
 const p = (a: number, b: number, z = 0) => `${(BOOTH.cx + (a + b) * S).toFixed(1)},${(BOOTH.cy + (-0.5 * a + 0.5 * b - z) * S).toFixed(1)}`;
 const poly = (...pts: [number, number, number?][]) => pts.map(([a, b, z]) => p(a, b, z)).join(" ");
@@ -62,7 +62,7 @@ export function Booth({ kind, tone, className, style }: { kind: BoothKind; tone:
 
   return (
     <svg viewBox={`0 0 ${BOOTH.w} ${BOOTH.h}`} aria-hidden="true" className={className} style={style}>
-      <ellipse cx={BOOTH.cx} cy={BOOTH.cy} rx="72" ry="30" fill="rgba(0,0,0,.16)" />
+      <ellipse cx={BOOTH.cx} cy={BOOTH.cy} rx="66" ry="28" fill="rgba(0,0,0,.16)" />
       {post(-62, -34)}
       {post(62, -34)}
       {/* meja */}

@@ -23,6 +23,8 @@ export type Panel = { id: PoiId; title: string; body: ReactNode; label?: string;
 
 const RATIO = IN_W / IN_H;
 const ZOOM = 1.2;
+// Di dalam aula karakter digambar lebih kecil dari di halaman depan supaya sebanding dengan kios dan perabot.
+const HERO = HERO_H * 0.8;
 const FOLLOW = 4;
 const MAP = "/img/rafi-kayla/inside-map.webp";
 
@@ -253,7 +255,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
     left: "clamp(calc(100vw - var(--gd-w)), calc(50vw - var(--gd-w) * var(--gd-fx)), 0px)",
     top: "clamp(calc(100dvh - var(--gd-h)), calc(44dvh - var(--gd-h) * var(--gd-fy)), 0px)",
   } as CSSProperties;
-  const heroW = `calc(var(--gd-w) * ${((HERO_H * CELL.w) / CELL.h / IN_W).toFixed(5)})`;
+  const heroW = `calc(var(--gd-w) * ${((HERO * CELL.w) / CELL.h / IN_W).toFixed(5)})`;
   const active = panels.find((p) => p.id === panel);
 
   return (
@@ -296,7 +298,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         <div
           ref={heroRef}
           className="pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-full"
-          style={{ left: `${(IN_SPAWN.x / IN_W) * 100}%`, top: `${(IN_SPAWN.y / IN_H) * 100}%`, width: heroW, height: `calc(var(--gd-w) * ${(HERO_H / IN_W).toFixed(5)})` }}
+          style={{ left: `${(IN_SPAWN.x / IN_W) * 100}%`, top: `${(IN_SPAWN.y / IN_H) * 100}%`, width: heroW, height: `calc(var(--gd-w) * ${(HERO / IN_W).toFixed(5)})` }}
         >
           <span aria-hidden="true" className="absolute inset-x-[18%] -bottom-[3%] h-[8%] rounded-full bg-black/25 blur-[1px]" />
           <div ref={bodyRef} className="relative size-full bg-no-repeat" style={sprite(hero)} role="img" aria-label="Karakter kamu" />
@@ -305,7 +307,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         {pois.map((p) => {
           const here = near === p.id;
           // Label di atas kios, atau di atas titik berdiri untuk pos tanpa kios.
-          const tag = p.booth ? { x: p.booth.c.x, y: p.booth.c.y - (p.booth.art ? p.booth.art.h * p.booth.art.ay + 6 : 92) } : { x: p.at.x, y: p.at.y - 70 };
+          const tag = p.booth ? { x: p.booth.c.x, y: p.booth.c.y - (p.booth.art ? p.booth.art.h * p.booth.art.ay + 6 : BOOTH.cy - 6) } : { x: p.at.x, y: p.at.y - 70 };
           return (
             <button
               key={p.id}

@@ -23,17 +23,23 @@ const FURNITURE: Area[] = [
 ];
 
 // Gambar kios jadi (PNG transparan) pengganti kios gambar kode. w dan h ukuran tampil dalam piksel peta, ax dan
-// ay titik pada gambar (0 sampai 1) yang menapak di pusat kios.
-export type BoothArt = { src: string; w: number; h: number; ax: number; ay: number };
+// ay titik pada gambar (0 sampai 1) yang menapak di pusat kios. foot adalah jejak rintangannya: dari l sampai r
+// piksel di kiri kanan pusat, dan d piksel ke belakang (atas) dari pusat, karena gambarnya menghadap ke depan.
+export type BoothArt = { src: string; w: number; h: number; ax: number; ay: number; foot: { l: number; r: number; d: number } };
 
 // Jenis kios yang sudah punya gambar jadi. Gambarnya menghadap ke depan, jadi tamu berdiri tepat di bawah
 // mejanya, dan meja pada gambar sedikit di atas titik tapaknya sehingga jejak rintangannya digeser naik.
+// Ukuran tampil disetel supaya meja di tiap gambar sama lebar (sekitar 100 piksel peta). Gambar dress code
+// digambar jauh lebih besar dari yang lain, jadi tampilnya diperkecil.
 const ART: Partial<Record<BoothKind, BoothArt>> = {
-  rsvp: { src: "/img/rafi-kayla/rsv-both.png", w: 230, h: 191, ax: 0.55, ay: 0.92 },
-  dresscode: { src: "/img/rafi-kayla/drescode-both.png", w: 230, h: 169, ax: 0.54, ay: 0.93 },
+  rsvp: { src: "/img/rafi-kayla/rsv-both.png", w: 200, h: 166, ax: 0.55, ay: 0.92, foot: { l: -65, r: 65, d: 35 } },
+  dresscode: { src: "/img/rafi-kayla/drescode-both.png", w: 120, h: 88, ax: 0.54, ay: 0.93, foot: { l: -55, r: 50, d: 21 } },
+  // Dinding foto dengan karpet di depannya (1333 x 1001). Karpetnya boleh diinjak, meja dan pot di sisinya tidak.
+  // Dinding foto mempelai (1232 x 1000), bentuknya sama dengan galeri.
+  mempelai: { src: "/img/rafi-kayla/mempelai.png", w: 200, h: 162, ax: 0.48, ay: 0.87, foot: { l: -93, r: 93, d: 51 } },
+  galeri: { src: "/img/rafi-kayla/gallery-both.png", w: 200, h: 150, ax: 0.52, ay: 0.86, foot: { l: -95, r: 90, d: 50 } },
 };
 const ART_FRONT = { x: 15, y: 47 };
-const ART_LIFT = 22;
 
 type Poi = {
   id: PoiId;
@@ -47,20 +53,23 @@ type Poi = {
 // Dua baris kios mengapit karpet, urutannya mengikuti bagan: penerima tamu dan angpao paling dekat pintu,
 // lalu bagian tambahan, galeri dan acara, dan paling jauh mempelai dan cerita di dekat pelaminan. Kios gambar
 // kode dilayani dari sisi kanan bawahnya (FRONT).
-const FRONT = { x: 62, y: 31 };
+const FRONT = { x: 57, y: 29 };
 
 const at = (id: PoiId, label: string, c: Point, kind: BoothKind, tone: BoothTone): Poi => ({ id, label, at: c, booth: { c, kind, tone } });
 
 const POIS: Poi[] = [
   { id: "pelaminan", label: "Pelaminan", at: { x: 1190, y: 352 } },
-  at("mempelai", "Mempelai", { x: 955, y: 320 }, "mempelai", "accent"),
-  at("galeri", "Galeri", { x: 780, y: 410 }, "galeri", "gold"),
-  at("slot1", "Bagian tambahan", { x: 615, y: 495 }, "slot", "roof"),
-  at("rsvp", "Penerima tamu", { x: 380, y: 615 }, "rsvp", "accent"),
-  at("cerita", "Cerita", { x: 1215, y: 470 }, "cerita", "gold"),
-  at("acara", "Acara", { x: 1085, y: 540 }, "acara", "accent"),
-  at("slot2", "Bagian tambahan", { x: 910, y: 625 }, "slot", "roof"),
-  at("angpao", "Kotak angpao", { x: 730, y: 705 }, "angpao", "gold"),
+  // Kedua baris sejajar karpet (y + x / 2 tetap) dengan jarak antarkios yang sama, 170 piksel ke samping.
+  // Sisi kiri karpet, dari pelaminan ke pintu: Mempelai, Galeri, bagian tambahan pertama, Penerima tamu.
+  at("mempelai", "Mempelai", { x: 960, y: 360 }, "mempelai", "accent"),
+  at("galeri", "Galeri", { x: 790, y: 445 }, "galeri", "gold"),
+  at("slot1", "Bagian tambahan", { x: 620, y: 530 }, "slot", "roof"),
+  at("rsvp", "Penerima tamu", { x: 450, y: 615 }, "rsvp", "accent"),
+  // Sisi kanan karpet, dari pelaminan ke pintu: Cerita, Acara, bagian tambahan kedua, Kotak angpao.
+  at("cerita", "Cerita", { x: 1230, y: 470 }, "cerita", "gold"),
+  at("acara", "Acara", { x: 1060, y: 555 }, "acara", "accent"),
+  at("slot2", "Bagian tambahan", { x: 890, y: 640 }, "slot", "roof"),
+  at("angpao", "Kotak angpao", { x: 720, y: 725 }, "angpao", "gold"),
 ];
 
 export type PlacedPoi = Poi;
@@ -83,7 +92,13 @@ export function placePois(panels: { id: PoiId; label?: string; icon?: BoothKind 
 // Rintangan: perabot gambar ditambah kios yang dipasang.
 export const obstacles = (pois: PlacedPoi[]): Area[] => [
   ...FURNITURE,
-  ...pois.flatMap((p) => (p.booth ? [boothFootprint(p.booth.art ? { x: p.booth.c.x, y: p.booth.c.y - ART_LIFT } : p.booth.c)] : [])),
+  ...pois.flatMap((p) => {
+    if (!p.booth) return [];
+    const { c, art } = p.booth;
+    if (!art) return [boothFootprint(c)];
+    const { l, r, d } = art.foot;
+    return [[[c.x + l, c.y - d], [c.x + r, c.y - d], [c.x + r, c.y], [c.x + l, c.y]] as Area];
+  }),
 ];
 export const interiorWorld = (pois: PlacedPoi[]) => makeWorld([FLOOR_OUTLINE], 12, obstacles(pois));
 
