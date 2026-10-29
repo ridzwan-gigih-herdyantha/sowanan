@@ -16,10 +16,22 @@ export const FLOOR_OUTLINE: Area = [
   [1195, 830], [1100, 790], [950, 865], [760, 768], [570, 835], [430, 755], [300, 690],
 ];
 
-// Perabot bawaan gambar yang berdiri di lantai: meja di depan sekat kayu dan meja kado di kanan bawah.
+// Tangga karpet merah dan panggung pelaminan, sampai depan sofa dan kursi. Sisi bawahnya sedikit menumpuk
+// lantai aula supaya keduanya tersambung tanpa celah.
+export const STAGE: Area = [
+  [1105, 272], [1120, 232], [1170, 207], [1215, 205], [1335, 230], [1340, 270], [1290, 300], [1235, 332],
+];
+
+// Pengantin berdiri di panggung pelaminan, di depan sofa. x dan y titik kaki (tengah bawah gambar), w dan h ukuran
+// tampil dalam piksel peta, sedikit lebih tinggi dari karakter tamu.
+export const COUPLE = { src: "/img/rafi-kayla/newlyweds.png", x: 1290, y: 245, w: 112, h: 109 };
+
+// Perabot bawaan gambar yang berdiri di lantai: meja di depan sekat kayu dan meja kado di kanan bawah, ditambah
+// tempat pengantin berdiri.
 const FURNITURE: Area[] = [
   [[770, 295], [710, 265], [590, 325], [650, 355]],
   [[1370, 715], [1310, 685], [1190, 745], [1250, 775]],
+  [[COUPLE.x - 38, COUPLE.y - 20], [COUPLE.x + 36, COUPLE.y - 20], [COUPLE.x + 36, COUPLE.y + 4], [COUPLE.x - 38, COUPLE.y + 4]],
 ];
 
 // Gambar kios jadi (PNG transparan) pengganti kios gambar kode. w dan h ukuran tampil dalam piksel peta, ax dan
@@ -61,7 +73,8 @@ const FRONT = { x: 57, y: 29 };
 const at = (id: PoiId, label: string, c: Point, kind: BoothKind, tone: BoothTone): Poi => ({ id, label, at: c, booth: { c, kind, tone } });
 
 const POIS: Poi[] = [
-  { id: "pelaminan", label: "Pelaminan", at: { x: 1190, y: 352 } },
+  // Di panggung, di kiri depan pengantin.
+  { id: "pelaminan", label: "Pelaminan", at: { x: 1225, y: 265 } },
   // Kedua baris sejajar karpet (y + x / 2 tetap) dengan jarak antarkios yang sama, 170 piksel ke samping.
   // Sisi kiri karpet, dari pelaminan ke pintu: Mempelai, Galeri, bagian tambahan pertama, Penerima tamu.
   at("mempelai", "Mempelai", { x: 920, y: 340 }, "mempelai", "accent"),
@@ -123,7 +136,7 @@ function footprint(b: NonNullable<Poi["booth"]>): Area {
 }
 
 export const obstacles = (pois: PlacedPoi[]): Area[] => [...FURNITURE, ...pois.flatMap((p) => (p.booth ? [footprint(p.booth)] : []))];
-export const interiorWorld = (pois: PlacedPoi[]) => makeWorld([FLOOR_OUTLINE], 12, obstacles(pois));
+export const interiorWorld = (pois: PlacedPoi[]) => makeWorld([FLOOR_OUTLINE, STAGE], 12, obstacles(pois));
 
 // Jarak tamu ke pos: ke titik berdirinya, atau ke tepi kios dari sisi mana pun, mana yang lebih dekat. Jadi
 // tombol "Buka" juga muncul saat tamu menempel di samping atau belakang kios.

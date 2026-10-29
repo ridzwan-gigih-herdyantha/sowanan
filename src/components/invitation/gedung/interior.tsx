@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerE
 import { Modal } from "../modal";
 import { CELL, HERO_H, KEYS, sprite, STEPS, STEP_FPS, type Pick } from "./door";
 import { Booth, BOOTH, type BoothKind } from "./booth";
-import { type BoothArt, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, poiDistance, type PoiId } from "./interior-world";
+import { type BoothArt, COUPLE, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, poiDistance, type PoiId, STAGE } from "./interior-world";
 import { Joystick } from "./joystick";
 import { SPEED, type Point } from "./world";
 
@@ -46,6 +46,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
   const [panel, setPanel] = useState<PoiId | null>(null);
   const [debug, setDebug] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const coupleRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -194,6 +195,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         const el = poi.booth && boothRefs.current.get(poi.id);
         if (el && poi.booth) el.style.zIndex = p.y < poi.booth.c.y ? "3" : "1";
       }
+      if (coupleRef.current) coupleRef.current.style.zIndex = p.y < COUPLE.y ? "3" : "1";
 
       let best: PoiId | null = null;
       let bestD = IN_NEAR;
@@ -265,7 +267,9 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
 
         {debug && (
           <svg aria-hidden="true" viewBox={`0 0 ${IN_W} ${IN_H}`} className="pointer-events-none absolute inset-0 z-[5] size-full">
-            <polygon points={FLOOR_OUTLINE.map((p) => p.join(",")).join(" ")} fill="rgba(0,160,255,.2)" stroke="#0af" strokeWidth="3" />
+            {[FLOOR_OUTLINE, STAGE].map((a, i) => (
+              <polygon key={i} points={a.map((p) => p.join(",")).join(" ")} fill="rgba(0,160,255,.2)" stroke="#0af" strokeWidth="3" />
+            ))}
             {obstacles(pois).map((o, i) => (
               <polygon key={i} points={o.map((q) => q.join(",")).join(" ")} fill="rgba(255,0,0,.3)" stroke="#f33" strokeWidth="2" />
             ))}
@@ -296,6 +300,14 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         )}
 
         <div
+          ref={coupleRef}
+          className="pointer-events-none absolute z-[1]"
+          style={{ left: `${((COUPLE.x - COUPLE.w / 2) / IN_W) * 100}%`, top: `${((COUPLE.y - COUPLE.h) / IN_H) * 100}%`, width: `${(COUPLE.w / IN_W) * 100}%`, height: `${(COUPLE.h / IN_H) * 100}%` }}
+        >
+          <Image src={COUPLE.src} alt="Pengantin di pelaminan" fill sizes="15vw" draggable={false} className="object-contain select-none" />
+        </div>
+
+        <div
           ref={heroRef}
           className="pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-full"
           style={{ left: `${(IN_SPAWN.x / IN_W) * 100}%`, top: `${(IN_SPAWN.y / IN_H) * 100}%`, width: heroW, height: `calc(var(--gd-w) * ${(HERO / IN_W).toFixed(5)})` }}
@@ -307,7 +319,12 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         {pois.map((p) => {
           const here = near === p.id;
           // Label di atas kios, atau di atas titik berdiri untuk pos tanpa kios.
-          const tag = p.booth ? { x: p.booth.c.x, y: p.booth.c.y - (p.booth.art ? p.booth.art.h * p.booth.art.ay + 6 : BOOTH.cy - 6) } : { x: p.at.x, y: p.at.y - 70 };
+          // Label pelaminan di atas kepala pengantin.
+          const tag = p.booth
+            ? { x: p.booth.c.x, y: p.booth.c.y - (p.booth.art ? p.booth.art.h * p.booth.art.ay + 6 : BOOTH.cy - 6) }
+            : p.id === "pelaminan"
+              ? { x: COUPLE.x, y: COUPLE.y - COUPLE.h - 6 }
+              : { x: p.at.x, y: p.at.y - 70 };
           return (
             <button
               key={p.id}
