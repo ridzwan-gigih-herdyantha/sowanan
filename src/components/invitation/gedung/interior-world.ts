@@ -29,11 +29,10 @@ export type BoothArt = { src: string; w: number; h: number; ax: number; ay: numb
 
 // Jenis kios yang sudah punya gambar jadi. Gambarnya menghadap ke depan, jadi tamu berdiri tepat di bawah
 // mejanya, dan meja pada gambar sedikit di atas titik tapaknya sehingga jejak rintangannya digeser naik.
-// Ukuran tampil disetel supaya meja di tiap gambar sama lebar (sekitar 100 piksel peta). Gambar penerima tamu
-// dan dress code digambar jauh lebih besar dari dinding foto, jadi tampilnya diperkecil.
+// Ukuran tampil disetel supaya tiap kios tampak sebesar dinding foto galeri.
 const ART: Partial<Record<BoothKind, BoothArt>> = {
-  rsvp: { src: "/img/rafi-kayla/rsv-both.png", w: 128, h: 94, ax: 0.53, ay: 0.93, foot: { l: -58, r: 56, d: 21 } },
-  dresscode: { src: "/img/rafi-kayla/drescode-both.png", w: 120, h: 88, ax: 0.54, ay: 0.93, foot: { l: -55, r: 50, d: 21 } },
+  rsvp: { src: "/img/rafi-kayla/rsv-both.png", w: 180, h: 132, ax: 0.53, ay: 0.93, foot: { l: -82, r: 79, d: 30 } },
+  dresscode: { src: "/img/rafi-kayla/drescode-both.png", w: 180, h: 132, ax: 0.54, ay: 0.93, foot: { l: -82, r: 75, d: 31 } },
   mempelai: { src: "/img/rafi-kayla/mempelai.png", w: 200, h: 162, ax: 0.48, ay: 0.87, foot: { l: -93, r: 93, d: 51 } },
   galeri: { src: "/img/rafi-kayla/gallery-both.png", w: 200, h: 150, ax: 0.52, ay: 0.86, foot: { l: -95, r: 90, d: 50 } },
 };
