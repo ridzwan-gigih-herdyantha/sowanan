@@ -25,7 +25,8 @@ const FURNITURE: Area[] = [
 // Gambar kios jadi (PNG transparan) pengganti kios gambar kode. w dan h ukuran tampil dalam piksel peta, ax dan
 // ay titik pada gambar (0 sampai 1) yang menapak di pusat kios. foot adalah jejak rintangannya: dari l sampai r
 // piksel di kiri kanan pusat, dan d piksel ke belakang (atas) dari pusat, karena gambarnya menghadap ke depan.
-export type BoothArt = { src: string; w: number; h: number; ax: number; ay: number; foot: { l: number; r: number; d: number } };
+// front menggeser titik berdiri tamu dari pusat kios bila gambarnya tidak menghadap lurus ke depan (ART_FRONT).
+export type BoothArt = { src: string; w: number; h: number; ax: number; ay: number; foot: { l: number; r: number; d: number }; front?: Point };
 
 // Jenis kios yang sudah punya gambar jadi. Gambarnya menghadap ke depan, jadi tamu berdiri tepat di bawah
 // mejanya, dan meja pada gambar sedikit di atas titik tapaknya sehingga jejak rintangannya digeser naik.
@@ -33,6 +34,11 @@ export type BoothArt = { src: string; w: number; h: number; ax: number; ay: numb
 const ART: Partial<Record<BoothKind, BoothArt>> = {
   rsvp: { src: "/img/rafi-kayla/rsv-both.png", w: 180, h: 132, ax: 0.53, ay: 0.93, foot: { l: -82, r: 79, d: 30 } },
   dresscode: { src: "/img/rafi-kayla/drescode-both.png", w: 180, h: 132, ax: 0.54, ay: 0.93, foot: { l: -82, r: 75, d: 31 } },
+  angpao: { src: "/img/rafi-kayla/gift-booth.png", w: 200, h: 154, ax: 0.5, ay: 0.93, foot: { l: -96, r: 96, d: 35 } },
+  // Meja miring isometrik: sisi panjangnya sejajar karpet dan menghadap ke kanan bawah, jadi tamu berdiri di
+  // depan sisi itu.
+  acara: { src: "/img/rafi-kayla/acara-booth.png", w: 300, h: 200, ax: 0.54, ay: 0.81, foot: { l: -80, r: 80, d: 46 }, front: { x: 25, y: 52 } },
+  cerita: { src: "/img/rafi-kayla/story-booth.png", w: 217, h: 145, ax: 0.54, ay: 0.84, foot: { l: -84, r: 80, d: 40 }, front: { x: 20, y: 46 } },
   mempelai: { src: "/img/rafi-kayla/mempelai.png", w: 200, h: 162, ax: 0.48, ay: 0.87, foot: { l: -93, r: 93, d: 51 } },
   galeri: { src: "/img/rafi-kayla/gallery-both.png", w: 200, h: 150, ax: 0.52, ay: 0.86, foot: { l: -95, r: 90, d: 50 } },
 };
@@ -68,37 +74,77 @@ const POIS: Poi[] = [
   at("angpao", "Kotak angpao", { x: 720, y: 725 }, "angpao", "gold"),
 ];
 
+// Urutan kios tiap baris, dari pelaminan ke pintu.
+const ROWS: PoiId[][] = [
+  ["mempelai", "galeri", "slot1", "rsvp"],
+  ["cerita", "acara", "slot2", "angpao"],
+];
+
+// Kios yang dipasang dibagi rata sepanjang barisnya, dari titik kios pertama sampai terakhir, supaya baris
+// tidak bolong saat bagian tambahan atau bagian lain tidak dipakai.
+function spread(ids: Set<PoiId>): Map<PoiId, Point> {
+  const out = new Map<PoiId, Point>();
+  for (const row of ROWS) {
+    const ends = [row[0], row[row.length - 1]].map((id) => POIS.find((p) => p.id === id)!.booth!.c);
+    const shown = row.filter((id) => ids.has(id));
+    shown.forEach((id, i) => {
+      const t = shown.length > 1 ? i / (shown.length - 1) : 0;
+      out.set(id, { x: ends[0].x + (ends[1].x - ends[0].x) * t, y: ends[0].y + (ends[1].y - ends[0].y) * t });
+    });
+  }
+  return out;
+}
+
 export type PlacedPoi = Poi;
 
 // Pos yang benar-benar dipasang, dengan nama dan jenis kios dari panelnya (bagian tambahan berganti-ganti
 // isinya), gambar jadi bila jenisnya punya, dan titik berdiri yang sesuai bentuk kiosnya.
 export function placePois(panels: { id: PoiId; label?: string; icon?: BoothKind }[]): PlacedPoi[] {
+  const spots = spread(new Set(panels.map((x) => x.id)));
   return POIS.flatMap((p) => {
     const own = panels.find((x) => x.id === p.id);
     if (!own) return [];
     if (!p.booth) return [{ ...p, label: own.label ?? p.label }];
     const kind = own.icon ?? p.booth.kind;
     const art = ART[kind];
-    const c = p.booth.c;
-    const stand = art ? { x: c.x + ART_FRONT.x, y: c.y + ART_FRONT.y } : { x: c.x + FRONT.x, y: c.y + FRONT.y };
-    return [{ ...p, label: own.label ?? p.label, at: stand, booth: { ...p.booth, kind, art } }];
+    const c = spots.get(p.id) ?? p.booth.c;
+    const off = art ? (art.front ?? ART_FRONT) : FRONT;
+    const stand = { x: c.x + off.x, y: c.y + off.y };
+    return [{ ...p, label: own.label ?? p.label, at: stand, booth: { ...p.booth, c, kind, art } }];
   });
 }
 
 // Rintangan: perabot gambar ditambah kios yang dipasang.
-export const obstacles = (pois: PlacedPoi[]): Area[] => [
-  ...FURNITURE,
-  ...pois.flatMap((p) => {
-    if (!p.booth) return [];
-    const { c, art } = p.booth;
-    if (!art) return [boothFootprint(c)];
-    const { l, r, d } = art.foot;
-    return [[[c.x + l, c.y - d], [c.x + r, c.y - d], [c.x + r, c.y], [c.x + l, c.y]] as Area];
-  }),
-];
+function footprint(b: NonNullable<Poi["booth"]>): Area {
+  const { c, art } = b;
+  if (!art) return boothFootprint(c);
+  const { l, r, d } = art.foot;
+  return [[c.x + l, c.y - d], [c.x + r, c.y - d], [c.x + r, c.y], [c.x + l, c.y]];
+}
+
+export const obstacles = (pois: PlacedPoi[]): Area[] => [...FURNITURE, ...pois.flatMap((p) => (p.booth ? [footprint(p.booth)] : []))];
 export const interiorWorld = (pois: PlacedPoi[]) => makeWorld([FLOOR_OUTLINE], 12, obstacles(pois));
+
+// Jarak tamu ke pos: ke titik berdirinya, atau ke tepi kios dari sisi mana pun, mana yang lebih dekat. Jadi
+// tombol "Buka" juga muncul saat tamu menempel di samping atau belakang kios.
+export function poiDistance(poi: PlacedPoi, p: Point): number {
+  const toStand = Math.hypot(p.x - poi.at.x, p.y - poi.at.y);
+  if (!poi.booth) return toStand;
+  const f = footprint(poi.booth);
+  let edge = Infinity;
+  f.forEach(([ax, ay], i) => {
+    const [bx, by] = f[(i + 1) % f.length];
+    const dx = bx - ax;
+    const dy = by - ay;
+    const t = Math.max(0, Math.min(1, ((p.x - ax) * dx + (p.y - ay) * dy) / (dx * dx + dy * dy)));
+    edge = Math.min(edge, Math.hypot(p.x - (ax + t * dx), p.y - (ay + t * dy)));
+  });
+  return Math.min(toStand, edge + IN_NEAR - IN_EDGE);
+}
 
 // Muncul tepat di dalam pintu, di atas karpet merah.
 export const IN_SPAWN: Point = { x: 490, y: 700 };
 // Jarak dari titik pos, dalam piksel gambar, sampai tombol "Buka" muncul.
 export const IN_NEAR = 80;
+// Jarak dari tepi kios sampai tombol "Buka" muncul, untuk tamu yang datang dari samping atau belakang.
+const IN_EDGE = 60;

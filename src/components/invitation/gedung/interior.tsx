@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerE
 import { Modal } from "../modal";
 import { CELL, HERO_H, KEYS, sprite, STEPS, STEP_FPS, type Pick } from "./door";
 import { Booth, BOOTH, type BoothKind } from "./booth";
-import { type BoothArt, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, type PoiId } from "./interior-world";
+import { type BoothArt, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, poiDistance, type PoiId } from "./interior-world";
 import { Joystick } from "./joystick";
 import { SPEED, type Point } from "./world";
 
@@ -198,7 +198,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
       let best: PoiId | null = null;
       let bestD = IN_NEAR;
       for (const poi of poisRef.current) {
-        const d = Math.hypot(p.x - poi.at.x, p.y - poi.at.y);
+        const d = poiDistance(poi, p);
         if (d < bestD) {
           best = poi.id;
           bestD = d;
