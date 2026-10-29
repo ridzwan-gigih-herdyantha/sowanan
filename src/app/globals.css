@@ -3062,11 +3062,10 @@ html.door-wait [data-fit] {
   transition: opacity 0.6s ease, visibility 0s linear 0.6s;
 }
 .gd-stage {
-  transform: translateY(-50%);
   transition: transform 0.95s cubic-bezier(0.55, 0, 0.8, 0.4);
 }
 .gd-door[data-entering="true"] .gd-stage {
-  transform: translateY(-50%) scale(2.6);
+  transform: scale(2.6);
 }
 .gd-fade {
   transition: opacity 0.35s ease, transform 0.35s ease;
@@ -3083,43 +3082,20 @@ html.door-wait [data-fit] {
   visibility: hidden;
   pointer-events: none;
 }
-.gd-ring {
-  animation: gd-ring 1.8s ease-out infinite;
-}
 .gd-pill {
-  animation: gd-hop 1.4s ease-in-out infinite;
+  animation: gd-pop 0.4s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
 .gd-board {
   animation: gd-rise 0.6s cubic-bezier(0.22, 0.9, 0.3, 1.2) 0.15s both;
   pointer-events: auto;
 }
-.gd-arrive {
-  animation: gd-walk-in 1.6s cubic-bezier(0.3, 0.7, 0.3, 1) 0.5s both;
+.gd-spawn {
+  animation: gd-spawn 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
-.gd-step {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: gd-step 0.5s ease-in-out infinite alternate;
-}
-.gd-step--b {
-  animation-delay: 0.25s;
-}
-.gd-bob {
-  animation: gd-bob 2.4s ease-in-out infinite;
-}
-@keyframes gd-ring {
+@keyframes gd-pop {
   from {
-    transform: scale(0.9);
-    opacity: 0.9;
-  }
-  to {
-    transform: scale(1.35);
     opacity: 0;
-  }
-}
-@keyframes gd-hop {
-  50% {
-    transform: translate(-50%, -6px);
+    scale: 0.6;
   }
 }
 @keyframes gd-rise {
@@ -3128,23 +3104,10 @@ html.door-wait [data-fit] {
     transform: translateY(40px) scale(0.96);
   }
 }
-@keyframes gd-walk-in {
+@keyframes gd-spawn {
   from {
     opacity: 0;
-    transform: translateX(-70vw);
-  }
-  15% {
-    opacity: 1;
-  }
-}
-@keyframes gd-step {
-  to {
-    transform: translateY(-3px);
-  }
-}
-@keyframes gd-bob {
-  50% {
-    transform: translateY(-3px);
+    transform: translateY(-40px) scale(0.6);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -3153,12 +3116,9 @@ html.door-wait [data-fit] {
   .gd-fade {
     transition: none;
   }
-  .gd-ring,
   .gd-pill,
   .gd-board,
-  .gd-arrive,
-  .gd-step,
-  .gd-bob {
+  .gd-spawn {
     animation: none;
   }
 }
