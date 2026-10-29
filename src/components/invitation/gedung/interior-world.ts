@@ -1,5 +1,6 @@
 import { boothFootprint, type BoothKind, type BoothTone } from "./booth";
 import { makeWorld, type Area, type Point } from "./world";
+import { npcObstacles } from "./interior-npcs";
 
 // Peta dalam gedung (inside-map.webp): koordinat dalam piksel gambar 1672 x 941, jadi tetap pas di ukuran layar
 // apa pun. Buka undangan dengan ?gdebug di alamat untuk melihat lantai (biru), rintangan (merah), dan jangkauan
@@ -135,7 +136,7 @@ function footprint(b: NonNullable<Poi["booth"]>): Area {
   return [[c.x + l, c.y - d], [c.x + r, c.y - d], [c.x + r, c.y], [c.x + l, c.y]];
 }
 
-export const obstacles = (pois: PlacedPoi[]): Area[] => [...FURNITURE, ...pois.flatMap((p) => (p.booth ? [footprint(p.booth)] : []))];
+export const obstacles = (pois: PlacedPoi[]): Area[] => [...FURNITURE, ...npcObstacles(), ...pois.flatMap((p) => (p.booth ? [footprint(p.booth)] : []))];
 export const interiorWorld = (pois: PlacedPoi[]) => makeWorld([FLOOR_OUTLINE, STAGE], 12, obstacles(pois));
 
 // Jarak tamu ke pos: ke titik berdirinya, atau ke tepi kios dari sisi mana pun, mana yang lebih dekat. Jadi

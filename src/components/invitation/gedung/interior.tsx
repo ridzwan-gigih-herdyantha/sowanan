@@ -6,6 +6,7 @@ import { Modal } from "../modal";
 import { CELL, HERO_H, KEYS, sprite, STEPS, STEP_FPS, type Pick } from "./door";
 import { Booth, BOOTH, type BoothKind } from "./booth";
 import { type BoothArt, COUPLE, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, poiDistance, type PoiId, STAGE } from "./interior-world";
+import { NPC_CELL, NPC_SHEETS, NPCS, npcStart, stepNpc, type NpcState } from "./interior-npcs";
 import { Joystick } from "./joystick";
 import { SPEED, type Point } from "./world";
 
@@ -25,6 +26,19 @@ const RATIO = IN_W / IN_H;
 const ZOOM = 1.2;
 // Di dalam aula karakter digambar lebih kecil dari di halaman depan supaya sebanding dengan kios dan perabot.
 const HERO = HERO_H * 0.8;
+
+// Siapa yang sedang bicara pada giliran ke-tick: tiap kelompok obrolan bergiliran antaranggota, dan kalimatnya
+// maju setiap putaran. Tamu yang sendirian hanya bergumam sesekali.
+function talk(tick: number) {
+  const groups = new Map<string, typeof NPCS>();
+  for (const n of NPCS) if (n.chat && n.lines) groups.set(n.chat, [...(groups.get(n.chat) ?? []), n]);
+  return [...groups.values()].flatMap((g) => {
+    if (g.length === 1 && tick % 2) return [];
+    const n = g[tick % g.length];
+    const round = Math.floor(tick / (g.length === 1 ? 2 : g.length));
+    return [{ n, line: n.lines![round % n.lines!.length] }];
+  });
+}
 const FOLLOW = 4;
 const MAP = "/img/rafi-kayla/inside-map.webp";
 
@@ -46,7 +60,6 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
   const [panel, setPanel] = useState<PoiId | null>(null);
   const [debug, setDebug] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const coupleRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -62,7 +75,8 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
   const pois = useMemo(() => placePois(panels), [panels]);
   const world = useMemo(() => interiorWorld(pois), [pois]);
   const worldRef = useRef(world);
-  const boothRefs = useRef(new Map<PoiId, HTMLDivElement>());
+  const npcRefs = useRef(new Map<string, HTMLDivElement>());
+  const [chatTick, setChatTick] = useState(0);
   useEffect(() => {
     worldRef.current = world;
   });
@@ -104,6 +118,13 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
     return () => mo.disconnect();
   }, []);
 
+  // Gelembung obrolan tamu lain bergantian setiap beberapa detik.
+  useEffect(() => {
+    if (!open) return;
+    const id = window.setInterval(() => setChatTick((t) => t + 1), 2800);
+    return () => window.clearInterval(id);
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const stage = stageRef.current;
@@ -118,6 +139,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
     let last = performance.now();
     let raf = 0;
     let current: PoiId | null = null;
+    const crowd: NpcState[] = NPCS.map(npcStart);
 
     const loop = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
@@ -183,19 +205,30 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
       body.style.transform = facing === 1 && flip ? "scaleX(-1)" : "";
       heroEl.style.left = `${(p.x / IN_W) * 100}%`;
       heroEl.style.top = `${(p.y / IN_H) * 100}%`;
+      heroEl.style.zIndex = String(Math.round(p.y));
+
+      // Tamu lain yang berjalan: posisi, arah hadap, dan langkah kakinya.
+      NPCS.forEach((n, i) => {
+        const s = crowd[i];
+        const el = npcRefs.current.get(n.id);
+        const dir = stepNpc(n, s, dt);
+        if (!el || n.path.length < 2) return;
+        s.walked = dir ? s.walked + dt : 0;
+        const face = dir ? (Math.abs(dir.y) > Math.abs(dir.x) ? (dir.y < 0 ? 2 : 0) : 1) : 0;
+        const npcCol = dir ? STEPS[Math.floor(s.walked * STEP_FPS) % STEPS.length] : 0;
+        const npcBody = el.lastElementChild as HTMLElement;
+        npcBody.style.backgroundPosition = `${npcCol * 50}% ${face * 50}%`;
+        npcBody.style.transform = face === 1 && dir && dir.x < 0 ? "scaleX(-1)" : "";
+        el.style.left = `${(s.p.x / IN_W) * 100}%`;
+        el.style.top = `${(s.p.y / IN_H) * 100}%`;
+        el.style.zIndex = String(Math.round(s.p.y));
+      });
 
       const k = Math.min(1, dt * FOLLOW);
       cam.x += (p.x / IN_W - cam.x) * k;
       cam.y += (p.y / IN_H - cam.y) * k;
       stage.style.setProperty("--gd-fx", cam.x.toFixed(4));
       stage.style.setProperty("--gd-fy", cam.y.toFixed(4));
-
-      // Kios menutupi karakter yang lewat di belakangnya, dan tertutup karakter yang lewat di depannya.
-      for (const poi of poisRef.current) {
-        const el = poi.booth && boothRefs.current.get(poi.id);
-        if (el && poi.booth) el.style.zIndex = p.y < poi.booth.c.y ? "3" : "1";
-      }
-      if (coupleRef.current) coupleRef.current.style.zIndex = p.y < COUPLE.y ? "3" : "1";
 
       let best: PoiId | null = null;
       let bestD = IN_NEAR;
@@ -258,15 +291,17 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
     top: "clamp(calc(100dvh - var(--gd-h)), calc(44dvh - var(--gd-h) * var(--gd-fy)), 0px)",
   } as CSSProperties;
   const heroW = `calc(var(--gd-w) * ${((HERO * CELL.w) / CELL.h / IN_W).toFixed(5)})`;
+  const heroH = `calc(var(--gd-w) * ${(HERO / IN_W).toFixed(5)})`;
+  const npcW = `calc(var(--gd-w) * ${((HERO * NPC_CELL.w) / NPC_CELL.h / IN_W).toFixed(5)})`;
   const active = panels.find((p) => p.id === panel);
 
   return (
     <div ref={rootRef} className="fixed inset-0 z-40 overflow-hidden bg-inv-night text-inv-ink">
-      <div ref={stageRef} className="absolute touch-none" style={stage} onPointerDown={onDown} onPointerMove={(e) => dragging.current && aim(e)} onPointerUp={() => (dragging.current = false)} onPointerCancel={() => (dragging.current = false)}>
+      <div ref={stageRef} className="absolute isolate touch-none" style={stage} onPointerDown={onDown} onPointerMove={(e) => dragging.current && aim(e)} onPointerUp={() => (dragging.current = false)} onPointerCancel={() => (dragging.current = false)}>
         <Image src={MAP} alt="" fill sizes="(min-width: 900px) 100vw, 160vw" draggable={false} className="pointer-events-none object-cover select-none" />
 
         {debug && (
-          <svg aria-hidden="true" viewBox={`0 0 ${IN_W} ${IN_H}`} className="pointer-events-none absolute inset-0 z-[5] size-full">
+          <svg aria-hidden="true" viewBox={`0 0 ${IN_W} ${IN_H}`} className="pointer-events-none absolute inset-0 z-[2001] size-full">
             {[FLOOR_OUTLINE, STAGE].map((a, i) => (
               <polygon key={i} points={a.map((p) => p.join(",")).join(" ")} fill="rgba(0,160,255,.2)" stroke="#0af" strokeWidth="3" />
             ))}
@@ -281,15 +316,8 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
 
         {pois.map((p) =>
           p.booth ? (
-            <div
-              key={p.id}
-              ref={(el) => {
-                if (el) boothRefs.current.set(p.id, el);
-                else boothRefs.current.delete(p.id);
-              }}
-              className="pointer-events-none absolute z-[1]"
-              style={boxOf(p.booth)}
-            >
+            // Urutan tumpuk mengikuti titik tapak: yang lebih bawah di layar tergambar di depan.
+            <div key={p.id} className="pointer-events-none absolute" style={{ ...boxOf(p.booth), zIndex: Math.round(p.booth.c.y) }}>
               {p.booth.art ? (
                 <Image src={p.booth.art.src} alt="" fill sizes="25vw" draggable={false} className="object-contain select-none" />
               ) : (
@@ -300,21 +328,50 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         )}
 
         <div
-          ref={coupleRef}
-          className="pointer-events-none absolute z-[1]"
-          style={{ left: `${((COUPLE.x - COUPLE.w / 2) / IN_W) * 100}%`, top: `${((COUPLE.y - COUPLE.h) / IN_H) * 100}%`, width: `${(COUPLE.w / IN_W) * 100}%`, height: `${(COUPLE.h / IN_H) * 100}%` }}
+          className="pointer-events-none absolute"
+          style={{ left: `${((COUPLE.x - COUPLE.w / 2) / IN_W) * 100}%`, top: `${((COUPLE.y - COUPLE.h) / IN_H) * 100}%`, width: `${(COUPLE.w / IN_W) * 100}%`, height: `${(COUPLE.h / IN_H) * 100}%`, zIndex: COUPLE.y }}
         >
           <Image src={COUPLE.src} alt="Pengantin di pelaminan" fill sizes="15vw" draggable={false} className="object-contain select-none" />
         </div>
 
         <div
           ref={heroRef}
-          className="pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-full"
-          style={{ left: `${(IN_SPAWN.x / IN_W) * 100}%`, top: `${(IN_SPAWN.y / IN_H) * 100}%`, width: heroW, height: `calc(var(--gd-w) * ${(HERO / IN_W).toFixed(5)})` }}
+          className="pointer-events-none absolute -translate-x-1/2 -translate-y-full"
+          style={{ left: `${(IN_SPAWN.x / IN_W) * 100}%`, top: `${(IN_SPAWN.y / IN_H) * 100}%`, width: heroW, height: heroH, zIndex: IN_SPAWN.y }}
         >
           <span aria-hidden="true" className="absolute inset-x-[18%] -bottom-[3%] h-[8%] rounded-full bg-black/25 blur-[1px]" />
           <div ref={bodyRef} className="relative size-full bg-no-repeat" style={sprite(hero)} role="img" aria-label="Karakter kamu" />
         </div>
+
+        {NPCS.map((n) => {
+          const at = n.path[0];
+          return (
+            <div
+              key={n.id}
+              ref={(el) => {
+                if (el) npcRefs.current.set(n.id, el);
+                else npcRefs.current.delete(n.id);
+              }}
+              aria-hidden="true"
+              className="pointer-events-none absolute -translate-x-1/2 -translate-y-full"
+              style={{ left: `${(at.x / IN_W) * 100}%`, top: `${(at.y / IN_H) * 100}%`, width: npcW, height: heroH, zIndex: at.y }}
+            >
+              <span className="absolute inset-x-[18%] -bottom-[3%] h-[8%] rounded-full bg-black/25 blur-[1px]" />
+              <div className="relative size-full bg-no-repeat" style={{ backgroundImage: `url(${NPC_SHEETS[n.sheet]})`, backgroundSize: "300% 300%", backgroundPosition: `0% ${(n.face ?? 0) * 50}%`, filter: n.tint, transform: n.flip ? "scaleX(-1)" : undefined }} />
+            </div>
+          );
+        })}
+
+        {talk(chatTick).map(({ n, line }) => (
+          <span
+            key={`${n.id}-${chatTick}`}
+            aria-hidden="true"
+            className="gd-pill pointer-events-none absolute z-[1500] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-xl border-2 border-inv-line bg-inv-card px-2.5 py-1 font-display text-[clamp(9px,2.4vw,12px)] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.2)]"
+            style={{ left: `${(n.path[0].x / IN_W) * 100}%`, top: `${((n.path[0].y - HERO - 4) / IN_H) * 100}%` }}
+          >
+            {line}
+          </span>
+        ))}
 
         {pois.map((p) => {
           const here = near === p.id;
@@ -331,7 +388,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
               type="button"
               onPointerDown={(e) => e.stopPropagation()}
               onClick={() => (here ? setPanel(p.id) : (target.current = worldRef.current.reachable(pos.current, p.at)))}
-              className={`${here ? "gd-pill bg-inv-accent text-inv-paper" : "bg-inv-card/90 text-inv-ink"} absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3.5 py-1.5 font-display text-[clamp(11px,3vw,15px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
+              className={`${here ? "gd-pill bg-inv-accent text-inv-paper" : "bg-inv-card/90 text-inv-ink"} absolute z-[2000] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3.5 py-1.5 font-display text-[clamp(11px,3vw,15px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
               style={{ left: `${(tag.x / IN_W) * 100}%`, top: `${(tag.y / IN_H) * 100}%` }}
             >
               {here ? `Buka ${p.label.toLowerCase()}` : p.label}
