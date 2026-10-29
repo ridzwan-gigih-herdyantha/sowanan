@@ -29,13 +29,11 @@ export type BoothArt = { src: string; w: number; h: number; ax: number; ay: numb
 
 // Jenis kios yang sudah punya gambar jadi. Gambarnya menghadap ke depan, jadi tamu berdiri tepat di bawah
 // mejanya, dan meja pada gambar sedikit di atas titik tapaknya sehingga jejak rintangannya digeser naik.
-// Ukuran tampil disetel supaya meja di tiap gambar sama lebar (sekitar 100 piksel peta). Gambar dress code
-// digambar jauh lebih besar dari yang lain, jadi tampilnya diperkecil.
+// Ukuran tampil disetel supaya meja di tiap gambar sama lebar (sekitar 100 piksel peta). Gambar penerima tamu
+// dan dress code digambar jauh lebih besar dari dinding foto, jadi tampilnya diperkecil.
 const ART: Partial<Record<BoothKind, BoothArt>> = {
-  rsvp: { src: "/img/rafi-kayla/rsv-both.png", w: 200, h: 166, ax: 0.55, ay: 0.92, foot: { l: -65, r: 65, d: 35 } },
+  rsvp: { src: "/img/rafi-kayla/rsv-both.png", w: 128, h: 94, ax: 0.53, ay: 0.93, foot: { l: -58, r: 56, d: 21 } },
   dresscode: { src: "/img/rafi-kayla/drescode-both.png", w: 120, h: 88, ax: 0.54, ay: 0.93, foot: { l: -55, r: 50, d: 21 } },
-  // Dinding foto dengan karpet di depannya (1333 x 1001). Karpetnya boleh diinjak, meja dan pot di sisinya tidak.
-  // Dinding foto mempelai (1232 x 1000), bentuknya sama dengan galeri.
   mempelai: { src: "/img/rafi-kayla/mempelai.png", w: 200, h: 162, ax: 0.48, ay: 0.87, foot: { l: -93, r: 93, d: 51 } },
   galeri: { src: "/img/rafi-kayla/gallery-both.png", w: 200, h: 150, ax: 0.52, ay: 0.86, foot: { l: -95, r: 90, d: 50 } },
 };
@@ -61,11 +59,10 @@ const POIS: Poi[] = [
   { id: "pelaminan", label: "Pelaminan", at: { x: 1190, y: 352 } },
   // Kedua baris sejajar karpet (y + x / 2 tetap) dengan jarak antarkios yang sama, 170 piksel ke samping.
   // Sisi kiri karpet, dari pelaminan ke pintu: Mempelai, Galeri, bagian tambahan pertama, Penerima tamu.
-  at("mempelai", "Mempelai", { x: 960, y: 360 }, "mempelai", "accent"),
-  at("galeri", "Galeri", { x: 790, y: 445 }, "galeri", "gold"),
-  at("slot1", "Bagian tambahan", { x: 620, y: 530 }, "slot", "roof"),
-  at("rsvp", "Penerima tamu", { x: 450, y: 615 }, "rsvp", "accent"),
-  // Sisi kanan karpet, dari pelaminan ke pintu: Cerita, Acara, bagian tambahan kedua, Kotak angpao.
+  at("mempelai", "Mempelai", { x: 920, y: 340 }, "mempelai", "accent"),
+  at("galeri", "Galeri", { x: 750, y: 425 }, "galeri", "gold"),
+  at("slot1", "Bagian tambahan", { x: 580, y: 510 }, "slot", "roof"),
+  at("rsvp", "Penerima tamu", { x: 410, y: 595 }, "rsvp", "accent"),
   at("cerita", "Cerita", { x: 1230, y: 470 }, "cerita", "gold"),
   at("acara", "Acara", { x: 1060, y: 555 }, "acara", "accent"),
   at("slot2", "Bagian tambahan", { x: 890, y: 640 }, "slot", "roof"),

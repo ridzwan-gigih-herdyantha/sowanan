@@ -323,7 +323,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         })}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] flex flex-col items-center gap-2.5 px-4">
+      <div className="pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] z-10 flex flex-col items-center gap-2.5 px-4">
         <span className="rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-1.5 font-display text-[clamp(11px,3vw,14px)] tracking-[.14em] uppercase shadow-[0_4px_0_rgba(0,0,0,.2)]">Di dalam gedung</span>
         <div className="max-w-[360px] rounded-2xl border-[3px] border-inv-line bg-inv-card px-4 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,.25)]">
           {welcome}
@@ -331,7 +331,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] flex justify-center">
+      <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-10 flex justify-center">
         <div ref={joyRef} className="pointer-events-auto opacity-80">
           <Joystick onMove={(x, y) => (joy.current = { x, y })} />
         </div>
