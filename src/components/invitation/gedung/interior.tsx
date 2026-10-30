@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import { Modal } from "../modal";
+import { useCloseInvitation } from "../shell";
 import { CELL, HERO_H, KEYS, sprite, STEPS, STEP_FPS, type Pick } from "./door";
 import { Booth, BOOTH, type BoothKind } from "./booth";
 import { type BoothArt, COUPLE, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, poiDistance, type PoiId, STAGE } from "./interior-world";
@@ -54,11 +55,19 @@ function savedHero(): Pick {
 
 // Isi undangan berupa peta di dalam gedung: tamu berjalan ke pos-pos di sepanjang aula, dan di dekat pos muncul
 // tombol untuk membuka isinya. Pos hanya ada bila panelnya ada.
-export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: ReactNode }) {
+// finale tampil di layar penutup setelah tamu keluar gedung: ucapan terima kasih dan nama mempelai.
+export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welcome?: ReactNode; finale?: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [hero, setHero] = useState<Pick>("groom");
   const [near, setNear] = useState<PoiId | null>(null);
   const [panel, setPanel] = useState<PoiId | null>(null);
+  // Pos yang isinya sudah dibuka, untuk centang di daftar isi dan layar selesai.
+  const [seen, setSeen] = useState<ReadonlySet<PoiId>>(() => new Set());
+  const [toc, setToc] = useState(false);
+  // play saat menjelajah, done saat semua pos sudah dibuka dan penutup "Tamat" tampil.
+  const [phase, setPhase] = useState<"play" | "done">("play");
+  const closeInvitation = useCloseInvitation();
+  const finished = useRef(false);
   const [debug, setDebug] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -91,13 +100,13 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
   });
 
   useEffect(() => {
-    paused.current = panel !== null;
-    if (panel) {
+    paused.current = panel !== null || phase !== "play";
+    if (panel || phase !== "play") {
       joy.current = { x: 0, y: 0 };
       keys.current.clear();
       target.current = null;
     }
-  }, [panel]);
+  }, [panel, phase]);
 
   // Peta baru aktif setelah undangan dibuka, supaya tombol panah tidak menggerakkan dua karakter sekaligus.
   useEffect(() => {
@@ -296,6 +305,27 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
   const heroH = `calc(var(--gd-w) * ${(HERO / IN_W).toFixed(5)})`;
   const npcW = `calc(var(--gd-w) * ${((HERO * NPC_CELL.w) / NPC_CELL.h / IN_W).toFixed(5)})`;
   const active = panels.find((p) => p.id === panel);
+  const done = pois.filter((p) => seen.has(p.id)).length;
+
+  const openPanel = (id: PoiId) => {
+    setPanel(id);
+    setToc(false);
+    if (id !== "pembuka") setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
+  };
+  // Panel terakhir ditutup dan semua pos sudah dibuka: layar selesai muncul sekali.
+  const closePanel = () => {
+    setPanel(null);
+    if (!finished.current && pois.length > 0 && pois.every((p) => seen.has(p.id))) {
+      finished.current = true;
+      window.setTimeout(() => setPhase("done"), 350);
+    }
+  };
+  // Dari daftar isi: karakter dipindah langsung ke depan pos, kamera menyusul.
+  const warp = (at: Point) => {
+    pos.current = { ...at };
+    target.current = null;
+    setToc(false);
+  };
 
   return (
     <div ref={rootRef} className="gd-interior fixed inset-0 z-40 overflow-hidden bg-inv-night text-inv-ink">
@@ -390,7 +420,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
               type="button"
               onPointerDown={(e) => e.stopPropagation()}
               data-sfx={here ? "open" : "tap"}
-              onClick={() => (here ? setPanel(p.id) : (target.current = worldRef.current.reachable(pos.current, p.at)))}
+              onClick={() => (here ? openPanel(p.id) : (target.current = worldRef.current.reachable(pos.current, p.at)))}
               className={`${here ? "gd-pill bg-inv-accent text-inv-paper" : "bg-inv-card/90 text-inv-ink"} absolute z-[2000] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3.5 py-1.5 font-display text-[clamp(11px,3vw,15px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
               style={{ left: `${(tag.x / IN_W) * 100}%`, top: `${(tag.y / IN_H) * 100}%` }}
             >
@@ -408,20 +438,58 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
         </div>
       </div>
 
+      {/* Daftar isi: semua pos dengan centang yang sudah dibuka. Mengetuk pos memindahkan karakter ke sana. */}
+      <div className="absolute top-[max(14px,2.4dvh)] left-3 z-20 sm:left-5">
+        <button
+          type="button"
+          onClick={() => setToc((t) => !t)}
+          aria-expanded={toc}
+          className="flex items-center gap-2 rounded-full border-[3px] border-inv-line bg-inv-card px-3.5 py-1.5 font-display text-[clamp(12px,3.2vw,14px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.25)] active:translate-y-0.5"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          Daftar isi
+          <span className="rounded-full bg-inv-accent px-1.5 py-0.5 text-[11px] text-inv-paper tabular-nums">
+            {done}/{pois.length}
+          </span>
+        </button>
+        {toc && (
+          <nav aria-label="Daftar isi" className="gd-pill mt-2 w-[min(260px,calc(100vw-24px))] rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]">
+            <ul className="max-h-[min(60dvh,420px)] overflow-y-auto">
+              {pois.map((p) => {
+                const ok = seen.has(p.id);
+                return (
+                  <li key={p.id}>
+                    <button type="button" onClick={() => warp(p.at)} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-[14px] font-semibold hover:bg-inv-wash focus-visible:bg-inv-wash">
+                      <span aria-hidden="true" className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-inv-line text-[11px] ${ok ? "bg-inv-accent text-inv-paper" : "bg-inv-paper"}`}>
+                        {ok ? "✓" : ""}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate">{p.label}</span>
+                      <span className="sr-only">{ok ? "sudah dibuka" : "belum dibuka"}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        )}
+      </div>
+
       <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-10 flex justify-center">
         <div ref={joyRef} className="pointer-events-auto opacity-80">
           <Joystick onMove={(x, y) => (joy.current = { x, y })} />
         </div>
       </div>
 
-      <Modal open={Boolean(active)} onClose={() => setPanel(null)} label={active?.title ?? "Isi undangan"}>
+      <Modal open={Boolean(active)} onClose={closePanel} label={active?.title ?? "Isi undangan"}>
         {active && (
           <div className="px-5 pt-12 pb-7">
             <h2 className="mb-4 text-center font-display text-[clamp(22px,6vw,28px)] leading-tight font-semibold text-inv-accent">{active.title}</h2>
             {active.body}
             {active.id === "pembuka" && (
               <div className="mt-5 flex justify-center">
-                <button type="button" onClick={() => setPanel(null)} className="rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[15px] leading-none font-semibold text-inv-paper shadow-[0_4px_0_rgba(0,0,0,.28)] transition-transform active:translate-y-0.5">
+                <button type="button" onClick={closePanel} className="rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[15px] leading-none font-semibold text-inv-paper shadow-[0_4px_0_rgba(0,0,0,.28)] transition-transform active:translate-y-0.5">
                   Jelajahi aula
                 </button>
               </div>
@@ -429,6 +497,30 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
           </div>
         )}
       </Modal>
+
+      {/* Semua pos sudah dibuka: penutup "Tamat" berisi kredit dari tema, dan satu jalan keluar kembali ke sampul.
+          Isi aula diatur ulang supaya kunjungan berikutnya mulai dari awal. */}
+      {phase === "done" && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/65 p-3 sm:p-6">
+          <div role="dialog" aria-modal="true" aria-label="Tamat" className="gd-pill flex max-h-full w-[min(520px,100%)] flex-col overflow-hidden rounded-3xl border-[3px] border-inv-line bg-inv-paper shadow-[0_8px_0_rgba(0,0,0,.35)]">
+            <div className="gd-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">{finale}</div>
+            <button
+              type="button"
+              data-sfx="open"
+              onClick={() => {
+                setPhase("play");
+                setSeen(new Set());
+                finished.current = false;
+                pos.current = { ...IN_SPAWN };
+                closeInvitation();
+              }}
+              className="m-3 shrink-0 rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-3 font-display text-[16px] leading-none font-semibold text-inv-paper shadow-[0_4px_0_rgba(0,0,0,.28)] active:translate-y-0.5"
+            >
+              Kembali ke awal
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

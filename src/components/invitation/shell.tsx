@@ -50,6 +50,11 @@ export function InvitationSlug({ slug, children }: { slug: string; children: Rea
 
 const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.elaris-door,.mawaddah-door,.nocturne-door,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door,.hr-door,.gd-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
 
+// Menutup undangan kembali ke sampul, untuk tema yang punya akhir cerita seperti peta Isometrik. Sampul dipasang
+// ulang dari awal, dan musik tetap berjalan.
+const CloseContext = createContext<() => void>(() => {});
+export const useCloseInvitation = () => useContext(CloseContext);
+
 // Pratinjau untuk mengatur foto di editor langsung menampilkan isi undangan, tanpa loader, pembuka, dan musik.
 const SkipDoorContext = createContext(false);
 export function SkipDoor({ children }: { children: ReactNode }) {
@@ -176,6 +181,8 @@ export function InvitationShell({ door, music, synth, className, style, children
   }, [slug, namesAllowed]);
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(skipDoor);
+  // Naik setiap undangan ditutup kembali ke sampul, supaya sampul dipasang ulang dari keadaan awal.
+  const [doorRound, setDoorRound] = useState(0);
   const [content, setContent] = useState<HTMLDivElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
@@ -350,6 +357,12 @@ export function InvitationShell({ door, music, synth, className, style, children
     play();
   };
 
+  const closeInvitation = () => {
+    window.scrollTo(0, 0);
+    setDoorRound((n) => n + 1);
+    setOpen(false);
+  };
+
   const toggleMusic = () => {
     resumeAfter.current = false;
     if (playing) return stopMusic(0.3);
@@ -360,6 +373,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   return (
     <GuestContext.Provider value={{ guest, setGuest }}>
       <MediaContext.Provider value={media}>
+        <CloseContext.Provider value={closeInvitation}>
         <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
           <noscript>
             <style>{NO_DOOR}</style>
@@ -461,7 +475,7 @@ export function InvitationShell({ door, music, synth, className, style, children
           {door.kind === "tabloid" && <TabloidDoor groom={door.groom} bride={door.bride} date={door.date} photo={door.photo} frame={door.frame} invited={invited} onOpen={openInvitation} />}
 
           {door.kind === "ulos" && <UlosDoor groom={door.groom} bride={door.bride} date={door.date} invited={invited} onOpen={openInvitation} />}
-          {door.kind === "gedung" && <GedungDoor groom={door.groom} bride={door.bride} date={door.date} place={door.place} invited={invited} onOpen={openInvitation} />}
+          {door.kind === "gedung" && <GedungDoor key={doorRound} groom={door.groom} bride={door.bride} date={door.date} place={door.place} invited={invited} onOpen={openInvitation} />}
           {door.kind === "elaris" && <ElarisDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
           {door.kind === "mawaddah" && <MawaddahDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
           {door.kind === "nocturne" && <NocturneDoor {...door} invited={invited} guestField={<GuestField invited={invited} greeting="Kepada Yth." />} open={open} onOpen={openInvitation} />}
@@ -549,6 +563,7 @@ export function InvitationShell({ door, music, synth, className, style, children
           )}
           {music && <audio ref={audio} src={music} preload="none" loop crossOrigin="anonymous" />}
         </div>
+        </CloseContext.Provider>
       </MediaContext.Provider>
     </GuestContext.Provider>
   );

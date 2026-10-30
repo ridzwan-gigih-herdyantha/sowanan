@@ -3091,18 +3091,24 @@ html.door-wait [data-fit] {
   border: 3px solid var(--inv-line);
   border-radius: 22px;
   box-shadow: 0 8px 0 rgb(0 0 0 / 0.35);
+}
+.gd-interior .inv-dialog,
+.gd-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--inv-accent) transparent;
 }
 @supports not (scrollbar-color: auto) {
-  .gd-interior .inv-dialog::-webkit-scrollbar {
+  .gd-interior .inv-dialog::-webkit-scrollbar,
+  .gd-scroll::-webkit-scrollbar {
     width: 10px;
   }
-  .gd-interior .inv-dialog::-webkit-scrollbar-track {
+  .gd-interior .inv-dialog::-webkit-scrollbar-track,
+  .gd-scroll::-webkit-scrollbar-track {
     margin: 20px 0;
     background: transparent;
   }
-  .gd-interior .inv-dialog::-webkit-scrollbar-thumb {
+  .gd-interior .inv-dialog::-webkit-scrollbar-thumb,
+  .gd-scroll::-webkit-scrollbar-thumb {
     border: 3px solid transparent;
     border-radius: 999px;
     background: var(--inv-accent) padding-box;

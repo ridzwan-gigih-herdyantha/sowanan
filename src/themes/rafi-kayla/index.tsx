@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { CalendarButton } from "@/components/invitation/calendar-button";
 import { CopyButton } from "@/components/invitation/copy-button";
 import { Extras } from "@/components/invitation/extras";
@@ -219,6 +219,36 @@ function Welcome() {
   );
 }
 
+// Penutup "Tamat" yang terbuka setelah semua pos di aula dikunjungi: foto penutup dan daftar kredit.
+function Finale({ inv }: { inv: InvitationView }) {
+  const credits: [string, ReactNode][] = [
+    ["Pemeran utama", <>{inv.groom.full || inv.groom.name}<br />{inv.bride.full || inv.bride.name}</>],
+    ["Bersama keluarga", <>{inv.groom.parents}<br />{inv.bride.parents}</>],
+    ["Lokasi", `${inv.venue.name}, ${inv.cityShort}`],
+    ["Tamu istimewa", <GuestName key="guest" fallback="Kamu" />],
+  ];
+  return (
+    <div className="px-5 pt-7 pb-4 text-center sm:px-8">
+      <p className="font-display text-[clamp(44px,12vw,64px)] leading-none font-semibold text-inv-accent">Tamat</p>
+      <p className="mt-2 text-[11px] font-bold tracking-[.2em] text-inv-gold uppercase">Terima kasih sudah berkunjung</p>
+      {inv.images.closing && (
+        <div className={`${card} relative mx-auto mt-5 aspect-[4/5] w-[min(72%,280px)] overflow-hidden`}>
+          <Image {...inv.frame.closing} src={inv.images.closing} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="280px" className="object-cover object-[50%_30%]" />
+        </div>
+      )}
+      <dl className="mt-6">
+        {credits.map(([role, name]) => (
+          <div key={role} className="not-first:mt-4">
+            <dt className="text-[10px] font-bold tracking-[.2em] text-inv-accent uppercase">{role}</dt>
+            <dd className="mt-1 text-[15px] leading-relaxed">{name}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-6 font-display text-[15px] font-semibold text-inv-accent">Sampai jumpa {inv.dateLong}</p>
+    </div>
+  );
+}
+
 // Bagian tambahan paket Istimewa (paling banyak dua) masing-masing mendapat satu kios: yang pertama di kiri,
 // sisanya di kanan. Nama dan ikon kios mengikuti judul dan jenis bagiannya, misalnya Dress Code.
 function extraItems(inv: InvitationView) {
@@ -264,7 +294,7 @@ export async function RafiKayla({ inv }: { inv: InvitationView }) {
       className={`${themeFonts} min-h-dvh bg-inv-paper font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
-      <InteriorMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome />} />
+      <InteriorMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome />} finale={<Finale inv={inv} />} />
     </InvitationShell>
   );
 }
