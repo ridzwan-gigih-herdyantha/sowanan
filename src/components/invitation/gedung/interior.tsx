@@ -431,49 +431,51 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] z-10 flex flex-col items-center gap-2.5 px-4">
-        <span className="rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-1.5 font-display text-[clamp(11px,3vw,14px)] tracking-[.14em] uppercase shadow-[0_4px_0_rgba(0,0,0,.2)]">Di dalam gedung</span>
+        {/* Label aula dan daftar isi sebaris di tengah atas, supaya tidak saling menimpa di layar HP. Daftar isi
+            berisi semua pos dengan centang yang sudah dibuka; mengetuk pos memindahkan karakter ke sana. */}
+        <div className="flex items-center gap-2">
+          <span className="hidden rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-1.5 font-display text-[clamp(11px,3vw,14px)] tracking-[.14em] uppercase shadow-[0_4px_0_rgba(0,0,0,.2)] min-[420px]:inline-block">Di dalam gedung</span>
+          <div className="pointer-events-auto relative">
+          <button
+            type="button"
+            onClick={() => setToc((t) => !t)}
+            aria-expanded={toc}
+            className="flex items-center gap-2 rounded-full border-[3px] border-inv-line bg-inv-card px-3.5 py-1.5 font-display text-[clamp(12px,3.2vw,14px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.25)] active:translate-y-0.5"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            Daftar isi
+            <span className="rounded-full bg-inv-accent px-1.5 py-0.5 text-[11px] text-inv-paper tabular-nums">
+              {done}/{pois.length}
+            </span>
+          </button>
+          {toc && (
+            <nav aria-label="Daftar isi" className="gd-pill absolute top-full left-1/2 z-20 mt-2 w-[min(260px,calc(100vw-24px))] -translate-x-1/2 rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]">
+              <ul className="max-h-[min(60dvh,420px)] overflow-y-auto">
+                {pois.map((p) => {
+                  const ok = seen.has(p.id);
+                  return (
+                    <li key={p.id}>
+                      <button type="button" onClick={() => warp(p.at)} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-[14px] font-semibold hover:bg-inv-wash focus-visible:bg-inv-wash">
+                        <span aria-hidden="true" className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-inv-line text-[11px] ${ok ? "bg-inv-accent text-inv-paper" : "bg-inv-paper"}`}>
+                          {ok ? "✓" : ""}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate">{p.label}</span>
+                        <span className="sr-only">{ok ? "sudah dibuka" : "belum dibuka"}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          )}
+          </div>
+        </div>
         <div className="max-w-[360px] rounded-2xl border-[3px] border-inv-line bg-inv-card px-4 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,.25)]">
           {welcome}
           <p className="text-[11px] text-inv-gold">Jalan ke tiap pos, atau ketuk namanya.</p>
         </div>
-      </div>
-
-      {/* Daftar isi: semua pos dengan centang yang sudah dibuka. Mengetuk pos memindahkan karakter ke sana. */}
-      <div className="absolute top-[max(14px,2.4dvh)] left-3 z-20 sm:left-5">
-        <button
-          type="button"
-          onClick={() => setToc((t) => !t)}
-          aria-expanded={toc}
-          className="flex items-center gap-2 rounded-full border-[3px] border-inv-line bg-inv-card px-3.5 py-1.5 font-display text-[clamp(12px,3.2vw,14px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.25)] active:translate-y-0.5"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          Daftar isi
-          <span className="rounded-full bg-inv-accent px-1.5 py-0.5 text-[11px] text-inv-paper tabular-nums">
-            {done}/{pois.length}
-          </span>
-        </button>
-        {toc && (
-          <nav aria-label="Daftar isi" className="gd-pill mt-2 w-[min(260px,calc(100vw-24px))] rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]">
-            <ul className="max-h-[min(60dvh,420px)] overflow-y-auto">
-              {pois.map((p) => {
-                const ok = seen.has(p.id);
-                return (
-                  <li key={p.id}>
-                    <button type="button" onClick={() => warp(p.at)} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-[14px] font-semibold hover:bg-inv-wash focus-visible:bg-inv-wash">
-                      <span aria-hidden="true" className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-inv-line text-[11px] ${ok ? "bg-inv-accent text-inv-paper" : "bg-inv-paper"}`}>
-                        {ok ? "✓" : ""}
-                      </span>
-                      <span className="min-w-0 flex-1 truncate">{p.label}</span>
-                      <span className="sr-only">{ok ? "sudah dibuka" : "belum dibuka"}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        )}
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-10 flex justify-center">

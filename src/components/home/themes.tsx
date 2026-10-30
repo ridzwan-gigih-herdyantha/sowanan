@@ -21,6 +21,8 @@ const CARD_BG: Record<string, string> = {
   "ivan-mawar": "bg-[#f3dcdc]",
   "galih-ardila": "bg-[#ecd3a8]",
   "bonar-anggi": "bg-[#e8cfc4]",
+  // Hijau taman di depan gedung pada peta Isometrik.
+  "rafi-kayla": "bg-[#d5e5c6]",
 };
 
 // Bingkai ponsel berisi tangkapan layar tema.
