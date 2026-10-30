@@ -430,28 +430,31 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         })}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] z-10 flex flex-col items-center gap-2.5 px-4">
-        {/* Label aula dan daftar isi sebaris di tengah atas, supaya tidak saling menimpa di layar HP. Daftar isi
-            berisi semua pos dengan centang yang sudah dibuka; mengetuk pos memindahkan karakter ke sana. */}
-        <div className="flex items-center gap-2">
-          <span className="hidden rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-1.5 font-display text-[clamp(11px,3vw,14px)] tracking-[.14em] uppercase shadow-[0_4px_0_rgba(0,0,0,.2)] min-[420px]:inline-block">Di dalam gedung</span>
-          <div className="pointer-events-auto relative">
+      <div className="pointer-events-none absolute inset-x-0 top-[max(12px,2.2dvh)] z-10 flex flex-col items-center gap-2 px-3">
+        {/* Satu papan di tengah atas: nama aula dan sambutan di kiri, daftar isi di kanan, supaya tidak menumpuk
+            jadi tiga kotak yang menutupi peta. Daftar isi berisi semua pos dengan centang yang sudah dibuka;
+            mengetuk pos memindahkan karakter ke sana. */}
+        <div className="pointer-events-auto relative flex w-full max-w-[420px] items-center gap-2 rounded-2xl border-[3px] border-inv-line bg-inv-card py-1.5 pr-1.5 pl-3.5 shadow-[0_4px_0_rgba(0,0,0,.22)]">
+          <div className="min-w-0 flex-1 [&_p]:truncate">
+            <span className="block text-[10px] leading-none font-semibold tracking-[.16em] text-inv-gold uppercase">Di dalam gedung</span>
+            <div className="mt-1 [&_p]:text-[clamp(13px,3.6vw,16px)] [&_p]:leading-tight">{welcome}</div>
+          </div>
           <button
             type="button"
             onClick={() => setToc((t) => !t)}
             aria-expanded={toc}
-            className="flex items-center gap-2 rounded-full border-[3px] border-inv-line bg-inv-card px-3.5 py-1.5 font-display text-[clamp(12px,3.2vw,14px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.25)] active:translate-y-0.5"
+            className="flex shrink-0 items-center gap-1.5 rounded-xl border-[2.5px] border-inv-line bg-inv-paper px-2.5 py-2 font-display text-[13px] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.22)] active:translate-y-0.5 active:shadow-none"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-            Daftar isi
+            <span className="max-[359px]:sr-only">Daftar isi</span>
             <span className="rounded-full bg-inv-accent px-1.5 py-0.5 text-[11px] text-inv-paper tabular-nums">
               {done}/{pois.length}
             </span>
           </button>
           {toc && (
-            <nav aria-label="Daftar isi" className="gd-pill absolute top-full left-1/2 z-20 mt-2 w-[min(260px,calc(100vw-24px))] -translate-x-1/2 rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]">
+            <nav aria-label="Daftar isi" className="gd-pill absolute top-full right-0 z-20 mt-2 w-[min(260px,calc(100vw-24px))] rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]">
               <ul className="max-h-[min(60dvh,420px)] overflow-y-auto">
                 {pois.map((p) => {
                   const ok = seen.has(p.id);
@@ -470,12 +473,11 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
               </ul>
             </nav>
           )}
-          </div>
         </div>
-        <div className="max-w-[360px] rounded-2xl border-[3px] border-inv-line bg-inv-card px-4 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,.25)]">
-          {welcome}
-          <p className="text-[11px] text-inv-gold">Jalan ke tiap pos, atau ketuk namanya.</p>
-        </div>
+        {/* Petunjuk kecil sampai tamu membuka pos pertamanya. */}
+        {seen.size === 0 && !toc && (
+          <p className="rounded-full bg-inv-line/75 px-3 py-1 text-[11px] font-semibold text-inv-paper">Jalan ke tiap pos, atau ketuk namanya</p>
+        )}
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-10 flex justify-center">
