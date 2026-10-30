@@ -34,8 +34,8 @@ export const NPCS: Npc[] = [
   { id: "a1", sheet: "wanita", tint: "hue-rotate(-40deg)", path: [{ x: 1170, y: 660 }], face: 1, chat: "a", lines: ["Dekorasinya cantik ya!", "Sudah foto di galeri?", "Pengantinnya serasi sekali."] },
   { id: "a2", sheet: "pria", path: [{ x: 1222, y: 660 }], face: 1, flip: true, chat: "a", lines: ["Iya, hangat sekali suasananya.", "Nanti, habis ini.", "Betul, ikut bahagia."] },
   // Dua tamu mengobrol dekat pintu masuk.
-  { id: "b1", sheet: "jas", tint: "brightness(1.1) sepia(.2)", path: [{ x: 280, y: 640 }], face: 1, chat: "b", lines: ["Sudah isi buku tamu?", "Ayo ke pelaminan!", "Jangan lupa amplopnya."] },
-  { id: "b2", sheet: "wanita", tint: "brightness(1.08) saturate(.9)", path: [{ x: 330, y: 640 }], face: 1, flip: true, chat: "b", lines: ["Sudah, barusan.", "Yuk, foto bareng.", "Aman, sudah siap."] },
+  { id: "b1", sheet: "jas", tint: "brightness(1.1) sepia(.2)", path: [{ x: 285, y: 628 }], face: 1, chat: "b", lines: ["Sudah isi buku tamu?", "Ayo ke pelaminan!", "Jangan lupa amplopnya."] },
+  { id: "b2", sheet: "wanita", tint: "brightness(1.08) saturate(.9)", path: [{ x: 335, y: 628 }], face: 1, flip: true, chat: "b", lines: ["Sudah, barusan.", "Yuk, foto bareng.", "Aman, sudah siap."] },
   // Melihat-lihat foto di dinding kanan.
   { id: "v1", sheet: "pria", tint: "sepia(.25) brightness(.95)", path: [{ x: 1430, y: 640 }], face: 2, chat: "v", lines: ["Fotonya bagus-bagus...", "Ini waktu lamaran ya?"] },
 ];

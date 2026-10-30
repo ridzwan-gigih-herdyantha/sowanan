@@ -14,7 +14,9 @@ export type PoiId = "pembuka" | "pelaminan" | "mempelai" | "cerita" | "galeri" |
 // Lantai aula yang boleh dilalui, digambar mengikuti tepi dinding, panggung, dan dinding foto di kanan.
 export const FLOOR_OUTLINE: Area = [
   [135, 598], [400, 466], [700, 316], [985, 172], [1005, 212], [1110, 262], [1230, 320], [1340, 375], [1340, 545], [1590, 670], [1230, 840],
-  [1195, 830], [1100, 790], [950, 865], [760, 768], [570, 835], [430, 755], [300, 690],
+  // Tepi depan berhenti di lantai di balik tembok depan dan pot bunga, bukan di puncak luar tembok, supaya karakter
+  // tidak terlihat berdiri di atas tembok atau di antara bunga.
+  [1195, 830], [1100, 790], [950, 850], [760, 768], [690, 742], [470, 722], [420, 712], [300, 652], [165, 585],
 ];
 
 // Tangga karpet merah dan panggung pelaminan, sampai depan sofa dan kursi. Sisi bawahnya sedikit menumpuk
@@ -47,7 +49,8 @@ export type BoothArt = { src: string; w: number; h: number; ax: number; ay: numb
 const ART: Partial<Record<BoothKind, BoothArt>> = {
   rsvp: { src: "/img/rafi-kayla/rsv-both.png", w: 180, h: 132, ax: 0.53, ay: 0.93, foot: { l: -82, r: 79, d: 30 } },
   dresscode: { src: "/img/rafi-kayla/drescode-both.png", w: 180, h: 132, ax: 0.54, ay: 0.93, foot: { l: -82, r: 75, d: 31 } },
-  angpao: { src: "/img/rafi-kayla/gift-booth.png", w: 200, h: 154, ax: 0.5, ay: 0.93, foot: { l: -96, r: 96, d: 35 } },
+  // Pot bunga di depan kotak angpao, jadi tamu dilayani dari kanan bawahnya.
+  angpao: { src: "/img/rafi-kayla/gift-booth.png", w: 200, h: 154, ax: 0.5, ay: 0.93, foot: { l: -96, r: 96, d: 35 }, front: { x: 60, y: 40 } },
   // Meja miring isometrik: sisi panjangnya sejajar karpet dan menghadap ke kanan bawah, jadi tamu berdiri di
   // depan sisi itu.
   acara: { src: "/img/rafi-kayla/acara-booth.png", w: 300, h: 200, ax: 0.54, ay: 0.81, foot: { l: -80, r: 80, d: 46 }, front: { x: 25, y: 52 } },
