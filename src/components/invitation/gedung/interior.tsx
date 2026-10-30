@@ -298,7 +298,7 @@ export function InteriorMap({ panels, welcome }: { panels: Panel[]; welcome?: Re
   const active = panels.find((p) => p.id === panel);
 
   return (
-    <div ref={rootRef} className="fixed inset-0 z-40 overflow-hidden bg-inv-night text-inv-ink">
+    <div ref={rootRef} className="gd-interior fixed inset-0 z-40 overflow-hidden bg-inv-night text-inv-ink">
       <div ref={stageRef} className="absolute isolate touch-none" style={stage} onPointerDown={onDown} onPointerMove={(e) => dragging.current && aim(e)} onPointerUp={() => (dragging.current = false)} onPointerCancel={() => (dragging.current = false)}>
         <Image src={MAP} alt="" fill sizes="(min-width: 900px) 100vw, 160vw" draggable={false} className="pointer-events-none object-cover select-none" />
 

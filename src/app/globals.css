@@ -3085,6 +3085,29 @@ html.door-wait [data-fit] {
 .gd-pill {
   animation: gd-pop 0.4s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
+/* Panel di dalam gedung Isometrik: bingkai tebal bersudut bulat seperti kartu tema, dan scrollbar tipis berwarna
+   aksen tanpa tombol panah. Jalurnya berhenti sebelum sudut supaya tidak menabrak lengkungan bingkai. */
+.gd-interior .inv-dialog {
+  border: 3px solid var(--inv-line);
+  border-radius: 22px;
+  box-shadow: 0 8px 0 rgb(0 0 0 / 0.35);
+  scrollbar-width: thin;
+  scrollbar-color: var(--inv-accent) transparent;
+}
+@supports not (scrollbar-color: auto) {
+  .gd-interior .inv-dialog::-webkit-scrollbar {
+    width: 10px;
+  }
+  .gd-interior .inv-dialog::-webkit-scrollbar-track {
+    margin: 20px 0;
+    background: transparent;
+  }
+  .gd-interior .inv-dialog::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background: var(--inv-accent) padding-box;
+  }
+}
 /* Buku ucapan di panel pelaminan Isometrik: kolom isian bergaris tebal dan tombol pil seperti tombol game. */
 .gd-wishes input:not([type="hidden"]),
 .gd-wishes textarea {

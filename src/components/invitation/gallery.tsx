@@ -9,7 +9,7 @@ type Photo = { src: string; w: number; h: number; alt: string; caption?: string;
 
 const tilt = [-2, 1.5, -1, 2.5, -2.5, 1];
 
-type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" | "bleed" | "strip" | "mawaddah" };
+type Props = { photos: readonly Photo[]; stamp?: string; variant?: "collage" | "grid" | "specimen" | "bleed" | "strip" | "mawaddah" | "game" };
 
 export function Gallery({ photos, stamp, variant = "collage" }: Props) {
   const grid = variant === "grid";
@@ -51,6 +51,41 @@ export function Gallery({ photos, stamp, variant = "collage" }: Props) {
             </li>
           ))}
         </ul>
+        {lightbox}
+      </>
+    );
+  }
+
+  // Kartu foto ala game untuk panel sempit: foto pertama lebar di atas, sisanya persegi dua kolom. Foto terakhir
+  // yang tersisa sendirian di barisnya ikut dibuat lebar. Bingkai tebal, bayangan padat, sedikit miring
+  // bergantian, dan nomor urut di lencana pojok.
+  if (variant === "game") {
+    return (
+      <>
+        <ul className="grid grid-cols-2 gap-3.5 sm:gap-4">
+          {photos.map((p, i) => {
+            const wide = i === 0 || (i === photos.length - 1 && photos.length % 2 === 0);
+            return (
+              <li key={p.src} className={wide ? "col-span-2" : "min-w-0"} style={wide ? undefined : { rotate: `${i % 2 ? -1.2 : 1.2}deg` }}>
+                <button
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className="group relative block w-full overflow-hidden rounded-2xl border-[3px] border-inv-line bg-inv-card text-left shadow-[0_5px_0_rgba(0,0,0,.22)] transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-inv-accent"
+                  aria-label={`Buka foto: ${p.alt}`}
+                >
+                  <span className={`relative block ${wide ? "aspect-[16/10]" : "aspect-square"}`}>
+                    <Image src={p.src} alt={p.alt} fill sizes={wide ? "(min-width: 560px) 480px, 92vw" : "(min-width: 560px) 240px, 46vw"} className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+                  </span>
+                  <span className="absolute top-2 left-2 rounded-full border-2 border-inv-line bg-inv-card px-2 py-0.5 font-display text-[11px] leading-none font-semibold tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  {p.caption && <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/60 to-transparent px-3 pt-6 pb-2 text-[12px] font-semibold text-white">{p.caption}</span>}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <p className="mt-4 text-center text-[12px] text-inv-gold">Ketuk foto untuk memperbesar</p>
         {lightbox}
       </>
     );

@@ -247,7 +247,7 @@ export async function RafiKayla({ inv }: { inv: InvitationView }) {
     { id: "pembuka", title: "Selamat datang", body: <Opening inv={inv} /> },
     (wishes !== null || inv.on.closing) && { id: "pelaminan", title: wishes ? "Pelaminan dan buku ucapan" : "Pelaminan", body: <Pelaminan inv={inv} wishes={wishes} /> },
     inv.on.couple && { id: "mempelai", title: "Mempelai", body: <Couple inv={inv} /> },
-    inv.on.gallery && inv.gallery.length > 0 && { id: "galeri", title: "Galeri", body: <Gallery photos={inv.gallery} variant="grid" /> },
+    inv.on.gallery && inv.gallery.length > 0 && { id: "galeri", title: "Galeri", body: <Gallery photos={inv.gallery} variant="game" /> },
     extraPanel(inv, "slot1", extras.slice(0, 1)),
     inv.on.rsvp && { id: "rsvp", title: "Konfirmasi kehadiran", body: <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /> },
     inv.on.story && inv.story.length > 0 && { id: "cerita", title: "Cerita kami", body: <Story inv={inv} /> },
