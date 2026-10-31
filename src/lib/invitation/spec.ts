@@ -1,4 +1,5 @@
 import type { Purpose } from "@/lib/storage/media";
+import { CUSTOM } from "../../themes/palette.ts";
 import { EXTRA_KINDS, EXTRA_TONES, RULE_ICONS, type ExtraAnchor, type ExtraKind, type InvitationData, type SectionKey } from "./schema.ts";
 
 const A = "andi-rina";
@@ -494,6 +495,11 @@ export function checkInvitation(data: InvitationData, theme: string): Issue[] {
   }
   const { start, end } = data.event;
   if (start && end && Date.parse(end) < Date.parse(start)) out.push({ path: "event.end", group: "hero", message: "Selesai acara harus setelah mulai acara." });
+  // Palet kustom dengan warna tidak sah diam-diam kembali ke palet bawaan, jadi ditahan di sini.
+  const { paper, accent, ink } = data.style.custom;
+  if (data.style.palette === CUSTOM && ![paper, accent, ink].every((c) => HEX.test(c))) {
+    out.push({ path: "style.palette", group: "gaya", message: "Palet kustom belum lengkap. Isi warna latar, aksen, dan teks dengan kode seperti #A3B18A, atau pilih palet jadi." });
+  }
   if (data.sections.gifts.enabled && !data.sections.gifts.accounts.length && !data.sections.gifts.qris) {
     out.push({ path: "sections.gifts.accounts", group: "gifts", message: "Isi minimal satu rekening atau QRIS, atau matikan section Hadiah." });
   }
