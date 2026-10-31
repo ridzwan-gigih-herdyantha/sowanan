@@ -116,7 +116,7 @@ export function BerandaPanel() {
             <>
               <Row>
                 <Text path={`${base}.name`} label="Nama fitur" max={30} />
-                <Text path={`${base}.text`} label="Keterangan singkat" max={90} />
+                <Text path={`${base}.text`} label="Keterangan singkat" max={120} />
                 <Select path={`${base}.icon`} label="Ikon" className={width.md} options={Object.entries(ICONS)} />
               </Row>
               <Row>
@@ -137,7 +137,7 @@ export function BerandaPanel() {
           render={(_, __, base) => (
             <Row>
               <Text path={`${base}.title`} label="Judul langkah" max={24} className={width.md} />
-              <Text path={`${base}.text`} label="Penjelasan" max={110} />
+              <Text path={`${base}.text`} label="Penjelasan" max={130} />
             </Row>
           )}
         />

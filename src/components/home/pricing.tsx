@@ -19,7 +19,10 @@ function plans(s: Settings): Plan[] {
       blurb: p.blurb,
       // Strip spesifikasi ada di posisi yang sama di semua kartu.
       specs: [["Jadi dalam", slaText(p, true)], ...(p.revision ? ([["Revisi", p.revision]] as [string, string][]) : [])],
-      features: s.matrix.map((row) => ({ label: row.label, ...cellView(s, row, id) })),
+      features: s.matrix.map((row) => {
+        const own = row.cells[id].label?.trim();
+        return own ? { label: own, on: true } : { label: row.label, ...cellView(s, row, id) };
+      }),
       waHref: planWaLink(s, id),
     };
   });

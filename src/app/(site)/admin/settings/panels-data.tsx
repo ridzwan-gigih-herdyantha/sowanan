@@ -147,6 +147,22 @@ function Matrix() {
                       className={cx(input, "border-[#E8E0D6] px-2.5! py-1.5! text-ink-mute sm:text-[12px]!")}
                     />
                   )}
+                  <details open={PACKAGE_IDS.some((p) => r.cells[p].label)} className="text-[12px] text-ink-mute">
+                    <summary className="cursor-pointer select-none hover:text-wine">Teks per paket</summary>
+                    <div className="mt-1.5 flex flex-col gap-1.5">
+                      {PACKAGE_IDS.map((p) => (
+                        <input
+                          key={p}
+                          value={r.cells[p].label ?? ""}
+                          placeholder={`${PACKAGE_NAMES[p]}: kosong berarti sama`}
+                          aria-label={`Teks khusus paket ${PACKAGE_NAMES[p]} baris ${i + 1}`}
+                          aria-invalid={!!errors[`matrix.${i}.cells.${p}.label`]}
+                          onChange={(e) => edit(i, `cells.${p}.label`, e.target.value)}
+                          className={cx(input, "px-2.5! py-1.5! sm:text-[12px]!", errors[`matrix.${i}.cells.${p}.label`] ? "border-wine" : "border-[#E8E0D6]")}
+                        />
+                      ))}
+                    </div>
+                  </details>
                 </span>
                 <span role="cell">
                   <SelectBox
@@ -254,7 +270,7 @@ export function PaketPanel() {
       </Card>
       <Card
         title="Isi paket"
-        hint="Satu baris sama dengan satu baris di kartu harga, urutannya berlaku untuk ketiga paket supaya kartu tetap sejajar. Baris tanpa kunci sistem hanya tampilan, bebas ditambah atau diubah kapan saja."
+        hint="Satu baris sama dengan satu baris di kartu harga, urutannya berlaku untuk ketiga paket supaya kartu tetap sejajar. Baris tanpa kunci sistem hanya tampilan, bebas ditambah atau diubah kapan saja. Teks per paket menggantikan nama baris di kartu paket itu dan selalu tampil termasuk, sedangkan kunci sistem tetap mengikuti centangnya."
         tools={
           <a href="/#harga" target="_blank" rel="noopener" className={cx(button.quiet, button.sm)}>
             Lihat halaman harga
@@ -278,7 +294,7 @@ export function AddonPanel() {
         render={(item, __, base) => (
           <>
             <Row>
-              <Text path={`${base}.name`} label="Nama tambahan" max={46} />
+              <Text path={`${base}.name`} label="Nama tambahan" max={90} />
               <NumberField path={`${base}.price`} label="Harga" chip="view" prefix="Rp" rupiah className={width.sm} />
               <Text path={`${base}.scope`} label="Berlaku untuk" max={60} />
             </Row>

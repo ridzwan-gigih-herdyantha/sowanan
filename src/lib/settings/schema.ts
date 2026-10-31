@@ -107,7 +107,7 @@ const offerCardShape = (label: string) =>
 export type OfferCardData = z.infer<ReturnType<typeof offerCardShape>>;
 const offerCard = (label: string, fallback: OfferCardData) => offerCardShape(label).default(fallback);
 
-const cell = z.object({ on: z.boolean(), n: count("Jumlah", 0, 9999).nullable() });
+const cell = z.object({ on: z.boolean(), n: count("Jumlah", 0, 9999).nullable(), label: str("Teks khusus paket", 60).optional() });
 
 const pkg = (name: string) =>
   z.object({
@@ -166,9 +166,9 @@ export const settingsSchema = z
       faq: section("tanya jawab").extend({ cta: str("Label tautan WhatsApp tanya jawab", 40).default("Belum terjawab? Tanya lewat WhatsApp") }),
     }),
     features: z
-      .array(z.object({ id, on: z.boolean(), name: req("Nama fitur", 30), text: str("Keterangan fitur", 90), icon: z.enum(Object.keys(ICONS) as [IconId, ...IconId[]]), label: str("Label fitur", 30) }))
+      .array(z.object({ id, on: z.boolean(), name: req("Nama fitur", 30), text: str("Keterangan fitur", 120), icon: z.enum(Object.keys(ICONS) as [IconId, ...IconId[]]), label: str("Label fitur", 30) }))
       .max(30, "Fitur maksimal 30."),
-    steps: z.array(z.object({ id, title: req("Judul langkah", 24), text: str("Penjelasan langkah", 110) })).max(8, "Langkah maksimal 8."),
+    steps: z.array(z.object({ id, title: req("Judul langkah", 24), text: str("Penjelasan langkah", 130) })).max(8, "Langkah maksimal 8."),
     closing: z.object({
       title: req("Judul penutup", 50),
       text: str("Kalimat penutup", 160),
@@ -235,7 +235,7 @@ export const settingsSchema = z
         z.object({
           id,
           on: z.boolean(),
-          name: req("Nama tambahan", 46),
+          name: req("Nama tambahan", 90),
           price: rupiah("Harga tambahan"),
           scope: str("Berlaku untuk", 60),
           unlock: z.enum(["", ...UNLOCK_KEYS]).default(""),
