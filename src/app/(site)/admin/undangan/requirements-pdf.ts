@@ -56,7 +56,8 @@ const family = (f: { style: { fontFamily: string } }) => f.style.fontFamily.spli
 
 // Pilihan palet dan font tema, hanya bila paket atau add-on membuka ganti palet dan font.
 // Contoh tulisan memakai font asli dari Google Fonts supaya klien bisa membandingkan.
-function styleChoices(theme: string, couple: string) {
+// Pilihan gaya yang ditawarkan mengikuti kunci paket: varian palet, warna sendiri, dan font masing-masing terpisah.
+function styleChoices(theme: string, couple: string, locked: PackageRules["locked"]) {
   const palette = PALETTES[theme];
   const fonts = FONT_PRESETS[theme] ?? [];
   if (!palette) return { html: "", families: [] as string[] };
@@ -68,17 +69,21 @@ function styleChoices(theme: string, couple: string) {
     .map((f, i) => `<tr class="font"><td class="box"><span></span></td><td class="label">${esc(f.name)}${i === 0 ? " <small>(bawaan)</small>" : ""}</td><td><div class="sample" style="font-family:'${esc(family(f.display))}'">${esc(names)}</div><div class="body" style="font-family:'${esc(family(f.body))}'">Dengan memohon rahmat Tuhan, kami mengundang Anda.</div></td></tr>`)
     .join("");
   const scripts = NAME_FONTS.map((f) => `<tr class="font"><td class="box"><span></span></td><td class="label">${esc(f.name)}</td><td><div class="sample" style="font-family:'${esc(family(f.font))}';font-size:20pt">${esc(names)}</div></td></tr>`).join("");
-  const html = `<h2>Warna dan font</h2><p class="note">Pilih satu palet dan satu pasangan font. Kalau tidak memilih, tema memakai yang pertama.</p>
-<h3>Palet warna</h3><div class="pals">${pals}<div class="pal"><span class="sw"><i style="background:#fff"></i><i style="background:#ddd"></i><i style="background:#999"></i></span><b>Warna sendiri: kirim tiga warna untuk latar, aksen, dan teks</b></div></div>
-${pairs ? `<h3>Pasangan font</h3><table>${pairs}</table>` : ""}
-<h3>Font khusus nama mempelai <small style="font-weight:400;color:#8a7f76">opsional</small></h3><table>${scripts}</table>`;
-  const families = [...new Set([...fonts.flatMap((f) => [family(f.display), family(f.body)]), ...NAME_FONTS.map((f) => family(f.font))])];
+  const own = `<div class="pal"><span class="sw"><i style="background:#fff"></i><i style="background:#ddd"></i><i style="background:#999"></i></span><b>Warna sendiri: kirim tiga warna untuk latar, aksen, dan teks</b></div>`;
+  const palettes = `${locked.palet_varian ? "" : pals}${locked.palet_custom ? "" : own}`;
+  const fontOpen = !locked.font_varian;
+  if (!palettes && !fontOpen) return { html: "", families: [] as string[] };
+  const html = `<h2>Warna dan font</h2><p class="note">Pilih ${[palettes && "satu palet", fontOpen && pairs && "satu pasangan font"].filter(Boolean).join(" dan ")}. Kalau tidak memilih, tema memakai yang pertama.</p>
+${palettes ? `<h3>Palet warna</h3><div class="pals">${palettes}</div>` : ""}
+${fontOpen && pairs ? `<h3>Pasangan font</h3><table>${pairs}</table>` : ""}
+${fontOpen ? `<h3>Font khusus nama mempelai <small style="font-weight:400;color:#8a7f76">opsional</small></h3><table>${scripts}</table>` : ""}`;
+  const families = fontOpen ? [...new Set([...fonts.flatMap((f) => [family(f.display), family(f.body)]), ...NAME_FONTS.map((f) => family(f.font))])] : [];
   return { html, families };
 }
 
 export async function requirementsHtml({ theme, themeName, pkgName, rules, data, skip, demoUrl, couple }: Input) {
   const { sections, automatic } = requirements(theme, rules, data, skip);
-  const style = rules.locked.warna_tema ? { html: "", families: [] } : styleChoices(theme, couple);
+  const style = styleChoices(theme, couple, rules.locked);
   const fontLink = style.families.length ? `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${style.families.map((f) => `family=${encodeURIComponent(f).replace(/%20/g, "+")}`).join("&")}&display=block">` : "";
   const qr = await QRCode.toDataURL(demoUrl, { margin: 0, width: 240, color: { dark: "#2a2420", light: "#ffffff" } });
   const title = `Kebutuhan data ${themeName}${couple ? ` - ${couple}` : ""}`;

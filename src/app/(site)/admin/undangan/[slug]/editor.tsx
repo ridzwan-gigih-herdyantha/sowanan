@@ -202,7 +202,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
 
   const jump = useCallback((path: string) => {
     setMobilePreview(false);
-    if (path === "style") return open("style");
+    if (path.startsWith("style")) return open("style");
     const g = groupOf(path);
     if (g) setActive(g);
     setFocus(path);
@@ -376,7 +376,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
               theme={theme}
               style={data.style}
               couple={[data.couple.groom.name, data.couple.bride.name].filter(Boolean).join(" & ") || "Andi & Rina"}
-              locked={rules.locked.warna_tema}
+              locked={{ palette: rules.locked.palet_varian, custom: rules.locked.palet_custom, font: rules.locked.font_varian }}
               applying={applying}
               onChange={(style) => {
                 if (JSON.stringify(style) === JSON.stringify(data.style)) return;

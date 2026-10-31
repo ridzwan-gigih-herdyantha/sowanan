@@ -163,6 +163,10 @@ function Matrix() {
                       ))}
                     </div>
                   </details>
+                  <label className="flex w-fit cursor-pointer items-center gap-1.5 text-[12px] text-ink-mute hover:text-wine">
+                    <input type="checkbox" checked={Boolean(r.hidden)} onChange={(e) => edit(i, "hidden", e.target.checked)} className="accent-wine" />
+                    Sembunyikan di kartu harga
+                  </label>
                 </span>
                 <span role="cell">
                   <SelectBox
@@ -270,7 +274,7 @@ export function PaketPanel() {
       </Card>
       <Card
         title="Isi paket"
-        hint="Satu baris sama dengan satu baris di kartu harga, urutannya berlaku untuk ketiga paket supaya kartu tetap sejajar. Baris tanpa kunci sistem hanya tampilan, bebas ditambah atau diubah kapan saja. Teks per paket menggantikan nama baris di kartu paket itu dan selalu tampil termasuk, sedangkan kunci sistem tetap mengikuti centangnya."
+        hint="Satu baris sama dengan satu baris di kartu harga, urutannya berlaku untuk ketiga paket supaya kartu tetap sejajar. Baris tanpa kunci sistem hanya tampilan, bebas ditambah atau diubah kapan saja. Teks per paket menggantikan nama baris di kartu paket itu dan selalu tampil termasuk, sedangkan kunci sistem tetap mengikuti centangnya. Baris yang disembunyikan tidak tampil di kartu harga tapi kuncinya tetap berlaku."
         tools={
           <a href="/#harga" target="_blank" rel="noopener" className={cx(button.quiet, button.sm)}>
             Lihat halaman harga

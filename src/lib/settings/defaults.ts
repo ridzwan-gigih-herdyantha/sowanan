@@ -329,7 +329,10 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   matrix: [
     { id: "katalog", label: "Bebas pilih satu tema dari katalog", kind: "check", unit: "", key: "", cells: all },
-    { id: "warna", label: "Warna tema disesuaikan palet acara", kind: "check", unit: "", key: "warna_tema", cells: cells(false, true, true) },
+    { id: "warna", label: "Warna tema disesuaikan palet acara", kind: "check", unit: "", key: "palet_varian", cells: cells(false, true, true) },
+    { id: "font", label: "Font, pilih dari varian", kind: "check", unit: "", key: "font_varian", cells: cells(false, true, true), hidden: true },
+    { id: "paletcustom", label: "Palet warna custom sesuai acara", kind: "check", unit: "", key: "palet_custom", cells: cells(false, false, true), hidden: true },
+    { id: "fontcustom", label: "Font custom dari Google Fonts", kind: "check", unit: "", key: "font_custom", cells: cells(false, false, true), hidden: true },
     {
       id: "bagian",
       label: "Bagian tambahan di luar tema",
@@ -362,7 +365,12 @@ export const DEFAULT_SETTINGS: Settings = {
   addons: [
     { id: "foto", on: true, name: "Tambah 10 foto galeri", price: 25000, scope: "Dasar dan Lengkap", unlock: "galeri_foto", amount: 10 },
     { id: "musik", on: true, name: "Musik latar pilihan sendiri", price: 25000, scope: "Dasar", unlock: "musik_sendiri", amount: 0 },
-    { id: "gaya", on: true, name: "Ganti font atau palet warna", price: 35000, scope: "Dasar", unlock: "warna_tema", amount: 0 },
+    { id: "gaya", on: true, name: "Ganti font atau palet warna", price: 35000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
+    // Pengganti add-on gaya, dinyalakan bersamaan dengan teks harga dan ketentuan yang baru.
+    { id: "palet", on: false, name: "Pilih 1 dari 4 varian palet", price: 25000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
+    { id: "font", on: false, name: "Pilih varian font", price: 25000, scope: "Dasar", unlock: "font_varian", amount: 0 },
+    { id: "paletcustom", on: false, name: "Palet warna custom", price: 25000, scope: "Lengkap", unlock: "palet_custom", amount: 0 },
+    { id: "fontcustom", on: false, name: "Font custom dari Google Fonts", price: 25000, scope: "Lengkap", unlock: "font_custom", amount: 0 },
     { id: "domainmyid", on: true, name: "Alamat domain sendiri (.my.id)", price: 99000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
     { id: "domain", on: true, name: "Alamat domain sendiri (.com)", price: 299000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
     { id: "excel", on: false, name: "Ekspor daftar tamu ke Excel", price: 50000, scope: "Lengkap", unlock: "ekspor_excel", amount: 0 },

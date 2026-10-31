@@ -11,8 +11,8 @@ type Props = {
   style: InvitationData["style"];
   // Nama mempelai untuk contoh font nama, misalnya "Andi & Rina".
   couple: string;
-  // Alasan gaya tidak bisa diubah karena tidak termasuk paket.
-  locked?: string;
+  // Alasan tiap bagian gaya tidak bisa diubah karena tidak termasuk paket. Kosong berarti terbuka.
+  locked: { palette?: string; custom?: string; font?: string };
   applying: string | null;
   onChange: (style: InvitationData["style"]) => void;
 };
@@ -46,6 +46,12 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
   const font = fonts.find((f) => f.id === style.font) ?? fonts[0];
   const nameFont = NAME_FONTS.find((f) => f.id === style.nameFont);
   const changed = current !== p.presets[0].id || Boolean(style.font) || Boolean(nameFont);
+  // Kunci yang sedang dilanggar isian sekarang ditandai merah, sisanya cukup keterangan.
+  const notes = [
+    { text: locked.palette, broken: !custom && current !== p.presets[0].id },
+    { text: locked.custom, broken: custom },
+    { text: locked.font, broken: Boolean(style.font) || Boolean(nameFont) },
+  ].filter((n, i, all): n is { text: string; broken: boolean } => Boolean(n.text) && all.findIndex((m) => m.text === n.text) === i);
 
   const pick = (id: string) => onChange({ ...style, palette: id === p.presets[0].id ? "" : id });
   const startCustom = () => onChange({ ...style, palette: CUSTOM, custom: { ...p.base(active) } });
@@ -63,14 +69,14 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
         </span>
       </div>
         <div>
-          {locked && (
-            <p className={`mb-4 rounded-sm px-3 py-2 text-[13px] ${changed ? "bg-blush/60 text-wine ring-1 ring-wine/40" : "bg-ivory text-ink-mute ring-1 ring-line"}`}>
-              {locked}
-              {changed && " Gaya yang sudah diubah perlu dikembalikan ke bawaan sebelum simpan final."}
+          {notes.map((n) => (
+            <p key={n.text} className={`mb-4 rounded-sm px-3 py-2 text-[13px] ${n.broken ? "bg-blush/60 text-wine ring-1 ring-wine/40" : "bg-ivory text-ink-mute ring-1 ring-line"}`}>
+              {n.text}
+              {n.broken && " Pilihan yang sudah diubah perlu dikembalikan ke bawaan sebelum simpan final."}
             </p>
-          )}
+          ))}
 
-          {!locked && (
+          {!locked.palette && (
             <>
             <p className="text-[13px] text-ink-mute">Palet jadi</p>
             <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -100,8 +106,12 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
                 );
               })}
             </div>
+            </>
+          )}
 
-            <div className="mt-5 flex items-center justify-between gap-3">
+          {!locked.custom && (
+            <>
+            <div className={`flex items-center justify-between gap-3 ${locked.palette ? "" : "mt-5"}`}>
               <p className="text-[13px] text-ink-mute">Palet kustom</p>
               {!custom && (
                 <button type="button" onClick={startCustom} className="rounded-sm border border-ink px-3 py-1.5 text-[13px]">
@@ -158,10 +168,14 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
                 )}
               </>
             )}
+            </>
+          )}
 
+          {!locked.font && (
+            <>
             {fonts.length > 0 && (
               <>
-                <p className="mt-6 text-[13px] text-ink-mute">Pasangan font (judul dan isi)</p>
+                <p className={`text-[13px] text-ink-mute ${locked.palette && locked.custom ? "" : "mt-6"}`}>Pasangan font (judul dan isi)</p>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                   {fonts.map((f, i) => {
                     const on = f.id === (font?.id ?? "");

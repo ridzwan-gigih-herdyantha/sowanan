@@ -46,7 +46,10 @@ export const SYSTEM_KEYS = {
   galeri_foto: "Membatasi jumlah foto galeri di editor undangan",
   bagian_tambahan: "Membatasi jumlah bagian tambahan di luar tema di editor undangan",
   musik_sendiri: "Membuka unggah musik sendiri di editor undangan",
-  warna_tema: "Membuka ganti palet dan font di editor undangan",
+  palet_varian: "Membuka pilihan varian palet di editor undangan",
+  palet_custom: "Membuka palet kustom dari tiga warna dasar di editor undangan",
+  font_varian: "Membuka pilihan pasangan font dan font nama mempelai di editor undangan",
+  font_custom: "Membuka font kustom dari Google Fonts di editor undangan",
   cerita: "Membuka bagian Cerita di editor undangan",
   nama_tamu: "Membuka halaman nama tamu",
   ekspor_excel: "Membuka unduh Excel di halaman RSVP dan daftar tamu",
@@ -227,6 +230,8 @@ export const settingsSchema = z
           unit: str("Format jumlah", 40).default(""),
           key: z.enum(["", ...(Object.keys(SYSTEM_KEYS) as SystemKey[])]),
           cells: z.object({ dasar: cell, lengkap: cell, istimewa: cell }),
+          // Baris yang hanya mengatur kunci sistem, tidak tampil di kartu harga.
+          hidden: z.boolean().optional(),
         }),
       )
       .max(40, "Isi paket maksimal 40 baris."),

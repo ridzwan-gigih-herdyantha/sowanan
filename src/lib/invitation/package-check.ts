@@ -1,6 +1,13 @@
 import type { PackageRules } from "@/lib/settings/text";
+import { CUSTOM } from "@/themes/palette";
 import { countsAsExtra, type InvitationData } from "./schema";
 import { forTheme, GROUPS, type Issue } from "./spec";
+
+// Palet kustom dan palet varian dikunci terpisah. Kosong berarti palet bawaan, selalu boleh.
+export function paletteLocked(palette: string, rules: PackageRules): string | undefined {
+  if (!palette) return undefined;
+  return palette === CUSTOM ? rules.locked.palet_custom : rules.locked.palet_varian;
+}
 
 // Isian yang melebihi paket plus add-on. Dipakai editor dan dicek ulang di server saat simpan final dan tayang.
 export function packageIssues(data: InvitationData, theme: string, rules: PackageRules): Issue[] {
@@ -28,8 +35,12 @@ export function packageIssues(data: InvitationData, theme: string, rules: Packag
   if (rules.locked.cerita && has("story") && data.sections.story.enabled) {
     out.push({ path: "sections.story.items", group: "story", message: `${rules.locked.cerita} Matikan bagian Cerita.` });
   }
-  if (rules.locked.warna_tema && (data.style.palette || data.style.font || data.style.nameFont)) {
-    out.push({ path: "style", group: "gaya", message: `${rules.locked.warna_tema} Kembalikan ke palet dan font bawaan.` });
+  const paletteLock = paletteLocked(data.style.palette, rules);
+  if (paletteLock) {
+    out.push({ path: "style.palette", group: "gaya", message: `${paletteLock} Kembalikan ke palet bawaan.` });
+  }
+  if (rules.locked.font_varian && (data.style.font || data.style.nameFont)) {
+    out.push({ path: "style.font", group: "gaya", message: `${rules.locked.font_varian} Kembalikan ke font bawaan.` });
   }
   return out;
 }
