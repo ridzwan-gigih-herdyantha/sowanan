@@ -1,0 +1,272 @@
+{
+  "slug": "damar-elara",
+  "theme": "damar-elara",
+  "published": true,
+  "package": "istimewa",
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "Bersamamu, bahkan malam terasa seperti rumah.",
+      "credit": "Foto oleh Ilyasick Photo dan Rachel Claire di Pexels",
+      "sesanti": "",
+      "tagline": "Di bawah cahaya redup, kami memilih satu sama lain?untuk seluruh hidup.",
+      "ayatArti": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-10-30T22:00:00+07:00",
+      "city": "Bandung, Jawa Barat",
+      "start": "2027-10-30T18:30:00+07:00",
+      "venue": {
+        "name": "Maison Arang",
+        "address": "Dago Atas, Bandung, Jawa Barat",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Maison+Arang%2C+Dago+Atas%2C+Bandung"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "10.00",
+          "until": "11.30"
+        },
+        {
+          "name": "Resepsi",
+          "time": "19.00",
+          "until": "21.30"
+        }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "17 Oktober 2027"
+    },
+    "media": {
+      "og": "/img/damar-elara/og.jpg",
+      "hero": "/img/damar-elara/hero.webp",
+      "rsvp": "",
+      "music": "",
+      "venue": "/img/damar-elara/venue.webp",
+      "couple": "",
+      "detail": "",
+      "closing": "/img/damar-elara/closing.webp",
+      "heroWide": "/img/damar-elara/hero-wide.webp"
+    },
+    "share": {
+      "description": "Dengan hangat, kami mengundang Anda ke pernikahan Damar dan Elara di Bandung.",
+      "ogDescription": "Undangan pernikahan Damar & Elara, Sabtu 30 Oktober 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Elara Maheswari",
+        "name": "Elara",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "/img/damar-elara/bride.webp",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Bima Mahendra & Ibu Nirmala Putri"
+      },
+      "groom": {
+        "full": "Damar Pradana",
+        "name": "Damar",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "/img/damar-elara/groom.webp",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Hendra Pradana & Ibu Ratih Kusuma"
+      }
+    },
+    "extras": [],
+    "monogram": "D & E",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Rekening contoh untuk pratinjau. Jangan lakukan transfer.",
+        "qris": "",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Bima Aditya Prakoso",
+            "number": "0000 1906 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Nadia Kusumawardani",
+            "number": "2222 1906 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "14.02.2019",
+            "long": "Sebuah perkenalan sederhana berubah menjadi cerita yang ingin kami jaga.",
+            "image": "/img/damar-elara/gallery-1.webp",
+            "place": "Bandung",
+            "short": "Sebuah perkenalan sederhana berubah menjadi cerita yang ingin kami jaga.",
+            "title": "Pertemuan yang tak direncanakan"
+          },
+          {
+            "no": "",
+            "date": "21.09.2021",
+            "long": "Kami menemukan rumah di antara jalan pulang dan obrolan yang tak kunjung usai.",
+            "image": "/img/damar-elara/gallery-2.webp",
+            "place": "Bandung",
+            "short": "Kami menemukan rumah di antara jalan pulang dan obrolan yang tak kunjung usai.",
+            "title": "Kota dan percakapan panjang"
+          },
+          {
+            "no": "",
+            "date": "16.10.2024",
+            "long": "Di hadapan keluarga, satu pertanyaan dijawab dengan sepenuh hati.",
+            "image": "/img/damar-elara/gallery-1.webp",
+            "place": "Bandung",
+            "short": "Di hadapan keluarga, satu pertanyaan dijawab dengan sepenuh hati.",
+            "title": "Satu jawaban untuk selamanya"
+          },
+          {
+            "no": "",
+            "date": "19.06.2027",
+            "long": "Kini kami memulai bab baru, ditemani orang-orang tersayang.",
+            "image": "/img/damar-elara/gallery-2.webp",
+            "place": "Bandung",
+            "short": "Kini kami memulai bab baru, ditemani orang-orang tersayang.",
+            "title": "Malam yang kami nantikan"
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "h": 1500,
+            "w": 1200,
+            "no": "102",
+            "alt": "Damar dan Elara dalam potret hitam-putih yang intim",
+            "src": "/img/damar-elara/gallery-1.webp",
+            "caption": "berdampingan"
+          },
+          {
+            "h": 1500,
+            "w": 1200,
+            "no": "108",
+            "alt": "Damar dan Elara berbagi momen di ruang temaram",
+            "src": "/img/damar-elara/gallery-2.webp",
+            "caption": "bergandengan"
+          },
+          {
+            "h": 1500,
+            "w": 1200,
+            "no": "115",
+            "alt": "Damar dan Elara dalam potret hitam-putih yang intim",
+            "src": "/img/damar-elara/gallery-1.webp",
+            "caption": "jalan setapak"
+          },
+          {
+            "h": 1500,
+            "w": 1200,
+            "no": "121",
+            "alt": "Damar dan Elara berbagi momen di ruang temaram",
+            "src": "/img/damar-elara/gallery-2.webp",
+            "caption": "di mulut gua"
+          },
+          {
+            "h": 1500,
+            "w": 1200,
+            "no": "129",
+            "alt": "Damar dan Elara dalam potret hitam-putih yang intim",
+            "src": "/img/damar-elara/gallery-1.webp",
+            "caption": "menunggu"
+          },
+          {
+            "h": 1500,
+            "w": 1200,
+            "no": "134",
+            "alt": "Damar dan Elara berbagi momen di ruang temaram",
+            "src": "/img/damar-elara/gallery-2.webp",
+            "caption": "langkah kecil"
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [
+          {
+            "h": 589,
+            "w": 600,
+            "no": "042",
+            "src": "hendrawan-larasati/specimen_1.webp?v=mui0557v",
+            "latin": "Rosa chinensis",
+            "local": "mawar"
+          },
+          {
+            "h": 600,
+            "w": 600,
+            "no": "057",
+            "src": "hendrawan-larasati/specimen_2.webp?v=mui055fv",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek bulan"
+          },
+          {
+            "h": 675,
+            "w": 600,
+            "no": "063",
+            "src": "hendrawan-larasati/specimen_3.webp?v=mui055on",
+            "latin": "Rosa & Phalaenopsis",
+            "local": "buket pengantin"
+          },
+          {
+            "h": 436,
+            "w": 600,
+            "no": "071",
+            "src": "hendrawan-larasati/specimen_4.webp?v=mui055vs",
+            "latin": "Phalaenopsis amabilis",
+            "local": "anggrek putih"
+          }
+        ],
+        "enabled": true
+      }
+    }
+  }
+}

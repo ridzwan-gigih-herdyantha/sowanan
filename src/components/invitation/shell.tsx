@@ -17,10 +17,14 @@ import { MulaiDoor, type MulaiProps } from "./petualang/door";
 import { MekarDoor, type MekarProps } from "./mekar/door";
 import { TabloidDoor, type TabloidProps } from "./tabloid/door";
 import { UlosDoor, type UlosProps } from "./horas/door";
+import { ElarisDoor, type ElarisDoorProps } from "./elaris-door";
+import { MawaddahDoor, type MawaddahDoorProps } from "./mawaddah-door";
+import { NocturneDoor, type NocturneDoorProps } from "./nocturne-door";
+import { GedungDoor, type GedungProps } from "./gedung/door";
 
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
-const GuestContext = createContext<GuestCtx>({ guest: "", setGuest: () => {} });
+const GuestContext = createContext<GuestCtx>({ guest: "", setGuest: () => { } });
 export const useGuest = () => useContext(GuestContext);
 
 // Undangan yang sudah dibekukan menjadi arsip: formulir RSVP dan ucapan ditutup, ucapan yang ada tetap tampil.
@@ -44,7 +48,12 @@ export function InvitationSlug({ slug, children }: { slug: string; children: Rea
   return <SlugContext.Provider value={slug}>{children}</SlugContext.Provider>;
 }
 
-const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door,.hr-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
+const NO_DOOR = `.sw-boot,.inv-door,.inv-door-walls,.inv-door-vellum,.elaris-door,.mawaddah-door,.nocturne-door,.pk-door,.sk-door,.su-door,.rb-door,.ls-door,.pt-door,.mm-door,.tp-door,.hr-door,.gd-door{display:none}.inv-enter{opacity:1;transform:none}html{overflow:auto!important}`;
+
+// Menutup undangan kembali ke sampul, untuk tema yang punya akhir cerita seperti peta Isometrik. Sampul dipasang
+// ulang dari awal, dan musik tetap berjalan.
+const CloseContext = createContext<() => void>(() => {});
+export const useCloseInvitation = () => useContext(CloseContext);
 
 // Pratinjau untuk mengatur foto di editor langsung menampilkan isi undangan, tanpa loader, pembuka, dan musik.
 const SkipDoorContext = createContext(false);
@@ -62,7 +71,7 @@ export function GuestNames({ allowed, children }: { allowed: boolean; children: 
 // Saat video atau lagu bagian tambahan diputar, media lain berhenti dan musik latar meredup lalu berhenti.
 // Setelah semuanya berhenti, musik latar menyala lagi pelan-pelan kalau tadinya menyala.
 type MediaCtx = { claim: (id: string, stop: () => void) => void; release: (id: string) => void };
-const MediaContext = createContext<MediaCtx>({ claim: () => {}, release: () => {} });
+const MediaContext = createContext<MediaCtx>({ claim: () => { }, release: () => { } });
 export const useInvitationMedia = () => useContext(MediaContext);
 
 // Detik.
@@ -92,7 +101,7 @@ function ramp({ ctx, gain }: Fader, to: number, seconds: number) {
   gain.gain.linearRampToValueAtTime(to, t + Math.max(0.01, seconds));
 }
 
-const noop = () => () => {};
+const noop = () => () => { };
 function readGuestParam() {
   const to = new URLSearchParams(window.location.search).get("to");
   return to ? to.trim().slice(0, GUEST_NAME_MAX) : "";
@@ -102,6 +111,9 @@ const readStoredGuest = () => recall(GUEST_KEY);
 const storeGuest = (name: string) => remember(GUEST_KEY, name);
 
 type Door =
+  | ({ kind: "mawaddah" } & Omit<MawaddahDoorProps, "invited" | "open" | "onOpen">)
+  | ({ kind: "nocturne" } & Omit<NocturneDoorProps, "invited" | "guestField" | "open" | "onOpen">)
+  | ({ kind: "elaris" } & Omit<ElarisDoorProps, "invited" | "open" | "onOpen">)
   | { kind: "seal"; couple: string; monogram: string; seal: string }
   | { kind: "walls"; groom: string; bride: string; date: string }
   | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string }
@@ -113,7 +125,8 @@ type Door =
   | ({ kind: "mulai" } & Omit<MulaiProps, "invited" | "onOpen">)
   | ({ kind: "mekar" } & Omit<MekarProps, "invited" | "onOpen">)
   | ({ kind: "tabloid" } & Omit<TabloidProps, "invited" | "onOpen">)
-  | ({ kind: "ulos" } & Omit<UlosProps, "invited" | "onOpen">);
+  | ({ kind: "ulos" } & Omit<UlosProps, "invited" | "onOpen">)
+  | ({ kind: "gedung" } & Omit<GedungProps, "invited" | "onOpen">);
 
 // Musik bawaan yang dibentuk langsung di browser, dipakai bila undangan tidak punya berkas musik.
 const SYNTHS = { gending, chiptune };
@@ -129,6 +142,9 @@ type Props = {
   reveal?: RevealMode | false;
   // Posisi tombol musik. "top" untuk tema yang memakai sudut bawah layar sebagai tombol kontrol.
   musicAt?: "bottom" | "top";
+  // Lagu mulai pada sentuhan atau tombol pertama di sampul, tidak menunggu undangan dibuka. Untuk sampul yang
+  // dijelajahi lama, seperti peta game. Browser tidak mengizinkan suara sebelum ada interaksi.
+  musicOnDoor?: boolean;
 };
 
 function GuestField({ invited, greeting, className = "" }: { invited: string; greeting: string; className?: string }) {
@@ -147,7 +163,7 @@ const arrow = (
   </svg>
 );
 
-export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom" }: Props) {
+export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom", musicOnDoor = false }: Props) {
   const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
   const namesAllowed = useContext(GuestNamesContext);
   const invited = namesAllowed ? fromLink : "";
@@ -165,6 +181,8 @@ export function InvitationShell({ door, music, synth, className, style, children
   }, [slug, namesAllowed]);
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(skipDoor);
+  // Naik setiap undangan ditutup kembali ke sampul, supaya sampul dipasang ulang dari keadaan awal.
+  const [doorRound, setDoorRound] = useState(0);
   const [content, setContent] = useState<HTMLDivElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
@@ -314,12 +332,35 @@ export function InvitationShell({ door, music, synth, className, style, children
   });
   const media = useMemo<MediaCtx>(() => ({ claim: (id, stop) => handlers.current.claim(id, stop), release: (id) => handlers.current.release(id) }), []);
 
+  const playRef = useRef(play);
+  useEffect(() => {
+    playRef.current = play;
+  });
+  useEffect(() => {
+    if (!musicOnDoor || open || !hasMusic) return;
+    const start = () => {
+      if (!playingRef.current) playRef.current();
+    };
+    window.addEventListener("pointerdown", start, { once: true });
+    window.addEventListener("keydown", start, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", start);
+      window.removeEventListener("keydown", start);
+    };
+  }, [musicOnDoor, open, hasMusic]);
+
   const openInvitation = () => {
     const name = guest || (slug && namesAllowed ? readStoredGuest() : "");
     if (name) setGuest(name);
     window.scrollTo(0, 0);
     setOpen(true);
     play();
+  };
+
+  const closeInvitation = () => {
+    window.scrollTo(0, 0);
+    setDoorRound((n) => n + 1);
+    setOpen(false);
   };
 
   const toggleMusic = () => {
@@ -332,6 +373,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   return (
     <GuestContext.Provider value={{ guest, setGuest }}>
       <MediaContext.Provider value={media}>
+        <CloseContext.Provider value={closeInvitation}>
         <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
           <noscript>
             <style>{NO_DOOR}</style>
@@ -433,8 +475,12 @@ export function InvitationShell({ door, music, synth, className, style, children
           {door.kind === "tabloid" && <TabloidDoor groom={door.groom} bride={door.bride} date={door.date} photo={door.photo} frame={door.frame} invited={invited} onOpen={openInvitation} />}
 
           {door.kind === "ulos" && <UlosDoor groom={door.groom} bride={door.bride} date={door.date} invited={invited} onOpen={openInvitation} />}
+          {door.kind === "gedung" && <GedungDoor key={doorRound} groom={door.groom} bride={door.bride} date={door.date} place={door.place} invited={invited} onOpen={openInvitation} />}
+          {door.kind === "elaris" && <ElarisDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
+          {door.kind === "mawaddah" && <MawaddahDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
+          {door.kind === "nocturne" && <NocturneDoor {...door} invited={invited} guestField={<GuestField invited={invited} greeting="Kepada Yth." />} open={open} onOpen={openInvitation} />}
 
-          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" ? null : door.kind === "seal" ? (
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" || door.kind === "elaris" || door.kind === "mawaddah" || door.kind === "nocturne" || door.kind === "gedung" ? null : door.kind === "seal" ? (
             <div
               className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
               aria-hidden={open}
@@ -517,6 +563,7 @@ export function InvitationShell({ door, music, synth, className, style, children
           )}
           {music && <audio ref={audio} src={music} preload="none" loop crossOrigin="anonymous" />}
         </div>
+        </CloseContext.Provider>
       </MediaContext.Provider>
     </GuestContext.Provider>
   );

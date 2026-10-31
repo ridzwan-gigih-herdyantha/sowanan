@@ -1,0 +1,272 @@
+{
+  "slug": "raka-anindya",
+  "theme": "raka-anindya",
+  "published": true,
+  "package": "istimewa",
+  "data": {
+    "copy": {
+      "ayat": "",
+      "honor": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+      "quote": "",
+      "credit": "Foto oleh Mehmet di Pexels",
+      "sesanti": "",
+      "tagline": "Dua nama, satu janji yang kami jaga sepanjang usia.",
+      "ayatArti": "",
+      "heroQuote": "",
+      "latinPair": "",
+      "rsvpQuote": "",
+      "ayatSumber": "",
+      "collection": "",
+      "sesantiArti": ""
+    },
+    "event": {
+      "end": "2027-02-14T21:00:00+07:00",
+      "city": "Sleman, DI Yogyakarta",
+      "start": "2027-02-14T08:00:00+07:00",
+      "venue": {
+        "name": "Larasati Garden House",
+        "address": "Jl. Kaliurang Km 9, Sleman, DI Yogyakarta",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Jl.+Kaliurang+Km+9%2C+Sleman%2C+DI+Yogyakarta"
+      },
+      "schedule": [
+        {
+          "name": "Akad Nikah",
+          "time": "08.00",
+          "until": "09.30"
+        },
+        {
+          "name": "Resepsi",
+          "time": "19.00",
+          "until": "21.00"
+        }
+      ],
+      "timezone": "WIB",
+      "rsvpDeadline": "31 Januari 2027"
+    },
+    "media": {
+      "og": "/img/raka-anindya/og.jpg",
+      "hero": "/img/raka-anindya/hero.webp",
+      "rsvp": "",
+      "music": "",
+      "venue": "/img/raka-anindya/venue.webp",
+      "couple": "",
+      "detail": "",
+      "closing": "/img/raka-anindya/closing.webp",
+      "heroWide": "/img/raka-anindya/hero-wide.webp"
+    },
+    "share": {
+      "description": "Dengan memohon rahmat Tuhan, kami mengundang Anda ke pernikahan Raka & Anindya di Sleman.",
+      "ogDescription": "Undangan pernikahan Raka & Anindya, Minggu 14 Februari 2027."
+    },
+    "style": {
+      "font": "",
+      "custom": {
+        "ink": "",
+        "paper": "",
+        "accent": ""
+      },
+      "palette": "",
+      "nameFont": ""
+    },
+    "couple": {
+      "bride": {
+        "full": "Anindya Paramitha",
+        "name": "Anindya",
+        "role": "Putri dari",
+        "latin": "",
+        "photo": "/img/raka-anindya/bride.webp",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Bambang Sudarmo & Ibu Endang Widowati"
+      },
+      "groom": {
+        "full": "Raka Pradipta",
+        "name": "Raka",
+        "role": "Putra dari",
+        "latin": "",
+        "photo": "/img/raka-anindya/groom.webp",
+        "aksara": "",
+        "flower": "",
+        "parents": "Bapak Hartono Wibowo & Ibu Sri Rahayu"
+      }
+    },
+    "extras": [
+      {
+        "body": "",
+        "kind": "dresscode",
+        "note": "Tolong ya guys",
+        "plan": {
+          "h": 0,
+          "w": 0,
+          "src": ""
+        },
+        "tone": "paper",
+        "after": "gallery",
+        "rules": [],
+        "title": "Dress Code",
+        "colors": [
+          {
+            "hex": "#FBF8F2",
+            "name": "Sage"
+          },
+          {
+            "hex": "#B49A6A",
+            "name": "Sage Tua"
+          }
+        ],
+        "photos": [],
+        "stream": {
+          "url": "",
+          "time": ""
+        },
+        "tracks": [],
+        "videos": [],
+        "rundown": []
+      }
+    ],
+    "monogram": "R & A",
+    "sections": {
+      "quiz": {
+        "enabled": true
+      },
+      "rsvp": {
+        "enabled": true
+      },
+      "event": {
+        "enabled": true
+      },
+      "gifts": {
+        "note": "Nomor rekening dan QRIS di atas hanya contoh, bukan untuk transfer.",
+        "qris": "",
+        "enabled": true,
+        "accounts": [
+          {
+            "bank": "Bank Contoh",
+            "holder": "Raka Pradipta",
+            "number": "0000 1402 2027"
+          },
+          {
+            "bank": "Bank Contoh",
+            "holder": "Anindya Paramitha",
+            "number": "2222 1402 2027"
+          }
+        ]
+      },
+      "story": {
+        "items": [
+          {
+            "no": "",
+            "date": "09.11.2019",
+            "long": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
+            "image": "/img/raka-anindya/gallery-1.webp",
+            "place": "Sleman",
+            "short": "Satu meja di pernikahan kawan lama, dan percakapan yang tidak selesai malam itu.",
+            "title": "Pertama Bertemu"
+          },
+          {
+            "no": "",
+            "date": "17.03.2021",
+            "long": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
+            "image": "/img/raka-anindya/gallery-2.webp",
+            "place": "Sleman",
+            "short": "Surat, telepon panjang, dan perjalanan pulang yang selalu terasa terlalu singkat.",
+            "title": "Saling Mengenal"
+          },
+          {
+            "no": "",
+            "date": "06.12.2025",
+            "long": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
+            "image": "/img/raka-anindya/gallery-3.webp",
+            "place": "Sleman",
+            "short": "Dua keluarga duduk bersama, dan satu pertanyaan dijawab dengan tenang.",
+            "title": "Lamaran"
+          },
+          {
+            "no": "",
+            "date": "14.02.2027",
+            "long": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
+            "image": "/img/raka-anindya/gallery-1.webp",
+            "place": "Sleman",
+            "short": "Hari yang kami tunggu, bersama orang-orang yang kami sayangi.",
+            "title": "Hari Pernikahan"
+          }
+        ],
+        "enabled": true
+      },
+      "couple": {
+        "photos": [],
+        "enabled": true
+      },
+      "wishes": {
+        "enabled": true
+      },
+      "closing": {
+        "enabled": true
+      },
+      "collage": {
+        "enabled": true,
+        "polaroids": []
+      },
+      "gallery": {
+        "photos": [
+          {
+            "src": "/img/raka-anindya/gallery-1.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya berdiri bersama di halaman taman",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/raka-anindya/gallery-2.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya berbagi momen di taman klasik",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/raka-anindya/gallery-3.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya menikmati suasana kebun yang rimbun",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/raka-anindya/gallery-4.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya berdiri bersama di halaman taman",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/raka-anindya/gallery-5.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya berbagi momen di taman klasik",
+            "no": "",
+            "caption": ""
+          },
+          {
+            "src": "/img/raka-anindya/gallery-6.webp",
+            "w": 1200,
+            "h": 1500,
+            "alt": "Raka dan Anindya menikmati suasana kebun yang rimbun",
+            "no": "",
+            "caption": ""
+          }
+        ],
+        "enabled": true
+      },
+      "countdown": {
+        "enabled": true
+      },
+      "specimens": {
+        "items": [],
+        "enabled": false
+      }
+    }
+  }
+}

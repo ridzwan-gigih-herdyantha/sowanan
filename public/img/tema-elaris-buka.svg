@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="1688" viewBox="0 0 780 1688" fill="none">
+  <rect width="780" height="1688" fill="#F5F2E9"/>
+  <path d="M0 0h780v1688H0z" fill="url(#paper)"/>
+  <circle cx="642" cy="298" r="274" stroke="#A6A98E" stroke-opacity=".44"/>
+  <circle cx="642" cy="298" r="222" stroke="#A6A98E" stroke-opacity=".38"/>
+  <path d="M90 1190V512a300 300 0 0 1 600 0v678" stroke="#53634C" stroke-opacity=".36"/>
+  <path d="M121 1190V512a269 269 0 0 1 538 0v678" stroke="#B69A68" stroke-opacity=".52"/>
+  <rect x="122" y="196" width="536" height="1120" stroke="#53634C" stroke-opacity=".32"/>
+  <path d="M151 225h478v1062H151z" stroke="#B69A68" stroke-opacity=".6"/>
+  <path d="M114 1460h552" stroke="#B69A68"/>
+  <text x="390" y="527" text-anchor="middle" fill="#53634C" font-family="Georgia,serif" font-size="23" letter-spacing="8">UNDANGAN PERNIKAHAN</text>
+  <text x="390" y="720" text-anchor="middle" fill="#52634A" font-family="Georgia,serif" font-size="97" font-style="italic">A &amp; K</text>
+  <text x="390" y="807" text-anchor="middle" fill="#3B4035" font-family="Arial,sans-serif" font-size="17" letter-spacing="7">DUA NAMA, SATU JANJI</text>
+  <text x="390" y="1507" text-anchor="middle" fill="#53634C" font-family="Arial,sans-serif" font-size="18" letter-spacing="9">ELARIS · EDITORIAL ROMANCE</text>
+  <defs><linearGradient id="paper" x1="74" y1="90" x2="733" y2="1595" gradientUnits="userSpaceOnUse"><stop stop-color="#FBF9F2"/><stop offset="1" stop-color="#E9E8DC"/></linearGradient></defs>
+</svg>

@@ -13,9 +13,9 @@ const FIRST = 4;
 const STEP = 6;
 const tilt = [-1.5, 1, -0.5, 2, -2, 0.5];
 
-type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" | "doa" | "langit" | "dialog" };
+type Props = { slug: string; initial: readonly Wish[]; variant?: "notes" | "lined" | "curator" | "tags" | "lontar" | "serat" | "doa" | "langit" | "dialog" | "elaris"; desktop?: "split" | "stack-when-empty" | "stack" };
 
-export function Wishes({ slug, initial, variant = "notes" }: Props) {
+export function Wishes({ slug, initial, variant = "notes", desktop = "split" }: Props) {
   // Langit memakai daftar bergaris yang sama, dengan langit bintang ucapan di atasnya.
   const langit = variant === "langit";
   const lined = variant === "lined" || langit;
@@ -26,6 +26,7 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const doa = variant === "doa";
   // Dialog: setiap ucapan sebagai kotak percakapan game dengan nama pengirim di label atasnya.
   const dialog = variant === "dialog";
+  const elaris = variant === "elaris";
   const tagTone = ["bg-inv-wash", "bg-[var(--inv-note-a,#E6D8E4)]", "bg-[var(--inv-note-b,#DDE3D3)]"];
   const { guest, setGuest } = useGuest();
   const archived = useArchived();
@@ -47,6 +48,9 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   const unsynced = mine.filter((w) => !known.has(w.id));
   const all = [...unsynced, ...initial];
   const full = message.length >= WISH_MAX;
+  const emptyStack = desktop === "stack-when-empty" && all.length === 0;
+  // "stack" selalu menyusun formulir di atas daftar, untuk wadah sempit seperti panel modal.
+  const stacked = desktop === "stack" || emptyStack;
 
   const send = (form: FormData) => {
     const missing = { name: nameValue.trim() ? "" : "Tulis namamu dulu.", message: message.trim() ? "" : "Tulis ucapanmu dulu." };
@@ -66,82 +70,82 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
   };
 
   return (
-    <div className="lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+    <div className={stacked ? "" : "lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"}>
       {archived ? (
         <p className="self-start rounded-sm border border-inv-line px-4 py-3.5 text-[14px] leading-relaxed text-inv-ink/75">
           Undangan ini sudah menjadi arsip. Ucapan baru tidak lagi diterima, ucapan yang sudah masuk tetap tersimpan di sini.
         </p>
       ) : (
-      <form action={send} noValidate className="self-start">
-        <fieldset disabled={inactive} className="m-0 min-w-0 border-0 p-0 disabled:[&_button]:cursor-not-allowed disabled:[&_button]:opacity-50">
-        {inactive && <p className="mb-5 rounded-sm border border-inv-line px-4 py-3 text-[14px] leading-relaxed text-inv-ink/75">Undangan ini belum aktif. Ucapan bisa dikirim setelah undangan aktif.</p>}
-        <label className="block text-[12px] tracking-[0.14em] text-inv-ink/70">
-          NAMAMU
-          <input
-            ref={nameRef}
-            required
-            maxLength={GUEST_NAME_MAX}
-            value={nameValue}
-            onChange={(e) => {
-              setName(e.target.value);
-              setInvalid((v) => ({ ...v, name: "" }));
-            }}
-            autoComplete="name"
-            aria-invalid={invalid.name ? true : undefined}
-            aria-describedby={invalid.name ? ids.name : undefined}
-            className="mt-2 block w-full rounded-sm border border-inv-line bg-transparent px-4 py-3 text-base tracking-normal text-inv-ink outline-none focus:border-inv-accent aria-invalid:border-[#9b2c1f] aria-invalid:focus:ring-1 aria-invalid:focus:ring-[#9b2c1f]"
-          />
-        </label>
-        {invalid.name && (
-          <p id={ids.name} className="mt-2 animate-[inv-pop_.18s_ease-out] text-[13px] text-[#9b2c1f]">
-            {invalid.name}
-          </p>
-        )}
-        <label className="mt-5 block text-[12px] tracking-[0.14em] text-inv-ink/70">
-          PESAN UNTUK MEREKA
-          <textarea
-            ref={messageRef}
-            required
-            maxLength={WISH_MAX}
-            rows={4}
-            value={message}
-            onChange={(e) => {
-              setMessage(e.target.value);
-              setInvalid((v) => ({ ...v, message: "" }));
-            }}
-            aria-invalid={invalid.message ? true : undefined}
-            aria-describedby={invalid.message ? `${ids.message} ${ids.count}` : ids.count}
-            className="mt-2 block w-full resize-none rounded-sm border border-inv-line bg-transparent px-4 py-3 text-base tracking-normal text-inv-ink outline-none focus:border-inv-accent aria-invalid:border-[#9b2c1f] aria-invalid:focus:ring-1 aria-invalid:focus:ring-[#9b2c1f]"
-          />
-        </label>
-        <div className="mt-2 flex items-start gap-4 text-[13px]">
-          {invalid.message && (
-            <p id={ids.message} className="animate-[inv-pop_.18s_ease-out] text-[#9b2c1f]">
-              {invalid.message}
-            </p>
-          )}
-          <p id={ids.count} className={`ml-auto shrink-0 tabular-nums ${full ? "text-[#9b2c1f]" : "text-inv-ink/60"}`}>
-            {message.length}/{WISH_MAX}
-            {full && <span className="sr-only"> karakter, batas tercapai</span>}
-          </p>
-        </div>
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
-        {error && <p className="mt-3 text-[13px] text-[#9b2c1f]">{error}</p>}
-        <button
-          type="submit"
-          disabled={pending}
-          className="mt-6 rounded-sm border border-inv-accent px-6 py-3.5 text-[13px] tracking-[0.14em] text-inv-accent transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper disabled:opacity-50"
-        >
-          {pending ? (lined || curator || tags || dialog ? "MENGIRIM..." : "MENEMPELKAN...") : tags ? "GANTUNGKAN UCAPAN" : curator ? "SIMPAN CATATAN" : lined || dialog ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
-        </button>
-        </fieldset>
-      </form>
+        <form action={send} noValidate className={`self-start ${elaris ? "border-b border-inv-gold/45 pb-9 lg:border-r lg:border-b-0 lg:pr-10" : ""}`}>
+          <fieldset disabled={inactive} className="m-0 min-w-0 border-0 p-0 disabled:[&_button]:cursor-not-allowed disabled:[&_button]:opacity-50">
+            {inactive && <p className="mb-5 rounded-sm border border-inv-line px-4 py-3 text-[14px] leading-relaxed text-inv-ink/75">Undangan ini belum aktif. Ucapan bisa dikirim setelah undangan aktif.</p>}
+            <label className={`block text-[11px] tracking-[0.18em] text-inv-ink/70 ${elaris ? "uppercase" : ""}`}>
+              NAMAMU
+              <input
+                ref={nameRef}
+                required
+                maxLength={GUEST_NAME_MAX}
+                value={nameValue}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setInvalid((v) => ({ ...v, name: "" }));
+                }}
+                autoComplete="name"
+                aria-invalid={invalid.name ? true : undefined}
+                aria-describedby={invalid.name ? ids.name : undefined}
+                className={`mt-2 block w-full rounded-sm border ${elaris ? "border-inv-gold/50 bg-inv-paper/70" : "border-inv-line bg-transparent"} px-4 py-3 text-base tracking-normal text-inv-ink outline-none focus:border-inv-accent aria-invalid:border-[#9b2c1f] aria-invalid:focus:ring-1 aria-invalid:focus:ring-[#9b2c1f]`}
+              />
+            </label>
+            {invalid.name && (
+              <p id={ids.name} className="mt-2 animate-[inv-pop_.18s_ease-out] text-[13px] text-[#9b2c1f]">
+                {invalid.name}
+              </p>
+            )}
+            <label className={`mt-5 block text-[11px] tracking-[0.18em] text-inv-ink/70 ${elaris ? "uppercase" : ""}`}>
+              PESAN UNTUK MEREKA
+              <textarea
+                ref={messageRef}
+                required
+                maxLength={WISH_MAX}
+                rows={4}
+                value={message}
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                  setInvalid((v) => ({ ...v, message: "" }));
+                }}
+                aria-invalid={invalid.message ? true : undefined}
+                aria-describedby={invalid.message ? `${ids.message} ${ids.count}` : ids.count}
+                className={`mt-2 block w-full resize-none rounded-sm border ${elaris ? "border-inv-gold/50 bg-inv-paper/70" : "border-inv-line bg-transparent"} px-4 py-3 text-base tracking-normal text-inv-ink outline-none focus:border-inv-accent aria-invalid:border-[#9b2c1f] aria-invalid:focus:ring-1 aria-invalid:focus:ring-[#9b2c1f]`}
+              />
+            </label>
+            <div className="mt-2 flex items-start gap-4 text-[13px]">
+              {invalid.message && (
+                <p id={ids.message} className="animate-[inv-pop_.18s_ease-out] text-[#9b2c1f]">
+                  {invalid.message}
+                </p>
+              )}
+              <p id={ids.count} className={`ml-auto shrink-0 tabular-nums ${full ? "text-[#9b2c1f]" : "text-inv-ink/60"}`}>
+                {message.length}/{WISH_MAX}
+                {full && <span className="sr-only"> karakter, batas tercapai</span>}
+              </p>
+            </div>
+            <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+            {error && <p className="mt-3 text-[13px] text-[#9b2c1f]">{error}</p>}
+            <button
+              type="submit"
+              disabled={pending}
+              className="mt-6 rounded-sm border border-inv-accent px-6 py-3.5 text-[11px] tracking-[0.18em] text-inv-accent transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper disabled:opacity-50"
+            >
+              {pending ? (lined || curator || tags || dialog || elaris ? "MENGIRIM..." : "MENEMPELKAN...") : tags ? "GANTUNGKAN UCAPAN" : curator ? "SIMPAN CATATAN" : lined || dialog || elaris ? "KIRIM UCAPAN" : "TEMPELKAN DI SINI"}
+            </button>
+          </fieldset>
+        </form>
       )}
 
-      <div className="mt-12 lg:mt-0">
+      <div className={emptyStack || (stacked && all.length === 0) ? "hidden" : stacked ? "mt-10" : "mt-12 lg:mt-0"}>
         <div ref={listTop} className="scroll-mt-24" />
         {langit && <WishSky wishes={all} fresh={new Set(unsynced.map((w) => w.id))} />}
-        <ul className={dialog ? "flex flex-col gap-7 pt-3" : serat || doa ? "columns-1 gap-4 sm:columns-2" : lontar ? "inv-lontar-list relative flex flex-col gap-3" : lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
+        <ul className={dialog ? "flex flex-col gap-7 pt-3" : elaris ? "flex flex-col gap-3" : serat || doa ? "columns-1 gap-4 sm:columns-2" : lontar ? "inv-lontar-list relative flex flex-col gap-3" : lined ? "border-t border-inv-line" : tags ? "columns-1 gap-5 pt-2 sm:columns-2" : "columns-1 gap-4 sm:columns-2"} aria-live="polite">
           {all.slice(0, shown).map((w, i) =>
             dialog ? (
               <li key={w.id} className={`relative ${i < unsynced.length ? "animate-[inv-pop_.3s_ease-out]" : ""}`}>
@@ -166,29 +170,31 @@ export function Wishes({ slug, initial, variant = "notes" }: Props) {
                 </div>
               </li>
             ) : (
-            <li
-              key={w.id}
-              className={`${
-                doa
-                  ? "sk-doa relative mb-4 break-inside-avoid rounded-sm px-5 pt-12 pb-4"
-                  : serat
-                  ? "inv-serat relative mb-4 break-inside-avoid rounded-sm px-5 pt-7 pb-4"
-                  : lontar
-                  ? "inv-lontar relative py-4 pr-8 pl-16"
-                  : lined
-                  ? "border-b border-inv-line py-6"
-                  : curator
-                    ? "mb-4 break-inside-avoid border border-inv-line bg-inv-wash px-5 pt-5 pb-4"
-                    : "mb-4 break-inside-avoid bg-[var(--inv-card,#fbf7f0)] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)]"
-              } ${i < unsynced.length ? (lined ? "animate-[inv-pop_.3s_ease-out]" : "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]") : ""}`}
-              style={lined || curator || serat || doa ? undefined : { rotate: `${(lontar ? 0.4 : 1) * tilt[i % tilt.length]}deg` }}
-            >
-              {lontar && <span className="inv-lontar-hole" aria-hidden="true" />}
-              <p className="font-display text-[19px] leading-snug italic">&ldquo;{w.message}&rdquo;</p>
-              <p className="mt-3 text-[11px] tracking-[0.18em] text-inv-ink/60">
-                {curator ? `DICATAT OLEH ${w.name.toUpperCase()}` : w.name.toUpperCase()}
-              </p>
-            </li>
+              <li
+                key={w.id}
+                className={`${elaris
+                    ? "relative border border-inv-gold/45 bg-inv-paper/75 px-5 py-5 sm:px-7"
+                    : doa
+                      ? "sk-doa relative mb-4 break-inside-avoid rounded-sm px-5 pt-12 pb-4"
+                      : serat
+                        ? "inv-serat relative mb-4 break-inside-avoid rounded-sm px-5 pt-7 pb-4"
+                        : lontar
+                          ? "inv-lontar relative py-4 pr-8 pl-16"
+                          : lined
+                            ? "border-b border-inv-line py-6"
+                            : curator
+                              ? "mb-4 break-inside-avoid border border-inv-line bg-inv-wash px-5 pt-5 pb-4"
+                              : "mb-4 break-inside-avoid bg-[var(--inv-card,#fbf7f0)] px-5 pt-5 pb-4 shadow-[0_4px_14px_rgba(28,25,22,.14)]"
+                  } ${i < unsynced.length ? (lined ? "animate-[inv-pop_.3s_ease-out]" : "animate-[inv-pin_.45s_cubic-bezier(.22,.61,.36,1)]") : ""}`}
+                style={lined || curator || serat || doa || elaris ? undefined : { rotate: `${(lontar ? 0.4 : 1) * tilt[i % tilt.length]}deg` }}
+              >
+                {lontar && <span className="inv-lontar-hole" aria-hidden="true" />}
+                {elaris && <span aria-hidden="true" className="absolute top-0 left-5 -translate-y-1/2 bg-inv-paper px-2 font-display text-lg text-inv-gold">✦</span>}
+                <p className={`font-display text-[19px] leading-snug ${elaris ? "not-italic text-inv-accent" : "italic"}`}>&ldquo;{w.message}&rdquo;</p>
+                <p className="mt-3 text-[10px] tracking-[0.18em] text-inv-ink/60">
+                  {curator ? `DICATAT OLEH ${w.name.toUpperCase()}` : w.name.toUpperCase()}
+                </p>
+              </li>
             ),
           )}
         </ul>
