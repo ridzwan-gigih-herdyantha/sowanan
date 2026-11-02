@@ -145,6 +145,7 @@ export type PackageRules = {
   pkg: PackageId | null;
   // Tidak ada berarti jumlahnya tidak dibatasi paket.
   photos?: { max: number; note: string };
+  postGallery?: { max: number; note: string };
   extras?: { max: number; note: string };
   // Fitur yang terkunci beserta alasannya.
   locked: Partial<Record<FeatureKey, string>>;
@@ -170,7 +171,7 @@ export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string
   }
 
   // Baris berjumlah yang dihapus atau bertanda tanpa batas berarti tidak dibatasi.
-  const limit = (key: "galeri_foto" | "bagian_tambahan", unit: string, none: string) => {
+  const limit = (key: "galeri_foto" | "galeri_pasca" | "bagian_tambahan", unit: string, none: string) => {
     const row = s.matrix.find((r) => r.key === key);
     const base = row ? (row.cells[p].on ? row.cells[p].n : 0) : null;
     if (base === null) return undefined;
@@ -183,5 +184,6 @@ export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string
   };
   const photos = limit("galeri_foto", "foto", "tidak termasuk galeri foto");
   const extras = limit("bagian_tambahan", "bagian tambahan", "tidak termasuk bagian tambahan di luar tema");
-  return { pkg: p, photos, extras, locked };
+  const postGallery = limit("galeri_pasca", "foto", "tidak termasuk galeri pasca acara");
+  return { pkg: p, photos, postGallery, extras, locked };
 }

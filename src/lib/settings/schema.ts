@@ -44,6 +44,7 @@ export type ThemeCategory = keyof typeof THEME_CATEGORIES;
 export const SYSTEM_KEYS = {
   jumlah_tema: "Dihitung otomatis dari tab Tema",
   galeri_foto: "Membatasi jumlah foto galeri di editor undangan",
+  galeri_pasca: "Membatasi jumlah foto galeri pasca acara di editor undangan",
   bagian_tambahan: "Membatasi jumlah bagian tambahan di luar tema di editor undangan",
   musik_sendiri: "Membuka unggah musik sendiri di editor undangan",
   palet_varian: "Membuka pilihan varian palet di editor undangan",
@@ -58,11 +59,11 @@ export const SYSTEM_KEYS = {
 } as const;
 export type SystemKey = keyof typeof SYSTEM_KEYS;
 // Kunci berjumlah dicatat sebagai angka, sisanya cukup termasuk atau tidak.
-export const COUNT_KEYS: SystemKey[] = ["jumlah_tema", "galeri_foto", "bagian_tambahan"];
-export type FeatureKey = Exclude<SystemKey, "jumlah_tema" | "galeri_foto" | "bagian_tambahan">;
+export const COUNT_KEYS: SystemKey[] = ["jumlah_tema", "galeri_foto", "galeri_pasca", "bagian_tambahan"];
+export type FeatureKey = Exclude<SystemKey, "jumlah_tema" | "galeri_foto" | "galeri_pasca" | "bagian_tambahan">;
 export const FEATURE_KEYS = Object.keys(SYSTEM_KEYS).filter((k) => !COUNT_KEYS.includes(k as SystemKey)) as FeatureKey[];
 // Add-on bisa membuka satu kunci. Untuk kunci berjumlah, tambahan per unit diisi di kolom amount.
-export const AMOUNT_KEYS = ["galeri_foto", "bagian_tambahan"] as const;
+export const AMOUNT_KEYS = ["galeri_foto", "galeri_pasca", "bagian_tambahan"] as const;
 export const UNLOCK_KEYS = [...AMOUNT_KEYS, ...FEATURE_KEYS] as const;
 export type UnlockKey = (typeof UNLOCK_KEYS)[number];
 
@@ -316,7 +317,7 @@ export const settingsSchema = z
     if (!PACKAGE_IDS.some((p) => s.packages[p].on)) ctx.addIssue({ code: "custom", path: ["packages", "dasar", "on"], message: "Minimal satu paket harus tampil." });
     s.addons.forEach((a, i) => {
       if ((AMOUNT_KEYS as readonly string[]).includes(a.unlock) && a.amount < 1) {
-        ctx.addIssue({ code: "custom", path: ["addons", i, "amount"], message: a.unlock === "galeri_foto" ? "Isi jumlah foto yang ditambahkan per unit." : "Isi jumlah bagian yang ditambahkan per unit." });
+        ctx.addIssue({ code: "custom", path: ["addons", i, "amount"], message: a.unlock === "bagian_tambahan" ? "Isi jumlah bagian yang ditambahkan per unit." : "Isi jumlah foto yang ditambahkan per unit." });
       }
     });
     if (s.contact.open >= s.contact.close) ctx.addIssue({ code: "custom", path: ["contact", "close"], message: "Jam tutup harus setelah jam buka." });

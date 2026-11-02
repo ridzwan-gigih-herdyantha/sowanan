@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
-import { packageIssues } from "@/lib/invitation/package-check";
+import type { PostGalleryWindow } from "@/lib/invitation/archive";
+import { packageIssues, postGalleryCap } from "@/lib/invitation/package-check";
 import { checkInvitation, fieldPatterns, forTheme, GROUPS, patternOf, setIn, type Group, type Issue } from "@/lib/invitation/spec";
 import type { Settings } from "@/lib/settings/schema";
 import { packageRules, type Purchased } from "@/lib/settings/text";
@@ -27,7 +28,7 @@ type Props = {
   bought: Purchased;
   dp: number;
   // Status arsip. Kosong berarti tanggal acara belum diisi atau undangan contoh.
-  archive: { archived: boolean; locked: boolean; archiveAt: string; unlockedUntil: string | null } | null;
+  archive: { archived: boolean; locked: boolean; archiveAt: string; unlockedUntil: string | null; postGallery?: PostGalleryWindow } | null;
 };
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
@@ -40,7 +41,7 @@ const SETUP = [
   { key: "package", title: "Package & add-ons" },
   { key: "style", title: "Style" },
 ];
-const MORE = new Set(["video", "extras", "share"]);
+const MORE = new Set(["pasca", "video", "extras", "share"]);
 const TITLES: Record<string, string> = { extras: "Custom sections", share: "Footer & share" };
 const panelOfIssue = (group: string) => (group === "gaya" ? "style" : group);
 
@@ -149,15 +150,17 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
     const out: Record<string, { max: number; note: string }> = {};
     if (rules.photos) out["sections.gallery.photos"] = rules.photos;
     if (rules.extras) out.extras = rules.extras;
+    const post = postGalleryCap(rules, archive?.postGallery);
+    if (post) out.postGallery = post;
     return out;
-  }, [rules]);
+  }, [rules, archive]);
   const locks = useMemo(
     () => ({ ...(rules.locked.musik_sendiri && { "media.music": rules.locked.musik_sendiri }), ...(rules.locked.video_youtube && { video: rules.locked.video_youtube }) }),
     [rules],
   );
 
   const groups = useMemo(() => forTheme(GROUPS, theme), [theme]);
-  const issues = useMemo(() => [...checkInvitation(data, theme), ...packageIssues(data, theme, rules)], [data, theme, rules]);
+  const issues = useMemo(() => [...checkInvitation(data, theme), ...packageIssues(data, theme, rules, archive?.postGallery)], [data, theme, rules, archive]);
   const errors = useMemo(() => (showIssues ? Object.fromEntries(issues.map((i) => [i.path, i.message])) : {}), [issues, showIssues]);
   const dirty = JSON.stringify(data) !== saved;
   const names = [data.couple.groom.name, data.couple.bride.name].filter(Boolean).join(" dan ") || "mempelai";
@@ -404,7 +407,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
     const lock = lockOf(g);
     const on = isOn(g);
     const fields = forTheme(g.fields, theme);
-    const note = lock ?? (g.key === "extras" ? "Bagian di luar isi tema, misalnya susunan acara, denah, atau dress code." : g.section ? undefined : g.note);
+    const note = lock ?? (g.key === "pasca" ? limits.postGallery?.note ?? g.note : g.key === "extras" ? "Bagian di luar isi tema, misalnya susunan acara, denah, atau dress code." : g.section ? undefined : g.note);
     return (
       <>
         <PanelHead title={titleOf(g.key)} note={note} action={g.section && <Switch on={on} disabled={Boolean(lock)} onChange={(v) => setSection(g.section!, v)} label={`Tampilkan ${g.title}`} />} />

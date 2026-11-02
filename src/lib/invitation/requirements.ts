@@ -105,7 +105,8 @@ export function requirements(theme: string, rules: PackageRules, data: Invitatio
   const sections: ReqSection[] = [];
   const automatic: string[] = [];
   for (const g of forTheme(GROUPS, theme)) {
-    if ((g.section && !data.sections[g.section].enabled) || sectionLocked(g.key, rules)) continue;
+    // Foto pasca acara dikirim setelah acara, jadi tidak ditanyakan di formulir awal.
+    if (g.key === "pasca" || (g.section && !data.sections[g.section].enabled) || sectionLocked(g.key, rules)) continue;
     const list = g.key === "extras" ? g.fields.find((f) => f.kind === "list") : undefined;
     const rows = list?.kind === "list" ? extraRows(list, data, ctx) : rowsOf(g.fields, ctx, 0);
     if (!rows.length) {

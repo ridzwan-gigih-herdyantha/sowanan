@@ -15,7 +15,7 @@ type Props = { packages: { id: string; name: string }[]; themes: Theme[]; matrix
 type Extra = { id: number; kind: ExtraKind; title: string };
 
 const field = "block w-full rounded-sm border border-line bg-white px-3 py-2 text-[15px] font-normal outline-none focus:border-wine";
-const MULTI = new Set(["galeri_foto", "bagian_tambahan"]);
+const MULTI = new Set(["galeri_foto", "galeri_pasca", "bagian_tambahan"]);
 
 // Daftar kebutuhan data untuk calon klien, disusun sebelum undangannya dibuat: tema, paket, add-on, bagian yang
 // dipakai, isian opsional yang diminta, dan bagian tambahan. Hasilnya disimpan sebagai PDF dari dialog cetak.
@@ -47,7 +47,7 @@ export function RequirementsBuilder({ packages, themes, matrix, addons }: Props)
   });
   // Semua isian tanpa pilihan opsional, dipakai untuk menampilkan isian yang bisa dicentang.
   const all = chosen ? requirements(chosen, rules, data).sections : [];
-  const groups = chosen ? forTheme(GROUPS, chosen).filter((g) => g.key !== "extras") : [];
+  const groups = chosen ? forTheme(GROUPS, chosen).filter((g) => g.key !== "extras" && g.key !== "pasca") : [];
   const counted = extras.filter((e) => e.kind !== "bebas").length;
   const room = rules.extras ? rules.extras.max - counted : Infinity;
 

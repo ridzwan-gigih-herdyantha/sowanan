@@ -86,6 +86,14 @@ const person = (key: "groom" | "bride", title: string): Field[] => [
   text(`couple.${key}.aksara`, "Nama dalam aksara Jawa", 80, { themes: [J], ...optional, hint: "Diketik manual dan dicek klien. Tidak diterjemahkan otomatis." }),
 ];
 
+const GALLERY_BLANK = { src: "", w: 0, h: 0, alt: "", caption: "", no: "" };
+const GALLERY_FIELDS: Field[] = [
+  media("src", "Foto", "gallery", { dims: true }),
+  text("alt", "Keterangan foto", 160),
+  text("caption", "Judul kecil", 60, { themes: [H], ...optional }),
+  text("no", "Nomor", 10, { themes: [H], ...optional }),
+];
+
 export const GROUPS: Group[] = [
   {
     key: "hero",
@@ -225,13 +233,8 @@ export const GROUPS: Group[] = [
         item: "Foto",
         min: 1,
         max: 24,
-        blank: { src: "", w: 0, h: 0, alt: "", caption: "", no: "" },
-        fields: [
-          media("src", "Foto", "gallery", { dims: true }),
-          text("alt", "Keterangan foto", 160),
-          text("caption", "Judul kecil", 60, { themes: [H], ...optional }),
-          text("no", "Nomor", 10, { themes: [H], ...optional }),
-        ],
+        blank: GALLERY_BLANK,
+        fields: GALLERY_FIELDS,
       },
     ],
   },
@@ -276,6 +279,12 @@ export const GROUPS: Group[] = [
       area("copy.umpasa", "Pantun berkat", 200, { themes: [T], ...optional, hint: "Satu baris per larik. Boleh berbahasa Indonesia, atau umpasa Batak yang dipilih atau dicek oleh keluarga." }),
       text("copy.umpasaArti", "Arti pantun", 200, { themes: [T], ...optional, hint: "Isi bila pantunnya berbahasa daerah." }),
     ],
+  },
+  {
+    key: "pasca",
+    title: "Galeri pasca acara",
+    note: "Foto tambahan setelah undangan disebar, tampil di akhir Galeri.",
+    fields: [{ kind: "list", path: "postGallery", label: "Foto pasca acara", item: "Foto", blank: GALLERY_BLANK, fields: GALLERY_FIELDS }],
   },
   {
     key: "video",

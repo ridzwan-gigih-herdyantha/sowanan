@@ -117,6 +117,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
   const s = d.sections;
   const palette = resolvePalette(theme, d.style);
   const enabled = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, Boolean(v.enabled)])) as Record<SectionKey, boolean>;
+  // Foto pasca acara sudah dibayar terpisah, jadi tetap tampil walau bagian Galeri dimatikan.
+  if (d.postGallery.length) enabled.gallery = true;
   const frames = cleanFrames(d.frames);
   const dateLong = `${p.weekday}, ${p.day} ${p.month} ${p.year}`;
   const events = d.event.schedule.map((e) => {
@@ -198,7 +200,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     giftNote: s.gifts.note,
     music: u(d.media.music || THEME_MUSIC[theme] || ""),
     story: s.story.items.map((i) => ({ ...i, short: i.short.trim() || excerpt(i.long), image: u(i.image), video: i.video?.src ? { src: u(i.video.src), poster: u(i.video.poster || i.image) } : undefined })),
-    gallery: s.gallery.photos.map((p) => ({ ...p, src: u(p.src) })),
+    gallery: [...s.gallery.photos, ...d.postGallery].map((p) => ({ ...p, src: u(p.src) })),
     gifts: s.gifts.accounts,
     couplePhotos: s.couple.photos.map((p) => ({ ...p, src: u(p.src) })),
     polaroids: s.collage.polaroids.map((p) => ({ ...p, src: u(p.src) })),

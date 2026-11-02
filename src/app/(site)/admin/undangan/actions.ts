@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { currentAdmin } from "@/lib/admin-auth";
 import { INVITATIONS_TAG, invitationTag } from "@/lib/invitation/load";
 import { packageIssues } from "@/lib/invitation/package-check";
-import { archiveInfo, editLocked, isDemo } from "@/lib/invitation/archive";
+import { archiveInfo, editLocked, isDemo, postGalleryWindow } from "@/lib/invitation/archive";
 import { invitationRules } from "@/lib/invitation/rules";
 import { emptyInvitationData, invitationDataSchema, type InvitationData } from "@/lib/invitation/schema";
 import { checkInvitation, type Issue } from "@/lib/invitation/spec";
@@ -43,7 +43,11 @@ const FROZEN = "Undangan ini sudah menjadi arsip dan tidak bisa diubah. Buka kun
 
 async function issuesFor(data: InvitationData, slug: string, theme: string): Promise<Issue[]> {
   const info = await invitationRules(slug);
-  return [...checkInvitation(data, theme), ...(info ? packageIssues(data, theme, info.rules) : [])];
+  // Masa tambah foto pasca acara dihitung dari versi tayang, sama seperti arsip.
+  const { data: row } = await supabaseAdmin().from("invitations").select("data").eq("slug", slug).maybeSingle();
+  const live = invitationDataSchema.safeParse(row?.data ?? {});
+  const win = live.success ? postGalleryWindow(archiveInfo(live.data, Date.now(), isDemo(slug, theme)), live.data.postGallery.length) : undefined;
+  return [...checkInvitation(data, theme), ...(info ? packageIssues(data, theme, info.rules, win) : [])];
 }
 
 // Tema hanya boleh dipakai paket di kolom Tersedia di paket, selama isi paket punya baris jumlah_tema.

@@ -38,6 +38,7 @@ export function applyPackage(d: InvitationData, rules: PackageRules): Invitation
     const gallery = out.sections.gallery;
     out = { ...out, sections: { ...out.sections, gallery: { ...gallery, enabled: gallery.enabled && max > 0, photos: gallery.photos.slice(0, max) } } };
   }
+  if (rules.postGallery) out = { ...out, postGallery: out.postGallery.slice(0, rules.postGallery.max) };
   if (rules.extras) out = { ...out, extras: limitExtras(out.extras, rules.extras.max) };
   if (rules.locked.musik_sendiri) out = { ...out, media: { ...out.media, music: "" } };
   if (paletteLocked(out.style.palette, rules)) out = { ...out, style: { ...out.style, palette: "" } };

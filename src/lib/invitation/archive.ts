@@ -4,6 +4,8 @@ import type { InvitationData } from "./schema";
 // edit, RSVP, ucapan baru, amplop digital, hitung mundur, dan link nama tamu berhenti. Klien diberi tahu H-7.
 export const ARCHIVE_AFTER_DAYS = 30;
 export const NOTICE_BEFORE_DAYS = 7;
+// Foto galeri pasca acara bisa ditambah sampai hari ke-21 setelah acara.
+export const POST_GALLERY_DAYS = 21;
 const DAY = 86_400_000;
 
 export type ArchiveInfo = {
@@ -41,6 +43,14 @@ export function archiveFromDates(start: string | null | undefined, end: string |
 // Editor bisa dibuka sementara oleh admin untuk koreksi, misalnya tanggal acara yang salah ketik.
 export const editLocked = (info: ArchiveInfo, unlockedUntil: string | null | undefined, now = Date.now()) =>
   info.archived && !(unlockedUntil && Date.parse(unlockedUntil) > now);
+
+// Masa tambah foto pasca acara. published adalah jumlah foto di versi tayang, tidak ada berarti tanggal acara kosong.
+export type PostGalleryWindow = { until: string; closed: boolean; published: number };
+export function postGalleryWindow(info: ArchiveInfo, published: number, now = Date.now()): PostGalleryWindow | undefined {
+  if (!info.eventAt) return undefined;
+  const until = new Date(info.eventAt.getTime() + POST_GALLERY_DAYS * DAY);
+  return { until: formatDateId(until), closed: now > until.getTime(), published };
+}
 
 export const activeUnlock = (until: string | null | undefined, now = Date.now()) => (until && Date.parse(until) > now ? until : null);
 

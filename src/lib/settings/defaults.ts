@@ -335,6 +335,15 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "fontcustom", label: "Font custom dari Google Fonts", kind: "check", unit: "", key: "font_custom", cells: cells(false, false, true), hidden: true },
     { id: "video", label: "Video dari YouTube", kind: "check", unit: "", key: "video_youtube", cells: cells(false, false, false), hidden: true },
     {
+      id: "pasca",
+      label: "Galeri pasca acara",
+      kind: "count",
+      unit: "{n} foto",
+      key: "galeri_pasca",
+      cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: false, n: null } },
+      hidden: true,
+    },
+    {
       id: "bagian",
       label: "Bagian tambahan di luar tema",
       kind: "count",
@@ -373,6 +382,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "paletcustom", on: false, name: "Palet warna custom", price: 25000, scope: "Lengkap", unlock: "palet_custom", amount: 0 },
     { id: "fontcustom", on: false, name: "Font custom dari Google Fonts", price: 25000, scope: "Lengkap", unlock: "font_custom", amount: 0 },
     { id: "video", on: false, name: "Video dari YouTube", price: 25000, scope: "Semua paket", unlock: "video_youtube", amount: 0 },
+    { id: "pasca", on: false, name: "Galeri pasca acara, per 10 foto", price: 25000, scope: "Semua paket", unlock: "galeri_pasca", amount: 10 },
     { id: "domainmyid", on: true, name: "Alamat domain sendiri (.my.id)", price: 99000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
     { id: "domain", on: true, name: "Alamat domain sendiri (.com)", price: 299000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
     { id: "excel", on: false, name: "Ekspor daftar tamu ke Excel", price: 50000, scope: "Lengkap", unlock: "ekspor_excel", amount: 0 },

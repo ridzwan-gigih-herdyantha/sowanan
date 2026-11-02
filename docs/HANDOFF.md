@@ -77,8 +77,9 @@ File utama: `src/app/(site)/admin/undangan/[slug]/editor.tsx`.
 
 ## Paket dan add-on
 
-- Isi paket diatur di admin pengaturan (matrix fitur per paket). Kunci sistem ada di `SYSTEM_KEYS` (`lib/settings/schema.ts`): galeri_foto, bagian_tambahan, musik_sendiri, palet_varian, palet_custom, font_varian, font_custom, video_youtube, cerita, nama_tamu, ekspor_excel, qr_absensi.
+- Isi paket diatur di admin pengaturan (matrix fitur per paket). Kunci sistem ada di `SYSTEM_KEYS` (`lib/settings/schema.ts`): galeri_foto, galeri_pasca, bagian_tambahan, musik_sendiri, palet_varian, palet_custom, font_varian, font_custom, video_youtube, cerita, nama_tamu, ekspor_excel, qr_absensi.
 - Font custom (`style.customFont`) menyimpan nama font Google Fonts untuk judul, isi, dan nama mempelai, dimuat lewat stylesheet Google saat undangan dibuka. Nama dicek ke katalog `themes/google-fonts.ts`, yang diperbarui dengan `pnpm google-fonts`.
+- Galeri pasca acara (`data.postGallery`) adalah daftar foto terpisah dari batas foto paket, tampil di akhir Galeri. Kuotanya dari add-on (`galeri_pasca`). Setelah hari ke-21 acara jumlahnya tidak boleh bertambah dari versi tayang (`postGalleryCap`), dan saat arsip seluruh editor terkunci.
 - Video add-on (`data.video`) berisi satu tautan YouTube dan selalu tampil setelah Galeri lewat `groupExtras` (`lib/invitation/view.ts`), jadi tidak perlu diubah per tema. Tidak termasuk paket mana pun, hanya terbuka lewat add-on. Musik latar berhenti lewat `claim` di `YoutubeStream`.
 - `packageRules(settings, pkg, addons)` (`lib/settings/text.ts`) menghasilkan `locked` (fitur yang terkunci beserta alasannya), batas foto galeri, dan batas bagian tambahan.
 - Teks alasan di `locked` ditulis untuk admin. Jangan tampilkan ke tamu atau mempelai, cukup sembunyikan fiturnya.

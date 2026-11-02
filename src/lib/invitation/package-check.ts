@@ -1,5 +1,6 @@
 import type { PackageRules } from "@/lib/settings/text";
 import { CUSTOM } from "@/themes/palette";
+import type { PostGalleryWindow } from "./archive";
 import { CUSTOM_FONT_SLOTS, customFontProblem } from "./custom-font";
 import { countsAsExtra, type InvitationData } from "./schema";
 import { forTheme, GROUPS, type Issue } from "./spec";
@@ -10,8 +11,18 @@ export function paletteLocked(palette: string, rules: PackageRules): string | un
   return palette === CUSTOM ? rules.locked.palet_custom : rules.locked.palet_varian;
 }
 
+// Batas foto pasca acara: kuota add-on selama masanya terbuka. Setelah masanya lewat jumlah foto tidak boleh
+// bertambah dari versi tayang, tapi foto yang sudah ada boleh dihapus.
+export function postGalleryCap(rules: PackageRules, win?: PostGalleryWindow): { max: number; note: string } | undefined {
+  const quota = rules.postGallery;
+  if (quota && !quota.max) return quota;
+  if (win?.closed) return { max: quota ? Math.min(quota.max, win.published) : win.published, note: `Foto pasca acara hanya bisa ditambah sampai ${win.until}.` };
+  if (!quota) return undefined;
+  return { max: quota.max, note: `Kuota ${quota.max} foto dari add-on${win ? `, bisa ditambah sampai ${win.until}` : ""}.` };
+}
+
 // Isian yang melebihi paket plus add-on. Dipakai editor dan dicek ulang di server saat simpan final dan tayang.
-export function packageIssues(data: InvitationData, theme: string, rules: PackageRules): Issue[] {
+export function packageIssues(data: InvitationData, theme: string, rules: PackageRules, win?: PostGalleryWindow): Issue[] {
   const out: Issue[] = [];
   const has = (section: string) => forTheme(GROUPS, theme).some((g) => g.section === section);
 
@@ -24,6 +35,11 @@ export function packageIssues(data: InvitationData, theme: string, rules: Packag
         ? `${rules.photos.note}, sekarang ${photos}. Hapus ${photos - rules.photos.max} foto atau tambah add-on.`
         : `${rules.photos.note} Hapus semua foto atau matikan bagian Galeri.`,
     });
+  }
+  const post = data.postGallery.length;
+  const postCap = postGalleryCap(rules, win);
+  if (postCap && post > postCap.max) {
+    out.push({ path: "postGallery", group: "pasca", message: `${postCap.note} Sekarang ${post} foto, hapus ${post - postCap.max}.` });
   }
   const extras = data.extras.filter(countsAsExtra).length;
   if (rules.extras && extras > rules.extras.max) {
