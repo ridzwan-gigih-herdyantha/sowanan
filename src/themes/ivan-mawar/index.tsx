@@ -205,6 +205,29 @@ function StorySection({ inv, set }: { inv: InvitationView; set: string }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <div className="mt-10">
+      {inv.events.map((e, i) => (
+        <div key={`${e.name}-${i}`}>
+          {i > 0 && <Divider className="my-9" />}
+          <p className="font-display text-[28px] font-light text-inv-accent italic">{e.name}</p>
+          <Label className="mt-2">{e.dateLabel}</Label>
+          {e.clock && <p className="mt-2 font-display text-[19px] tabular-nums">{e.clock}</p>}
+          {e.place.name && <p className="mt-4 font-display text-[clamp(20px,5vw,24px)] leading-tight">{e.place.name}</p>}
+          {e.place.address && <p className="mx-auto mt-2 max-w-[40ch] text-[14px] leading-relaxed text-inv-ink/75">{e.place.address}</p>}
+          {e.place.mapUrl && (
+            <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${button} mt-5`}>
+              Petunjuk arah
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Details({ inv, set }: { inv: InvitationView; set: string }) {
   // "Sabtu, 15 Mei 2027" dipecah supaya tanggal bisa ditonjolkan di tengah.
   const [weekday, rest = ""] = inv.dateLong.split(", ");
@@ -227,27 +250,31 @@ function Details({ inv, set }: { inv: InvitationView; set: string }) {
             </div>
           </div>
 
-          <div className={`mt-10 grid gap-6 ${inv.events.length > 1 ? "sm:grid-cols-2" : ""}`}>
-            {inv.events.map((e, i) => (
-              <div key={e.name} className={i > 0 ? "border-t border-inv-line pt-6 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-6" : ""}>
-                <p className="font-display text-[26px] font-light text-inv-accent italic">{e.name}</p>
-                <p className="mt-2 font-display text-[19px] tabular-nums">
-                  {e.time}
-                  {e.until && <span className="text-inv-gold"> &ndash; </span>}
-                  {e.until} <span className="text-[13px] tracking-[0.2em] text-inv-ink/60">{inv.tz}</span>
-                </p>
-              </div>
-            ))}
-          </div>
+          {inv.agenda ? (
+            <Agenda inv={inv} />
+          ) : (
+            <div className={`mt-10 grid gap-6 ${inv.events.length > 1 ? "sm:grid-cols-2" : ""}`}>
+              {inv.events.map((e, i) => (
+                <div key={e.name} className={i > 0 ? "border-t border-inv-line pt-6 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-6" : ""}>
+                  <p className="font-display text-[26px] font-light text-inv-accent italic">{e.name}</p>
+                  <p className="mt-2 font-display text-[19px] tabular-nums">
+                    {e.time}
+                    {e.until && <span className="text-inv-gold"> &ndash; </span>}
+                    {e.until} <span className="text-[13px] tracking-[0.2em] text-inv-ink/60">{inv.tz}</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
 
           <Divider className="mt-10" />
           <div className="mm-frame relative mx-auto mt-10 aspect-[3/2] w-[min(100%,440px)] overflow-hidden rounded-[4px]">
             <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="440px" className="object-cover" />
           </div>
-          <p className="mt-9 font-display text-[clamp(22px,5.6vw,28px)] leading-tight">{inv.venue.name}</p>
-          <p className="mx-auto mt-2 max-w-[40ch] text-[14px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>
+          {!inv.agenda && <p className="mt-9 font-display text-[clamp(22px,5.6vw,28px)] leading-tight">{inv.venue.name}</p>}
+          {!inv.agenda && <p className="mx-auto mt-2 max-w-[40ch] text-[14px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>}
           <div className="mt-7 flex flex-wrap justify-center gap-3">
-            {inv.venue.mapUrl && (
+            {!inv.agenda && inv.venue.mapUrl && (
               <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={button}>
                 Petunjuk arah
               </a>

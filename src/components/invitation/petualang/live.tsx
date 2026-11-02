@@ -251,7 +251,8 @@ export function StoryDetail({ s, no }: { s: StoryEntry; no: number }) {
               </div>
               <div className="px-5 pt-4 pb-2 text-left">
                 <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">
-                  Checkpoint {no} / {s.date}
+                  Checkpoint {no}
+                  {s.date && ` / ${s.date}`}
                 </p>
                 <h3 className="mt-1.5 font-display text-[clamp(22px,6vw,28px)] leading-tight font-bold">{s.title}</h3>
                 {s.place && <p className="mt-1 text-[13px] text-inv-ink/70">{s.place}</p>}

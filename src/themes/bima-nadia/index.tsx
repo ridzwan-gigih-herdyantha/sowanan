@@ -176,6 +176,28 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <ul className="mt-8">
+      {inv.events.map((e, i) => (
+        <li key={`${e.name}-${i}`} className="border-b border-inv-line py-5 first:border-t">
+          <p className="rb-label text-[13px] tracking-[0.18em] text-inv-gold">{e.dateLabel}</p>
+          <p className="mt-1 font-display text-[clamp(24px,3.4vw,32px)] text-inv-ink">{e.name}</p>
+          {e.clock && <p className="rb-label mt-1 text-[14px] tracking-[0.1em] text-inv-ink tabular-nums">{e.clock}</p>}
+          {e.place.name && <p className="mt-2 text-[16px] font-medium text-inv-ink">{e.place.name}</p>}
+          {e.place.address && <p className="mt-1 text-[15px] leading-relaxed text-inv-ink/75">{e.place.address}</p>}
+          {e.place.mapUrl && (
+            <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${button} mt-3`}>
+              Lihat peta
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
   return (
     <Folio title="Malam yang kami nantikan" wash seed={21}>
@@ -193,18 +215,22 @@ function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
             {moon.name}, {moon.percent}% bulan tampak terang malam itu
           </p>
           {/* Jadwal seperti tabel almanak: nama acara, titik penuntun, lalu jam. */}
-          <ul className="mt-8">
-            {inv.events.map((e) => (
-              <li key={e.name} className="flex items-baseline gap-3 border-b border-inv-line py-4 first:border-t">
-                <span className="font-display text-[clamp(24px,3.4vw,32px)] text-inv-ink">{e.name}</span>
-                <span aria-hidden="true" className="mb-1.5 flex-1 border-b border-dotted border-inv-gold-light" />
-                <span className="rb-label text-[15px] tracking-[0.12em] text-inv-ink tabular-nums">
-                  {e.time}
-                  {e.until && <> &ndash; {e.until}</>} <span className="text-inv-gold">{inv.tz}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
+          {inv.agenda ? (
+            <Agenda inv={inv} />
+          ) : (
+            <ul className="mt-8">
+              {inv.events.map((e) => (
+                <li key={e.name} className="flex items-baseline gap-3 border-b border-inv-line py-4 first:border-t">
+                  <span className="font-display text-[clamp(24px,3.4vw,32px)] text-inv-ink">{e.name}</span>
+                  <span aria-hidden="true" className="mb-1.5 flex-1 border-b border-dotted border-inv-gold-light" />
+                  <span className="rb-label text-[15px] tracking-[0.12em] text-inv-ink tabular-nums">
+                    {e.time}
+                    {e.until && <> &ndash; {e.until}</>} <span className="text-inv-gold">{inv.tz}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
@@ -213,11 +239,11 @@ function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
           <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="220px" className="object-cover" />
         </div>
         <div>
-          <Label>Tempat</Label>
-          <p className="mt-3 font-display text-[clamp(30px,4.6vw,44px)] leading-tight text-inv-ink">{inv.venue.name}</p>
-          <p className="mt-2 text-[16px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>
+          {!inv.agenda && <Label>Tempat</Label>}
+          {!inv.agenda && <p className="mt-3 font-display text-[clamp(30px,4.6vw,44px)] leading-tight text-inv-ink">{inv.venue.name}</p>}
+          {!inv.agenda && <p className="mt-2 text-[16px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>}
           <div className="mt-6 flex flex-wrap gap-3">
-            {inv.venue.mapUrl && (
+            {!inv.agenda && inv.venue.mapUrl && (
               <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={button}>
                 Lihat peta
               </a>

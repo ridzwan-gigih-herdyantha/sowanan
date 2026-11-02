@@ -177,6 +177,29 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv, btn }: { inv: InvitationView; btn: string }) {
+  return (
+    <div className="mt-8 grid gap-4">
+      {inv.events.map((e, i) => (
+        <div key={`${e.name}-${i}`} {...reveal(i + 2)} className="hr-acara relative overflow-hidden rounded-sm bg-inv-wash/[0.06] py-5 pr-5 pl-12 ring-1 ring-inv-gold/40">
+          <div aria-hidden="true" className="hr-ulos-tegak absolute inset-y-0 left-0 w-7" />
+          <p className="text-[14px] tracking-[0.06em] text-inv-gold-light">{e.dateLabel}</p>
+          <p className="mt-1 font-display text-[clamp(21px,5.4vw,26px)] leading-tight font-semibold text-inv-wash">{e.name}</p>
+          {e.clock && <p className="mt-1 text-[16px] text-inv-gold-light">{e.clock}</p>}
+          {e.place.name && <p className="mt-3 text-[16px] font-medium text-inv-wash">{e.place.name}</p>}
+          {e.place.address && <p className="mt-1 text-[15px] text-inv-wash/80">{e.place.address}</p>}
+          {e.place.mapUrl && (
+            <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${btn} mt-4`}>
+              Buka peta
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function EventDetails({ inv }: { inv: InvitationView }) {
   const btn = "inline-flex items-center gap-2 rounded-sm bg-inv-gold-light px-5 py-3 text-[15px] text-inv-night no-underline transition-transform duration-150 hover:-translate-y-0.5";
   return (
@@ -192,29 +215,35 @@ function EventDetails({ inv }: { inv: InvitationView }) {
           <p {...reveal(1)} className="font-display text-[clamp(22px,6vw,30px)] text-inv-gold-light">
             {inv.dateLong}
           </p>
-          <div className="mt-8 grid gap-4">
-            {inv.events.map((e, i) => (
-              <div key={e.name} {...reveal(i + 2)} className="hr-acara relative overflow-hidden rounded-sm bg-inv-wash/[0.06] py-5 pr-5 pl-12 ring-1 ring-inv-gold/40">
-                <div aria-hidden="true" className="hr-ulos-tegak absolute inset-y-0 left-0 w-7" />
-                <p className="font-display text-[clamp(21px,5.4vw,26px)] leading-tight font-semibold text-inv-wash">{e.name}</p>
-                <p className="mt-1 text-[16px] text-inv-gold-light">
-                  {e.time}
-                  {e.until ? ` sampai ${e.until}` : ""} {inv.tz}
-                </p>
-              </div>
-            ))}
-          </div>
+          {inv.agenda ? (
+            <Agenda inv={inv} btn={btn} />
+          ) : (
+            <div className="mt-8 grid gap-4">
+              {inv.events.map((e, i) => (
+                <div key={e.name} {...reveal(i + 2)} className="hr-acara relative overflow-hidden rounded-sm bg-inv-wash/[0.06] py-5 pr-5 pl-12 ring-1 ring-inv-gold/40">
+                  <div aria-hidden="true" className="hr-ulos-tegak absolute inset-y-0 left-0 w-7" />
+                  <p className="font-display text-[clamp(21px,5.4vw,26px)] leading-tight font-semibold text-inv-wash">{e.name}</p>
+                  <p className="mt-1 text-[16px] text-inv-gold-light">
+                    {e.time}
+                    {e.until ? ` sampai ${e.until}` : ""} {inv.tz}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div {...reveal(2)} className="mt-12 lg:mt-24">
           <div className="relative aspect-[4/5] overflow-hidden rounded-sm shadow-[0_0_0_4px_var(--inv-night),0_0_0_5px_var(--inv-gold)]">
             <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 400px, 90vw" className="object-cover" />
           </div>
-          <p className="mt-5 font-display text-[24px] font-semibold">{inv.venue.name}</p>
-          <p className="mt-1 text-[16px] text-inv-wash/80">{inv.venue.address}</p>
+          {!inv.agenda && <p className="mt-5 font-display text-[24px] font-semibold">{inv.venue.name}</p>}
+          {!inv.agenda && <p className="mt-1 text-[16px] text-inv-wash/80">{inv.venue.address}</p>}
           <div className="mt-5 flex flex-wrap gap-3">
-            <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
-              Buka peta
-            </a>
+            {!inv.agenda && inv.venue.mapUrl && (
+              <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
+                Buka peta
+              </a>
+            )}
             <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
               Simpan ke kalender
             </CalendarButton>

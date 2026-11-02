@@ -214,11 +214,33 @@ function Collage({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <ol className="mt-6 divide-y divide-dashed divide-inv-line border-t border-dashed border-inv-line">
+      {inv.events.map((e, i) => (
+        <li key={`${e.name}-${i}`} className="py-5 last:pb-0">
+          <p className="text-[10px] tracking-[0.22em] text-inv-ink/60">{e.dateLabel.toUpperCase()}</p>
+          <p className="mt-1 font-display text-[26px] leading-tight text-inv-accent italic">{e.name}</p>
+          {e.clock && <p className="mt-1 font-display text-[18px]">{e.clock}</p>}
+          {e.place.name && <p className="mt-2 font-display text-[18px] leading-snug">{e.place.name}</p>}
+          {e.place.address && <p className="mt-1 text-[13px] text-inv-ink/65">{e.place.address}</p>}
+          {e.place.mapUrl && (
+            <a href={e.place.mapUrl} target="_blank" rel="noopener" className="mt-3 inline-flex rounded-sm border border-inv-accent px-3.5 py-2 text-[11px] tracking-[0.16em] text-inv-accent no-underline">
+              BUKA PETA
+            </a>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function EventDetails({ inv }: { inv: InvitationView }) {
   const rows: [string, string][] = [
     [inv.dayLabel.toUpperCase(), inv.dateShort.replace(/ /g, "")],
-    ...inv.events.map((e): [string, string] => [e.name.toUpperCase(), `${e.time}${e.until ? ` sampai ${e.until}` : ""} ${inv.tz}`]),
-    ["TEMPAT", inv.venue.name],
+    ...(inv.agenda ? [] : inv.events.map((e): [string, string] => [e.name.toUpperCase(), `${e.time}${e.until ? ` sampai ${e.until}` : ""} ${inv.tz}`])),
+    ...(inv.agenda ? [] : ([["TEMPAT", inv.venue.name]] as [string, string][])),
   ];
   return (
     <section className="inv-paper torn-top relative -mt-3.5 py-20 lg:py-28">
@@ -245,7 +267,8 @@ function EventDetails({ inv }: { inv: InvitationView }) {
                 </div>
               ))}
             </dl>
-            <p className="mt-5 text-[13px] text-inv-ink/65">{inv.venue.address}</p>
+            {inv.agenda && <Agenda inv={inv} />}
+            {!inv.agenda && <p className="mt-5 text-[13px] text-inv-ink/65">{inv.venue.address}</p>}
           </div>
           </div>
           <div className="ticket-stub flex flex-col justify-between gap-5 border-t-2 border-dashed border-inv-line bg-inv-card p-6 sm:px-8 lg:w-[22%] lg:border-t-0 lg:border-l-2">
@@ -253,18 +276,20 @@ function EventDetails({ inv }: { inv: InvitationView }) {
               <p className="font-display text-[44px] leading-none text-inv-accent">{inv.dayMonth}</p>
               <p className="mt-2 text-[10px] tracking-[0.22em] text-inv-ink/60">SIMPAN SOBEKAN INI</p>
             </div>
-            <a
-              href={inv.venue.mapUrl}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center justify-center gap-2 rounded-sm border border-inv-accent px-4 py-3 text-[11px] tracking-[0.16em] text-inv-accent no-underline transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-                <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
-                <circle cx="12" cy="10" r="2.5" />
-              </svg>
-              BUKA PETA
-            </a>
+            {!inv.agenda && inv.venue.mapUrl && (
+              <a
+                href={inv.venue.mapUrl}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center justify-center gap-2 rounded-sm border border-inv-accent px-4 py-3 text-[11px] tracking-[0.16em] text-inv-accent no-underline transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                  <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                BUKA PETA
+              </a>
+            )}
           </div>
         </div>
         <p className="mt-10 max-w-[48ch] font-display text-lg leading-snug italic">{inv.honor}</p>

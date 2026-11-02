@@ -191,6 +191,28 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <div className="mt-8 grid gap-5">
+      {inv.events.map((e, i) => (
+        <div key={`${e.name}-${i}`} className={`tp-letterboard px-5 pt-4 pb-5 text-inv-card ${i % 2 ? "rotate-1" : "-rotate-1"}`}>
+          <p className="tp-label text-[15px] text-(--tp-sun)">{e.dateLabel}</p>
+          <p className="tp-label mt-1.5 text-[34px] leading-none">{e.name}</p>
+          {e.clock && <p className="tp-label mt-2 text-[24px] leading-none text-(--tp-sun)">{e.clock}</p>}
+          {e.place.name && <p className="tp-label mt-3 text-[20px] leading-tight">{e.place.name}</p>}
+          {e.place.address && <p className="mt-1.5 text-[14px] leading-relaxed text-inv-card/85">{e.place.address}</p>}
+          {e.place.mapUrl && (
+            <a href={e.place.mapUrl} target="_blank" rel="noopener" className="tp-pill tp-label mt-4 inline-block text-[16px] no-underline">
+              Petunjuk arah
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Details({ inv }: { inv: InvitationView }) {
   return (
     <Section bg="sun">
@@ -201,26 +223,30 @@ function Details({ inv }: { inv: InvitationView }) {
         <Marquee className="h-24">
           <Title className="relative text-[clamp(28px,8vw,36px)] text-inv-card">Jadwal Tayang</Title>
         </Marquee>
-        <div className="mt-8 grid gap-5">
-          {inv.events.map((e, i) => (
-            <div key={e.name} className={`tp-letterboard px-5 pt-4 pb-5 text-inv-card ${i % 2 ? "rotate-1" : "-rotate-1"}`}>
-              <p className="tp-label text-[15px] text-(--tp-sun)">{inv.dateLong}</p>
-              <p className="tp-label mt-1.5 text-[34px] leading-none">{e.name}</p>
-              <p className="tp-label mt-2 text-[24px] leading-none text-(--tp-sun)">
-                {e.time}
-                {e.until && ` – ${e.until}`} {inv.tz}
-              </p>
-            </div>
-          ))}
-        </div>
+        {inv.agenda ? (
+          <Agenda inv={inv} />
+        ) : (
+          <div className="mt-8 grid gap-5">
+            {inv.events.map((e, i) => (
+              <div key={e.name} className={`tp-letterboard px-5 pt-4 pb-5 text-inv-card ${i % 2 ? "rotate-1" : "-rotate-1"}`}>
+                <p className="tp-label text-[15px] text-(--tp-sun)">{inv.dateLong}</p>
+                <p className="tp-label mt-1.5 text-[34px] leading-none">{e.name}</p>
+                <p className="tp-label mt-2 text-[24px] leading-none text-(--tp-sun)">
+                  {e.time}
+                  {e.until && ` – ${e.until}`} {inv.tz}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
         <Note className="mt-8">
           <div className="tp-card relative mb-4 overflow-hidden">
             <Panel src={inv.images.venue} frame={inv.frame.venue} alt={`Suasana ${inv.venue.name}`} sizes="520px" className="aspect-[16/9]" />
           </div>
-          <p className="tp-label text-[22px] leading-none">{inv.venue.name}</p>
-          <p className="mt-2 text-[15px] leading-relaxed text-inv-ink/85">{inv.venue.address}</p>
+          {!inv.agenda && <p className="tp-label text-[22px] leading-none">{inv.venue.name}</p>}
+          {!inv.agenda && <p className="mt-2 text-[15px] leading-relaxed text-inv-ink/85">{inv.venue.address}</p>}
           <div className="mt-5 flex flex-wrap gap-3">
-            {inv.venue.mapUrl && (
+            {!inv.agenda && inv.venue.mapUrl && (
               <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className="tp-pill tp-label text-[16px] no-underline">
                 Petunjuk arah
               </a>

@@ -25,7 +25,7 @@ type Base = { path: string; label: string; themes?: string[]; hint?: string; req
 // Jenis dengan counted false tidak dihitung dalam batas paket.
 export type Variants = { path: string; options: { value: string; label: string; hint: string; counted: boolean; blank: Record<string, unknown> }[] };
 export type Field =
-  | (Base & { kind: "text" | "textarea"; max: number; format?: "url" | "time" | "color"; placeholder?: string })
+  | (Base & { kind: "text" | "textarea"; max: number; format?: "url" | "time" | "color" | "date"; placeholder?: string })
   | (Base & { kind: "media"; purpose: Purpose; dims?: boolean })
   | (Base & { kind: "datetime" })
   | (Base & { kind: "select"; options: string[]; labels?: Record<string, string> })
@@ -36,7 +36,7 @@ export type Field =
 
 export type Group = { key: string; title: string; section?: SectionKey; themes?: string[]; note?: string; fields: Field[] };
 
-const text = (path: string, label: string, max: number, extra: Partial<Base & { format: "url" | "time" | "color"; placeholder: string }> = {}): Field => ({
+const text = (path: string, label: string, max: number, extra: Partial<Base & { format: "url" | "time" | "color" | "date"; placeholder: string }> = {}): Field => ({
   kind: "text",
   path,
   label,
@@ -94,8 +94,8 @@ export const GROUPS: Group[] = [
       text("couple.groom.name", "Nama panggilan pria", 40),
       text("couple.bride.name", "Nama panggilan wanita", 40),
       text("monogram", "Monogram", 12, { placeholder: "A & R" }),
-      { kind: "datetime", path: "event.start", label: "Mulai acara", required: true },
-      { kind: "datetime", path: "event.end", label: "Selesai acara", required: true },
+      { kind: "datetime", path: "event.start", label: "Mulai acara", required: true, hint: "Tanggal utama, dipakai hitung mundur. Kalau acara beberapa hari, isi acara pertama." },
+      { kind: "datetime", path: "event.end", label: "Selesai acara", required: true, hint: "Kalau acara beberapa hari, isi selesainya acara terakhir. Arsip dihitung dari sini." },
       { kind: "select", path: "event.timezone", label: "Zona waktu", options: ["WIB", "WITA", "WIT"] },
       text("event.city", "Kota", 60, { placeholder: "Bandung, Jawa Barat" }),
       text("copy.tagline", "Tagline", 120, { themes: [A, B, E, EL, N, R, L, P, M, G, RK], ...optional }),
@@ -149,11 +149,11 @@ export const GROUPS: Group[] = [
         blank: { title: "", date: "", image: "", short: "", long: "", no: "", place: "" },
         fields: [
           text("title", "Judul", 60),
-          text("date", "Tanggal", 20, { placeholder: "14.02.2020" }),
+          text("date", "Tanggal", 20, { ...optional, placeholder: "14.02.2020" }),
           text("place", "Tempat", 60, { themes: [H], ...optional }),
           text("no", "Nomor", 10, { themes: [H], ...optional }),
           media("image", "Foto", "story"),
-          area("short", "Ringkasan", 200),
+          area("short", "Ringkasan", 200, { ...optional, hint: "Kosong berarti diambil dari awal cerita lengkap." }),
           area("long", "Cerita lengkap", 1200),
           media("video.src", "Video", "video", { ...optional, hint: "Opsional. Menggantikan foto saat dibuka." }),
           media("video.poster", "Poster video", "poster", { ...optional }),
@@ -188,20 +188,25 @@ export const GROUPS: Group[] = [
       area("copy.honor", "Kalimat kehormatan", 400),
       text("event.venue.name", "Nama tempat", 80),
       area("event.venue.address", "Alamat", 200),
-      text("event.venue.mapUrl", "Link Google Maps", 500, { format: "url", placeholder: "https://maps.app.goo.gl/..." }),
+      text("event.venue.mapUrl", "Link Google Maps", 500, { ...optional, format: "url", placeholder: "https://maps.app.goo.gl/..." }),
       media("media.venue", "Foto tempat", "venue", { ...optional, hint: "Kosong berarti memakai foto hero." }),
       {
         kind: "list",
         path: "event.schedule",
         label: "Susunan acara",
         item: "Acara",
+        hint: "Acara beda hari atau beda tempat? Isi tanggal dan tempat di tiap acara, undangan otomatis menampilkannya per kartu.",
         min: 1,
         max: 6,
-        blank: { time: "", name: "", until: "" },
+        blank: { time: "", name: "", until: "", date: "", venue: "", address: "", mapUrl: "" },
         fields: [
           text("name", "Nama acara", 60, { placeholder: "Akad Nikah" }),
-          text("time", "Jam mulai", 5, { format: "time", placeholder: "08.00" }),
-          text("until", "Jam selesai", 5, { format: "time", placeholder: "11.00", ...optional }),
+          text("date", "Tanggal", 10, { ...optional, format: "date", hint: "Kosong berarti tanggal utama." }),
+          text("time", "Jam mulai", 5, { ...optional, format: "time", placeholder: "08.00" }),
+          text("until", "Jam selesai", 5, { ...optional, format: "time", placeholder: "11.00" }),
+          text("venue", "Nama tempat", 80, { ...optional, hint: "Kosong berarti tempat utama." }),
+          area("address", "Alamat", 200, optional),
+          text("mapUrl", "Link Google Maps", 500, { ...optional, format: "url", placeholder: "https://maps.app.goo.gl/..." }),
         ],
       },
     ],
@@ -477,6 +482,7 @@ function checkFields(data: unknown, fields: Field[], theme: string, prefix: stri
     if (f.kind === "text" || f.kind === "textarea") {
       if (v.length > f.max) push(`${name} maksimal ${f.max} karakter.`);
       if (f.format === "time" && !TIME.test(v)) push(`${name} pakai format 08.00.`);
+      if (f.format === "date" && !/^\d{4}-\d{2}-\d{2}$/.test(v)) push(`${name} tidak valid.`);
       if (f.format === "url" && !/^https?:\/\/\S+\.\S+/.test(v)) push(`${name} harus diawali https://`);
       if (f.format === "color" && !HEX.test(v)) push(`${name} pakai kode warna seperti #A3B18A.`);
     }

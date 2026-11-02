@@ -53,6 +53,10 @@ pnpm dev
 
 Draf dan versi live terpisah. Editor menyimpan draf otomatis ke `draft`. Tombol Save version / Publish changes menyalin draf ke `data` setelah validasi. Switch Live mengubah `published`.
 
+## Acara beberapa hari atau beberapa tempat
+
+Setiap item `event.schedule` boleh punya `date`, `venue`, `address`, dan `mapUrl` sendiri. Kosong berarti ikut tanggal dan tempat utama. `toView` menyalakan `inv.agenda` kalau ada acara dengan tanggal atau tempat sendiri, atau tanpa jam. Saat menyala, tema menampilkan komponen `Agenda` miliknya sendiri (lihat `index.tsx` tiap tema) dan menyembunyikan blok tempat utama. Data per acara sudah siap di `e.dateLabel`, `e.clock`, dan `e.place`. Tema baru perlu mengikuti pola ini.
+
 ## Cache
 
 - `getInvitation(slug)` di `lib/invitation/load.ts` memakai `"use cache"` dengan tag `invitation-<slug>`. Setiap aksi admin yang mengubah undangan memanggil `updateTag` untuk tag itu.

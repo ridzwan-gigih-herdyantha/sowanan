@@ -185,6 +185,35 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <div className="mt-10 grid gap-8">
+      {inv.events.map((e, i) => {
+        const rows: [string, ReactNode][] = [["TANGGAL", e.dateLabel]];
+        if (e.clock) rows.push(["JAM", e.clock]);
+        if (e.place.name) rows.push(["TEMPAT", e.place.name]);
+        if (e.place.address) rows.push(["ALAMAT", e.place.address]);
+        return (
+          <article key={`${e.name}-${i}`}>
+            <p className="font-display text-[24px] leading-tight text-inv-accent italic">{e.name}</p>
+            <SpecLabel className="mt-3" rows={rows} />
+            {e.place.mapUrl && (
+              <a href={e.place.mapUrl} target="_blank" rel="noopener" className="mt-4 inline-flex items-center gap-3 rounded-sm border border-inv-accent px-5 py-3 text-[11px] font-medium tracking-[0.2em] text-inv-accent no-underline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                  <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                BUKA PETA
+              </a>
+            )}
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
 function EventDetails({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-20 lg:py-28">
@@ -192,35 +221,41 @@ function EventDetails({ inv }: { inv: InvitationView }) {
         <div className="lg:col-span-6">
           <Label>HARI H</Label>
           <Title>{inv.dateLong}</Title>
-          <SpecLabel
-            className="mt-10"
-            rows={[
-              ...inv.events.map(
-                (e) =>
-                  [
-                    `${e.time} ${inv.tz}`,
-                    <span key={e.name}>
-                      {e.name}
-                      {"until" in e && <span className="text-inv-ink/60">, sampai {e.until} {inv.tz}</span>}
-                    </span>,
-                  ] as [string, ReactNode],
-              ),
-              ["TEMPAT", <span key="v">{inv.venue.name}</span>],
-              ["ALAMAT", <span key="a">{inv.venue.address}</span>],
-            ]}
-          />
-          <a
-            href={inv.venue.mapUrl}
-            target="_blank"
-            rel="noopener"
-            className="mt-6 inline-flex items-center gap-3 rounded-sm border border-inv-accent px-5 py-3 text-[11px] font-medium tracking-[0.2em] text-inv-accent no-underline transition-colors duration-150 hover:bg-inv-accent hover:text-inv-wash"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-              <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
-              <circle cx="12" cy="10" r="2.5" />
-            </svg>
-            BUKA PETA
-          </a>
+          {inv.agenda ? (
+            <Agenda inv={inv} />
+          ) : (
+            <SpecLabel
+              className="mt-10"
+              rows={[
+                ...inv.events.map(
+                  (e) =>
+                    [
+                      `${e.time} ${inv.tz}`,
+                      <span key={e.name}>
+                        {e.name}
+                        {e.until && <span className="text-inv-ink/60">, sampai {e.until} {inv.tz}</span>}
+                      </span>,
+                    ] as [string, ReactNode],
+                ),
+                ["TEMPAT", <span key="v">{inv.venue.name}</span>],
+                ["ALAMAT", <span key="a">{inv.venue.address}</span>],
+              ]}
+            />
+          )}
+          {!inv.agenda && inv.venue.mapUrl && (
+            <a
+              href={inv.venue.mapUrl}
+              target="_blank"
+              rel="noopener"
+              className="mt-6 inline-flex items-center gap-3 rounded-sm border border-inv-accent px-5 py-3 text-[11px] font-medium tracking-[0.2em] text-inv-accent no-underline transition-colors duration-150 hover:bg-inv-accent hover:text-inv-wash"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+              BUKA PETA
+            </a>
+          )}
           <p className="mt-10 max-w-[40ch] font-display text-lg leading-snug italic">{inv.honor}</p>
         </div>
         <div className="relative mt-12 lg:col-span-5 lg:col-start-8 lg:mt-0">
@@ -229,7 +264,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
             <div className="relative aspect-[4/5] overflow-hidden">
               <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 980px) 440px, 90vw" className="object-cover" />
             </div>
-            <p className="px-1 pt-2.5 font-display text-[14px] italic">{inv.venue.name}</p>
+            {!inv.agenda && <p className="px-1 pt-2.5 font-display text-[14px] italic">{inv.venue.name}</p>}
           </div>
         </div>
       </Wrap>

@@ -83,7 +83,8 @@ export const invitationDataSchema = z.object({
       timezone: z.enum(["WIB", "WITA", "WIT"]).default("WIB"),
       city: str(),
       venue: z.object({ name: str(), address: str(), mapUrl: str() }).prefault({}),
-      schedule: list(z.object({ time: str(), name: str(), until: str() })),
+      // date, venue, address, mapUrl opsional. Kosong berarti ikut tanggal dan tempat utama.
+      schedule: list(z.object({ time: str(), name: str(), until: str(), date: str(), venue: str(), address: str(), mapUrl: str() })),
       rsvpDeadline: str(),
     })
     .prefault({}),

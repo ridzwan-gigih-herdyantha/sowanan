@@ -181,6 +181,31 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv, btn }: { inv: InvitationView; btn: string }) {
+  return (
+    <ol className="relative mt-7 border-l border-pk-emas pl-8">
+      {inv.events.map((e, i) => (
+        <li key={`${e.name}-${i}`} {...reveal(i + 3)} className="relative pb-8 last:pb-0">
+          <span className="absolute top-1.5 -left-[44px] flex size-6 items-center justify-center bg-inv-paper text-inv-accent">
+            <Motif name="wajik" className="size-5" />
+          </span>
+          <p className="font-display text-[26px] leading-tight text-inv-ink">{e.name}</p>
+          <p className="mt-1 text-[16px] text-inv-accent">{e.dateLabel}</p>
+          {e.clock && <p className="text-[16px] text-inv-accent">{e.clock}</p>}
+          {e.place.name && <p className="mt-3 font-display text-[20px] leading-tight text-inv-ink">{e.place.name}</p>}
+          {e.place.address && <p className="mt-1 text-[16px] text-inv-ink/80">{e.place.address}</p>}
+          {e.place.mapUrl && (
+            <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${btn} mt-4`}>
+              Buka peta
+            </a>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function EventDetails({ inv }: { inv: InvitationView }) {
   const btn = "inline-flex items-center gap-2 rounded-sm bg-inv-ink px-5 py-3 text-[14px] text-inv-wash no-underline transition-colors duration-150 hover:bg-inv-accent";
   return (
@@ -197,31 +222,37 @@ function EventDetails({ inv }: { inv: InvitationView }) {
             {tanggal(inv)}
           </p>
           <Seret className="mt-3 w-40" />
-          <ol className="relative mt-7 border-l border-pk-emas pl-8">
-            {inv.events.map((e, i) => (
-              <li key={e.name} {...reveal(i + 3)} className="relative pb-6 last:pb-0">
-                <span className="absolute top-1.5 -left-[44px] flex size-6 items-center justify-center bg-inv-paper text-inv-accent">
-                  <Motif name="wajik" className="size-5" />
-                </span>
-                <p className="font-display text-[26px] leading-tight text-inv-ink">{e.name}</p>
-                <p className="mt-1 text-[16px] text-inv-accent">
-                  {e.time}
-                  {e.until ? ` sampai ${e.until}` : ""} {inv.tz}
-                </p>
-              </li>
-            ))}
-          </ol>
+          {inv.agenda ? (
+            <Agenda inv={inv} btn={btn} />
+          ) : (
+            <ol className="relative mt-7 border-l border-pk-emas pl-8">
+              {inv.events.map((e, i) => (
+                <li key={e.name} {...reveal(i + 3)} className="relative pb-6 last:pb-0">
+                  <span className="absolute top-1.5 -left-[44px] flex size-6 items-center justify-center bg-inv-paper text-inv-accent">
+                    <Motif name="wajik" className="size-5" />
+                  </span>
+                  <p className="font-display text-[26px] leading-tight text-inv-ink">{e.name}</p>
+                  <p className="mt-1 text-[16px] text-inv-accent">
+                    {e.time}
+                    {e.until ? ` sampai ${e.until}` : ""} {inv.tz}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          )}
         </div>
         <div {...reveal(2)} className="mt-12 lg:mt-4">
           <div className="relative aspect-[4/5] overflow-hidden rounded-t-[999px] shadow-[0_0_0_5px_var(--inv-paper),0_0_0_6px_var(--pk-emas),0_20px_36px_rgba(62,46,34,.18)]">
             <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 420px, 90vw" className="object-cover" />
           </div>
-          <p className="mt-5 font-display text-[26px] text-inv-ink">{inv.venue.name}</p>
-          <p className="mt-1 text-[16px] text-inv-ink/80">{inv.venue.address}</p>
+          {!inv.agenda && <p className="mt-5 font-display text-[26px] text-inv-ink">{inv.venue.name}</p>}
+          {!inv.agenda && <p className="mt-1 text-[16px] text-inv-ink/80">{inv.venue.address}</p>}
           <div className="mt-5 flex flex-wrap gap-3">
-            <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
-              Buka peta
-            </a>
+            {!inv.agenda && inv.venue.mapUrl && (
+              <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
+                Buka peta
+              </a>
+            )}
             <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
               Simpan ke kalender
             </CalendarButton>

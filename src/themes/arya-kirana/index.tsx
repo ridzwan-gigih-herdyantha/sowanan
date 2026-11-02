@@ -190,6 +190,30 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <div className="mx-auto mt-14 grid max-w-[860px] gap-8 sm:grid-cols-2">
+      {inv.events.map((e, i) => (
+        <OrnateFrame key={`${e.name}-${i}`} className={`${card} su-lift ${i % 2 ? "sm:rotate-[1deg]" : "sm:-rotate-[1deg]"}`}>
+          <div className="px-6 py-10 text-center">
+            <Label>{e.name}</Label>
+            <p className="mt-4 font-display text-[clamp(24px,5vw,30px)] leading-tight">{e.dateLabel}</p>
+            {e.clock && <p className="mt-2 font-display text-[12px] tracking-[0.3em] text-inv-gold">{e.clock}</p>}
+            {e.place.name && <p className="mt-5 font-display text-[20px] leading-tight">{e.place.name}</p>}
+            {e.place.address && <p className="mt-2 text-[14px] leading-relaxed text-inv-ink/80">{e.place.address}</p>}
+            {e.place.mapUrl && (
+              <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${button} mt-5`}>
+                Lihat peta
+              </a>
+            )}
+          </div>
+        </OrnateFrame>
+      ))}
+    </div>
+  );
+}
+
 function Details({ inv }: { inv: InvitationView }) {
   // "Minggu, 14 Februari 2027" dipecah supaya tanggal bisa ditonjolkan di tengah.
   const [weekday, rest = ""] = inv.dateLong.split(", ");
@@ -205,21 +229,25 @@ function Details({ inv }: { inv: InvitationView }) {
           <p className="flex-1 border-y border-inv-gold py-2.5 font-display text-[12px] tracking-[0.3em] uppercase">{monthYear.join(" ")}</p>
         </div>
 
-        <div className="mx-auto mt-14 grid max-w-[860px] gap-8 sm:grid-cols-2">
-          {inv.events.map((e, i) => (
-            <OrnateFrame key={e.name} className={`${card} su-lift ${i % 2 ? "sm:rotate-[1deg]" : "sm:-rotate-[1deg]"}`}>
-              <div className="px-6 py-12 text-center">
-                <Label>{e.name}</Label>
-                <p className="mt-5 font-display text-[clamp(30px,6.4vw,40px)] leading-tight tabular-nums">
-                  {e.time}
-                  {e.until && <span className="text-inv-gold"> &ndash; </span>}
-                  {e.until}
-                </p>
-                <p className="mt-1 font-display text-[12px] tracking-[0.3em] text-inv-gold">{inv.tz}</p>
-              </div>
-            </OrnateFrame>
-          ))}
-        </div>
+        {inv.agenda ? (
+          <Agenda inv={inv} />
+        ) : (
+          <div className="mx-auto mt-14 grid max-w-[860px] gap-8 sm:grid-cols-2">
+            {inv.events.map((e, i) => (
+              <OrnateFrame key={e.name} className={`${card} su-lift ${i % 2 ? "sm:rotate-[1deg]" : "sm:-rotate-[1deg]"}`}>
+                <div className="px-6 py-12 text-center">
+                  <Label>{e.name}</Label>
+                  <p className="mt-5 font-display text-[clamp(30px,6.4vw,40px)] leading-tight tabular-nums">
+                    {e.time}
+                    {e.until && <span className="text-inv-gold"> &ndash; </span>}
+                    {e.until}
+                  </p>
+                  <p className="mt-1 font-display text-[12px] tracking-[0.3em] text-inv-gold">{inv.tz}</p>
+                </div>
+              </OrnateFrame>
+            ))}
+          </div>
+        )}
 
         <OrnateFrame corners={false} className={`mx-auto mt-10 max-w-[860px] ${card}`}>
           <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -227,11 +255,11 @@ function Details({ inv }: { inv: InvitationView }) {
               <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 430px, 100vw" className="object-cover" />
             </div>
             <div className="px-6 py-10 text-center md:px-10 md:text-left">
-              <Label>Tempat</Label>
-              <p className="mt-4 font-display text-[clamp(26px,5.6vw,34px)] leading-tight">{inv.venue.name}</p>
-              <p className="mt-3 text-[15px] leading-relaxed text-inv-ink/80">{inv.venue.address}</p>
+              {!inv.agenda && <Label>Tempat</Label>}
+              {!inv.agenda && <p className="mt-4 font-display text-[clamp(26px,5.6vw,34px)] leading-tight">{inv.venue.name}</p>}
+              {!inv.agenda && <p className="mt-3 text-[15px] leading-relaxed text-inv-ink/80">{inv.venue.address}</p>}
               <div className="mt-7 flex flex-wrap justify-center gap-3 md:justify-start">
-                {inv.venue.mapUrl && (
+                {!inv.agenda && inv.venue.mapUrl && (
                   <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={button}>
                     Lihat peta
                   </a>

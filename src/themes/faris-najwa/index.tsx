@@ -184,6 +184,18 @@ function Story({ inv }: { inv: InvitationView }) {
   </section>;
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return <div className="mt-8 grid gap-3">{inv.events.map((e, i) => <article key={`${e.name}-${i}`} className="border-l-2 border-inv-gold bg-inv-wash px-4 py-5 text-left sm:px-6">
+    <Label>{e.name}</Label>
+    <p className="mt-3 font-display text-[clamp(22px,4vw,30px)] leading-tight text-inv-accent">{e.dateLabel}</p>
+    {e.clock && <p className="mt-1 text-[12px] text-inv-ink/60">{e.clock}</p>}
+    {e.place.name && <h3 className="mt-3 font-display text-xl text-inv-accent">{e.place.name}</h3>}
+    {e.place.address && <p className="mt-1 text-[13px] leading-relaxed text-inv-ink/70">{e.place.address}</p>}
+    {e.place.mapUrl && <a className={`${button} mt-4`} href={e.place.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
+  </article>)}</div>;
+}
+
 function Event({ inv }: { inv: InvitationView }) {
   const calendar = calendarEventOf(inv);
   return <section className="relative isolate overflow-hidden bg-inv-paper py-20 text-inv-ink sm:py-28">
@@ -196,13 +208,13 @@ function Event({ inv }: { inv: InvitationView }) {
         <div className="border-y border-inv-line py-6">
           <p className="text-center font-display text-[clamp(30px,6vw,46px)] text-inv-accent lg:text-left">{inv.dateLong}</p>
           <p className="mt-2 text-center text-[13px] tracking-[.14em] text-inv-ink/60 lg:text-left">{hijri(inv.date, inv.tz)} · {inv.tz}</p>
-          <div className="mt-8 grid grid-cols-2 gap-3">{inv.events.map((event, i) => <article key={`${event.name}-${i}`} className="border-l-2 border-inv-gold bg-inv-wash px-4 py-5 text-left sm:px-6">
+          {inv.agenda ? <Agenda inv={inv} /> : <div className="mt-8 grid grid-cols-2 gap-3">{inv.events.map((event, i) => <article key={`${event.name}-${i}`} className="border-l-2 border-inv-gold bg-inv-wash px-4 py-5 text-left sm:px-6">
             <Label>{event.name}</Label><p className="mt-3 font-display text-[clamp(24px,4vw,34px)] text-inv-accent">{event.time}</p>{event.until && <p className="mt-1 text-[12px] text-inv-ink/60">sampai {event.until}</p>}
-          </article>)}</div>
+          </article>)}</div>}
         </div>
         <div className="grid gap-5 sm:grid-cols-[.85fr_1fr] lg:grid-cols-1 xl:grid-cols-[.85fr_1fr]">
           <div className="relative min-h-[260px] overflow-hidden border border-inv-gold/50 bg-inv-wash p-1.5"><div className="relative min-h-[248px] h-full"><Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 360px, 90vw" className="object-cover object-[50%_25%]" /></div></div>
-          <div className="flex flex-col justify-center"><Label>LOKASI</Label><h3 className="mt-3 font-display text-3xl text-inv-accent">{inv.venue.name}</h3><p className="mt-2 text-[13px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p><div className="mt-5 flex flex-wrap gap-3">{inv.venue.mapUrl && <a className={button} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}<CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className={button}>Simpan tanggal</CalendarButton></div></div>
+          <div className="flex flex-col justify-center">{!inv.agenda && <Label>LOKASI</Label>}{!inv.agenda && <h3 className="mt-3 font-display text-3xl text-inv-accent">{inv.venue.name}</h3>}{!inv.agenda && <p className="mt-2 text-[13px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p>}<div className="mt-5 flex flex-wrap gap-3">{!inv.agenda && inv.venue.mapUrl && <a className={button} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}<CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className={button}>Simpan tanggal</CalendarButton></div></div>
         </div>
       </div>
     </Frame>
