@@ -85,6 +85,21 @@ function Story({ inv }: { inv: InvitationView }) {
   </div></Frame></section>;
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return <div className="divide-y divide-inv-line">{inv.events.map((e, i) => <article key={`${e.name}-${i}`} className="flex gap-5 p-6 sm:p-7">
+    <span className="font-display text-4xl text-inv-gold/80">0{i + 1}</span>
+    <div className="min-w-0">
+      <Label>{e.name}</Label>
+      <p className="mt-2 font-display text-2xl">{e.dateLabel}</p>
+      {e.clock && <p className="mt-1 text-[12px] text-inv-ink/65">{e.clock}</p>}
+      {e.place.name && <h3 className="mt-4 font-display text-xl">{e.place.name}</h3>}
+      {e.place.address && <p className="mt-1 max-w-[45ch] text-[13px] leading-relaxed text-inv-ink/65">{e.place.address}</p>}
+      {e.place.mapUrl && <a className={`${button} mt-4`} href={e.place.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
+    </div>
+  </article>)}</div>;
+}
+
 function Event({ inv }: { inv: InvitationView }) {
   const calendar = calendarEventOf(inv);
   return <section id="acara" className="scroll-mt-8 bg-inv-wash py-20 text-inv-ink sm:py-28"><Frame className="max-w-[1320px]">
@@ -92,10 +107,10 @@ function Event({ inv }: { inv: InvitationView }) {
     <div className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-stretch">
       <div className="relative flex min-h-[360px] flex-col justify-between overflow-hidden border border-inv-gold/45 bg-inv-night p-7 sm:min-h-[460px] sm:p-10"><span aria-hidden="true" className="absolute -right-4 -bottom-20 font-display text-[260px] leading-none text-inv-gold/[.07]">✦</span><div className="relative"><Label>THE WEDDING NIGHT</Label><p className="mt-12 font-display text-[clamp(42px,7vw,76px)] leading-[.95]">{inv.dateLong}</p><p className="mt-5 text-[10px] tracking-[.2em] text-inv-gold uppercase">{inv.cityShort} · {inv.tz}</p></div><div className="relative flex items-end justify-between gap-4 border-t border-inv-line pt-5"><p className="font-display text-2xl">{inv.monogram}</p>{inv.on.countdown && <Countdown target={inv.date} className="grid grid-cols-3 gap-2" cellClassName="min-w-14 border border-inv-line bg-inv-card/60 px-2 py-2 font-display text-xl text-inv-ink [&>span:last-child]:block [&>span:last-child]:font-body [&>span:last-child]:text-[8px] [&>span:last-child]:tracking-[.12em] [&>span:last-child]:text-inv-gold" />}</div></div>
       <div className="flex flex-col border border-inv-line bg-inv-paper">
-        <div className="grid divide-y divide-inv-line sm:grid-cols-2 sm:divide-x sm:divide-y-0">{inv.events.map((e, i) => <article key={e.name} className="flex items-center gap-5 p-6 sm:p-7"><span className="font-display text-4xl text-inv-gold/80">0{i + 1}</span><div><Label>{e.name}</Label><p className="mt-2 font-display text-2xl">{e.time}{e.until && ` — ${e.until}`}</p><p className="mt-1 text-[10px] text-inv-ink/55">{inv.tz}</p></div></article>)}</div>
+        {inv.agenda ? <Agenda inv={inv} /> : <div className="grid divide-y divide-inv-line sm:grid-cols-2 sm:divide-x sm:divide-y-0">{inv.events.map((e, i) => <article key={e.name} className="flex items-center gap-5 p-6 sm:p-7"><span className="font-display text-4xl text-inv-gold/80">0{i + 1}</span><div><Label>{e.name}</Label><p className="mt-2 font-display text-2xl">{e.time}{e.until && ` — ${e.until}`}</p><p className="mt-1 text-[10px] text-inv-ink/55">{inv.tz}</p></div></article>)}</div>}
         <div className="grid flex-1 border-t border-inv-line md:grid-cols-[.85fr_1.15fr]">
           <div className="relative min-h-[250px] md:min-h-[320px]"><Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 35vw, 100vw" className="object-cover grayscale-[.2]" /><span className="absolute top-4 left-4 border border-white/60 bg-inv-night/75 px-3 py-2 text-[9px] tracking-[.2em] text-inv-ink uppercase">THE VENUE</span></div>
-          <div className="flex flex-col justify-center p-7 sm:p-9"><Label>TEMPAT PERAYAAN</Label><h3 className="mt-4 font-display text-3xl sm:text-4xl">{inv.venue.name}</h3><p className="mt-3 max-w-[45ch] text-[13px] leading-relaxed text-inv-ink/65">{inv.venue.address}</p><div className="mt-7 flex flex-wrap gap-3">{inv.venue.mapUrl && <a className={button} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}<CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className={button}>Simpan tanggal</CalendarButton></div></div>
+          <div className="flex flex-col justify-center p-7 sm:p-9">{!inv.agenda && <Label>TEMPAT PERAYAAN</Label>}{!inv.agenda && <h3 className="mt-4 font-display text-3xl sm:text-4xl">{inv.venue.name}</h3>}{!inv.agenda && <p className="mt-3 max-w-[45ch] text-[13px] leading-relaxed text-inv-ink/65">{inv.venue.address}</p>}<div className="mt-7 flex flex-wrap gap-3">{!inv.agenda && inv.venue.mapUrl && <a className={button} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}<CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className={button}>Simpan tanggal</CalendarButton></div></div>
         </div>
       </div>
     </div>

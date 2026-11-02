@@ -5,7 +5,7 @@ import { Extras } from "@/components/invitation/extras";
 import { Greeting } from "@/components/invitation/greeting";
 import { Rsvp } from "@/components/invitation/rsvp";
 import { Fasad, GiftCard, HangingLantern, Riwaq, SakinahHero, StarCountdown } from "@/components/invitation/sakinah/interactive";
-import { Arch, Bunga, Hias, Pattern, Pita, Star, type Tile } from "@/components/invitation/sakinah/ornaments";
+import { Arch, ArchCard, Bunga, Hias, Pattern, Pita, Star, type Tile } from "@/components/invitation/sakinah/ornaments";
 import { AR_RUM_21, BISMILLAH } from "@/components/invitation/sakinah/text";
 import { InvitationShell } from "@/components/invitation/shell";
 import { Wishes } from "@/components/invitation/wishes";
@@ -196,6 +196,33 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <div className="mt-8 grid gap-5 sm:grid-cols-2">
+      {inv.events.map((e, i) => (
+        <div key={`${e.name}-${i}`} {...reveal(i + 2)}>
+          <ArchCard cap="pt-[30cqw]" className="text-inv-ink">
+            <div className="flex flex-col items-center px-5 pb-6 text-center">
+              <Star className="mb-2 size-6 text-sk-emas" />
+              <p className="font-display text-[clamp(22px,5.4vw,28px)] leading-tight">{e.name}</p>
+              <p className="mt-2 text-[14px] leading-snug text-inv-accent">{e.dateLabel}</p>
+              {e.clock && <p className="mt-0.5 text-[14px] leading-snug text-inv-accent">{e.clock}</p>}
+              {e.place.name && <p className="mt-3 font-display text-[18px] leading-tight">{e.place.name}</p>}
+              {e.place.address && <p className="mt-1 text-[13px] leading-relaxed text-inv-ink/75">{e.place.address}</p>}
+              {e.place.mapUrl && (
+                <a href={e.place.mapUrl} target="_blank" rel="noopener" className="mt-4 inline-flex rounded-sm bg-inv-ink px-4 py-2.5 text-[13px] font-medium text-inv-wash no-underline transition-colors duration-150 hover:bg-inv-accent">
+                  Buka peta
+                </a>
+              )}
+            </div>
+          </ArchCard>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function EventDetails({ inv }: { inv: InvitationView }) {
   const btn = "inline-flex items-center gap-2 rounded-sm bg-inv-wash px-5 py-3 text-[14px] font-medium text-inv-ink no-underline transition-colors duration-150 hover:bg-inv-gold-light";
   return (
@@ -211,33 +238,39 @@ function EventDetails({ inv }: { inv: InvitationView }) {
               <p className="mt-1 text-[15px] text-inv-gold-light">{hijri(inv.date, inv.tz)}</p>
               {inv.honor && <p className="mx-auto mt-5 max-w-[46ch] text-[16px] leading-relaxed text-inv-wash/85 lg:mx-0">{inv.honor}</p>}
             </div>
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-5">
-              {inv.events.map((e, i) => (
-                <div key={e.name} {...reveal(i + 2)}>
-                  <Arch className="aspect-[3/3.7]" gap="var(--sk-night2)" line="var(--sk-emas)" inner="bg-inv-paper">
-                    <div className="flex h-full flex-col items-center justify-center px-3 pt-[24%] pb-4 text-center text-inv-ink">
-                      <Star className="mb-2 size-6 text-sk-emas" />
-                      <p className="font-display text-[clamp(19px,5.4vw,28px)] leading-tight">{e.name}</p>
-                      <p className="mt-2 text-[clamp(13px,3.6vw,15px)] leading-snug text-inv-accent">
-                        {e.time}
-                        {e.until ? ` sampai ${e.until}` : ""} {inv.tz}
-                      </p>
-                    </div>
-                  </Arch>
-                </div>
-              ))}
-            </div>
+            {inv.agenda ? (
+              <Agenda inv={inv} />
+            ) : (
+              <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-5">
+                {inv.events.map((e, i) => (
+                  <div key={e.name} {...reveal(i + 2)}>
+                    <Arch className="aspect-[3/3.7]" gap="var(--sk-night2)" line="var(--sk-emas)" inner="bg-inv-paper">
+                      <div className="flex h-full flex-col items-center justify-center px-3 pt-[24%] pb-4 text-center text-inv-ink">
+                        <Star className="mb-2 size-6 text-sk-emas" />
+                        <p className="font-display text-[clamp(19px,5.4vw,28px)] leading-tight">{e.name}</p>
+                        <p className="mt-2 text-[clamp(13px,3.6vw,15px)] leading-snug text-inv-accent">
+                          {e.time}
+                          {e.until ? ` sampai ${e.until}` : ""} {inv.tz}
+                        </p>
+                      </div>
+                    </Arch>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div {...reveal(2)}>
             <Arch className="aspect-[4/4.4]" gap="var(--sk-night2)">
               <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 400px, 92vw" className="object-cover" />
             </Arch>
-            <p className="mt-5 font-display text-[26px] leading-tight">{inv.venue.name}</p>
-            <p className="mt-1 text-[15px] text-inv-wash/80">{inv.venue.address}</p>
+            {!inv.agenda && <p className="mt-5 font-display text-[26px] leading-tight">{inv.venue.name}</p>}
+            {!inv.agenda && <p className="mt-1 text-[15px] text-inv-wash/80">{inv.venue.address}</p>}
             <div className="mt-5 flex flex-wrap gap-3">
-              <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
-                Buka peta
-              </a>
+              {!inv.agenda && inv.venue.mapUrl && (
+                <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
+                  Buka peta
+                </a>
+              )}
               <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
                 Simpan ke kalender
               </CalendarButton>

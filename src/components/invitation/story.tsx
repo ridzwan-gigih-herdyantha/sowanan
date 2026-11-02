@@ -37,7 +37,8 @@ export function Story({ items, variant = "arch", lead, tail }: StoryProps) {
             {items.map((s, i) => (
               <li key={s.title} className="film-frame snap-start">
                 <span className="film-code" aria-hidden="true">
-                  {12 + i}A &#9656; {s.date}
+                  {12 + i}A
+                  {s.date && <> &#9656; {s.date}</>}
                 </span>
                 <button type="button" onClick={() => setActive(i)} className="group relative block w-full flex-1 overflow-hidden text-left">
                   <Image

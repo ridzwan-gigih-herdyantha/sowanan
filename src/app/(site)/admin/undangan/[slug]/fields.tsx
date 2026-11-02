@@ -374,7 +374,7 @@ export function FieldInput({ f, path }: { f: Field; path: string }) {
       return (
         <Label f={f} path={path} err={err}>
           <input
-            type={f.format === "url" ? "url" : "text"}
+            type={f.format === "url" ? "url" : f.format === "date" ? "date" : "text"}
             inputMode={f.format === "time" ? "decimal" : undefined}
             maxLength={f.max}
             placeholder={f.placeholder}

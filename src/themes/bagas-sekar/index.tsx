@@ -133,6 +133,37 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <dl className="mt-10 border-t border-inv-ink">
+      {inv.events.map((e, i) => (
+        <div key={`${e.name}-${i}`} className="grid gap-x-8 gap-y-3 border-b border-inv-line py-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <div>
+            <dt className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">{e.name.toUpperCase()}</dt>
+            <dd className="mt-1 font-display text-[28px] leading-tight">{e.dateLabel}</dd>
+            {e.clock && <dd className="mt-1 text-[14px] text-inv-gold">{e.clock}</dd>}
+          </div>
+          <div>
+            {e.place.name && <dd className="font-display text-[22px] leading-tight">{e.place.name}</dd>}
+            {e.place.address && <dd className="mt-1 text-[14px] text-inv-gold">{e.place.address}</dd>}
+            {e.place.mapUrl && (
+              <dd className="mt-4">
+                <a href={e.place.mapUrl} target="_blank" rel="noopener" className="inline-flex items-center gap-3 rounded-sm border border-inv-ink px-4 py-2.5 text-[11px] font-medium tracking-[0.24em] text-inv-ink no-underline">
+                  LIHAT PETA
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                    <path d="M4 12h16M14 6l6 6-6 6" />
+                  </svg>
+                </a>
+              </dd>
+            )}
+          </div>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 function Details({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash relative pt-20 lg:pt-28">
@@ -140,33 +171,39 @@ function Details({ inv }: { inv: InvitationView }) {
         <Label>DETAIL ACARA</Label>
         <p className="mt-6 font-display text-[clamp(44px,12vw,96px)] leading-none tracking-[-0.01em]">{inv.dateShort}</p>
         <p className="mt-3 text-[12px] font-medium tracking-[0.24em]">{inv.dayLabel.toUpperCase()}</p>
-        <dl className="mt-10 grid gap-6 border-t border-inv-ink pt-6 sm:grid-cols-3">
-          {inv.events.map((e) => (
-            <div key={e.name}>
-              <dt className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">{e.name.toUpperCase()}</dt>
-              <dd className="mt-1 font-display text-[28px]">
-                {e.time}
-                {"until" in e && <span className="text-inv-gold"> sampai {e.until}</span>} WIB
-              </dd>
+        {inv.agenda ? (
+          <Agenda inv={inv} />
+        ) : (
+          <dl className="mt-10 grid gap-6 border-t border-inv-ink pt-6 sm:grid-cols-3">
+            {inv.events.map((e) => (
+              <div key={e.name}>
+                <dt className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">{e.name.toUpperCase()}</dt>
+                <dd className="mt-1 font-display text-[28px]">
+                  {e.time}
+                  {e.until && <span className="text-inv-gold"> sampai {e.until}</span>} WIB
+                </dd>
+              </div>
+            ))}
+            <div>
+              <dt className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">TEMPAT</dt>
+              {!inv.agenda && <dd className="mt-1 font-display text-[28px] leading-tight">{inv.venue.name}</dd>}
+              {!inv.agenda && <dd className="mt-1 text-[14px] text-inv-gold">{inv.venue.address}</dd>}
             </div>
-          ))}
-          <div>
-            <dt className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">TEMPAT</dt>
-            <dd className="mt-1 font-display text-[28px] leading-tight">{inv.venue.name}</dd>
-            <dd className="mt-1 text-[14px] text-inv-gold">{inv.venue.address}</dd>
-          </div>
-        </dl>
-        <a
-          href={inv.venue.mapUrl}
-          target="_blank"
-          rel="noopener"
-          className="mt-8 inline-flex items-center gap-3 rounded-sm border border-inv-ink px-5 py-3 text-[11px] font-medium tracking-[0.24em] text-inv-ink no-underline transition-colors duration-150 hover:bg-inv-ink hover:text-inv-paper"
-        >
-          LIHAT PETA
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-            <path d="M4 12h16M14 6l6 6-6 6" />
-          </svg>
-        </a>
+          </dl>
+        )}
+        {!inv.agenda && inv.venue.mapUrl && (
+          <a
+            href={inv.venue.mapUrl}
+            target="_blank"
+            rel="noopener"
+            className="mt-8 inline-flex items-center gap-3 rounded-sm border border-inv-ink px-5 py-3 text-[11px] font-medium tracking-[0.24em] text-inv-ink no-underline transition-colors duration-150 hover:bg-inv-ink hover:text-inv-paper"
+          >
+            LIHAT PETA
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M4 12h16M14 6l6 6-6 6" />
+            </svg>
+          </a>
+        )}
         <p className="mt-10 max-w-[48ch] font-display text-lg leading-snug italic">{inv.honor}</p>
       </Wrap>
       <div className="clip-arch relative mt-14 aspect-[4/5] w-full md:aspect-[21/9]">

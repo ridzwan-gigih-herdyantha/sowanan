@@ -167,6 +167,32 @@ function StorySection({ inv }: { inv: InvitationView }) {
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <ul>
+      {inv.events.map((e, i) => (
+        <li key={`${e.name}-${i}`} className="grid gap-x-8 gap-y-3 border-b border-inv-line py-7 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+          <div>
+            <Label>{e.dateLabel}</Label>
+            <p className={`${big} mt-3 text-[clamp(30px,5vw,56px)]`}>{e.name}</p>
+            {e.clock && <p className="mt-2 text-[16px] tabular-nums">{e.clock}</p>}
+          </div>
+          <div>
+            {e.place.name && <p className="text-[clamp(20px,2.6vw,26px)] leading-tight">{e.place.name}</p>}
+            {e.place.address && <p className="mt-2 text-[16px] leading-relaxed text-inv-ink/75">{e.place.address}</p>}
+            {e.place.mapUrl && (
+              <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${button} mt-4`}>
+                Lihat peta
+              </a>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Details({ inv }: { inv: InvitationView }) {
   const [day, month] = inv.dayMonth.split(".");
   const year = inv.date.slice(0, 4);
@@ -181,29 +207,33 @@ function Details({ inv }: { inv: InvitationView }) {
         </p>
         <p className="mt-5 border-b border-inv-line pb-6 text-[18px]">{inv.dateLong}</p>
 
-        <ul>
-          {inv.events.map((e) => (
-            <li key={e.name} className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-b border-inv-line py-7">
-              <p className="text-[clamp(26px,4vw,40px)] leading-tight">{e.name}</p>
-              <p className={`${big} text-[clamp(26px,4.4vw,48px)] tabular-nums`}>
-                {e.time}
-                {e.until && <span className="text-inv-gold-light"> &ndash; {e.until}</span>}
-                <span className="ml-3 align-middle font-body text-[13px] font-semibold tracking-[0.2em] text-inv-gold [font-stretch:100%]">{inv.tz}</span>
-              </p>
-            </li>
-          ))}
-        </ul>
+        {inv.agenda ? (
+          <Agenda inv={inv} />
+        ) : (
+          <ul>
+            {inv.events.map((e) => (
+              <li key={e.name} className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-b border-inv-line py-7">
+                <p className="text-[clamp(26px,4vw,40px)] leading-tight">{e.name}</p>
+                <p className={`${big} text-[clamp(26px,4.4vw,48px)] tabular-nums`}>
+                  {e.time}
+                  {e.until && <span className="text-inv-gold-light"> &ndash; {e.until}</span>}
+                  <span className="ml-3 align-middle font-body text-[13px] font-semibold tracking-[0.2em] text-inv-gold [font-stretch:100%]">{inv.tz}</span>
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <div className="mt-14 grid gap-8 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:items-end md:gap-10">
           <div data-lr="photo" className="relative aspect-[3/2] overflow-hidden bg-inv-wash">
             <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 55vw, 90vw" className="object-cover" />
           </div>
           <div>
-            <Label>Tempat</Label>
-            <p className="mt-4 text-[clamp(28px,3.6vw,40px)] leading-tight">{inv.venue.name}</p>
-            <p className="mt-3 text-[16px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>
+            {!inv.agenda && <Label>Tempat</Label>}
+            {!inv.agenda && <p className="mt-4 text-[clamp(28px,3.6vw,40px)] leading-tight">{inv.venue.name}</p>}
+            {!inv.agenda && <p className="mt-3 text-[16px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>}
             <div className="mt-8 flex flex-wrap gap-3">
-              {inv.venue.mapUrl && (
+              {!inv.agenda && inv.venue.mapUrl && (
                 <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={button}>
                   Lihat peta
                 </a>

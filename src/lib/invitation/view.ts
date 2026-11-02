@@ -24,6 +24,12 @@ function parts(iso: string, tz: keyof typeof ZONES) {
   return { weekday: get("weekday"), day: get("day"), month: get("month"), year: get("year"), dd: num[0], mm: num[1], yyyy: num[2] };
 }
 
+// Ringkasan cerita dari awal cerita lengkap, dipotong di batas kata.
+function excerpt(text: string, max = 140) {
+  const t = text.trim();
+  return t.length <= max ? t : `${t.slice(0, t.lastIndexOf(" ", max))}...`;
+}
+
 export type ExtraView = {
   kind: ExtraKind;
   title: string;
@@ -89,6 +95,20 @@ export function toView(slug: string, d: InvitationData, theme = "") {
   const palette = resolvePalette(theme, d.style);
   const enabled = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, Boolean(v.enabled)])) as Record<SectionKey, boolean>;
   const frames = cleanFrames(d.frames);
+  const dateLong = `${p.weekday}, ${p.day} ${p.month} ${p.year}`;
+  const events = d.event.schedule.map((e) => {
+    // Tempat sendiri tidak mewarisi peta utama, supaya link tidak menunjuk lokasi lain.
+    const own = Boolean(e.venue.trim() || e.address.trim() || e.mapUrl.trim());
+    const day = e.date ? parts(`${e.date}T12:00:00+07:00`, "WIB") : null;
+    return {
+      ...e,
+      until: e.until || undefined,
+      dateLabel: day ? `${day.weekday}, ${day.day} ${day.month} ${day.year}` : dateLong,
+      clock: e.time ? `${e.time}${e.until ? ` sampai ${e.until}` : ""} ${d.event.timezone}` : "",
+      place: own ? { name: e.venue, address: e.address, mapUrl: e.mapUrl } : d.event.venue,
+      separate: own || Boolean(e.date),
+    };
+  });
 
   return {
     slug,
@@ -102,7 +122,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     tz: d.event.timezone,
     dayLabel: p.weekday,
     dateShort: `${p.dd} . ${p.mm} . ${p.yyyy}`,
-    dateLong: `${p.weekday}, ${p.day} ${p.month} ${p.year}`,
+    dateLong,
     filmStamp: `'${p.yyyy.slice(2)} ${p.mm} ${p.dd}`,
     city: d.event.city,
     cityShort: d.event.city.split(",")[0].trim(),
@@ -111,7 +131,9 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     credit: d.copy.credit,
     place: d.event.city,
     venue: d.event.venue,
-    events: d.event.schedule.map((e) => ({ ...e, until: e.until || undefined })),
+    events,
+    // Tema menampilkan EventAgenda kalau ada acara dengan tanggal atau tempat sendiri, atau tanpa jam.
+    agenda: events.some((e) => e.separate || !e.time),
     rsvpDeadline: d.event.rsvpDeadline,
     tagline: d.copy.tagline,
     headline: d.copy.headline.trim() || d.event.city.split(",")[0].trim(),
@@ -152,7 +174,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     },
     giftNote: s.gifts.note,
     music: u(d.media.music || THEME_MUSIC[theme] || ""),
-    story: s.story.items.map((i) => ({ ...i, image: u(i.image), video: i.video?.src ? { src: u(i.video.src), poster: u(i.video.poster || i.image) } : undefined })),
+    story: s.story.items.map((i) => ({ ...i, short: i.short.trim() || excerpt(i.long), image: u(i.image), video: i.video?.src ? { src: u(i.video.src), poster: u(i.video.poster || i.image) } : undefined })),
     gallery: s.gallery.photos.map((p) => ({ ...p, src: u(p.src) })),
     gifts: s.gifts.accounts,
     couplePhotos: s.couple.photos.map((p) => ({ ...p, src: u(p.src) })),
@@ -172,7 +194,8 @@ export function calendarEventOf(v: InvitationView) {
   return {
     title: `Pernikahan ${v.groom.name} & ${v.bride.name}`,
     start: v.date,
-    end: v.end,
+    // Acara beberapa hari disimpan sebagai acara pertama, bukan satu acara sepanjang rentang hari.
+    end: v.agenda && v.end.slice(0, 10) !== v.date.slice(0, 10) ? new Date(Date.parse(v.date) + 3 * 3600_000).toISOString() : v.end,
     location: `${v.venue.name}, ${v.venue.address}`,
     details: `Undangan: https://sowanan.com/${v.slug}`,
   };

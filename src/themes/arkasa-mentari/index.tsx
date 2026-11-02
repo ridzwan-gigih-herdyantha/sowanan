@@ -106,7 +106,8 @@ function StoryBoard({ s, i }: { s: InvitationView["story"][number]; i: number })
       </PixelPhoto>
       <div className="min-w-0">
         <p className="pt-label text-[10px] text-inv-accent">
-          Checkpoint {i + 1} / {s.date}
+          Checkpoint {i + 1}
+          {s.date && ` / ${s.date}`}
         </p>
         <h3 className="mt-1 font-display text-[clamp(18px,4.6vw,22px)] leading-tight font-bold">{s.title}</h3>
         <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-inv-ink/80 sm:text-[14px]">{s.short}</p>
@@ -116,30 +117,60 @@ function StoryBoard({ s, i }: { s: InvitationView["story"][number]; i: number })
   );
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return (
+    <ul className="space-y-3 pr-1">
+      {inv.events.map((e, i) => (
+        <li key={`${e.name}-${i}`} className="border-l-4 border-inv-accent pl-2.5">
+          <p className="pt-label text-[10px] text-inv-accent">{e.dateLabel}</p>
+          <p className="mt-0.5 font-display text-[18px] leading-tight font-bold">{e.name}</p>
+          {e.clock && <p className="text-[14px] tabular-nums">{e.clock}</p>}
+          {e.place.name && <p className="mt-1 text-[14px] leading-snug font-medium">{e.place.name}</p>}
+          {e.place.address && <p className="text-[13px] leading-snug text-inv-gold">{e.place.address}</p>}
+          {e.place.mapUrl && (
+            <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${btn} mt-2`}>
+              &#9654; Peta
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function EventBoard({ inv }: { inv: InvitationView }) {
   return (
     <article className={board}>
-      <PixelPhoto className="relative h-[20svh] min-h-[56px] shrink overflow-hidden bg-inv-wash sm:h-[min(42svh,var(--room))] sm:w-[42%] sm:shrink-0">
-        <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover" />
-      </PixelPhoto>
+      {!inv.agenda && (
+        <PixelPhoto className="relative h-[20svh] min-h-[56px] shrink overflow-hidden bg-inv-wash sm:h-[min(42svh,var(--room))] sm:w-[42%] sm:shrink-0">
+          <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover" />
+        </PixelPhoto>
+      )}
       <div className={boardText}>
         <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">Misi utama / Hari H</p>
         <p className="mt-1 font-display text-[clamp(18px,4.6vw,24px)] leading-tight font-bold">{inv.dateLong}</p>
-        <ul className="mt-2 space-y-0.5 text-[14px]">
-          {inv.events.map((e) => (
-            <li key={e.name} className="flex flex-wrap justify-between gap-x-3">
-              <span className="font-medium">{e.name}</span>
-              <span className="tabular-nums">
-                {e.time}
-                {e.until && <> &ndash; {e.until}</>} {inv.tz}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-2 text-[14px] leading-snug font-medium">{inv.venue.name}</p>
-        <p className="text-[13px] leading-snug text-inv-gold">{inv.venue.address}</p>
+        {inv.agenda ? (
+          <div className="pt-scroll mt-2 max-h-[min(46svh,var(--room))] overflow-y-auto overscroll-contain">
+            <Agenda inv={inv} />
+          </div>
+        ) : (
+          <ul className="mt-2 space-y-0.5 text-[14px]">
+            {inv.events.map((e) => (
+              <li key={e.name} className="flex flex-wrap justify-between gap-x-3">
+                <span className="font-medium">{e.name}</span>
+                <span className="tabular-nums">
+                  {e.time}
+                  {e.until && <> &ndash; {e.until}</>} {inv.tz}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {!inv.agenda && <p className="mt-2 text-[14px] leading-snug font-medium">{inv.venue.name}</p>}
+        {!inv.agenda && <p className="text-[13px] leading-snug text-inv-gold">{inv.venue.address}</p>}
         <div className="mt-3 flex flex-wrap gap-2.5">
-          {inv.venue.mapUrl && (
+          {!inv.agenda && inv.venue.mapUrl && (
             <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
               &#9654; Peta
             </a>

@@ -67,7 +67,8 @@ function Story({ inv }: { inv: InvitationView }) {
           )}
           <div className="px-4 py-3">
             <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">
-              Bab {i + 1} · {item.date}
+              Bab {i + 1}
+              {item.date && ` · ${item.date}`}
             </p>
             <h3 className="font-display text-[19px] leading-tight font-semibold text-inv-accent">{item.title}</h3>
             {item.place && <p className="text-[12px] text-inv-ink/60">{item.place}</p>}
@@ -77,6 +78,24 @@ function Story({ inv }: { inv: InvitationView }) {
       ))}
     </ol>
   );
+}
+
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return inv.events.map((e, i) => (
+    <article key={`${e.name}-${i}`} className={`${card} px-4 py-3`}>
+      <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{e.dateLabel}</p>
+      <p className="font-display text-[22px] leading-tight font-semibold text-inv-accent">{e.name}</p>
+      {e.clock && <p className="text-[13px] text-inv-ink/70">{e.clock}</p>}
+      {e.place.name && <p className="mt-2 font-display text-[16px] leading-snug font-semibold">{e.place.name}</p>}
+      {e.place.address && <p className="mt-0.5 text-[12px] leading-relaxed text-inv-ink/70">{e.place.address}</p>}
+      {e.place.mapUrl && (
+        <a className={`${action} mt-3`} href={e.place.mapUrl} target="_blank" rel="noreferrer">
+          Buka peta
+        </a>
+      )}
+    </article>
+  ));
 }
 
 function Event({ inv }: { inv: InvitationView }) {
@@ -91,7 +110,7 @@ function Event({ inv }: { inv: InvitationView }) {
           cellClassName={`${card} px-2 py-3 text-center font-display text-3xl text-inv-accent [&>span:last-child]:font-body [&>span:last-child]:text-[10px] [&>span:last-child]:text-inv-gold`}
         />
       )}
-      {inv.events.map((event, i) => (
+      {inv.agenda ? <Agenda inv={inv} /> : inv.events.map((event, i) => (
         <article key={`${event.name}-${i}`} className={`${card} px-4 py-3`}>
           <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{event.name}</p>
           <p className="font-display text-[24px] leading-tight font-semibold text-inv-accent">
@@ -106,10 +125,10 @@ function Event({ inv }: { inv: InvitationView }) {
           <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="480px" className="object-cover" />
         </div>
         <div className="px-4 py-3">
-        <p className="font-display text-[18px] font-semibold">{inv.venue.name}</p>
-        <p className="mt-1 text-[12px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p>
+        {!inv.agenda && <p className="font-display text-[18px] font-semibold">{inv.venue.name}</p>}
+        {!inv.agenda && <p className="mt-1 text-[12px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p>}
         <div className="mt-3 flex flex-wrap justify-center gap-2.5">
-          {inv.venue.mapUrl && (
+          {!inv.agenda && inv.venue.mapUrl && (
             <a className={action} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">
               Buka peta
             </a>

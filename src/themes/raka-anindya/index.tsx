@@ -96,6 +96,22 @@ function Story({ inv }: { inv: InvitationView }) {
   </Frame></section>;
 }
 
+// Acara beda hari atau beda tempat, satu per satu.
+function Agenda({ inv }: { inv: InvitationView }) {
+  return <div className="mx-auto mt-12 grid max-w-[760px] gap-5 sm:grid-cols-2">{inv.events.map((e, i) => <ElarisFrame key={`${e.name}-${i}`} corners className="bg-inv-paper text-inv-ink shadow-[0_18px_42px_rgba(0,0,0,.12)]">
+    <article className="relative flex min-h-[220px] flex-col items-center justify-center px-6 py-8 text-center sm:px-8">
+      <span className="font-display text-[13px] italic text-inv-gold">{String(i + 1).padStart(2, "0")}</span>
+      <p className="mt-3 text-[10px] tracking-[.25em] text-inv-accent uppercase">{e.name}</p>
+      <Flourish className="mt-3 w-24 text-inv-gold" />
+      <p className="mt-4 font-display text-[clamp(22px,4vw,28px)] leading-tight text-inv-accent">{e.dateLabel}</p>
+      {e.clock && <p className="mt-2 text-[11px] tracking-[.16em] text-inv-ink/60">{e.clock}</p>}
+      {e.place.name && <h3 className="mt-4 font-display text-xl text-inv-accent">{e.place.name}</h3>}
+      {e.place.address && <p className="mt-1.5 text-[13px] leading-relaxed text-inv-ink/70">{e.place.address}</p>}
+      {e.place.mapUrl && <a className={`${btn} mt-5 px-4 py-3`} href={e.place.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
+    </article>
+  </ElarisFrame>)}</div>;
+}
+
 function Event({ inv }: { inv: InvitationView }) {
   const calendar = calendarEventOf(inv);
   return <section id="acara" className="relative scroll-mt-8 overflow-hidden bg-inv-accent py-20 text-inv-paper sm:py-28">
@@ -108,7 +124,7 @@ function Event({ inv }: { inv: InvitationView }) {
           {inv.dateLong}
         </p>
         {inv.on.countdown && <Countdown target={inv.date} className="mx-auto mt-9 grid max-w-[460px] grid-cols-3 gap-3" cellClassName="border border-white/20 px-3 py-4 font-display text-3xl text-inv-paper [&>span:last-child]:font-body [&>span:last-child]:text-inv-gold-light" />}
-        <div className="mx-auto mt-12 grid max-w-[760px] gap-5 text-left sm:grid-cols-2">{inv.events.map((e, i) => <ElarisFrame key={e.name} corners className="bg-inv-paper text-inv-ink shadow-[0_18px_42px_rgba(0,0,0,.12)]">
+        {inv.agenda ? <Agenda inv={inv} /> : <div className="mx-auto mt-12 grid max-w-[760px] gap-5 text-left sm:grid-cols-2">{inv.events.map((e, i) => <ElarisFrame key={e.name} corners className="bg-inv-paper text-inv-ink shadow-[0_18px_42px_rgba(0,0,0,.12)]">
           <article className="relative flex min-h-[220px] flex-col items-center justify-center px-6 py-8 text-center sm:px-8">
             <span className="font-display text-[13px] italic text-inv-gold">{String(i + 1).padStart(2, "0")}</span>
             <p className="mt-3 text-[10px] tracking-[.25em] text-inv-accent uppercase">{e.name}</p>
@@ -116,14 +132,14 @@ function Event({ inv }: { inv: InvitationView }) {
             <p className="mt-4 font-display text-[clamp(26px,4vw,34px)] leading-tight text-inv-accent">{e.time}{e.until && <><span className="px-2 text-inv-gold">—</span>{e.until}</>}</p>
             <p className="mt-2 text-[11px] tracking-[.16em] text-inv-ink/60">{inv.tz}</p>
           </article>
-        </ElarisFrame>)}</div>
+        </ElarisFrame>)}</div>}
         <ElarisFrame corners className="mx-auto mt-8 max-w-[760px] bg-inv-paper text-inv-ink shadow-[0_18px_42px_rgba(0,0,0,.12)]">
           <div className="p-6 text-center sm:p-8">
-            <p className="text-[10px] tracking-[.25em] text-inv-accent uppercase">TEMPAT PERAYAAN</p>
-            <h3 className="mt-3 font-display text-3xl text-inv-accent">{inv.venue.name}</h3>
-            <p className="mx-auto mt-2 max-w-[48ch] text-[13px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p>
+            {!inv.agenda && <p className="text-[10px] tracking-[.25em] text-inv-accent uppercase">TEMPAT PERAYAAN</p>}
+            {!inv.agenda && <h3 className="mt-3 font-display text-3xl text-inv-accent">{inv.venue.name}</h3>}
+            {!inv.agenda && <p className="mx-auto mt-2 max-w-[48ch] text-[13px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p>}
             <div className="mt-6 flex flex-wrap gap-3">
-              {inv.venue.mapUrl && <a className={`${btn} px-4 py-3`} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
+              {!inv.agenda && inv.venue.mapUrl && <a className={`${btn} px-4 py-3`} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
               <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className={`${btn} px-4 py-3`}>Simpan tanggal</CalendarButton>
             </div>
           </div>
