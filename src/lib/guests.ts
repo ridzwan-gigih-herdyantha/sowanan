@@ -93,7 +93,8 @@ Terima kasih.
 // sedangkan tanda kurung, kutip, dan titik di ujung bisa memotong link. Contoh: "Pak Joko (RT 05)".
 const strictEncode = (s: string) => encodeURIComponent(s).replace(/[!'()*~_.]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
 
-// k adalah kode QR kehadiran tamu, hanya ikut kalau undangan memakai QR absensi.
+// k adalah kode pengenal tamu di link pribadinya, supaya langsung dikenali saat memindai QR undangan di lokasi.
+// Hanya ikut kalau undangan memakai QR absensi.
 export function guestLink(origin: string, slug: string, name: string, k?: string | null) {
   return `${origin}/${slug}?to=${strictEncode(name).replace(/%20/g, "+")}${k ? `&k=${k}` : ""}`;
 }

@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { currentAdmin } from "@/lib/admin-auth";
-import { newCheckinToken, setCheckedIn } from "@/lib/checkin";
+import { checkInManual, newCheckinToken, setCheckedIn } from "@/lib/checkin";
 import { GUEST_COLS, MAX_GUESTS, normalizePhone } from "@/lib/guests";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -104,6 +104,15 @@ export async function setGuestCheckin(slug: string, guestId: number, present: bo
   const guest = await setCheckedIn(id, guestId, present);
   if (!guest) return { ok: false, error: "Gagal menyimpan." };
   return { ok: true, data: guest.checked_in_at };
+}
+
+// Nama yang tidak ada di daftar tamu dicatat sebagai datang langsung oleh penerima tamu.
+export async function addWalkIn(slug: string, name: string): Promise<Result<Guest>> {
+  const id = await invitationId(slug);
+  if (!id) return { ok: false, error: SESSION_ENDED };
+  const guest = await checkInManual(id, name);
+  if (!guest) return { ok: false, error: "Gagal mencatat. Coba lagi." };
+  return { ok: true, data: guest as Guest };
 }
 
 // Buka absensi sekarang walaupun belum jadwalnya, atau kembalikan ke jadwal acara.

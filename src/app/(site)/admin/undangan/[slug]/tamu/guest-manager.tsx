@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { downloadQr, QrCode } from "@/components/qr-code";
 import { fillGuestMessage, guestLink, MAX_GUESTS, parseCsv, parseGuestRows, parseGuestText, type GuestInput } from "@/lib/guests";
 import type { CheckinSchedule } from "@/lib/checkin";
-import { addGuests, checkinLink, deleteGuests, openCheckinNow, markSent, saveGuestMessage, setGuestCheckin, updateGuest, type Guest } from "./actions";
+import { addGuests, addWalkIn, checkinLink, deleteGuests, openCheckinNow, markSent, saveGuestMessage, setGuestCheckin, updateGuest, type Guest } from "./actions";
 
 type Props = {
   slug: string;
@@ -288,6 +288,15 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
     });
   }
 
+  function recordWalkIn(name: string) {
+    run("datang", async () => {
+      const res = await addWalkIn(slug, name);
+      if (!res.ok) return setNotice({ tone: "error", text: res.error });
+      setGuests((list) => (list.some((x) => x.id === res.data.id) ? list.map((x) => (x.id === res.data.id ? res.data : x)) : [...list, res.data]));
+      setQuery("");
+    });
+  }
+
   async function exportXlsx() {
     const { default: writeXlsxFile } = await import("write-excel-file/browser");
     const head = (value: string) => ({ value, fontWeight: "bold" as const, backgroundColor: "#F2F2F2" });
@@ -446,6 +455,11 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
         )}
 
         {!guests.length && <p className="mt-4 text-[15px] text-ink-mute">Belum ada tamu.</p>}
+        {qr.on && guests.length > 0 && !filtered.length && query.trim().length >= 2 && (
+          <button type="button" onClick={() => recordWalkIn(query)} disabled={working !== null} className="mt-3 rounded-sm border border-wine px-4 py-2 text-[14px] text-wine transition-colors duration-150 hover:bg-wine hover:text-white disabled:opacity-60">
+            {working === "datang" ? "Mencatat..." : `Catat "${query.trim()}" sebagai datang langsung`}
+          </button>
+        )}
 
         <ul className="mt-4 divide-y divide-line border-y border-line">
           {filtered.slice(0, limit).map((g) => (

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useWorking } from "@/app/(site)/admin/use-working";
 import { rsvpSheet } from "@/lib/export/rsvp-sheet";
 import { fillGuestMessage, guestLink } from "@/lib/guests";
-import { coupleHideWish, coupleMarkSent } from "../actions";
+import { coupleAddWalkIn, coupleHideWish, coupleMarkSent, coupleSetPresent } from "../actions";
 
 export type BoardRsvp = { id: number; name: string; attending: boolean; guests: number; created_at: string };
 export type BoardWish = { id: number; name: string; message: string; created_at: string; hidden_at: string | null; hidden_by: "admin" | "mempelai" | null };
@@ -48,7 +48,8 @@ function Stat({ label, value, note }: { label: string; value: number | string; n
   );
 }
 
-// Isi dashboard mempelai. Semua data hanya dibaca, kecuali tombol sembunyikan ucapan dan tanda link terkirim.
+// Isi dashboard mempelai. Semua data hanya dibaca, kecuali tombol sembunyikan ucapan, tanda link terkirim, dan
+// tanda hadir sebagai cadangan kalau pemindaian QR bermasalah.
 export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests: initialGuests, excel, qr, personalLinks, template, couple, date }: Props) {
   const [wishes, setWishes] = useState(initialWishes);
   const [guests, setGuests] = useState(initialGuests);
@@ -91,12 +92,33 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
     setTimeout(() => setCopied((c) => (c === `${what}:${g.id}` ? null : c)), 1500);
   }
 
+  function togglePresent(g: BoardGuest) {
+    if (g.checked_in_at && !confirm(`Batalkan tanda hadir ${g.name}?`)) return;
+    run(`hadir:${g.id}`, async () => {
+      const res = await coupleSetPresent(slug, g.id, !g.checked_in_at);
+      if (!res.ok) return setError(res.error);
+      setError("");
+      setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, checked_in_at: res.data } : x)));
+    });
+  }
+
+  function addWalkIn(name: string) {
+    run("datang", async () => {
+      const res = await coupleAddWalkIn(slug, name);
+      if (!res.ok) return setError(res.error);
+      setError("");
+      setGuests((list) => (list.some((x) => x.id === res.data.id) ? list.map((x) => (x.id === res.data.id ? res.data : x)) : [...list, res.data]));
+      setQuery("");
+    });
+  }
+
   const q = key(query);
   const lists = {
     rsvp: rsvps.filter((r) => (filter === "all" || r.attending === (filter === "yes")) && (!q || key(r.name).includes(q))),
     wish: wishes.filter((w) => !q || key(w.name).includes(q) || w.message.toLowerCase().includes(q)),
     guest: invited.filter((g) => !q || key(g.name).includes(q)),
-    checkin: present.filter((g) => !q || key(g.name).includes(q)),
+    // Saat mencari, tamu yang belum hadir ikut tampil supaya bisa ditandai.
+    checkin: q ? guests.filter((g) => key(g.name).includes(q)) : present,
   };
   const list = lists[tab];
 
@@ -188,7 +210,7 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
             setQuery(e.target.value);
             setLimit(PAGE);
           }}
-          placeholder={tab === "wish" ? "Cari nama atau isi ucapan" : "Cari nama"}
+          placeholder={tab === "wish" ? "Cari nama atau isi ucapan" : tab === "checkin" ? "Cari nama tamu" : "Cari nama"}
           className={`${field} w-full sm:max-w-xs sm:flex-1`}
         />
         {tab === "rsvp" && (
@@ -222,8 +244,14 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
         )}
       </div>
 
+      {tab === "checkin" && <p className="mt-3 text-[13px] text-ink-mute">Kalau pemindaian QR bermasalah, cari nama tamu di sini lalu tandai hadir.</p>}
       {error && <p className="mt-3 rounded-sm bg-blush px-4 py-3 text-[14px] text-wine">{error}</p>}
       {!list.length && <p className="mt-6 text-[15px] text-ink-mute">{query ? "Tidak ada yang cocok." : empty}</p>}
+      {tab === "checkin" && !list.length && query.trim().length >= 2 && (
+        <button type="button" onClick={() => addWalkIn(query)} disabled={working !== null} className="mt-3 rounded-sm bg-wine px-4 py-2.5 text-[14px] text-white disabled:opacity-60">
+          {working === "datang" ? "Mencatat..." : `Catat "${query.trim()}" sebagai datang langsung`}
+        </button>
+      )}
 
       <ul className="mt-4 divide-y divide-line border-y border-line empty:border-0">
         {tab === "rsvp" &&
@@ -289,7 +317,18 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
             <li key={g.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3">
               <p className="min-w-0 flex-1 basis-40 truncate font-medium">{g.name}</p>
               {g.walk_in && <span className="rounded-full bg-blush px-2.5 py-0.5 text-[12px] text-ink-soft">Datang langsung</span>}
-              <span className="text-[14px] text-ink-soft tabular-nums">{clockFmt.format(new Date(g.checked_in_at!))}</span>
+              {g.checked_in_at ? (
+                <>
+                  <span className="text-[14px] text-ink-soft tabular-nums">{clockFmt.format(new Date(g.checked_in_at))}</span>
+                  <button type="button" onClick={() => togglePresent(g)} disabled={working !== null} className="text-[14px] text-ink-mute hover:text-wine disabled:opacity-60">
+                    {working === `hadir:${g.id}` ? "Menyimpan..." : "Batalkan"}
+                  </button>
+                </>
+              ) : (
+                <button type="button" onClick={() => togglePresent(g)} disabled={working !== null} className="rounded-sm border border-wine px-3 py-1.5 text-[14px] text-wine disabled:opacity-60">
+                  {working === `hadir:${g.id}` ? "Menyimpan..." : "Tandai hadir"}
+                </button>
+              )}
             </li>
           ))}
       </ul>

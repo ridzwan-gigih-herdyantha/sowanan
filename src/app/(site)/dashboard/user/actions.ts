@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { checkInManual, manualCheckinClosed, setCheckedIn } from "@/lib/checkin";
 import { coupleEmailForSlug } from "@/lib/couple-account";
 import { coupleInvitation } from "@/lib/couple-auth";
 import { clearAttempts, clientIp, countAttempts, recordAttempt } from "@/lib/login-attempts";
@@ -66,6 +67,30 @@ export async function coupleMarkSent(slug: string, guestId: number): Promise<{ o
   const { error } = await supabaseAdmin().from("guests").update({ sent_at: at }).eq("id", guestId).eq("invitation_id", found.invitation.id);
   if (error) return { ok: false, error: "Gagal menandai terkirim." };
   return { ok: true, data: at };
+}
+
+type GuestRow = { id: number; name: string; phone: string | null; sent_at: string | null; qr_token: string | null; checked_in_at: string | null; walk_in: boolean };
+
+// Cadangan kalau pemindaian QR bermasalah: penerima tamu mencari nama lalu menandai hadir, mengikuti jam absensi.
+export async function coupleSetPresent(slug: string, guestId: number, present: boolean): Promise<{ ok: true; data: string | null } | { ok: false; error: string }> {
+  const found = await coupleInvitation(slug);
+  if (!found) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
+  const closed = await manualCheckinClosed(slug);
+  if (closed) return { ok: false, error: closed };
+  const guest = await setCheckedIn(found.invitation.id, guestId, present);
+  if (!guest) return { ok: false, error: "Gagal menyimpan. Coba lagi." };
+  return { ok: true, data: guest.checked_in_at };
+}
+
+// Nama yang tidak ada di daftar tamu dicatat sebagai datang langsung.
+export async function coupleAddWalkIn(slug: string, name: string): Promise<{ ok: true; data: GuestRow } | { ok: false; error: string }> {
+  const found = await coupleInvitation(slug);
+  if (!found) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
+  const closed = await manualCheckinClosed(slug);
+  if (closed) return { ok: false, error: closed };
+  const guest = await checkInManual(found.invitation.id, name);
+  if (!guest) return { ok: false, error: "Gagal mencatat. Coba lagi." };
+  return { ok: true, data: guest as GuestRow };
 }
 
 // Keluar dari perangkat ini saja. Perangkat lain tetap masuk sampai password diganti admin.
