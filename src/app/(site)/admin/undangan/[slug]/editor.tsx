@@ -40,7 +40,7 @@ const SETUP = [
   { key: "package", title: "Package & add-ons" },
   { key: "style", title: "Style" },
 ];
-const MORE = new Set(["extras", "share"]);
+const MORE = new Set(["video", "extras", "share"]);
 const TITLES: Record<string, string> = { extras: "Custom sections", share: "Footer & share" };
 const panelOfIssue = (group: string) => (group === "gaya" ? "style" : group);
 
@@ -151,7 +151,10 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
     if (rules.extras) out.extras = rules.extras;
     return out;
   }, [rules]);
-  const locks = useMemo(() => (rules.locked.musik_sendiri ? { "media.music": rules.locked.musik_sendiri } : undefined), [rules]);
+  const locks = useMemo(
+    () => ({ ...(rules.locked.musik_sendiri && { "media.music": rules.locked.musik_sendiri }), ...(rules.locked.video_youtube && { video: rules.locked.video_youtube }) }),
+    [rules],
+  );
 
   const groups = useMemo(() => forTheme(GROUPS, theme), [theme]);
   const issues = useMemo(() => [...checkInvitation(data, theme), ...packageIssues(data, theme, rules)], [data, theme, rules]);

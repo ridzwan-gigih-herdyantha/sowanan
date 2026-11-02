@@ -46,6 +46,8 @@ export type ExtraView = {
   videos: { src: string; poster: string }[];
   tracks: { src: string; cover: string; title: string; artist: string }[];
   youtube: { id: string; title: string }[];
+  // Video dari add-on, bukan bagian tambahan isian admin.
+  video?: boolean;
 };
 
 // Dikelompokkan per posisi. Posisi yang tidak ada di tema (misal setelah ganti tema) tampil sebelum Penutup.
@@ -84,6 +86,27 @@ function groupExtras(d: InvitationData, theme: string) {
       videos: bebas ? videos : [],
       tracks: bebas ? tracks : [],
       youtube: bebas ? youtube : [],
+    });
+  }
+  // Video add-on selalu di posisi yang sama di semua tema: setelah Galeri, mendahului bagian tambahan di sana.
+  const video = streamOf(d.video.trim(), "", "");
+  if (video?.youtube) {
+    (out.gallery ??= []).unshift({
+      kind: "siaran",
+      title: "Video Kami",
+      video: true,
+      body: "",
+      rundown: [],
+      plan: null,
+      colors: [],
+      rules: [],
+      stream: { ...video, platform: "" },
+      note: "",
+      tone: "paper",
+      photos: [],
+      videos: [],
+      tracks: [],
+      youtube: [],
     });
   }
   return out;

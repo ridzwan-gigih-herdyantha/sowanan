@@ -97,7 +97,7 @@ function extraRows(list: Extract<Field, { kind: "list" }>, data: InvitationData,
 }
 
 // Bagian yang tidak bisa dipakai di paket ini, misalnya Cerita yang tidak termasuk paket.
-export const sectionLocked = (key: string, rules: PackageRules) => (key === "story" && Boolean(rules.locked.cerita)) || (key === "gallery" && rules.photos?.max === 0);
+export const sectionLocked = (key: string, rules: PackageRules) => (key === "story" && Boolean(rules.locked.cerita)) || (key === "gallery" && rules.photos?.max === 0) || (key === "video" && Boolean(rules.locked.video_youtube));
 
 // skip berisi key isian opsional yang tidak diminta. Isian wajib selalu dicantumkan.
 export function requirements(theme: string, rules: PackageRules, data: InvitationData, skip: ReadonlySet<string> = new Set()): { sections: ReqSection[]; automatic: string[] } {

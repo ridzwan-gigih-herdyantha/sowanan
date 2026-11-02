@@ -1,6 +1,7 @@
 import type { Purpose } from "@/lib/storage/media";
 import { CUSTOM } from "../../themes/palette.ts";
 import { EXTRA_KINDS, EXTRA_TONES, RULE_ICONS, type ExtraAnchor, type ExtraKind, type InvitationData, type SectionKey } from "./schema.ts";
+import { streamOf } from "./stream.ts";
 
 const A = "andi-rina";
 const B = "bagas-sekar";
@@ -277,6 +278,19 @@ export const GROUPS: Group[] = [
     ],
   },
   {
+    key: "video",
+    title: "Video YouTube",
+    note: "Satu video per undangan, tampil setelah Galeri di semua tema. Musik latar berhenti otomatis saat video diputar.",
+    fields: [
+      text("video", "Tautan YouTube", 300, {
+        ...optional,
+        format: "url",
+        placeholder: "https://youtu.be/...",
+        hint: "Video harus berstatus Publik atau Unlisted, dengan izin penyematan aktif. Tidak ada unggah berkas video.",
+      }),
+    ],
+  },
+  {
     key: "extras",
     title: "Bagian tambahan",
     note: "Di luar isi tema.",
@@ -505,6 +519,9 @@ export function checkInvitation(data: InvitationData, theme: string): Issue[] {
   const { paper, accent, ink } = data.style.custom;
   if (data.style.palette === CUSTOM && ![paper, accent, ink].every((c) => HEX.test(c))) {
     out.push({ path: "style.palette", group: "gaya", message: "Palet kustom belum lengkap. Isi warna latar, aksen, dan teks dengan kode seperti #A3B18A, atau pilih palet jadi." });
+  }
+  if (data.video.trim() && !streamOf(data.video.trim(), "", "")?.youtube) {
+    out.push({ path: "video", group: "video", message: "Tautan video harus mengarah ke satu video YouTube, bukan saluran atau situs lain." });
   }
   if (data.sections.gifts.enabled && !data.sections.gifts.accounts.length && !data.sections.gifts.qris) {
     out.push({ path: "sections.gifts.accounts", group: "gifts", message: "Isi minimal satu rekening atau QRIS, atau matikan section Hadiah." });

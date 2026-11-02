@@ -269,9 +269,9 @@ function Finale({ inv }: { inv: InvitationView }) {
 }
 
 // Bagian tambahan paket Istimewa (paling banyak dua) masing-masing mendapat satu kios: yang pertama di kiri,
-// sisanya di kanan. Nama dan ikon kios mengikuti judul dan jenis bagiannya, misalnya Dress Code.
+// sisanya di kanan. Nama dan ikon kios mengikuti judul dan jenis bagiannya, misalnya Dress Code. Video add-on selalu di kios pertama.
 function extraItems(inv: InvitationView) {
-  return (Object.entries(inv.extras) as [ExtraAnchor, ExtraView[]][]).flatMap(([at, items]) => items.map((e, i) => ({ at, i, e })));
+  return (Object.entries(inv.extras) as [ExtraAnchor, ExtraView[]][]).flatMap(([at, items]) => items.map((e, i) => ({ at, i, e }))).sort((a, b) => Number(Boolean(b.e.video)) - Number(Boolean(a.e.video)));
 }
 
 const EXTRA_ICON: Record<ExtraKind, BoothKind> = { dresscode: "dresscode", rundown: "rundown", denah: "denah", imbauan: "imbauan", siaran: "siaran", bebas: "slot" };
@@ -280,7 +280,7 @@ function extraPanel(inv: InvitationView, id: "slot1" | "slot2", items: ReturnTyp
   if (!items.length) return false;
   const first = items[0].e;
   const label = first.title.trim() || EXTRA_KINDS[first.kind];
-  return { id, title: label, label, icon: EXTRA_ICON[first.kind], body: <ExtraSlot inv={inv} items={items} /> };
+  return { id, title: label, label, icon: first.video ? "video" : EXTRA_ICON[first.kind], body: <ExtraSlot inv={inv} items={items} /> };
 }
 
 function ExtraSlot({ inv, items }: { inv: InvitationView; items: ReturnType<typeof extraItems> }) {

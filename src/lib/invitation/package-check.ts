@@ -43,6 +43,9 @@ export function packageIssues(data: InvitationData, theme: string, rules: Packag
   if (rules.locked.font_varian && (data.style.font || data.style.nameFont)) {
     out.push({ path: "style.font", group: "gaya", message: `${rules.locked.font_varian} Kembalikan ke font bawaan.` });
   }
+  if (rules.locked.video_youtube && data.video) {
+    out.push({ path: "video", group: "video", message: `${rules.locked.video_youtube} Hapus tautan video.` });
+  }
   const customFonts = CUSTOM_FONT_SLOTS.filter((s) => data.style.customFont[s.key]);
   if (rules.locked.font_custom && customFonts.length) {
     out.push({ path: "style.customFont", group: "gaya", message: `${rules.locked.font_custom} Kosongkan font custom.` });

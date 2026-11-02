@@ -694,7 +694,7 @@ export function Extras({ inv, at, only, compact = false }: { inv: InvitationView
           </>
         )}
         <div className={`relative mx-auto ${e.kind === "bebas" && e.photos.length > 2 ? "max-w-[960px]" : "max-w-[680px]"}`}>
-          <Heading skin={skin} eyebrow={EYEBROW[e.kind]} title={e.title} tone={tone} />
+          <Heading skin={skin} eyebrow={e.video ? "" : EYEBROW[e.kind]} title={e.title} tone={tone} />
           <Body e={e} skin={skin} tone={tone} left={left} />
         </div>
       </section>

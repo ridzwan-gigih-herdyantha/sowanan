@@ -42,6 +42,7 @@ export function applyPackage(d: InvitationData, rules: PackageRules): Invitation
   if (rules.locked.musik_sendiri) out = { ...out, media: { ...out.media, music: "" } };
   if (paletteLocked(out.style.palette, rules)) out = { ...out, style: { ...out.style, palette: "" } };
   if (rules.locked.font_varian) out = { ...out, style: { ...out.style, font: "", nameFont: "" } };
+  if (rules.locked.video_youtube) out = { ...out, video: "" };
   if (rules.locked.font_custom) out = { ...out, style: { ...out.style, customFont: { display: "", body: "", name: "" } } };
   return out;
 }

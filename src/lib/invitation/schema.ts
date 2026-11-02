@@ -122,6 +122,8 @@ export const invitationDataSchema = z.object({
       custom: z.object({ paper: str(), accent: str(), ink: str() }).prefault({}),
     })
     .prefault({}),
+  // Tautan YouTube dari add-on video. Satu video per undangan, tanpa unggah berkas.
+  video: str(),
   media: z
     .object({ hero: str(), heroWide: str(), og: str(), music: str(), venue: str(), couple: str(), closing: str(), detail: str(), rsvp: str() })
     .prefault({}),
