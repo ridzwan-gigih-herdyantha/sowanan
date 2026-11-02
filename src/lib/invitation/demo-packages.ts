@@ -1,5 +1,5 @@
 import { PACKAGE_IDS, PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
-import { themeAvailable, type PackageRules } from "@/lib/settings/text";
+import { themeAvailable, waLink, type PackageRules } from "@/lib/settings/text";
 import { paletteLocked } from "./package-check";
 import { limitExtras, type InvitationData } from "./schema";
 
@@ -14,6 +14,9 @@ export function demoHref(slug: string, pkg: PackageId, device: DemoDevice = "des
   const base = pkg === TOP_PACKAGE ? `/${slug}` : `/${slug}/paket/${pkg}`;
   return device === "desktop" ? base : `${base}/${device}`;
 }
+
+// Tautan WhatsApp tombol pesan di undangan contoh, berisi tema dan paket yang sedang dilihat.
+export const demoOrderLink = (s: Settings, themeName: string, pkg: PackageId) => waLink(s.contact.wa, `Halo Sowanan, saya mau pesan tema ${themeName}, paket ${PACKAGE_NAMES[pkg]}. Tanggal acara saya:`);
 
 export type DemoPackage = { id: PackageId; name: string; available: boolean; note?: string };
 

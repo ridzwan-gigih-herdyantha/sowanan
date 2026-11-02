@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { WaIcon } from "@/components/home/closing";
 import { CustomFontLinks } from "@/components/invitation/custom-font-links";
+import { DemoOrderButton } from "@/components/invitation/demo-order-button";
 import { DemoViewSwitch } from "@/components/invitation/demo-view-switch";
 import { TrackThemeView } from "@/components/meta-pixel";
 import { Archived, GuestNames, Inactive, InvitationSlug } from "@/components/invitation/shell";
 import { Watermark } from "@/components/invitation/watermark";
 import { isDemo } from "@/lib/invitation/archive";
-import { applyPackage, demoHref, demoPackages, TOP_PACKAGE, type DemoDevice, type DemoPackage } from "@/lib/invitation/demo-packages";
+import { applyPackage, demoHref, demoOrderLink, demoPackages, TOP_PACKAGE, type DemoDevice, type DemoPackage } from "@/lib/invitation/demo-packages";
 import { getInvitation } from "@/lib/invitation/load";
 import { limitExtras } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
@@ -40,6 +42,7 @@ export async function loadInvitationPage(slug: string, demoPkg?: PackageId) {
     demo,
     pkg: demo ? (pkg as PackageId) : null,
     packages,
+    orderHref: demo ? demoOrderLink(settings, THEME_NAMES[inv.theme] ?? inv.theme, pkg as PackageId) : "",
     guestNames: !rules.locked.nama_tamu && !archived,
     view,
   };
@@ -92,6 +95,9 @@ export function InvitationBody({ found }: { found: InvitationPageData }) {
       {found.demo && found.pkg && (
         <>
           <DemoViewSwitch {...demoSwitchLinks(found.view.slug, found.pkg, "desktop", found.packages)} />
+          <DemoOrderButton href={found.orderHref} theme={THEME_NAMES[found.view.slug] ?? found.view.slug}>
+            <WaIcon className="size-6" />
+          </DemoOrderButton>
           <TrackThemeView theme={found.view.slug} name={THEME_NAMES[found.view.slug] ?? found.view.slug} pkg={found.pkg} device="desktop" />
         </>
       )}

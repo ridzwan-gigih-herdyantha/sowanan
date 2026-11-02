@@ -40,7 +40,7 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
   if (archived) return <p className="text-[15px] text-inv-ink/75">Konfirmasi kehadiran sudah ditutup karena undangan ini sudah menjadi arsip.</p>;
 
   return (
-    <div aria-live="polite">
+    <div data-inv-rsvp aria-live="polite">
       {step === "attend" && (
         <fieldset key="attend" disabled={inactive} className="animate-[inv-pop_.3s_ease-out]">
           <legend className="font-display text-[32px] leading-tight text-inv-accent">Kamu bisa datang?</legend>
