@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Modal } from "../modal";
 import { SHAPES } from "./pop";

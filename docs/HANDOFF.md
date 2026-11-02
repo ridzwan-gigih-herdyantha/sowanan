@@ -89,6 +89,7 @@ File utama: `src/app/(site)/admin/undangan/[slug]/editor.tsx`.
 
 - **Belum lunas** (`payment_status = 'belum_lunas'`): watermark tampil, RSVP dan ucapan dimatikan dengan pesan "undangan belum aktif". Aksi server juga menolak kiriman.
 - **Arsip**: 30 hari setelah acara (`lib/invitation/archive.ts`). RSVP, ucapan baru, amplop, hitung mundur, dan link nama tamu berhenti. Admin bisa membuka kunci 24 jam untuk koreksi. Pemberitahuan ke klien muncul 7 hari sebelumnya di tab RSVP.
+- **Undangan tanpa foto** boleh, semua foto opsional. Foto undangan memakai `components/invitation/photo.tsx`, bukan `next/image` langsung: kalau kosong tampil monogram dengan warna tema, dan foto latar selebar layar cukup warna section-nya. Galeri, kolase, dan spesimen tanpa isi disembunyikan di `toView`. Tema baru harus memakai komponen ini.
 - **Tombol Pesan tema ini** (`DemoOrderButton`) hanya di undangan contoh. Event Lead piksel terkirim otomatis dari `MetaPixel` untuk semua tautan wa.me, tombol ini menambah `klik_whatsapp` di GA4 dengan parameter `tema` dan `posisi`. Kedua parameter perlu didaftarkan sebagai dimensi kustom di GA4 supaya muncul di laporan.
 - **Nama tamu** (`?to=`) hanya dipakai bila paket termasuk nama_tamu. Kode `?k=` adalah pengenal tamu di link pribadinya, bukan QR per tamu: absensi memakai satu QR per undangan (`/absen/<token>`). Cadangannya, penerima tamu mencari nama lalu menandai hadir di dashboard mempelai atau admin.
 

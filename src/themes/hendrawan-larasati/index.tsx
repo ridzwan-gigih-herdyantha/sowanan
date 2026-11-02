@@ -1,4 +1,5 @@
-import Image, { getImageProps } from "next/image";
+import { getImageProps } from "next/image";
+import Image, { NoPhoto } from "@/components/invitation/photo";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { Extras } from "@/components/invitation/extras";
@@ -58,6 +59,7 @@ function SpecLabel({ rows, className = "" }: { rows: [string, ReactNode][]; clas
 }
 
 function HeroPhoto({ inv }: { inv: InvitationView }) {
+  if (!inv.images.hero) return <NoPhoto />;
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name} dalam busana pengantin`, fetchPriority: "high" as const };
   const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 1800, height: 1200, sizes: "min(1120px, 100vw)" });
   const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1200, height: 1602, sizes: "96vw" });

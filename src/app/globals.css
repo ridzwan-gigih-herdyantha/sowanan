@@ -3179,3 +3179,22 @@ html.door-wait [data-fit] {
     animation: none;
   }
 }
+
+/* Tempat foto saat undangan tidak memakai foto. Ukuran monogram mengikuti ukuran tempatnya. */
+.inv-no-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  container-type: size;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--inv-accent) 9%, var(--inv-paper));
+  color: var(--inv-accent);
+  font-family: var(--inv-display);
+  object-fit: unset;
+}
+.inv-no-photo::before {
+  content: var(--inv-monogram, "");
+  font-size: clamp(16px, 22cqmin, 84px);
+  line-height: 1;
+  white-space: nowrap;
+}

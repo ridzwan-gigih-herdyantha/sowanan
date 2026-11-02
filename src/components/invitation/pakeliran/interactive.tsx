@@ -1,7 +1,7 @@
 "use client";
 
 import { animate, motion, useAnimate, useInView, useMotionValue, useReducedMotion, useTransform, type PanInfo } from "motion/react";
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { pad, useTimeLeft } from "@/components/countdown";
 import { angkaJawa } from "@/lib/javanese";

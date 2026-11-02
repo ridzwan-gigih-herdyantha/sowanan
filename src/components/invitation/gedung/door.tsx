@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { Joystick } from "./joystick";
 import { useButtonSfx } from "./sfx";

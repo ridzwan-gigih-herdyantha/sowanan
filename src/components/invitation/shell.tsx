@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { BrandLoader } from "@/components/brand-loader";
 import { AutoReveal, type RevealMode } from "./auto-reveal";

@@ -1,4 +1,5 @@
-import Image, { getImageProps } from "next/image";
+import { getImageProps } from "next/image";
+import Image, { NoPhoto } from "@/components/invitation/photo";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { Extras } from "@/components/invitation/extras";
@@ -82,6 +83,7 @@ function tanggal(inv: InvitationView) {
 }
 
 function HeroPhoto({ inv }: { inv: InvitationView }) {
+  if (!inv.images.hero) return <NoPhoto />;
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name}`, fetchPriority: "high" as const };
   const { props: { srcSet, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1000, height: 1400, sizes: "(min-width: 1024px) 46vw, 96vw" });
   // eslint-disable-next-line @next/next/no-img-element
@@ -326,7 +328,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
       <Wrap className="max-w-[980px]">
         <div {...reveal()} className="overflow-hidden rounded-sm bg-inv-paper shadow-[0_24px_50px_color-mix(in_srgb,var(--inv-ink)_16%,transparent)] ring-1 ring-sk-emas/50 md:grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="relative min-h-[260px] overflow-hidden text-inv-wash md:min-h-[400px]">
-            <Image {...inv.frame.heroWide} src={inv.images.heroWide} alt="" fill sizes="(min-width: 768px) 440px, 100vw" className="object-cover" />
+            {inv.images.heroWide && <Image {...inv.frame.heroWide} src={inv.images.heroWide} alt="" fill sizes="(min-width: 768px) 440px, 100vw" className="object-cover" />}
             <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-inv-night via-inv-night/70 to-inv-night/20" />
             <Pattern name="zellige" color="var(--sk-emas)" opacity={0.08} />
             <div className="relative flex h-full min-h-[inherit] flex-col justify-end p-6 sm:p-8">

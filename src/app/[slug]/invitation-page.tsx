@@ -62,7 +62,8 @@ export function invitationMetadata(found: InvitationPageData | null, path: strin
       title,
       description: v.share.ogDescription,
       url: path,
-      images: [{ url: v.images.og, width: 1200, height: 630, alt: `${v.groom.name} dan ${v.bride.name}` }],
+      // Tanpa gambar, pratinjau WhatsApp memakai gambar bawaan situs.
+      ...(v.images.og ? { images: [{ url: v.images.og, width: 1200, height: 630, alt: `${v.groom.name} dan ${v.bride.name}` }] } : {}),
     },
   };
 }

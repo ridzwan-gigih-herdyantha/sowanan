@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import type { CSSProperties, ReactNode } from "react";
 import type { ExtraAnchor, ExtraKind, ExtraTone } from "@/lib/invitation/schema";
 import type { ExtraView, InvitationView } from "@/lib/invitation/view";

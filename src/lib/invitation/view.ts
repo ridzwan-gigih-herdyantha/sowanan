@@ -119,6 +119,10 @@ export function toView(slug: string, d: InvitationData, theme = "") {
   const enabled = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, Boolean(v.enabled)])) as Record<SectionKey, boolean>;
   // Foto pasca acara sudah dibayar terpisah, jadi tetap tampil walau bagian Galeri dimatikan.
   if (d.postGallery.length) enabled.gallery = true;
+  // Undangan tanpa foto boleh: bagian yang isinya hanya foto disembunyikan.
+  if (!s.gallery.photos.length && !d.postGallery.length) enabled.gallery = false;
+  if (!s.collage.polaroids.length) enabled.collage = false;
+  if (!s.specimens.items.length) enabled.specimens = false;
   const frames = cleanFrames(d.frames);
   const dateLong = `${p.weekday}, ${p.day} ${p.month} ${p.year}`;
   const events = d.event.schedule.map((e) => {
@@ -177,8 +181,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     ayatSumber: d.copy.ayatSumber,
     share: d.share,
     images: {
-      hero: u(d.media.hero),
-      heroWide: u(d.media.heroWide),
+      hero: u(d.media.hero || d.media.heroWide),
+      heroWide: u(d.media.heroWide || d.media.hero),
       og: u(d.media.og),
       venue: u(d.media.venue || d.media.hero),
       couple: u(d.media.couple || s.couple.photos[0]?.src || d.media.heroWide),
@@ -208,7 +212,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     on: enabled,
     extras: groupExtras(d, theme),
     palette,
-    fonts: resolveFonts(theme, d.style),
+    // Monogram ikut sebagai variabel supaya tempat foto yang kosong bisa menampilkannya tanpa perlu props.
+    fonts: { ...resolveFonts(theme, d.style), "--inv-monogram": JSON.stringify(d.monogram || [d.couple.groom.name, d.couple.bride.name].map((n) => n.trim().charAt(0)).filter(Boolean).join(" & ")) },
     fontLinks: customFontLinks(d.style),
     pageColor: palette["--inv-paper"] ?? "",
   };

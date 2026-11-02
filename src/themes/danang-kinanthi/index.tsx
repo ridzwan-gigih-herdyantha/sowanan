@@ -1,4 +1,5 @@
-import Image, { getImageProps } from "next/image";
+import { getImageProps } from "next/image";
+import Image, { NoPhoto } from "@/components/invitation/photo";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { Extras } from "@/components/invitation/extras";
@@ -85,6 +86,7 @@ function tanggal(inv: InvitationView) {
 }
 
 function HeroPhoto({ inv }: { inv: InvitationView }) {
+  if (!inv.images.hero) return <NoPhoto />;
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name}`, fetchPriority: "high" as const };
   const { props: { srcSet, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1000, height: 1500, sizes: "(min-width: 1024px) 420px, 80vw" });
   // eslint-disable-next-line @next/next/no-img-element

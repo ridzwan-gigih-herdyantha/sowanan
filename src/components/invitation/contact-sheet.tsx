@@ -1,6 +1,7 @@
 "use client";
 
-import Image, { getImageProps } from "next/image";
+import { getImageProps } from "next/image";
+import Image from "@/components/invitation/photo";
 import { useState, type PointerEvent } from "react";
 import { Modal } from "./modal";
 

@@ -1,4 +1,5 @@
-import Image, { getImageProps } from "next/image";
+import { getImageProps } from "next/image";
+import Image from "@/components/invitation/photo";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { Extras } from "@/components/invitation/extras";
@@ -38,6 +39,8 @@ function Wrap({ children, className = "" }: { children: ReactNode; className?: s
 }
 
 function HeroPhoto({ inv }: { inv: InvitationView }) {
+  // Nama mempelai sudah besar di atas latar hero, jadi tanpa foto cukup warna latarnya.
+  if (!inv.images.hero) return null;
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name} bergandengan di jalan saat senja`, fetchPriority: "high" as const };
   const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 1800, height: 1200, sizes: "100vw" });
   const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1200, height: 1602, sizes: "100vw" });

@@ -1,4 +1,5 @@
-import Image, { getImageProps } from "next/image";
+import { getImageProps } from "next/image";
+import Image, { NoPhoto } from "@/components/invitation/photo";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { CalendarButton } from "@/components/invitation/calendar-button";
@@ -61,6 +62,7 @@ function Monogram({ inv, className = "" }: { inv: InvitationView; className?: st
 }
 
 function HeroPhoto({ inv }: { inv: InvitationView }) {
+  if (!inv.images.hero) return <NoPhoto />;
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name}`, fetchPriority: "high" as const };
   const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 2400, height: 1600, sizes: "(min-width: 1024px) 520px, 100vw" });
   const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1600, height: 2135, sizes: "(min-width: 1024px) 520px, 100vw" });

@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useAnimate, useReducedMotion } from "motion/react";
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { pad, useTimeLeft } from "@/components/countdown";
 import { angkaArab } from "@/lib/hijri";

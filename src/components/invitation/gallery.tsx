@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useState } from "react";
 import { Modal } from "./modal";
 import { Arch } from "./sakinah/ornaments";

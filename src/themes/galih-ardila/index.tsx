@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { CalendarButton } from "@/components/invitation/calendar-button";

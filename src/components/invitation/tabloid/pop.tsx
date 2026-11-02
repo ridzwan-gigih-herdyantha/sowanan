@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import type { CSSProperties, ReactNode } from "react";
 import type { FrameProps } from "@/lib/invitation/frame";
 
