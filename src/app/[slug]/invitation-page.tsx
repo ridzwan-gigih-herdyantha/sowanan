@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { CustomFontLinks } from "@/components/invitation/custom-font-links";
 import { DemoViewSwitch } from "@/components/invitation/demo-view-switch";
 import { TrackThemeView } from "@/components/meta-pixel";
 import { Archived, GuestNames, Inactive, InvitationSlug } from "@/components/invitation/shell";
@@ -77,6 +78,7 @@ export function InvitationBody({ found }: { found: InvitationPageData }) {
   const { Component } = found.theme;
   return (
     <>
+      <CustomFontLinks hrefs={found.view.fontLinks} />
       <Archived archived={found.archived}>
         <Inactive inactive={!found.paid && !found.demo}>
           <GuestNames allowed={found.guestNames}>

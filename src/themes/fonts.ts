@@ -168,13 +168,30 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
 
 export const fontStack = (f: Font, kind: "display" | "body") => `${f.style.fontFamily}, ${kind === "display" ? SERIF : SANS}`;
 
+// Semua nama keluarga di Google Fonts hanya memakai huruf, angka, dan spasi.
+const isFamily = (name?: string): name is string => Boolean(name) && /^[A-Za-z0-9 ]+$/.test(name!);
+const customStack = (name: string, kind: "display" | "body") => fontStack({ style: { fontFamily: `'${name}'` } }, kind);
+
 // Font bawaan memakai pengaturan tema sendiri, jadi hanya pilihan lain yang menimpa variabel font.
 // --inv-script yang kosong membuat nama mempelai kembali ke font judul.
+// Font custom menimpa pilihan di atasnya, per tempat.
 export function resolveFonts(theme: string, style?: InvitationData["style"]): Record<string, string> {
   const preset = style?.font && FONT_PRESETS[theme]?.find((x) => x.id === style.font);
   const name = style?.nameFont && NAME_FONTS.find((x) => x.id === style.nameFont);
+  const custom = style?.customFont;
   return {
     ...(preset && { "--inv-display": fontStack(preset.display, "display"), "--inv-body": fontStack(preset.body, "body") }),
     ...(name && { "--inv-script": fontStack(name.font, "display") }),
+    ...(isFamily(custom?.display) && { "--inv-display": customStack(custom.display, "display") }),
+    ...(isFamily(custom?.body) && { "--inv-body": customStack(custom.body, "body") }),
+    ...(isFamily(custom?.name) && { "--inv-script": customStack(custom.name, "display") }),
   };
+}
+
+// Tautan stylesheet font custom, satu per font supaya satu nama yang salah tidak menggagalkan yang lain.
+// API css versi lama dipakai karena melewati ketebalan yang tidak dimiliki font itu, sedangkan css2 menolaknya.
+export function customFontLinks(style?: InvitationData["style"]): string[] {
+  const c = style?.customFont;
+  const names = [c?.display, c?.body, c?.name].filter(isFamily);
+  return [...new Set(names)].map((name) => `https://fonts.googleapis.com/css?family=${name.replace(/ /g, "+")}:300,300i,400,400i,500,500i,600,600i,700,700i&display=swap`);
 }

@@ -117,6 +117,8 @@ export const invitationDataSchema = z.object({
       font: str(),
       // Font skrip khusus nama mempelai. Kosong berarti sama dengan font judul.
       nameFont: str(),
+      // Nama font Google Fonts per tempat, menimpa pilihan font di atas. Kosong berarti tidak dipakai.
+      customFont: z.object({ display: str(), body: str(), name: str() }).prefault({}),
       custom: z.object({ paper: str(), accent: str(), ink: str() }).prefault({}),
     })
     .prefault({}),

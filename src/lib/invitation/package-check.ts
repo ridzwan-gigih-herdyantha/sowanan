@@ -1,5 +1,6 @@
 import type { PackageRules } from "@/lib/settings/text";
 import { CUSTOM } from "@/themes/palette";
+import { CUSTOM_FONT_SLOTS, customFontProblem } from "./custom-font";
 import { countsAsExtra, type InvitationData } from "./schema";
 import { forTheme, GROUPS, type Issue } from "./spec";
 
@@ -41,6 +42,15 @@ export function packageIssues(data: InvitationData, theme: string, rules: Packag
   }
   if (rules.locked.font_varian && (data.style.font || data.style.nameFont)) {
     out.push({ path: "style.font", group: "gaya", message: `${rules.locked.font_varian} Kembalikan ke font bawaan.` });
+  }
+  const customFonts = CUSTOM_FONT_SLOTS.filter((s) => data.style.customFont[s.key]);
+  if (rules.locked.font_custom && customFonts.length) {
+    out.push({ path: "style.customFont", group: "gaya", message: `${rules.locked.font_custom} Kosongkan font custom.` });
+  } else {
+    for (const s of customFonts) {
+      const problem = customFontProblem(s.key, data.style.customFont[s.key]);
+      if (problem) out.push({ path: "style.customFont", group: "gaya", message: `${s.label}: ${problem}` });
+    }
   }
   return out;
 }

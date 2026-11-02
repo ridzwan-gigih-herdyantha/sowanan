@@ -1,6 +1,6 @@
 import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
-import { resolveFonts } from "@/themes/fonts";
+import { customFontLinks, resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
 import { RULE_ICONS, type ExtraAnchor, type ExtraKind, type ExtraTone, type InvitationData, type RuleIcon, type SectionKey } from "./schema";
 import { extraAnchors, HEX } from "./spec";
@@ -184,6 +184,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     extras: groupExtras(d, theme),
     palette,
     fonts: resolveFonts(theme, d.style),
+    fontLinks: customFontLinks(d.style),
     pageColor: palette["--inv-paper"] ?? "",
   };
 }

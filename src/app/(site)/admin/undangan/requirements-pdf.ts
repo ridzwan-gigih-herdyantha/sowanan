@@ -2,6 +2,7 @@ import QRCode from "qrcode";
 import { requirements } from "@/lib/invitation/requirements";
 import type { InvitationData } from "@/lib/invitation/schema";
 import type { PackageRules } from "@/lib/settings/text";
+import { CUSTOM_FONT_SLOTS } from "@/lib/invitation/custom-font";
 import { FONT_PRESETS, NAME_FONTS } from "@/themes/fonts";
 import { PALETTES } from "@/themes/palettes";
 
@@ -72,11 +73,15 @@ function styleChoices(theme: string, couple: string, locked: PackageRules["locke
   const own = `<div class="pal"><span class="sw"><i style="background:#fff"></i><i style="background:#ddd"></i><i style="background:#999"></i></span><b>Warna sendiri: kirim tiga warna untuk latar, aksen, dan teks</b></div>`;
   const palettes = `${locked.palet_varian ? "" : pals}${locked.palet_custom ? "" : own}`;
   const fontOpen = !locked.font_varian;
-  if (!palettes && !fontOpen) return { html: "", families: [] as string[] };
-  const html = `<h2>Warna dan font</h2><p class="note">Pilih ${[palettes && "satu palet", fontOpen && pairs && "satu pasangan font"].filter(Boolean).join(" dan ")}. Kalau tidak memilih, tema memakai yang pertama.</p>
+  const customFont = locked.font_custom
+    ? ""
+    : `<h3>Font custom dari Google Fonts <small style="font-weight:400;color:#8a7f76">opsional</small></h3><p class="note">Tulis nama font persis seperti di fonts.google.com. Font tulisan tangan atau dekoratif hanya bisa untuk judul dan nama mempelai.</p><table>${CUSTOM_FONT_SLOTS.map((s) => `<tr><td class="box"><span></span></td><td class="label">${esc(s.label)}</td><td class="type"></td></tr>`).join("")}</table>`;
+  if (!palettes && !fontOpen && !customFont) return { html: "", families: [] as string[] };
+  const html = `<h2>Warna dan font</h2><p class="note">${palettes || (fontOpen && pairs) ? `Pilih ${[palettes && "satu palet", fontOpen && pairs && "satu pasangan font"].filter(Boolean).join(" dan ")}. Kalau tidak memilih, tema memakai yang pertama.` : "Kalau tidak diisi, tema memakai font bawaan."}</p>
 ${palettes ? `<h3>Palet warna</h3><div class="pals">${palettes}</div>` : ""}
 ${fontOpen && pairs ? `<h3>Pasangan font</h3><table>${pairs}</table>` : ""}
-${fontOpen ? `<h3>Font khusus nama mempelai <small style="font-weight:400;color:#8a7f76">opsional</small></h3><table>${scripts}</table>` : ""}`;
+${fontOpen ? `<h3>Font khusus nama mempelai <small style="font-weight:400;color:#8a7f76">opsional</small></h3><table>${scripts}</table>` : ""}
+${customFont}`;
   const families = fontOpen ? [...new Set([...fonts.flatMap((f) => [family(f.display), family(f.body)]), ...NAME_FONTS.map((f) => family(f.font))])] : [];
   return { html, families };
 }

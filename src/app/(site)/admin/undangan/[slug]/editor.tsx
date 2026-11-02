@@ -376,16 +376,18 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
               theme={theme}
               style={data.style}
               couple={[data.couple.groom.name, data.couple.bride.name].filter(Boolean).join(" & ") || "Andi & Rina"}
-              locked={{ palette: rules.locked.palet_varian, custom: rules.locked.palet_custom, font: rules.locked.font_varian }}
+              locked={{ palette: rules.locked.palet_varian, custom: rules.locked.palet_custom, font: rules.locked.font_varian, customFont: rules.locked.font_custom }}
               applying={applying}
               onChange={(style) => {
                 if (JSON.stringify(style) === JSON.stringify(data.style)) return;
                 setApplying(
-                  style.font !== data.style.font
-                    ? `font:${style.font || "bawaan"}`
-                    : style.nameFont !== data.style.nameFont
-                      ? `nama:${style.nameFont || "bawaan"}`
-                      : style.palette || "bawaan",
+                  JSON.stringify(style.customFont) !== JSON.stringify(data.style.customFont)
+                    ? "font:custom"
+                    : style.font !== data.style.font
+                      ? `font:${style.font || "bawaan"}`
+                      : style.nameFont !== data.style.nameFont
+                        ? `nama:${style.nameFont || "bawaan"}`
+                        : style.palette || "bawaan",
                 );
                 setData((d) => ({ ...d, style }));
               }}
