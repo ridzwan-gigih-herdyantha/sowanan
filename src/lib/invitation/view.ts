@@ -132,7 +132,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     place: d.event.city,
     venue: d.event.venue,
     events,
-    // Tema menampilkan EventAgenda kalau ada acara dengan tanggal atau tempat sendiri, atau tanpa jam.
+    // Tema menampilkan Agenda miliknya kalau ada acara dengan tanggal atau tempat sendiri, atau tanpa jam.
     agenda: events.some((e) => e.separate || !e.time),
     rsvpDeadline: d.event.rsvpDeadline,
     tagline: d.copy.tagline,
