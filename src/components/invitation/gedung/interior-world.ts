@@ -31,7 +31,7 @@ const STEPS: Area = area(hallAt(HALL.stepL - 8, -HALL.stepS + 8), hallAt(HALL.st
 // Pengantin berdiri di tengah panggung, tepat di sumbu karpet dan di depan sofa. x dan y titik kaki (tengah bawah
 // gambar), w dan h ukuran tampil dalam piksel peta. Bukan rintangan: tamu boleh menembus semua karakter.
 const COUPLE_AT = hallAt(1004, 0, HALL.stageZ);
-export const COUPLE = { src: "/img/rafi-kayla/couple-sprite.png", x: COUPLE_AT.x, y: COUPLE_AT.y, w: 128, h: 124 };
+export const COUPLE = { src: "/img/rafi-kayla/couple-sprite.png", x: COUPLE_AT.x, y: COUPLE_AT.y, w: 154, h: 106 };
 
 // Perabot bawaan gambar yang berdiri di lantai: sofa di panggung dan pot di kaki tangga.
 const FURNITURE: Area[] = [

@@ -306,7 +306,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
   };
 
   return (
-    <div ref={rootRef} className="gd-interior fixed inset-0 z-40 overflow-hidden bg-inv-night text-inv-ink">
+    <div ref={rootRef} className="gd-interior fixed inset-0 z-40 overflow-hidden bg-[#2a1c1e] text-inv-ink">
       <div ref={camRef} className="gd-pixel absolute top-0 left-0 will-change-transform" style={camera}>
       <div ref={stageRef} className="absolute inset-0 isolate touch-none" onPointerDown={onDown} onPointerMove={(e) => dragging.current && aim(e, false)} onPointerUp={() => (dragging.current = false)} onPointerCancel={() => (dragging.current = false)}>
         <Image src={MAP} alt="" fill sizes="100vw" draggable={false} className="pointer-events-none object-cover select-none" />
@@ -362,7 +362,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
               }}
               aria-hidden="true"
               className="pointer-events-none absolute -translate-x-1/2 -translate-y-full"
-              style={{ left: `${(at.x / IN_W) * 100}%`, top: `${(at.y / IN_H) * 100}%`, width: `calc(${heroW} * ${n.body?.w ?? 1})`, height: `calc(${heroH} * ${n.body?.h ?? 1})`, zIndex: Math.round(at.y) }}
+              style={{ left: `${(at.x / IN_W) * 100}%`, top: `${(at.y / IN_H) * 100}%`, width: heroW, height: heroH, zIndex: Math.round(at.y) }}
             >
               <span className="absolute inset-x-[22%] -bottom-[3%] h-[7%] rounded-full bg-black/25" />
               <div className="relative size-full bg-no-repeat" style={{ backgroundImage: `url(${NPC_SHEETS[n.sheet]})`, backgroundSize: "300% 300%", backgroundPosition: `0% ${(n.face ?? 0) * 50}%`, transform: n.flip ? "scaleX(-1)" : undefined }} />
@@ -375,7 +375,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
             key={`${n.id}-${chatTick}`}
             aria-hidden="true"
             className="gd-pill pointer-events-none absolute z-[1500] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-xl border-2 border-inv-line bg-inv-card px-2.5 py-1 font-display text-[clamp(9px,2.4vw,12px)] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.2)]"
-            style={{ left: `${(n.path[0].x / IN_W) * 100}%`, top: `${((n.path[0].y - HERO * (n.body?.h ?? 1) - 4) / IN_H) * 100}%` }}
+            style={{ left: `${(n.path[0].x / IN_W) * 100}%`, top: `${((n.path[0].y - HERO + 2) / IN_H) * 100}%` }}
           >
             {line}
           </span>

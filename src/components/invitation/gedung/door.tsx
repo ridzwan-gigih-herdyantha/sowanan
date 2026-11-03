@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, 
 import { Joystick } from "./joystick";
 import { aimCamera, clearTap, markTap, shift, turn, type Camera, type Facing } from "./motion";
 import { useButtonSfx } from "./sfx";
-import { ARCH_BEAM, behindArch, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, reachable, SPAWN, SPEED, type Point } from "./world";
+import { behindArch, DOOR_AT, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, reachable, SIGN_AT, SPAWN, SPEED, type Point } from "./world";
 
 export type GedungProps = {
   groom: string;
@@ -18,25 +18,23 @@ export type GedungProps = {
 
 export type Pick = "groom" | "bride";
 
-// Peta cover berukuran 1672 x 941. Pintu gedung ada di sekitar 61,5% x 40% gambar.
 const RATIO = MAP_W / MAP_H;
-const COVER = "/img/rafi-kayla/cover-pixel.png";
-const DOOR = { x: 61.5, y: 40 };
+const COVER = "/img/rafi-kayla/town.png";
+const GATE = "/img/rafi-kayla/town-gate.png";
+const DOOR = { x: (DOOR_AT.x / MAP_W) * 100, y: (DOOR_AT.y / MAP_H) * 100 };
 // Peta sedikit diperbesar supaya kamera punya ruang menaikkan karakter di atas joystick.
 const ZOOM = 1.2;
 const ZOOM_MS = 950;
-// Balok gapura pada gambar: pusatnya di sekitar 50% x 50%, lebar papan 13,6%, dan miring 27 derajat ke kanan bawah
-// (garis isometrik 2:1), jadi tulisan dimiringkan dengan sudut yang sama supaya terlihat menempel di balok.
-const BEAM_CLIP = `polygon(${ARCH_BEAM.map(([x, y]) => `${((x / MAP_W) * 100).toFixed(2)}% ${((y / MAP_H) * 100).toFixed(2)}%`).join(", ")})`;
-const BEAM = { x: 50, y: 50, w: 13.6, h: 7.4, tilt: 27 };
+// Papan nama menempel di balok gapura, yang miring mengikuti garis isometrik 2:1.
+const BEAM = { x: (SIGN_AT.x / MAP_W) * 100, y: (SIGN_AT.y / MAP_H) * 100, w: 12.9, h: 6.8, tilt: 26.57 };
 // Jumlah huruf yang muat di papan pada ukuran penuh. Teks yang lebih panjang dikecilkan.
 const NAME_FIT = 13;
 const PLACE_FIT = 24;
 
-// Lembar sprite 3 x 3 (sel 44 x 64): baris menghadap bawah, samping kanan, dan atas. Kolom pertama diam,
+// Lembar sprite 3 x 3 (sel 32 x 40): baris menghadap bawah, samping kanan, dan atas. Kolom pertama diam,
 // dua kolom lain langkah kaki.
 const SPRITES: Record<Pick, string> = { groom: "/img/rafi-kayla/guest-male.png", bride: "/img/rafi-kayla/guest-female.png" };
-export const CELL = { w: 44, h: 64 };
+export const CELL = { w: 32, h: 40 };
 export const HERO_H = 120;
 export const STEPS = [1, 0, 2, 0];
 export const STEP_FPS = 8;
@@ -275,16 +273,16 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const heroW = `calc(var(--gd-w) * ${((HERO_H * CELL.w) / CELL.h / MAP_W).toFixed(5)})`;
 
   return (
-    <div ref={rootRef} className="gd-door fixed inset-0 z-50 overflow-hidden bg-inv-night text-inv-ink" role="dialog" aria-label="Sampul undangan" data-entering={entering}>
+    <div ref={rootRef} className="gd-door fixed inset-0 z-50 overflow-hidden bg-[#2a1c1e] text-inv-ink" role="dialog" aria-label="Sampul undangan" data-entering={entering}>
       <div ref={camRef} className="gd-pixel absolute top-0 left-0 will-change-transform" style={camera}>
       <div ref={stageRef} className="gd-stage absolute inset-0 touch-none" style={{ transformOrigin: `${DOOR.x}% ${DOOR.y}%` }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
         <Image src={COVER} alt="" fill priority draggable={false} sizes="100vw" className="pointer-events-none object-cover select-none" />
         {/* Kamera boleh turun melewati tepi bawah peta: peta memudar ke warna latar. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[3%] bg-linear-to-b from-transparent to-inv-night" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[3%] bg-linear-to-b from-transparent to-[#2a1c1e]" />
         <div ref={archRef} className="pointer-events-none absolute inset-0 z-[1]">
-          <Image src={COVER} alt="" fill sizes="100vw" draggable={false} className="object-cover select-none" style={{ clipPath: BEAM_CLIP }} />
+          <Image src={GATE} alt="" fill sizes="100vw" draggable={false} className="object-cover select-none" />
           <div
-            className="pointer-events-none absolute flex flex-col items-center justify-center whitespace-nowrap rounded-[0.25em] border-[0.12em] border-[#4a2c17] bg-[#9a6a3f] text-center text-[#fff4dc] shadow-[0_0.18em_0_rgba(40,20,8,.45)] [text-shadow:0_0.07em_0_rgba(40,20,8,.55)]"
+            className="pointer-events-none absolute flex flex-col items-center justify-center whitespace-nowrap border-[0.12em] border-[#2b1a1d] bg-[#7a4a34] text-center text-[#fff6e0] [text-shadow:0_0.07em_0_#2b1a1d]"
             style={{
               left: `${BEAM.x}%`,
               top: `${BEAM.y}%`,
@@ -318,7 +316,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
         {/* Sprite berupa gambar latar yang tidak ditunggu loader. Salinan tersembunyi ini membuat loader menunggunya,
             jadi saat loader hilang karakter sudah tergambar. */}
         {(["groom", "bride"] as const).map((who) => (
-          <Image key={who} src={SPRITES[who]} alt="" width={132} height={192} preload className="hidden" />
+          <Image key={who} src={SPRITES[who]} alt="" width={96} height={120} preload className="hidden" />
         ))}
 
         {nearDoor && (
@@ -364,7 +362,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
                       aria-pressed={chosen === who}
                       className="group flex items-center justify-center gap-2.5 rounded-2xl border-[3px] border-inv-line bg-inv-wash px-2 py-1.5 shadow-[0_4px_0_rgba(0,0,0,.2)] transition-transform hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 aria-pressed:bg-inv-gold-light"
                     >
-                      <span aria-hidden="true" className="gd-pixel block aspect-[44/64] h-[clamp(40px,8dvh,64px)] shrink-0 bg-no-repeat" style={sprite(who)} />
+                      <span aria-hidden="true" className="gd-pixel block aspect-[32/40] h-[clamp(40px,8dvh,64px)] shrink-0 bg-no-repeat" style={sprite(who)} />
                       <span className="font-display text-[14px] leading-none font-semibold">{who === "groom" ? "Laki-laki" : "Perempuan"}</span>
                     </button>
                   ))}

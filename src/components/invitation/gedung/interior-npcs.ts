@@ -1,14 +1,12 @@
 import { hallAt } from "./interior-world";
 import type { Point } from "./world";
 
-// Tamu lain di aula supaya suasananya hidup. Lembar sprite berbeda warna rambut, kulit, dan bajunya, dan body
-// mengubah tinggi dan lebar badan, jadi tiap tamu terlihat berbeda orangnya. Ada yang berjalan bolak-balik, ada yang
+// Tamu lain di aula supaya suasananya hidup. Tiap lembar sprite orang yang berbeda: anak-anak, kakek berkacamata,
+// ibu bersanggul, tamu berhijab, bapak berpeci, dan seterusnya. Ada yang berjalan bolak-balik, ada yang
 // berdiri mengobrol dengan gelembung percakapan bergantian. Semua tamu bisa ditembus pemain.
 export type Npc = {
   id: string;
   sheet: NpcSheet;
-  // Pengali lebar dan tinggi badan, misalnya anak-anak yang lebih kecil.
-  body?: { w: number; h: number };
   // Titik-titik yang dilalui berulang. Satu titik berarti diam di tempat.
   path: Point[];
   // Arah hadap saat diam: 0 bawah, 1 samping, 2 atas. flip menghadap ke kiri.
@@ -27,27 +25,22 @@ export const NPC_SPEED = 55;
 // Lama berhenti di tiap titik jalan, dalam detik.
 export const NPC_PAUSE = 1.6;
 
-const KID = { w: 0.74, h: 0.72 };
-const TALL = { w: 1, h: 1.08 };
-const STOUT = { w: 1.16, h: 0.98 };
-const OLD = { w: 1.04, h: 0.92 };
-
 export const NPCS: Npc[] = [
   // Berjalan pelan di karpet merah, dari dekat pintu ke tangga pelaminan dan kembali.
   { id: "w1", sheet: "kebaya", path: [hallAt(130, 12), hallAt(780, 12)] },
   // Anak yang berlarian kecil di lantai kanan bawah, dan ibunya yang berjalan di sisi kiri.
-  { id: "w2", sheet: "anak", body: KID, path: [hallAt(120, 215), hallAt(420, 215)] },
-  { id: "w3", sheet: "ibu", body: STOUT, path: [hallAt(350, -210), hallAt(740, -210)] },
+  { id: "w2", sheet: "anak", path: [hallAt(120, 215), hallAt(420, 215)] },
+  { id: "w3", sheet: "ibu", path: [hallAt(350, -210), hallAt(740, -210)] },
   // Dua tamu mengobrol di lantai kanan.
   { id: "a1", sheet: "gadis", path: [hallAt(690, 212)], face: 1, chat: "a", lines: ["Dekorasinya cantik ya!", "Sudah foto di galeri?", "Pengantinnya serasi sekali."] },
-  { id: "a2", sheet: "pria", body: TALL, path: [hallAt(740, 212)], face: 1, flip: true, chat: "a", lines: ["Iya, hangat sekali suasananya.", "Nanti, habis ini.", "Betul, ikut bahagia."] },
+  { id: "a2", sheet: "pria", path: [hallAt(740, 212)], face: 1, flip: true, chat: "a", lines: ["Iya, hangat sekali suasananya.", "Nanti, habis ini.", "Betul, ikut bahagia."] },
   // Dua tamu mengobrol dekat pintu masuk.
-  { id: "b1", sheet: "bapak", body: STOUT, path: [hallAt(120, -190)], face: 1, chat: "b", lines: ["Sudah isi buku tamu?", "Ayo ke pelaminan!", "Jangan lupa amplopnya."] },
+  { id: "b1", sheet: "bapak", path: [hallAt(120, -190)], face: 1, chat: "b", lines: ["Sudah isi buku tamu?", "Ayo ke pelaminan!", "Jangan lupa amplopnya."] },
   { id: "b2", sheet: "wanita", path: [hallAt(170, -190)], face: 1, flip: true, chat: "b", lines: ["Sudah, barusan.", "Yuk, foto bareng.", "Aman, sudah siap."] },
   // Melihat-lihat dinding foto dari tepi karpet.
-  { id: "v1", sheet: "kakek", body: OLD, path: [hallAt(690, -66)], face: 2, chat: "v", lines: ["Fotonya bagus-bagus...", "Ini waktu lamaran ya?"] },
+  { id: "v1", sheet: "kakek", path: [hallAt(690, -66)], face: 2, chat: "v", lines: ["Fotonya bagus-bagus...", "Ini waktu lamaran ya?"] },
   // Berdiri sendiri di samping panggung.
-  { id: "v2", sheet: "hijau", body: TALL, path: [hallAt(880, 226)], face: 0 },
+  { id: "v2", sheet: "hijau", path: [hallAt(880, 226)], face: 0 },
 ];
 
 export type NpcState = { p: Point; next: number; wait: number; walked: number };
