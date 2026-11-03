@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useSyncExternalStore, type FormEvent } from "react";
-import { GUEST_KEY, guestCodeKey, recall, remember } from "@/lib/guest-memory";
+import { guestCodeKey, guestNameKey, recall, remember } from "@/lib/guest-memory";
 import { checkInName, checkInSelf } from "./actions";
 
 const noop = () => () => {};
@@ -14,7 +14,7 @@ type Done = { status: "ok" | "already"; name: string; at: string };
 // demo: undangan contoh tidak membaca maupun menyimpan nama dan kode tamu di HP.
 export function CheckinForm({ token, slug, demo }: { token: string; slug: string; demo: boolean }) {
   const code = useSyncExternalStore(noop, () => (demo ? "" : recall(guestCodeKey(slug))), () => "");
-  const remembered = useSyncExternalStore(noop, () => (demo ? "" : recall(GUEST_KEY)), () => "");
+  const remembered = useSyncExternalStore(noop, () => (demo ? "" : recall(guestNameKey(slug))), () => "");
   const [mode, setMode] = useState<"auto" | "name">("auto");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -25,7 +25,7 @@ export function CheckinForm({ token, slug, demo }: { token: string; slug: string
     if (res.status === "ok" || res.status === "already") {
       if (!demo) {
         if (res.k) remember(guestCodeKey(slug), res.k);
-        remember(GUEST_KEY, res.name);
+        remember(guestNameKey(slug), res.name);
       }
       setDone(res);
     } else if (res.status === "unknown") {

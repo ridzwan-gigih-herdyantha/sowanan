@@ -8,7 +8,7 @@ import { KelirDoor, type KelirProps } from "./kelir-door";
 import { gending } from "./pakeliran/gamelan";
 import { chiptune } from "./petualang/chiptune";
 import { GUEST_NAME_MAX } from "@/lib/guest-input";
-import { GUEST_KEY, guestCodeKey, recall, remember } from "@/lib/guest-memory";
+import { guestCodeKey, guestNameKey, recall, remember } from "@/lib/guest-memory";
 import { PintuDoor, type PintuProps } from "./sakinah/door";
 import { LensaDoor, type LensaProps } from "./lensa/door";
 import { BulanDoor, type BulanProps } from "./rembulan/door";
@@ -107,8 +107,8 @@ function readGuestParam() {
   return to ? to.trim().slice(0, GUEST_NAME_MAX) : "";
 }
 
-const readStoredGuest = () => recall(GUEST_KEY);
-const storeGuest = (name: string) => remember(GUEST_KEY, name);
+const readStoredGuest = (slug: string) => recall(guestNameKey(slug));
+const storeGuest = (slug: string, name: string) => remember(guestNameKey(slug), name);
 
 type Door =
   | ({ kind: "mawaddah" } & Omit<MawaddahDoorProps, "invited" | "open" | "onOpen">)
@@ -177,7 +177,7 @@ export function InvitationShell({ door, music, synth, className, style, children
     const k = new URLSearchParams(window.location.search).get("k");
     if (k && /^[a-z0-9]{8,32}$/i.test(k)) remember(guestCodeKey(slug), k);
     const to = readGuestParam();
-    if (to) remember(GUEST_KEY, to);
+    if (to) storeGuest(slug, to);
   }, [slug, namesAllowed]);
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(skipDoor);
@@ -256,11 +256,11 @@ export function InvitationShell({ door, music, synth, className, style, children
   useEffect(() => () => Object.values(SYNTHS).forEach((s) => s.pause()), []);
 
   const guest = invited || typed || "";
-  // Paket tanpa nama tamu tidak membaca maupun menyimpan nama yang diingat, supaya nama dari undangan lain tidak ikut
-  // muncul. Nama yang diketik tamu di RSVP atau ucapan tetap dipakai selama kunjungan itu.
+  // Paket tanpa nama tamu tidak membaca maupun menyimpan nama yang diingat.
+  // Nama yang diketik tamu di RSVP atau ucapan tetap dipakai selama kunjungan itu.
   const setGuest = (name: string) => {
     setTyped(name);
-    if (slug && namesAllowed) storeGuest(name);
+    if (slug && namesAllowed) storeGuest(slug, name);
   };
 
   const player = !music && synth ? SYNTHS[synth] : null;
@@ -350,7 +350,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   }, [musicOnDoor, open, hasMusic]);
 
   const openInvitation = () => {
-    const name = guest || (slug && namesAllowed ? readStoredGuest() : "");
+    const name = guest || (slug && namesAllowed ? readStoredGuest(slug) : "");
     if (name) setGuest(name);
     window.scrollTo(0, 0);
     setOpen(true);
