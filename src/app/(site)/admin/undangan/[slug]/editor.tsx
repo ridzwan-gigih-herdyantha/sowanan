@@ -368,6 +368,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
         <>
           <PanelHead title="Package & add-ons" note="Paket dipilih di daftar undangan. Centang add-on yang sudah dibayar supaya batas isian dan total harga ikut menyesuaikan." />
           <div className="pt-5">
+            {data.copyOf && <p className="mb-4 rounded-sm bg-ivory px-3 py-2 text-[13px] text-ink-soft ring-1 ring-line">Salinan dari sowanan.com/{data.copyOf} lewat add-on undangan kedua. Paket dan add-on di bawah sudah dibayar di undangan pertama, jadi rincian harganya tidak ditagih lagi.</p>}
             <AddonPanel slug={slug} pkg={pkg} packages={packageData.packages} addons={packageData.addons} bought={bought} dp={dp} onChange={setBought} />
           </div>
         </>

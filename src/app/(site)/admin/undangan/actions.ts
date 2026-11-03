@@ -4,6 +4,7 @@ import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { currentAdmin } from "@/lib/admin-auth";
 import { INVITATIONS_TAG, invitationTag } from "@/lib/invitation/load";
+import { duplicateAllowance, duplicateInvitation, type DuplicateResult } from "@/lib/invitation/duplicate";
 import { packageIssues } from "@/lib/invitation/package-check";
 import { archiveInfo, editLocked, isDemo, postGalleryWindow } from "@/lib/invitation/archive";
 import { invitationRules } from "@/lib/invitation/rules";
@@ -188,6 +189,20 @@ export async function markArchiveNotified(slug: string, notified: boolean): Prom
   const { error } = await supabaseAdmin().from("invitations").update({ archive_notified_at: at }).eq("slug", slug);
   if (error) return { ok: false, error: "Gagal menyimpan." };
   return { ok: true, at: at ?? "" };
+}
+
+// Jatah duplikat, ditampilkan di dialog sebelum admin mengisi alamat baru.
+export async function duplicateInfo(slug: string): Promise<{ ok: true; data: { couple: string; left: number; reason?: string } } | { ok: false; error: string }> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  const info = await duplicateAllowance(slug);
+  return info ? { ok: true, data: info } : { ok: false, error: "Undangan tidak ditemukan." };
+}
+
+export async function duplicateTo(slug: string, target: string): Promise<DuplicateResult> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  const res = await duplicateInvitation(slug, target);
+  if (res.ok) refresh(res.slug);
+  return res;
 }
 
 type DeleteSummary = { couple: string; rsvps: number; wishes: number; guests: number; files: number };

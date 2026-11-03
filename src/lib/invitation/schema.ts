@@ -74,6 +74,8 @@ export function limitExtras<T extends { kind: ExtraKind }>(extras: T[], max: num
 export const TIMEZONES = { WIB: "+07:00", WITA: "+08:00", WIT: "+09:00" } as const;
 
 export const invitationDataSchema = z.object({
+  // Alamat undangan asal kalau ini salinan dari add-on undangan kedua.
+  copyOf: str(),
   monogram: str(),
   couple: z.object({ groom: person, bride: person }).prefault({}),
   event: z

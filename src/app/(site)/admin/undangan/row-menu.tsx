@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { Pending } from "../pending";
 import { DeleteButton } from "./delete-button";
+import { DuplicateButton } from "./duplicate-button";
 
 type Item = { href: string; label: string };
 
@@ -16,10 +17,10 @@ export function RowMenu({ slug, demo }: { slug: string; demo: boolean }) {
     ...(demo ? [] : [{ href: "/akses", label: "Akses mempelai" }]),
   ];
   if (demo) return <Menu slug={slug} items={items} />;
-  return <DeleteButton slug={slug}>{(open) => <Menu slug={slug} items={items} onDelete={open} />}</DeleteButton>;
+  return <DuplicateButton slug={slug}>{(duplicate) => <DeleteButton slug={slug}>{(open) => <Menu slug={slug} items={items} onDuplicate={duplicate} onDelete={open} />}</DeleteButton>}</DuplicateButton>;
 }
 
-function Menu({ slug, items, onDelete }: { slug: string; items: Item[]; onDelete?: () => void }) {
+function Menu({ slug, items, onDuplicate, onDelete }: { slug: string; items: Item[]; onDuplicate?: () => void; onDelete?: () => void }) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const [up, setUp] = useState(false);
@@ -102,6 +103,20 @@ function Menu({ slug, items, onDelete }: { slug: string; items: Item[]; onDelete
               <Pending />
             </Link>
           ))}
+          {onDuplicate && (
+            <button
+              type="button"
+              role="menuitem"
+              tabIndex={-1}
+              onClick={() => {
+                close(false);
+                onDuplicate();
+              }}
+              className={`${item} text-ink`}
+            >
+              Duplikat undangan
+            </button>
+          )}
           {onDelete && (
             <>
               <div role="separator" className="mx-2 my-1 h-px bg-line" />
