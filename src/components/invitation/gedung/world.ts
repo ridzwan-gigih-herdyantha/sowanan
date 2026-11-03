@@ -16,7 +16,7 @@ export const SPAWN: Point = townAt(40, 0);
 export const DOOR_TARGET: Point = townAt(474, 0);
 export const NEAR_RADIUS = 80;
 // Titik tengah daun pintu dan papan nama di balok gapura, dalam piksel peta.
-export const DOOR_AT: Point = townAt(TOWN.doorL, 0, 45);
+export const DOOR_AT: Point = townAt(TOWN.doorL, 0, 66);
 export const SIGN_AT: Point = townAt(TOWN.gateL, 0, 148);
 
 // Area yang boleh dilalui: halaman paving, jalan di antara dua tiang gapura sampai depan pintu, dan pelataran tangga.

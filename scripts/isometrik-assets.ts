@@ -302,22 +302,6 @@ function streetLamp(iso: Iso, l: number, s: number, h = 112) {
   iso.box(l - 6, l + 6, s + 14, s + 28, h - 5, h, C.glowLight, C.glow, C.glowLight, C.line);
 }
 
-// Mobil parkir: badan rendah dan kabin kaca, memanjang sepanjang arah l atau s.
-function car(iso: Iso, l: number, s: number, tone: Rgb, alongS = false) {
-  const hl = alongS ? 18 : 34;
-  const hs = alongS ? 34 : 18;
-  const dark = shade(tone, -0.28);
-  iso.box(l - hl, l + hl, s - hs, s + hs, 5, 20, shade(tone, 0.12), tone, dark);
-  const cl = alongS ? 15 : 20;
-  const cs = alongS ? 20 : 15;
-  iso.box(l - cl, l + cl, s - cs, s + cs, 20, 34, tone, C.glassLight, C.glass);
-  // Roda.
-  for (const [a, b] of alongS ? [[-hl, -18], [-hl, 18]] : [[-22, hl], [22, hl]]) {
-    const [x, y] = iso.xy(l + a, s + b, 4);
-    iso.c.disc(x, y, 3, () => C.line);
-  }
-}
-
 const shade = (c: Rgb, t: number): Rgb => (t < 0 ? mix(c, C.line, -t) : mix(c, C.white, t));
 
 type Block = "kantor" | "apartemen" | "ruko";
@@ -429,7 +413,7 @@ function archWindow(u: number, v: number, w: number, h: number, frame: Rgb = C.t
 // Atap pelana terakota dengan bubungan sepanjang l. Genteng besar berbaris, ada lumut dan tepi bayangan.
 // ---------------------------------------------------------------------------------------------------------------
 // Halaman gedung di tengah kota. Sama dengan world.ts.
-const TOWN = { x0: 480, y0: 740, art: 3, plazaL0: -120, plazaL1: 250, plazaS: 268, pathS: 70, doorL: 520, gateL: 270, gateS: 104, gateZ: 118, bl1: 770, bs: 190, wall: 250, lobby: 92 };
+const TOWN = { x0: 480, y0: 740, art: 3, plazaL0: -120, plazaL1: 250, plazaS: 268, pathS: 70, doorL: 520, gateL: 270, gateS: 104, gateZ: 118, bl1: 770, bs: 190, wall: 280, lobby: 136 };
 
 // Gerbang beton dan balok baja. Papan nama digambar di atas baloknya oleh door.tsx.
 function drawGate(iso: Iso) {
@@ -477,8 +461,8 @@ function mainHall(iso: Iso) {
       if (a < 62) {
         if (a < 2 || z > B - 20) return C.steel;
         if (a > 58) return C.steel;
-        if (a > 6 && a < 10 && z > 32 && z < 54) return C.goldBar;
-        return z > 60 ? C.glowLight : C.glow;
+        if (a > 6 && a < 10 && z > 44 && z < 74) return C.goldBar;
+        return z > 84 ? C.glowLight : C.glow;
       }
       return (a + 800) % 58 < 5 ? C.concrete : z > B - 30 ? C.glowLight : C.glow;
     }
@@ -594,17 +578,6 @@ async function drawTown() {
     if (i % 2) at(l, 312, () => streetTree(iso, l, 312, 80 + i));
     else at(l, 312, () => streetLamp(iso, l, 312));
   }
-  // Mobil parkir di petak kanan kiri halaman dan yang lewat di jalan.
-  const tones = [hex("#b4553b"), hex("#3e6d84"), hex("#e4d3ad"), hex("#5f8034"), hex("#39424d"), hex("#7c2f3c")];
-  [-78, 6, 90, 174].forEach((l, i) => {
-    if (i !== 1) at(l + 20, -232, () => car(iso, l + 20, -232, tones[i], true));
-    if (i !== 2) at(l + 20, 232, () => car(iso, l + 20, 232, tones[(i + 3) % tones.length], true));
-  });
-  at(620, -360, () => car(iso, 620, -360, tones[3]));
-  at(240, -435, () => car(iso, 240, -435, tones[1]));
-  at(620, 385, () => car(iso, 620, 385, tones[5]));
-  at(-300, 80, () => car(iso, -300, 80, tones[2], true));
-
   // Air mancur kecil di taman samping jalan masuk.
   at(385, 245, () => {
     const [x, y] = iso.xy(385, 245, 0);

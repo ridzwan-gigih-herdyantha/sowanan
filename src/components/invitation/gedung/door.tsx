@@ -35,7 +35,8 @@ const PLACE_FIT = 24;
 // dua kolom lain langkah kaki.
 const SPRITES: Record<Pick, string> = { groom: "/img/rafi-kayla/guest-male.png", bride: "/img/rafi-kayla/guest-female.png" };
 export const CELL = { w: 32, h: 40 };
-export const HERO_H = 120;
+// Tinggi tampil karakter dalam piksel peta, sama di halaman depan dan di dalam aula.
+export const HERO_H = 96;
 export const STEPS = [1, 0, 2, 0];
 export const STEP_FPS = 8;
 // Sebentar berhenti (terhalang satu frame saat meluncur di dinding) tidak mengulang langkah dari awal.

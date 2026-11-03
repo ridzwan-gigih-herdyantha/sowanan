@@ -23,8 +23,7 @@ export type Panel = { id: PoiId; title: string; body: ReactNode; label?: string;
 
 // Skala layar sama dengan halaman depan, jadi karakter tidak mengecil walau peta aula lebih luas.
 const BASE = { w: 1672, h: 941, zoom: 1.2 };
-// Di dalam aula karakter digambar lebih kecil dari di halaman depan supaya sebanding dengan kios dan perabot.
-const HERO = HERO_H * 0.8;
+const HERO = HERO_H;
 
 // Siapa yang sedang bicara pada giliran ke-tick: tiap kelompok obrolan bergiliran antaranggota, dan kalimatnya
 // maju setiap putaran. Tamu yang sendirian hanya bergumam sesekali.
