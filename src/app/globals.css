@@ -3085,6 +3085,60 @@ html.door-wait [data-fit] {
 .gd-pill {
   animation: gd-pop 0.4s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
+/* Semua gambar peta dan karakter adalah pixel art, jadi diperbesar tanpa dihaluskan. */
+.gd-pixel {
+  image-rendering: pixelated;
+}
+/* Tanda tujuan di lantai saat tamu mengetuk peta: cincin yang melebar sekali dan titik yang berdenyut sampai
+   karakter tiba. Bentuknya elips 2:1 mengikuti lantai isometrik. */
+.gd-tap {
+  position: absolute;
+  width: 3.4%;
+  aspect-ratio: 2;
+  translate: -50% -50%;
+  pointer-events: none;
+  opacity: 0;
+}
+.gd-tap[data-on="true"] {
+  opacity: 1;
+}
+.gd-tap::before,
+.gd-tap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.gd-tap::before {
+  border: 3px solid var(--inv-accent);
+  box-shadow: 0 0 0 2px var(--inv-paper);
+}
+.gd-tap::after {
+  inset: 32%;
+  background: var(--inv-accent);
+  box-shadow: 0 0 0 2px var(--inv-paper);
+}
+.gd-tap[data-on="true"]::before {
+  animation: gd-tap-ring 0.9s ease-out infinite;
+}
+.gd-tap[data-on="true"]::after {
+  animation: gd-tap-dot 0.9s ease-in-out infinite;
+}
+@keyframes gd-tap-ring {
+  from {
+    opacity: 1;
+    scale: 0.35;
+  }
+  to {
+    opacity: 0;
+    scale: 1.15;
+  }
+}
+@keyframes gd-tap-dot {
+  50% {
+    scale: 0.7;
+  }
+}
 /* Panel di dalam gedung Isometrik: bingkai tebal bersudut bulat seperti kartu tema, dan scrollbar tipis berwarna
    aksen tanpa tombol panah. Jalurnya berhenti sebelum sudut supaya tidak menabrak lengkungan bingkai. */
 .gd-interior .inv-dialog {
@@ -3175,7 +3229,9 @@ html.door-wait [data-fit] {
   }
   .gd-pill,
   .gd-board,
-  .gd-spawn {
+  .gd-spawn,
+  .gd-tap[data-on="true"]::before,
+  .gd-tap[data-on="true"]::after {
     animation: none;
   }
 }

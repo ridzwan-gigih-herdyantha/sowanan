@@ -8,7 +8,14 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
-    if (open && !d.open) d.showModal();
+    if (open && !d.open) {
+      d.showModal();
+      // showModal memfokuskan tombol atau tautan pertama di isi, yang bisa berada jauh di bawah sehingga dialog
+      // ikut tergulung. Elemen dialog yang sama juga dipakai ulang dengan posisi gulir terakhirnya. Fokus dipindah
+      // ke dialog, jadi isi selalu mulai dibaca dari atas.
+      d.focus({ preventScroll: true });
+      d.scrollTop = 0;
+    }
     if (!open && d.open) d.close();
   }, [open]);
 
@@ -16,9 +23,10 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
     <dialog
       ref={ref}
       aria-label={label}
+      tabIndex={-1}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="inv-dialog m-auto max-h-[92dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto bg-inv-paper p-0 text-inv-ink"
+      className="inv-dialog m-auto max-h-[92dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto bg-inv-paper p-0 text-inv-ink outline-none"
     >
       {open && children}
       <button
