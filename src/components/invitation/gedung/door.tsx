@@ -55,12 +55,17 @@ function defaultHero(): Pick {
     const saved = window.sessionStorage.getItem("gd-hero");
     if (saved === "groom" || saved === "bride") return (autoHero = saved);
   } catch {}
-  autoHero = Math.random() < 0.5 ? "groom" : "bride";
-  try {
-    window.sessionStorage.setItem("gd-hero", autoHero);
-  } catch {}
-  return autoHero;
+  const random: Pick = Math.random() < 0.5 ? "groom" : "bride";
+  rememberHero(random);
+  return random;
 }
+function rememberHero(who: Pick) {
+  autoHero = who;
+  try {
+    window.sessionStorage.setItem("gd-hero", who);
+  } catch {}
+}
+const serverHero = (): Pick => "groom";
 
 export const KEYS: Record<string, [number, number]> = {
   ArrowLeft: [-1, 0],
@@ -87,11 +92,13 @@ const link = "pointer-events-auto text-[12px] font-bold text-inv-gold underline 
 // terbuka. "Langsung buka" tetap tersedia untuk yang tidak ingin berjalan.
 export function GedungDoor({ groom, bride, date, place, invited, onOpen }: GedungProps) {
   const [entering, setEntering] = useState(false);
-  const auto = useSyncExternalStore(noop, defaultHero, () => null);
+  // Karakter sudah ada di HTML dari server. Pilihan acaknya baru diketahui di browser, dan pergantiannya tidak
+  // terlihat karena loader undangan masih menutup halaman sampai hydration selesai.
+  const auto = useSyncExternalStore(noop, defaultHero, serverHero);
   const [picked, setPicked] = useState<Pick | null>(null);
   const chosen = picked ?? auto;
-  const ready = chosen !== null;
-  const [choosing, setChoosing] = useState(true);
+  // Papan pilih karakter hanya terbuka lewat tombol "Ganti karakter".
+  const [choosing, setChoosing] = useState(false);
   const [nearDoor, setNearDoor] = useState(false);
   const timer = useRef(0);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -129,7 +136,6 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   // Satu loop untuk gerak, animasi langkah, dan kamera. Posisi ditulis langsung ke elemen supaya tidak merender
   // ulang komponen tiap frame.
   useEffect(() => {
-    if (!ready) return;
     const root = rootRef.current;
     const camEl = camRef.current;
     const stage = stageRef.current;
@@ -227,7 +233,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
       window.removeEventListener("blur", blur);
       held.clear();
     };
-  }, [ready]);
+  }, []);
 
   // Ketukan atau seretan di peta menjadi titik tujuan, diubah ke koordinat gambar peta.
   const aim = (e: PointerEvent, fresh: boolean) => {
@@ -239,7 +245,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
     markTap(tapRef.current, target.current, MAP_W, MAP_H, fresh);
   };
   const onDown = (e: PointerEvent) => {
-    if (!chosen || enteringRef.current) return;
+    if (enteringRef.current) return;
     setChoosing(false);
     dragging.current = true;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -249,9 +255,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const onUp = () => (dragging.current = false);
 
   const pickHero = (who: Pick) => {
-    try {
-      window.sessionStorage.setItem("gd-hero", who);
-    } catch {}
+    rememberHero(who);
     setPicked(who);
     setChoosing(false);
   };
@@ -303,20 +307,21 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
 
         <div ref={tapRef} aria-hidden="true" className="gd-tap z-[1]" />
 
-        {chosen && (
-          <div
-            ref={heroRef}
-            className="pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-full"
-            style={{ left: `${(SPAWN.x / MAP_W) * 100}%`, top: `${(SPAWN.y / MAP_H) * 100}%`, width: heroW, height: `calc(var(--gd-w) * ${(HERO_H / MAP_W).toFixed(5)})` }}
-          >
-            <div className="gd-spawn relative size-full">
-              <span aria-hidden="true" className="absolute inset-x-[22%] -bottom-[3%] h-[7%] rounded-full bg-black/25" />
-              <div ref={bodyRef} className="relative size-full bg-no-repeat" style={sprite(chosen)} role="img" aria-label={`Karakter ${chosen === "groom" ? "laki-laki" : "perempuan"}`} />
-            </div>
-          </div>
-        )}
+        <div
+          ref={heroRef}
+          className="pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-full"
+          style={{ left: `${(SPAWN.x / MAP_W) * 100}%`, top: `${(SPAWN.y / MAP_H) * 100}%`, width: heroW, height: `calc(var(--gd-w) * ${(HERO_H / MAP_W).toFixed(5)})` }}
+        >
+          <span aria-hidden="true" className="absolute inset-x-[22%] -bottom-[3%] h-[7%] rounded-full bg-black/25" />
+          <div ref={bodyRef} className="relative size-full bg-no-repeat" style={sprite(chosen)} role="img" aria-label={`Karakter ${chosen === "groom" ? "laki-laki" : "perempuan"}`} />
+        </div>
+        {/* Sprite berupa gambar latar yang tidak ditunggu loader. Salinan tersembunyi ini membuat loader menunggunya,
+            jadi saat loader hilang karakter sudah tergambar. */}
+        {(["groom", "bride"] as const).map((who) => (
+          <Image key={who} src={SPRITES[who]} alt="" width={132} height={192} preload className="hidden" />
+        ))}
 
-        {chosen && nearDoor && (
+        {nearDoor && (
           <button
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
@@ -374,7 +379,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
         )}
       </div>
 
-      {chosen && !choosing && (
+      {!choosing && (
         <>
           <div className="gd-fade pointer-events-none absolute inset-x-0 top-[max(56px,7.4dvh)] z-[999] flex flex-col items-center gap-2.5 px-4 [@media(max-height:520px)]:top-2 [@media(max-height:520px)]:items-end">
             <div className="max-w-[360px] rounded-2xl [@media(max-height:520px)]:hidden border-[3px] border-inv-line bg-inv-card px-4 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,.25)]">
