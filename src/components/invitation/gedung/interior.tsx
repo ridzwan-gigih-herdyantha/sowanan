@@ -21,8 +21,8 @@ function boxOf(c: Point): CSSProperties {
 
 export type Panel = { id: PoiId; title: string; body: ReactNode; label?: string; icon?: BoothKind };
 
-const RATIO = IN_W / IN_H;
-const ZOOM = 1.2;
+// Skala layar sama dengan halaman depan, jadi karakter tidak mengecil walau peta aula lebih luas.
+const BASE = { w: 1672, h: 941, zoom: 1.2 };
 // Di dalam aula karakter digambar lebih kecil dari di halaman depan supaya sebanding dengan kios dan perabot.
 const HERO = HERO_H * 0.8;
 
@@ -275,8 +275,8 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
   };
 
   const camera = {
-    "--gd-w": `calc(max(100vw, calc(100dvh * ${RATIO})) * ${ZOOM})`,
-    "--gd-h": `calc(max(100dvh, calc(100vw / ${RATIO})) * ${ZOOM})`,
+    "--gd-w": `calc(max(100vw, calc(100dvh * ${BASE.w / BASE.h})) * ${(BASE.zoom * IN_W) / BASE.w})`,
+    "--gd-h": `calc(var(--gd-w) * ${IN_H / IN_W})`,
     width: "var(--gd-w)",
     height: "var(--gd-h)",
   } as CSSProperties;
@@ -374,7 +374,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
           <span
             key={`${n.id}-${chatTick}`}
             aria-hidden="true"
-            className="gd-pill pointer-events-none absolute z-[1500] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-xl border-2 border-inv-line bg-inv-card px-2.5 py-1 font-display text-[clamp(9px,2.4vw,12px)] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.2)]"
+            className="gd-pill pointer-events-none absolute z-[1900] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-xl border-2 border-inv-line bg-inv-card px-2.5 py-1 font-display text-[clamp(9px,2.4vw,12px)] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.2)]"
             style={{ left: `${(n.path[0].x / IN_W) * 100}%`, top: `${((n.path[0].y - HERO + 2) / IN_H) * 100}%` }}
           >
             {line}

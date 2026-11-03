@@ -1,15 +1,15 @@
 import { BOOTH, type BoothKind } from "./booth";
 import { makeWorld, type Area, type Point } from "./world";
 
-// Peta dalam gedung (hall.png, digambar scripts/isometrik-assets.ts): koordinat dalam piksel peta 1672 x 941, jadi
+// Peta dalam gedung (hall.png, digambar scripts/isometrik-assets.ts): koordinat dalam piksel peta 2420 x 1540, jadi
 // tetap pas di ukuran layar apa pun. Buka undangan dengan ?gdebug di alamat untuk melihat lantai (biru), rintangan
 // (merah), dan jangkauan tiap pos (kuning) di atas gambar saat menyetel ulang titik-titik di bawah.
-export const IN_W = 1672;
-export const IN_H = 941;
+export const IN_W = 2420;
+export const IN_H = 1540;
 
 // Aula persegi panjang. l sejajar karpet dari pintu ke pelaminan, s melintang karpet: negatif ke arah dinding
 // belakang, positif ke arah tembok rendah. Sumbu karpet ada di s = 0, jadi kanan dan kirinya simetris.
-const HALL = { x0: 300, y0: 792.5, L: 1060, S: 260, stageL: 860, stageS: 200, stageZ: 26, stepL: 826, stepS: 110 };
+const HALL = { x0: 460, y0: 1300, L: 1500, S: 400, stageL: 1270, stageS: 280, stageZ: 26, stepL: 1236, stepS: 130 };
 export const hallAt = (l: number, s: number, z = 0): Point => ({ x: HALL.x0 + l + s, y: HALL.y0 + (s - l) / 2 - z });
 const area = (...pts: Point[]): Area => pts.map((p) => [p.x, p.y]);
 const rect = (l0: number, l1: number, s0: number, s1: number, z = 0): Area => area(hallAt(l0, s0, z), hallAt(l1, s0, z), hallAt(l1, s1, z), hallAt(l0, s1, z));
@@ -30,13 +30,13 @@ const STEPS: Area = area(hallAt(HALL.stepL - 8, -HALL.stepS + 8), hallAt(HALL.st
 
 // Pengantin berdiri di tengah panggung, tepat di sumbu karpet dan di depan sofa. x dan y titik kaki (tengah bawah
 // gambar), w dan h ukuran tampil dalam piksel peta. Bukan rintangan: tamu boleh menembus semua karakter.
-const COUPLE_AT = hallAt(1004, 0, HALL.stageZ);
+const COUPLE_AT = hallAt(HALL.L - 56, 0, HALL.stageZ);
 export const COUPLE = { src: "/img/rafi-kayla/couple-sprite.png", x: COUPLE_AT.x, y: COUPLE_AT.y, w: 154, h: 106 };
 
 // Perabot bawaan gambar yang berdiri di lantai: sofa di panggung dan pot di kaki tangga.
 const FURNITURE: Area[] = [
   rect(HALL.L - 34, HALL.L, -70, 70, HALL.stageZ),
-  ...[-1, 1].map((k) => rect(HALL.stepL - 26, HALL.stepL - 2, k * 128 - 12, k * 128 + 12)),
+  ...[-1, 1].map((k) => rect(HALL.stepL - 26, HALL.stepL - 2, k * 150 - 12, k * 150 + 12)),
 ];
 
 type Poi = {
@@ -51,23 +51,23 @@ type Poi = {
 // Dua baris kios mengapit karpet, urutannya mengikuti bagan: penerima tamu dan angpao paling dekat pintu,
 // lalu bagian tambahan, galeri dan acara, dan paling jauh mempelai dan cerita di dekat pelaminan. Semua kios
 // menghadap ke kanan bawah, jadi tamu berdiri di sisi s yang lebih besar.
-const ROW_S = 135;
-const ROW_FROM = 290;
-const ROW_TO = 770;
+const ROW_S = 190;
+const ROW_FROM = 360;
+const ROW_TO = 1120;
 const FRONT_S = 50;
 
 const at = (id: PoiId, label: string, c: Point, kind: BoothKind): Poi => ({ id, label, at: c, booth: { c, kind } });
 
 const POIS: Poi[] = [
   // Di panggung, tepat di depan pengantin.
-  { id: "pelaminan", label: "Pelaminan", at: hallAt(930, 0, HALL.stageZ) },
+  { id: "pelaminan", label: "Pelaminan", at: hallAt(HALL.L - 130, 0, HALL.stageZ) },
   at("mempelai", "Mempelai", hallAt(ROW_TO, -ROW_S), "mempelai"),
-  at("galeri", "Galeri", hallAt(610, -ROW_S), "galeri"),
-  at("slot1", "Bagian tambahan", hallAt(450, -ROW_S), "slot"),
+  at("galeri", "Galeri", hallAt(867, -ROW_S), "galeri"),
+  at("slot1", "Bagian tambahan", hallAt(613, -ROW_S), "slot"),
   at("rsvp", "Penerima tamu", hallAt(ROW_FROM, -ROW_S), "rsvp"),
   at("cerita", "Cerita", hallAt(ROW_TO, ROW_S), "cerita"),
-  at("acara", "Acara", hallAt(610, ROW_S), "acara"),
-  at("slot2", "Bagian tambahan", hallAt(450, ROW_S), "slot"),
+  at("acara", "Acara", hallAt(867, ROW_S), "acara"),
+  at("slot2", "Bagian tambahan", hallAt(613, ROW_S), "slot"),
   at("angpao", "Kotak angpao", hallAt(ROW_FROM, ROW_S), "angpao"),
 ];
 

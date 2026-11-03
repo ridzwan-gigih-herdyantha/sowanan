@@ -282,7 +282,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
         <div ref={archRef} className="pointer-events-none absolute inset-0 z-[1]">
           <Image src={GATE} alt="" fill sizes="100vw" draggable={false} className="object-cover select-none" />
           <div
-            className="pointer-events-none absolute flex flex-col items-center justify-center whitespace-nowrap border-[0.12em] border-[#2b1a1d] bg-[#7a4a34] text-center text-[#fff6e0] [text-shadow:0_0.07em_0_#2b1a1d]"
+            className="pointer-events-none absolute flex flex-col items-center justify-center whitespace-nowrap border-[0.12em] border-[#2b1a1d] bg-[#39424d] text-center text-[#fff6e0] [text-shadow:0_0.07em_0_#2b1a1d]"
             style={{
               left: `${BEAM.x}%`,
               top: `${BEAM.y}%`,

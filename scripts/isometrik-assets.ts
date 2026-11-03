@@ -1,7 +1,7 @@
 // pnpm isometrik-assets
-// Menggambar semua aset pixel art tema Isometrik ke public/img/rafi-kayla langsung per piksel: halaman depan dan
-// gedung, gapura, aula, kios, tamu, dan pengantin. Gayanya piksel besar dengan garis cokelat tua, genteng terakota,
-// paving batu, lumut kuning hijau, dan air toska. Bebas lambang, dan layout aula simetris.
+// Menggambar semua aset pixel art tema Isometrik ke public/img/rafi-kayla langsung per piksel: halaman gedung di tengah
+// kota, gapura, aula, kios, tamu, dan pengantin. Gayanya piksel besar dengan garis cokelat tua dan warna hangat, berisi
+// jalan aspal, trotoar, dan gedung bertingkat. Bebas lambang, dan layout aula simetris.
 // Geometri di sini harus sama dengan src/components/invitation/gedung/world.ts dan interior-world.ts.
 import sharp from "sharp";
 
@@ -58,6 +58,24 @@ const C = {
   suit: hex("#332a38"),
   screen: hex("#253a4c"),
   screenLight: hex("#4f8596"),
+  goldBar: hex("#e0ae4c"),
+  parking: hex("#6a6470"),
+  asphalt: hex("#4b4650"),
+  asphaltLight: hex("#5b5660"),
+  asphaltDark: hex("#3b3640"),
+  lane: hex("#ece2c6"),
+  curb: hex("#b9ad99"),
+  walk: hex("#cdbfa6"),
+  walkDark: hex("#ad9f88"),
+  concrete: hex("#d9ccb4"),
+  concreteDark: hex("#a99c86"),
+  glass: hex("#3e6d84"),
+  glassLight: hex("#7cb4c0"),
+  glassDark: hex("#2c4c60"),
+  brick: hex("#a9553f"),
+  brickDark: hex("#7f3f33"),
+  steel: hex("#39424d"),
+  steelLight: hex("#5a6672"),
 };
 
 const mix = (a: Rgb, b: Rgb, t: number): Rgb => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
@@ -85,7 +103,6 @@ function noise(x: number, y: number) {
   const v = fy * fy * (3 - 2 * fy);
   return (hash(ix, iy) * (1 - u) + hash(ix + 1, iy) * u) * (1 - v) + (hash(ix, iy + 1) * (1 - u) + hash(ix + 1, iy + 1) * u) * v;
 }
-const fbm = (x: number, y: number) => noise(x, y) * 0.6 + noise(x * 2.3 + 7, y * 2.3 + 3) * 0.3 + noise(x * 5.1 + 11, y * 5.1 + 5) * 0.1;
 
 class Canvas {
   readonly w: number;
@@ -241,16 +258,6 @@ function bush(c: Canvas, cx: number, cy: number, r: number, seed: number, bloom:
   }
 }
 
-// Gerigi lumut yang menempel pada tepi: fungsi menghasilkan warna lumut di titik dunia atau null.
-function mossAt(a: number, b: number, density: number): Rgb | null {
-  const n = fbm(a * 0.018, b * 0.018);
-  if (n < 1 - density) return null;
-  const t = (n - (1 - density)) / density;
-  if (t < 0.22) return C.leaf;
-  if (t < 0.48) return C.mossMid;
-  return noise(a * 0.09, b * 0.09) > 0.62 ? C.mossLight : C.moss;
-}
-
 // Paving batu besar berbentuk bata tidak rata, nadanya berbeda tiap keping.
 function paving(l: number, s: number, size: number, seed = 0): Rgb {
   const row = Math.floor(s / size);
@@ -266,22 +273,120 @@ function paving(l: number, s: number, size: number, seed = 0): Rgb {
   return t > 0.8 ? C.stoneLight : C.stone;
 }
 
-function tree(iso: Iso, l: number, s: number, seed: number, size = 1) {
-  const c = iso.c;
-  const [x, y] = iso.xy(l, s, 0);
-  const a = iso.art;
-  const h = (70 * size) / a;
-  c.disc(x, y, (30 * size) / a, (_, dy, px, py) => (dy > -((16 * size) / a) && bayer(px, py) < 0.5 ? C.leafDeep : null));
+// Pohon kota kecil di kotak tanam.
+function streetTree(iso: Iso, l: number, s: number, seed: number) {
+  iso.box(l - 15, l + 15, s - 15, s + 15, 0, 8, C.leafDark, C.curb, C.walkDark);
+  const [x, y] = iso.xy(l, s, 8);
+  const h = 42 / iso.art;
   for (let i = 0; i < h; i++) {
-    const w = (12 * size) / a + (i < 3 ? 2 : 0);
-    for (let k = -w / 2; k < w / 2; k++) c.set(x + k, y - i, k < -w / 4 ? C.woodLight : k < w / 4 ? C.wood : C.timber);
-    c.set(x - w / 2 - 1, y - i, C.line);
-    c.set(x + w / 2, y - i, C.line);
+    c3(iso.c, x, y - i);
   }
-  const r = (62 * size) / a;
-  bush(c, x - r * 0.55, y - h - r * 0.1, r * 0.7, seed + 1);
-  bush(c, x + r * 0.55, y - h - r * 0.05, r * 0.72, seed + 2);
-  bush(c, x, y - h - r * 0.62, r * 0.82, seed + 3);
+  bush(iso.c, x, y - h - 8 / iso.art, 26 / iso.art, seed);
+  bush(iso.c, x - 10 / iso.art, y - h + 4 / iso.art, 18 / iso.art, seed + 1);
+  bush(iso.c, x + 11 / iso.art, y - h + 2 / iso.art, 18 / iso.art, seed + 2);
+}
+function c3(c: Canvas, x: number, y: number) {
+  c.set(x - 2, y, C.line);
+  c.set(x - 1, y, C.woodLight);
+  c.set(x, y, C.wood);
+  c.set(x + 1, y, C.timber);
+  c.set(x + 2, y, C.line);
+}
+
+// Lampu jalan: tiang besi dengan lengan dan lampu menyala.
+function streetLamp(iso: Iso, l: number, s: number, h = 112) {
+  iso.box(l - 6, l + 6, s - 6, s + 6, 0, 8, C.steelLight, C.steel, C.asphaltDark);
+  iso.box(l - 2.5, l + 2.5, s - 2.5, s + 2.5, 8, h, C.steelLight, C.steelLight, C.steel, null);
+  iso.seg([l - 2.5, s + 2.5, 8], [l - 2.5, s + 2.5, h]);
+  iso.box(l - 2.5, l + 2.5, s - 2, s + 24, h, h + 4, C.steelLight, C.steel, C.steel, C.line);
+  iso.box(l - 6, l + 6, s + 14, s + 28, h - 5, h, C.glowLight, C.glow, C.glowLight, C.line);
+}
+
+// Mobil parkir: badan rendah dan kabin kaca, memanjang sepanjang arah l atau s.
+function car(iso: Iso, l: number, s: number, tone: Rgb, alongS = false) {
+  const hl = alongS ? 18 : 34;
+  const hs = alongS ? 34 : 18;
+  const dark = shade(tone, -0.28);
+  iso.box(l - hl, l + hl, s - hs, s + hs, 5, 20, shade(tone, 0.12), tone, dark);
+  const cl = alongS ? 15 : 20;
+  const cs = alongS ? 20 : 15;
+  iso.box(l - cl, l + cl, s - cs, s + cs, 20, 34, tone, C.glassLight, C.glass);
+  // Roda.
+  for (const [a, b] of alongS ? [[-hl, -18], [-hl, 18]] : [[-22, hl], [22, hl]]) {
+    const [x, y] = iso.xy(l + a, s + b, 4);
+    iso.c.disc(x, y, 3, () => C.line);
+  }
+}
+
+const shade = (c: Rgb, t: number): Rgb => (t < 0 ? mix(c, C.line, -t) : mix(c, C.white, t));
+
+type Block = "kantor" | "apartemen" | "ruko";
+const BLOCK_TONES: [Rgb, Rgb, Rgb][] = [
+  [C.concrete, C.concreteDark, C.stoneMid],
+  [C.brick, C.brickDark, C.tileLight],
+  [hex("#8f9aa0"), hex("#6e7a82"), hex("#a8b2b6")],
+  [hex("#c9a77f"), hex("#9f8160"), hex("#dcc09a")],
+  [hex("#7f6a78"), hex("#5e4e5c"), hex("#98828f")],
+];
+
+// Jendela gedung pada satu bidang: u mendatar, z dari tanah. Sebagian menyala hangat.
+function facade(kind: Block, u: number, z: number, h: number, base: Rgb, seed: number): Rgb {
+  if (z > h - 7) return C.concreteDark;
+  if (kind === "kantor") {
+    if (z < 26) return ((u + 400) % 34 < 3 ? C.steel : hash(Math.floor((u + 400) / 34), seed) > 0.5 ? C.glowDark : C.glass);
+    const col = Math.floor((u + 400) / 22);
+    const row = Math.floor(z / 22);
+    if ((u + 400) % 22 < 2.5 || z % 22 < 2.5) return C.steel;
+    const n = hash(col + seed, row);
+    return n > 0.82 ? C.glow : n > 0.45 ? C.glass : C.glassDark;
+  }
+  if (kind === "apartemen") {
+    const ku = (u + 400) % 40;
+    const kz = z % 34;
+    if (kz < 4) return shade(base, -0.2);
+    if (ku > 8 && ku < 32 && kz > 10 && kz < 28) {
+      if (ku < 11 || ku > 29 || kz < 13 || kz > 25) return C.line;
+      return hash(Math.floor((u + 400) / 40) + seed, Math.floor(z / 34)) > 0.62 ? C.glow : C.glass;
+    }
+    return base;
+  }
+  // Ruko: lantai bawah toko kaca dengan tenda, lantai atas jendela.
+  if (z < 34) {
+    const ku = (u + 400) % 62;
+    if (ku < 4) return C.timber;
+    return z < 5 ? C.dark : hash(Math.floor((u + 400) / 62), seed) > 0.5 ? C.glow : C.glowDark;
+  }
+  if (z < 40) return Math.floor((u + 400) / 10) % 2 ? C.wine : C.cloth;
+  const ku = (u + 400) % 31;
+  const kz = (z - 40) % 34;
+  if (ku > 8 && ku < 24 && kz > 8 && kz < 26) return ku < 10 || ku > 22 || kz < 10 ? C.line : C.glass;
+  return base;
+}
+
+function cityBlock(iso: Iso, l0: number, l1: number, s0: number, s1: number, h: number, seed: number) {
+  const kinds: Block[] = ["kantor", "apartemen", "ruko"];
+  const kind = kinds[Math.floor(hash(seed, 3) * 3)];
+  const [base, dark] = BLOCK_TONES[Math.floor(hash(seed, 9) * BLOCK_TONES.length)];
+  iso.wallS(s1, l0, l1, 0, h, (l, z) => {
+    const c = facade(kind, l - l0, z, h, shade(base, -0.08), seed);
+    return c === C.glow ? C.glowDark : shade(c, -0.08);
+  });
+  iso.wallL(l0, s0, s1, 0, h, (s, z) => facade(kind, s - s0, z, h, base, seed + 1));
+  iso.floor(h, l0, l1, s0, s1, (l, s) => (l < l0 + 6 || l > l1 - 6 || s < s0 + 6 || s > s1 - 6 ? C.concrete : Math.floor(l / 26 + s / 26) % 2 ? dark : shade(dark, -0.1)));
+  iso.seg([l0, s0, h], [l1, s0, h]);
+  iso.seg([l1, s0, h], [l1, s1, h]);
+  iso.seg([l1, s1, h], [l0, s1, h]);
+  iso.seg([l0, s1, h], [l0, s0, h]);
+  iso.seg([l0, s1, 0], [l0, s1, h]);
+  iso.seg([l0, s0, 0], [l0, s0, h]);
+  iso.seg([l1, s1, 0], [l1, s1, h]);
+  // Mesin dan tangki di atap.
+  const al = l0 + (l1 - l0) * (0.25 + hash(seed, 5) * 0.4);
+  const as = s0 + (s1 - s0) * (0.25 + hash(seed, 6) * 0.4);
+  iso.box(al - 14, al + 14, as - 11, as + 11, h, h + 14, C.stoneLight, C.stoneMid, C.stoneDark);
+  if (hash(seed, 7) > 0.55) {
+    iso.box(al + 34, al + 54, as - 10, as + 10, h, h + 26, C.steelLight, C.steel, C.asphaltDark);
+  }
 }
 
 // Tiang lentera batu beratap gelap.
@@ -313,29 +418,6 @@ function terracottaPot(iso: Iso, l: number, s: number, seed: number, size = 1, b
   bush(c, x, y - h - (16 * size) / iso.art, (15 * size) / iso.art, seed, bloom);
 }
 
-function barrel(iso: Iso, l: number, s: number) {
-  const c = iso.c;
-  const [x, y] = iso.xy(l, s, 0);
-  const r = 12 / iso.art + 1;
-  const h = 28 / iso.art;
-  for (let i = 0; i <= h; i++) {
-    for (let k = -r; k <= r; k++) c.set(x + k, y - i, i === 2 || i === Math.floor(h) - 2 ? C.dark : k < -r / 3 ? C.woodLight : k < r / 2 ? C.wood : C.timber);
-    c.set(x - r - 1, y - i, C.line);
-    c.set(x + r + 1, y - i, C.line);
-  }
-  c.disc(x, y - h, r, () => C.woodPale);
-  c.disc(x, y - h, Math.max(1, r - 1.6), () => C.wood);
-}
-
-function wallTimberPlaster(u: number, z: number, top: number, bay: number): Rgb {
-  if (z < 16) return (Math.floor(u / 22) + Math.floor(z / 8)) % 2 ? C.rock : C.rockDark;
-  if (z < 20) return C.timber;
-  if (z > top - 8) return C.timber;
-  const k = ((u % bay) + bay) % bay;
-  if (k < 8) return k < 3 ? C.wood : C.timber;
-  return z > top - 14 ? C.plasterDark : (fbm(u * 0.04, z * 0.04) > 0.62 ? C.plasterLight : C.plaster);
-}
-
 function archWindow(u: number, v: number, w: number, h: number, frame: Rgb = C.timber): Rgb | null {
   const inside = (m: number) => Math.abs(u) <= w - m && v >= m && (v <= h - w || Math.hypot(u, v - (h - w)) <= w - m);
   if (!inside(0)) return null;
@@ -345,283 +427,222 @@ function archWindow(u: number, v: number, w: number, h: number, frame: Rgb = C.t
 }
 
 // Atap pelana terakota dengan bubungan sepanjang l. Genteng besar berbaris, ada lumut dan tepi bayangan.
-function gableRoof(iso: Iso, l0: number, l1: number, s0: number, s1: number, z0: number, rise: number, over = 16, seed = 1) {
-  const m = (s0 + s1) / 2;
-  const tile = (l: number, v: number, seen: number): Rgb => {
-    const rows = Math.max(4, Math.round((s1 - s0) / 2 / 20));
-    const row = Math.floor(v * rows);
-    const a = l + (row % 2) * 12;
-    const k = ((a % 24) + 24) % 24;
-    const f = v * rows - row;
-    const moss = mossAt(l + seed * 91, v * 300 + seen * 700, 0.2);
-    if (moss) return moss;
-    if (f > 0.84) return C.line;
-    if (k < 3) return C.tileDark;
-    if (f > 0.66) return seen ? C.tile : C.tileDark;
-    const tone = hash(Math.floor(a / 24) + seed, row + seen * 31);
-    if (seen) return tone > 0.72 ? C.tilePale : tone > 0.3 ? C.tileLight : C.tile;
-    return tone > 0.7 ? C.tile : C.tileDark;
-  };
-  // Lereng belakang, lalu ujung segitiga, lalu lereng depan.
-  iso.face([l0 - over, m, z0 + rise], [l1 + over, m, z0 + rise], [l0 - over, s0 - over, z0 - 6], (u, v) => tile(l0 - over + (l1 - l0 + 2 * over) * u, v, 0));
-  iso.wallL(l0, s0, s1, z0, z0 + rise, (s, z) => {
-    if (z - z0 > rise * (1 - Math.abs(s - m) / ((s1 - s0) / 2))) return null;
-    return wallTimberPlaster(s + 400, 40 + z - z0, 400, 70);
-  });
-  iso.face([l0 - over, m, z0 + rise], [l1 + over, m, z0 + rise], [l0 - over, s1 + over, z0 - 6], (u, v) => tile(l0 - over + (l1 - l0 + 2 * over) * u, v, 1));
-  // Papan tepi atap di ujung depan, dan bubungan.
-  for (const [a, b] of [[s0 - over, m], [s1 + over, m]]) {
-    const za = z0 - 6;
-    const zb = z0 + rise;
-    iso.face([l0 - over, a, za], [l0 - over, b, zb], [l0 - over, a, za - 9], () => C.timber);
-    iso.seg([l0 - over, a, za], [l0 - over, b, zb], C.line);
-    iso.seg([l0 - over, a, za - 9], [l0 - over, b, zb - 9], C.line);
-  }
-  iso.box(l0 - over, l1 + over, m - 6, m + 6, z0 + rise, z0 + rise + 7, C.tilePale, C.tile, C.tileDark);
-  iso.seg([l0 - over, s1 + over, z0 - 6], [l1 + over, s1 + over, z0 - 6], C.line);
-  iso.face([l0 - over, s1 + over, z0 - 6], [l1 + over, s1 + over, z0 - 6], [l0 - over, s1 + over, z0 - 12], () => C.timber);
-}
-
-function house(iso: Iso, l0: number, l1: number, s0: number, s1: number, h: number, rise: number, seed: number) {
-  iso.wallS(s1, l0, l1, 0, h, (l, z) => {
-    const base = wallTimberPlaster(l - l0, z, h, 96);
-    const k = (((l - l0) % 96) + 96) % 96;
-    return z > 26 ? (archWindow(k - 52, z - 26, 18, 40) ?? base) : base;
-  });
-  iso.wallL(l0, s0, s1, 0, h, (s, z) => {
-    const base = wallTimberPlaster(s - s0, z, h, 96);
-    const k = (((s - s0) % 96) + 96) % 96;
-    return z > 26 ? (archWindow(k - 52, z - 26, 18, 40) ?? base) : base;
-  });
-  iso.seg([l0, s1, 0], [l0, s1, h]);
-  gableRoof(iso, l0, l1, s0, s1, h, rise, 16, seed);
-}
-
 // ---------------------------------------------------------------------------------------------------------------
-// Halaman depan. Sama dengan world.ts.
-const TOWN = { x0: 480, y0: 740, art: 3, plazaL0: -120, plazaL1: 250, plazaS: 210, pathS: 70, doorL: 520, gateL: 270, gateS: 104, gateZ: 118, bl1: 860, bs: 190, wall: 124, rise: 96 };
+// Halaman gedung di tengah kota. Sama dengan world.ts.
+const TOWN = { x0: 480, y0: 740, art: 3, plazaL0: -120, plazaL1: 250, plazaS: 268, pathS: 70, doorL: 520, gateL: 270, gateS: 104, gateZ: 118, bl1: 770, bs: 190, wall: 250, lobby: 92 };
 
+// Gerbang beton dan balok baja. Papan nama digambar di atas baloknya oleh door.tsx.
 function drawGate(iso: Iso) {
   const { gateL: L, gateS: S, gateZ: Z } = TOWN;
   for (const k of [-1, 1]) {
-    iso.box(L - 18, L + 18, k * S - 18, k * S + 18, 0, 14, C.stoneMid, C.rock, C.stoneDark);
-    iso.wallL(L - 12, k * S - 12, k * S + 12, 14, Z, (s, z) => ((Math.floor(z / 18) + Math.floor(s / 12)) % 2 ? C.stoneMid : C.stone));
-    iso.wallS(k * S + 12, L - 12, L + 12, 14, Z, (l, z) => ((Math.floor(z / 18) + Math.floor(l / 12)) % 2 ? C.stoneDark : C.rock));
-    iso.seg([L - 12, k * S - 12, 14], [L - 12, k * S - 12, Z]);
-    iso.seg([L - 12, k * S + 12, 14], [L - 12, k * S + 12, Z]);
-    iso.seg([L + 12, k * S + 12, 14], [L + 12, k * S + 12, Z]);
-    // Sulur merambat di tiang.
-    for (let z = 22; z < Z; z += 13) {
-      const [x, y] = iso.xy(L - 13, k * S + Math.sin(z * 0.4) * 8, z);
-      bush(iso.c, x, y, 2.6, Math.round(z) + k, null);
-    }
+    iso.box(L - 18, L + 18, k * S - 18, k * S + 18, 0, 12, C.concrete, C.concreteDark, C.stoneDark);
+    iso.wallL(L - 12, k * S - 12, k * S + 12, 12, Z, (_, z) => (z % 30 < 3 ? C.steel : C.concrete));
+    iso.wallS(k * S + 12, L - 12, L + 12, 12, Z, (l, z) => (z % 30 < 3 ? C.steel : Math.abs(l - L) < 3 && z > 30 ? C.glow : C.concreteDark));
+    iso.seg([L - 12, k * S - 12, 12], [L - 12, k * S - 12, Z]);
+    iso.seg([L - 12, k * S + 12, 12], [L - 12, k * S + 12, Z]);
+    iso.seg([L + 12, k * S + 12, 12], [L + 12, k * S + 12, Z]);
   }
-  // Balok kayu dan atap kecil di atasnya.
-  iso.box(L - 14, L + 14, -S - 28, S + 28, Z, Z + 60, C.woodLight, C.wood, C.timber);
-  iso.box(L - 22, L + 22, -S - 38, S + 38, Z + 60, Z + 66, C.timber, C.dark, C.timber);
-  iso.face([L - 24, -S - 42, Z + 66], [L - 24, S + 42, Z + 66], [L, -S - 42, Z + 82], (u, v) => {
-    const a = u * (2 * S + 84);
-    const row = Math.floor(v * 3);
-    const k = (a + (row % 2) * 11) % 22;
-    if (v * 3 - row > 0.8) return C.line;
-    if (k < 3) return C.tileDark;
-    return hash(Math.floor(a / 22), row) > 0.6 ? C.tilePale : C.tileLight;
-  });
-  iso.box(L - 2, L + 6, -S - 44, S + 44, Z + 80, Z + 86, C.tilePale, C.tile, C.tileDark);
-  for (const s of [-S - 20, S + 20, -S / 2, S / 2]) {
-    const [x, y] = iso.xy(L - 22, s, Z + 72);
-    bush(iso.c, x, y, 4.5, Math.round(s + 500), s % 2 ? C.white : null);
+  iso.box(L - 14, L + 14, -S - 28, S + 28, Z, Z + 60, C.steelLight, C.steel, C.asphaltDark);
+  iso.box(L - 18, L + 18, -S - 34, S + 34, Z + 60, Z + 66, C.concrete, C.concreteDark, C.stoneDark);
+  // Lampu di bawah balok, dan kotak bunga di atasnya.
+  iso.wallL(L - 14, -S - 28, S + 28, Z, Z + 4, () => C.glow);
+  iso.box(L - 12, L + 12, -S - 26, S + 26, Z + 66, Z + 74, C.stoneLight, C.stoneMid, C.stoneDark);
+  for (let s = -S - 14; s <= S + 14; s += 34) {
+    const [x, y] = iso.xy(L, s, Z + 80);
+    bush(iso.c, x, y, 3.8, Math.round(s + 500), Math.round(s) % 4 ? C.white : C.blush);
   }
 }
 
+// Gedung pernikahan: gedung kota bertingkat dengan lobi kaca menyala, dinding kaca di atasnya, dan kanopi pintu.
 function mainHall(iso: Iso) {
-  const { doorL: L0, bl1: L1, bs: S, wall: W, rise: R } = TOWN;
-  // Dinding samping dengan jendela lengkung bercahaya.
+  const { doorL: L0, bl1: L1, bs: S, wall: W, lobby: B } = TOWN;
+  const upper = (u: number, z: number) => {
+    if (z > W - 10) return C.concrete;
+    if ((z - B) % 36 < 4) return C.concrete;
+    if ((u + 800) % 40 < 3) return C.steel;
+    const n = hash(Math.floor((u + 800) / 40), Math.floor((z - B) / 36));
+    return n > 0.72 ? C.glow : n > 0.4 ? C.glassLight : C.glass;
+  };
   iso.wallS(S, L0, L1, 0, W, (l, z) => {
     const u = l - L0;
-    const base = wallTimberPlaster(u, z, W, 95);
-    const k = u % 95;
-    return z > 28 ? (archWindow(k - 52, z - 30, 22, 56) ?? base) : base;
+    if (z < 8) return C.rockDark;
+    if (z < B - 12) return u % 68 < 5 ? C.concreteDark : z > B - 30 ? C.glowLight : C.glow;
+    if (z < B) return C.concreteDark;
+    return shade(upper(u, z), -0.1);
   });
-  // Dinding depan: pintu lengkung di sumbu, jendela kanan dan kiri simetris.
   iso.wallL(L0, -S, S, 0, W, (s, z) => {
     const a = Math.abs(s);
-    const base = wallTimberPlaster(a + 400, z, W, 200);
-    if (a < 68 && z < 112) {
-      const inDoor = Math.abs(s) <= 62 && (z <= 54 || Math.hypot(s, z - 54) <= 62);
-      if (inDoor) {
-        if (Math.abs(s) > 54 || (z > 54 && Math.hypot(s, z - 54) > 54)) return C.rockDark;
-        if (Math.abs(s) < 2) return C.line;
-        if (Math.abs(s) > 6 && Math.abs(s) < 10 && z > 36 && z < 50) return C.glow;
-        return Math.floor((s + 130) / 13) % 2 ? C.wood : C.timber;
+    if (z < 8) return C.rockDark;
+    if (z < B - 12) {
+      if (a < 62) {
+        if (a < 2 || z > B - 20) return C.steel;
+        if (a > 58) return C.steel;
+        if (a > 6 && a < 10 && z > 32 && z < 54) return C.goldBar;
+        return z > 60 ? C.glowLight : C.glow;
       }
+      return (a + 800) % 58 < 5 ? C.concrete : z > B - 30 ? C.glowLight : C.glow;
     }
-    return a > 100 && a < 172 && z > 28 ? (archWindow(a - 136, z - 30, 24, 60) ?? base) : base;
+    if (z < B) return C.concrete;
+    // Bidang tengah polos dengan bunga netral, kaca di kanan dan kirinya.
+    if (a < 60 && z < W - 10) {
+      if (a > 56) return C.concreteDark;
+      return flower(s, z - (B + W) / 2, 26, C.white, C.glow) ?? C.wine;
+    }
+    return upper(a, z);
   });
   iso.seg([L0, S, 0], [L0, S, W]);
-  // Lantera kecil di kanan kiri pintu.
-  for (const k of [-1, 1]) iso.box(L0 - 7, L0, k * 80 - 6, k * 80 + 6, 70, 88, C.glowLight, C.glow, C.glowLight, C.dark);
+  iso.seg([L0, -S, 0], [L0, -S, W]);
+  // Atap datar dengan tembok tepi dan mesin.
+  iso.floor(W, L0, L1, -S, S, (l, s) => (l < L0 + 8 || l > L1 - 8 || Math.abs(s) > S - 8 ? C.stoneLight : Math.floor(l / 30 + s / 30) % 2 ? C.stoneDark : C.rock));
+  iso.seg([L0, -S, W], [L1, -S, W]);
+  iso.seg([L1, -S, W], [L1, S, W]);
+  iso.seg([L1, S, W], [L0, S, W]);
+  iso.seg([L0, S, W], [L0, -S, W]);
+  iso.box(L1 - 140, L1 - 90, 40, 90, W, W + 24, C.stoneLight, C.stoneMid, C.stoneDark);
+  iso.box(L1 - 240, L1 - 200, -110, -70, W, W + 34, C.steelLight, C.steel, C.asphaltDark);
 
-  gableRoof(iso, L0, L1, -S, S, W, R, 22, 4);
-
-  // Gelung di segitiga atap: bunga saja, netral.
-  iso.wallL(L0 - 1, -46, 46, W + 6, W + 62, (s, z) => {
-    const d = Math.hypot(s, z - (W + 30));
-    if (d > 24) return null;
-    if (d > 20) return C.timber;
-    return flower(s, z - (W + 30), 16, C.white, C.glow) ?? C.wine;
-  });
-  // Cerobong dan sulur.
-  iso.box(L1 - 150, L1 - 118, S * 0.42, S * 0.42 + 32, W + R * 0.45, W + R * 0.45 + 58, C.dark, C.rock, C.rockDark);
-  // Tangga batu dan karpet merah keluar pintu.
+  // Tangga, karpet, dan kanopi di atas pintu.
   iso.box(L0 - 34, L0, -96, 96, 0, 8, C.stoneLight, C.stoneMid, C.stoneDark);
   iso.box(L0 - 17, L0, -80, 80, 8, 16, C.stoneLight, C.stoneMid, C.stoneDark);
-  iso.floor(9, L0 - 34, L0 - 17, -44, 44, (_, s) => (Math.abs(s) > 40 ? C.moss : C.wine));
-  iso.floor(17, L0 - 17, L0, -44, 44, (_, s) => (Math.abs(s) > 40 ? C.moss : C.wineLight));
+  iso.floor(9, L0 - 34, L0 - 17, -44, 44, (_, s) => (Math.abs(s) > 40 ? C.glowDark : C.wine));
+  iso.floor(17, L0 - 17, L0, -44, 44, (_, s) => (Math.abs(s) > 40 ? C.glowDark : C.wineLight));
   iso.wallL(L0 - 34, -44, 44, 0, 8, () => C.wineDark);
   iso.wallL(L0 - 17, -44, 44, 8, 16, () => C.wineDark);
-  // Hamparan tanaman di kaki dinding.
-  for (let l = L0 + 20; l < L1; l += 46) {
-    const [x, y] = iso.xy(l, S + 18, 12);
-    bush(iso.c, x, y, 8 + hash(l, 2) * 3, Math.round(l), hash(l, 7) > 0.5 ? C.white : null);
-  }
-  for (const s of [-180, -118, 118, 180]) {
-    const [x, y] = iso.xy(L0 - 18, s, 12);
-    bush(iso.c, x, y, 9, Math.round(s + 400), s > 0 ? C.white : C.blush);
+  for (const k of [-1, 1]) iso.box(L0 - 62, L0 - 50, k * 86 - 6, k * 86 + 6, 0, B + 4, C.concrete, C.concrete, C.concreteDark);
+  iso.box(L0 - 70, L0, -100, 100, B + 4, B + 16, C.stoneLight, C.steel, C.asphaltDark);
+  iso.wallL(L0 - 70, -100, 100, B + 4, B + 7, () => C.glow);
+  for (const s of [-140, 140]) terracottaPot(iso, L0 - 20, s, Math.round(s + 300), 1.3, s > 0 ? C.white : C.blush);
+  // Kotak tanam memanjang di sisi gedung.
+  iso.box(L0 + 10, L1 - 10, S + 8, S + 30, 0, 12, C.leafDark, C.curb, C.walkDark);
+  for (let l = L0 + 26; l < L1 - 10; l += 40) {
+    const [x, y] = iso.xy(l, S + 19, 22);
+    bush(iso.c, x, y, 7, Math.round(l), hash(l, 7) > 0.55 ? C.white : null);
   }
 }
 
 async function drawTown() {
   const W = 558;
   const H = 314;
-  const c = new Canvas(W, H, C.leafDark);
+  const c = new Canvas(W, H, C.walk);
   const iso = new Iso(c, TOWN.x0, TOWN.y0, TOWN.art);
   const { plazaL0: PL0, plazaL1: PL1, plazaS: PS, pathS: AS, doorL: DL, gateL: GL } = TOWN;
-  const inPlaza = (l: number, s: number) => l > PL0 && l < PL1 && Math.abs(s) < PS;
-  const inPath = (l: number, s: number) => l >= PL1 - 10 && l < DL - 20 && Math.abs(s) < AS + 12;
-  const inLanding = (l: number, s: number) => l > DL - 80 && l < DL && Math.abs(s) < 130;
-  const inRoad = (s: number) => s < -270 && s > -420;
-  const inRoad2 = (l: number) => l < -180 && l > -320;
+  const ROADS = { s1: [-470, -320], s2: [350, 490], l1: [-340, -190], l2: [880, 1020] };
+  const within = (v: number, r: number[], m = 0) => v > r[0] - m && v < r[1] + m;
 
-  // Tanah seluruh peta: rumput gelap, petak lumut, jalan batu, dan paving halaman.
+  // Tanah: aspal, garis jalan, zebra cross, trotoar, parkiran, dan jalan masuk berpaving.
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const a = (x + 0.5) * TOWN.art - TOWN.x0;
       const b = 2 * ((y + 0.5) * TOWN.art - TOWN.y0);
       const l = (a - b) / 2;
       const s = (a + b) / 2;
-      if (inRoad(s) || inRoad2(l)) {
-        const stone = paving(l, s, 30, 3);
-        c.set(x, y, stone === C.mortar ? C.rockDark : stone === C.stoneDark ? C.rockDark : hash(Math.floor(l / 42), Math.floor(s / 30)) > 0.5 ? C.rock : C.stoneDark);
-        const m = mossAt(l + 900, s, 0.16);
-        if (m) c.set(x, y, m);
+      const inS = within(s, ROADS.s1) || within(s, ROADS.s2);
+      const inL = within(l, ROADS.l1) || within(l, ROADS.l2);
+      if (inS || inL) {
+        let col = noise(x * 0.5, y * 0.5) > 0.7 ? C.asphaltLight : noise(x * 0.31 + 9, y * 0.31) > 0.72 ? C.asphaltDark : C.asphalt;
+        const midS = within(s, ROADS.s1) ? -395 : 420;
+        const midL = within(l, ROADS.l1) ? -265 : 950;
+        if (inS && !inL && Math.abs(s - midS) < 3 && ((l + 2000) % 90) < 48) col = C.lane;
+        if (inL && !inS && Math.abs(l - midL) < 3 && ((s + 2000) % 90) < 48) col = C.lane;
+        // Zebra cross di depan halaman.
+        if (within(s, ROADS.s1) && l > 40 && l < 120 && (s + 2000) % 26 < 13) col = C.lane;
+        if (within(s, ROADS.s2) && l > 300 && l < 380 && (s + 2000) % 26 < 13) col = C.lane;
+        c.set(x, y, col);
         continue;
       }
-      if (inPlaza(l, s) || inPath(l, s) || inLanding(l, s)) {
-        // Lumut merambat dari tepi paving ke dalam.
-        const edge = Math.min(inPlaza(l, s) ? Math.min(l - PL0, PL1 - l + 20, PS - Math.abs(s)) : 40, inPath(l, s) ? AS + 12 - Math.abs(s) : 40);
-        const pave = paving(l, s, 40, 1);
-        const axis = Math.abs(s) < AS + 2 && l > 150;
-        const m = mossAt(l, s, 0.14 + Math.max(0, 40 - edge) * 0.012 - (axis ? 0.12 : 0));
-        c.set(x, y, m ?? pave);
+      const curb = within(s, ROADS.s1, 5) || within(s, ROADS.s2, 5) || within(l, ROADS.l1, 5) || within(l, ROADS.l2, 5);
+      if (curb) {
+        c.set(x, y, C.curb);
         continue;
       }
-      const n = fbm(l * 0.012, s * 0.012);
-      const m = mossAt(l + 300, s - 200, 0.24);
-      c.set(x, y, m ?? (n + (bayer(x, y) - 0.5) * 0.08 > 0.56 ? C.leaf : C.leafDark));
+      if (l > PL0 && l < PL1 && Math.abs(s) < PS) {
+        // Parkiran: aspal halus dengan garis petak di kanan dan kiri.
+        const e = Math.abs(s);
+        let col = noise(x * 0.5, y * 0.5) > 0.74 ? C.asphaltLight : C.parking;
+        if (Math.abs(e - 200) < 2.5) col = C.lane;
+        if (e < 3 && ((l + 2000) % 70) < 36) col = C.lane;
+        if (e > 200 && ((l + 2000) % 84) < 4) col = C.lane;
+        if (l < PL0 + 5 || l > PL1 - 5 || e > PS - 5) col = C.curb;
+        c.set(x, y, col);
+        continue;
+      }
+      if ((l >= PL1 - 5 && l < DL && Math.abs(s) < AS + 12) || (l > DL - 80 && l < DL && Math.abs(s) < 130)) {
+        c.set(x, y, Math.abs(s) < AS + 12 && Math.abs(s) > AS + 7 ? C.curb : paving(l, s, 40, 1));
+        continue;
+      }
+      // Trotoar berpetak.
+      c.set(x, y, (l + 2000) % 44 < 2.4 || (s + 2000) % 44 < 2.4 ? C.walkDark : C.walk);
     }
   }
 
   const items: { d: number; draw: () => void }[] = [];
   const at = (l: number, s: number, draw: () => void) => items.push({ d: s - l, draw });
+  const block = (l0: number, l1: number, s0: number, s1: number, h: number, seed: number) => at((l0 + l1) / 2, (s0 + s1) / 2, () => cityBlock(iso, l0, l1, s0, s1, h, seed));
 
-  // Rumah tetangga di seberang jalan, dan satu di kanan bawah.
-  at(-60, -600, () => house(iso, -200, 80, -640, -450, 88, 84, 11));
-  at(320, -600, () => house(iso, 180, 460, -640, -450, 96, 88, 12));
-  at(720, -620, () => house(iso, 580, 840, -660, -470, 90, 84, 15));
-  at(1200, -400, () => house(iso, 1040, 1300, -280, -90, 88, 78, 13));
-  at(120, 560, () => house(iso, 20, 260, 440, 640, 84, 78, 14));
+  // Deretan gedung di seberang jalan.
+  [-230, 70, 370, 670, 970].forEach((l, i) => block(l, l + 270, -770, -510, 210 + hash(i, 1) * 130, 10 + i));
+  [-230, 100, 430, 760].forEach((l, i) => block(l, l + 300, -1100, -820, 240 + hash(i, 2) * 140, 20 + i));
+  [-280, 40, 340].forEach((s, i) => block(-640, -380, s, s + 280, 110 + hash(i, 3) * 60, 30 + i));
+  [-300, 10].forEach((s, i) => block(1060, 1330, s, s + 280, 230 + hash(i, 4) * 90, 40 + i));
+  [-140, 170, 480, 790].forEach((l, i) => block(l, l + 280, 530, 790, 70 + hash(i, 5) * 30, 50 + i));
 
-  // Kios kecil beratap kain di tepi halaman, dan barang-barangnya.
-  at(70, -262, () => {
-    iso.box(0, 120, -280, -236, 0, 34, C.woodLight, C.wood, C.timber);
-    for (const l of [4, 116]) iso.box(l - 3, l + 3, -239, -233, 34, 92, C.wood, C.timber, C.timber);
-    iso.face([-8, -210, 76], [128, -210, 76], [-8, -290, 104], (u, v) => {
-      const k = Math.floor(u * 8);
-      if (v > 0.96) return C.line;
-      if (v < 0.3 && v < 0.3 * (1 - Math.abs(u * 8 - k - 0.5) * 2)) return C.tilePale;
-      return v < 0.34 ? C.wineDark : C.wine;
-    });
-    for (let i = 0; i < 7; i++) {
-      const [x, y] = iso.xy(12 + i * 15, -258 + (i % 2) * 8, 38);
-      c.disc(x, y, 2.6, () => (i % 3 ? C.tileLight : C.mossLight));
-    }
+  // Pohon dan lampu sepanjang trotoar.
+  for (let l = -130, i = 0; l < 860; l += 165, i++) {
+    if (i % 2) at(l, -290, () => streetLamp(iso, l, -290));
+    else at(l, -290, () => streetTree(iso, l, -290, 60 + i));
+    if (l < 500 && l > 240) continue;
+    if (i % 2) at(l, 312, () => streetTree(iso, l, 312, 80 + i));
+    else at(l, 312, () => streetLamp(iso, l, 312));
+  }
+  // Mobil parkir di petak kanan kiri halaman dan yang lewat di jalan.
+  const tones = [hex("#b4553b"), hex("#3e6d84"), hex("#e4d3ad"), hex("#5f8034"), hex("#39424d"), hex("#7c2f3c")];
+  [-78, 6, 90, 174].forEach((l, i) => {
+    if (i !== 1) at(l + 20, -232, () => car(iso, l + 20, -232, tones[i], true));
+    if (i !== 2) at(l + 20, 232, () => car(iso, l + 20, 232, tones[(i + 3) % tones.length], true));
   });
-  at(-40, -245, () => barrel(iso, -40, -245));
-  at(-74, -240, () => barrel(iso, -74, -240));
-  at(150, -240, () => terracottaPot(iso, 150, -240, 31, 1.2, C.white));
+  at(620, -360, () => car(iso, 620, -360, tones[3]));
+  at(240, -435, () => car(iso, 240, -435, tones[1]));
+  at(620, 385, () => car(iso, 620, 385, tones[5]));
+  at(-300, 80, () => car(iso, -300, 80, tones[2], true));
 
-  // Kolam toska di samping jalan.
-  at(315, 245, () => {
-    const [x, y] = iso.xy(330, 245, 0);
-    const rx = 27;
-    const ry = 14;
+  // Air mancur kecil di taman samping jalan masuk.
+  at(385, 245, () => {
+    const [x, y] = iso.xy(385, 245, 0);
+    const rx = 25;
+    const ry = 13;
     const ring = (dx: number, dy: number, grow: number) => (dx / (rx + grow)) ** 2 + (dy / (ry + grow / 2)) ** 2 <= 1;
     for (let j = -ry - 6; j <= ry + 6; j++) {
       for (let i = -rx - 6; i <= rx + 6; i++) {
         if (!ring(i, j, 5)) continue;
         if (!ring(i, j, 4)) c.set(x + i, y + j, C.line);
-        else if (!ring(i, j, 0)) c.set(x + i, y + j, j > 0 ? C.stoneMid : C.stoneLight);
+        else if (!ring(i, j, 0)) c.set(x + i, y + j, j > 0 ? C.concreteDark : C.stoneLight);
         else if (!ring(i, j, -1)) c.set(x + i, y + j, C.waterDark);
-        else {
-          const w = noise((x + i) * 0.22, (y + j) * 0.5);
-          c.set(x + i, y + j, w > 0.68 ? C.waterLight : j < -ry * 0.45 ? C.waterDark : C.water);
-        }
+        else c.set(x + i, y + j, noise((x + i) * 0.22, (y + j) * 0.5) > 0.68 ? C.waterLight : j < -ry * 0.45 ? C.waterDark : C.water);
       }
     }
+    c.rect(x - 2, y - 12, 4, 12, C.concreteDark);
+    c.disc(x, y - 13, 3, () => C.waterLight);
   });
 
-  // Tiang lentera di sudut halaman, tanaman, dan pohon.
-  for (const [l, s] of [[PL0 + 4, -PS - 16], [PL1 - 8, -PS - 16], [PL0 + 4, PS + 16], [PL1 - 8, PS + 16]]) at(l, s, () => lanternPost(iso, l, s));
-  for (const k of [-1, 1]) at(GL + 70, k * (AS + 34), () => terracottaPot(iso, GL + 70, k * (AS + 34), 40 + k, 1.25, k > 0 ? C.white : C.blush));
-  for (const [l, s, seed, size] of [
-    [640, -320, 21, 1.5],
-    [430, -250, 22, 1.4],
-    [270, -255, 23, 1.15],
-    [1000, -120, 24, 1.3],
-    [1040, 250, 25, 1.25],
-    [-70, 300, 26, 1.25],
-    [-250, 20, 27, 1.15],
-    [720, 320, 28, 1.3],
-    [460, 300, 29, 1.2],
-  ]) {
-    at(l, s, () => tree(iso, l, s, seed, size));
-  }
-  // Pagar semak sepanjang jalan menuju pintu.
-  for (let l = PL1 + 40; l < DL - 90; l += 30) {
-    if (Math.abs(l - (GL + 70)) < 22) continue;
+  // Kotak bunga sepanjang jalan masuk, dan pot di kaki gerbang.
+  for (let l = PL1 + 40; l < DL - 90; l += 44) {
     for (const k of [-1, 1]) {
       const s = k * (AS + 24);
       at(l, s, () => {
-        const [x, y] = iso.xy(l, s, 12);
-        bush(c, x, y, 8.5, Math.round(l) + k, hash(l, k) > 0.55 ? (k > 0 ? C.white : C.blush) : null);
+        iso.box(l - 18, l + 18, s - 9, s + 9, 0, 10, C.leafDark, C.curb, C.walkDark);
+        const [x, y] = iso.xy(l, s, 18);
+        bush(c, x, y, 7, Math.round(l) + k, hash(l, k) > 0.5 ? (k > 0 ? C.white : C.blush) : null);
       });
     }
   }
-  // Bangku kayu.
-  for (const k of [-1, 1]) {
-    at(180, k * (PS + 26), () => {
-      iso.box(150, 214, k * (PS + 26) - 10, k * (PS + 26) + 10, 12, 18, C.woodPale, C.wood, C.woodLight);
-      for (const l of [156, 208]) iso.box(l - 3, l + 3, k * (PS + 26) - 8, k * (PS + 26) + 8, 0, 12, C.timber, C.dark, C.timber, null);
-    });
-  }
+  at(440, -165, () => streetTree(iso, 440, -165, 89));
   at(DL, 0, () => mainHall(iso));
   at(GL, 0, () => drawGate(iso));
 
   items.sort((a, b) => a.d - b.d);
-  // Gapura digambar sekali lagi di atas karakter saat dia lewat di belakangnya, jadi disimpan sebagai lapisan sendiri.
   for (const it of items) it.draw();
-  await c.save("town.png", 96);
+  await c.save("town.png", 110);
+  // Gerbang digambar sekali lagi di atas karakter saat dia lewat di belakangnya, jadi disimpan sebagai lapisan sendiri.
   const front = new Canvas(W, H);
   drawGate(new Iso(front, TOWN.x0, TOWN.y0, TOWN.art));
   await front.save("town-gate.png", 48);
@@ -630,7 +651,7 @@ async function drawTown() {
 // ---------------------------------------------------------------------------------------------------------------
 // Aula. Sama dengan interior-world.ts.
 const HALL_ART = 2.4;
-const H = { x0: 300, y0: 792.5, L: 1060, S: 260, wall: 118, stageL: 860, stageS: 200, stageZ: 26, stepL: 826, stepS: 110 };
+const H = { x0: 460, y0: 1300, L: 1500, S: 400, wall: 150, stageL: 1270, stageS: 280, stageZ: 26, stepL: 1236, stepS: 130, w: 2420, h: 1540 };
 
 function hallWall(z: number, top: number): Rgb {
   if (z < 10) return C.rockDark;
@@ -672,8 +693,7 @@ function hallFloor(l: number, s: number, x: number, y: number): Rgb {
   const light = Math.cos((s / H.S) * Math.PI * 0.5) * (0.6 + 0.4 * Math.cos((l / 212) * Math.PI * 2));
   if (base === C.mortar || base === C.stoneDark) return base;
   if (light + (bayer(x, y) - 0.5) * 0.3 > 0.82) return C.stoneLight;
-  const m = mossAt(l, s + 500, 0.05);
-  return m ?? base;
+  return base;
 }
 
 // Karpet tenun merah dengan pola segitiga di tepinya.
@@ -686,16 +706,65 @@ function carpet(l: number, s: number): Rgb {
   return flower(k, s, 20, C.tilePale, C.glow) ?? (Math.abs(((l + 22) % 44) - 22) < 1.6 && e < 30 ? C.wineDark : C.wine);
 }
 
+// Kota di balik dinding belakang dan dinding ujung: jalan dan gedung bertingkat. Sisi dekat kamera tetap kosong.
+function hallCity(c: Canvas, iso: Iso) {
+  const { L, S } = H;
+  const CL = 400;
+  const CS = 340;
+  const GAP = 96;
+  const behind = (l: number, s: number) => s < -S - 16 || l > L + 16;
+  for (let y = 0; y < c.h; y++) {
+    for (let x = 0; x < c.w; x++) {
+      const a = (x + 0.5) * HALL_ART - H.x0;
+      const b = 2 * ((y + 0.5) * HALL_ART - H.y0);
+      const l = (a - b) / 2;
+      const s = (a + b) / 2;
+      if (!behind(l, s)) continue;
+      const kl = ((l % CL) + CL) % CL;
+      const ks = ((s % CS) + CS) % CS;
+      if (kl < GAP || ks < GAP) {
+        let col = noise(x * 0.5, y * 0.5) > 0.72 ? C.asphaltLight : C.asphalt;
+        if (kl >= GAP && Math.abs(ks - GAP / 2) < 2.5 && ((l + 8000) % 80) < 40) col = C.lane;
+        if (ks >= GAP && Math.abs(kl - GAP / 2) < 2.5 && ((s + 8000) % 80) < 40) col = C.lane;
+        c.set(x, y, col);
+      } else {
+        c.set(x, y, kl < GAP + 6 || ks < GAP + 6 ? C.curb : (l + 8000) % 40 < 2.4 || (s + 8000) % 40 < 2.4 ? C.walkDark : C.walk);
+      }
+    }
+  }
+  const blocks: { d: number; draw: () => void }[] = [];
+  for (let i = -6; i < 12; i++) {
+    for (let j = -10; j < 8; j++) {
+      const l0 = i * CL + GAP + 22;
+      const l1 = (i + 1) * CL - 22;
+      const s0 = j * CS + GAP + 22;
+      const s1 = (j + 1) * CS - 22;
+      // Hanya blok yang utuh di belakang dinding.
+      if (!(s1 < -S - 30 || l0 > L + 30)) continue;
+      const seed = (i + 20) * 31 + (j + 20) * 7;
+      const h = 150 + hash(i, j) * 210;
+      const [x0, yb] = iso.xy(l0, s1, 0);
+      const [x1] = iso.xy(l1, s0, 0);
+      const [, yt] = iso.xy(l1, s0, h + 40);
+      if (x1 < 0 || x0 > c.w || yb < 0 || yt > c.h) continue;
+      blocks.push({ d: (s0 + s1) / 2 - (l0 + l1) / 2, draw: () => cityBlock(iso, l0, l1, s0, s1, h, seed) });
+    }
+  }
+  blocks.sort((a, b) => a.d - b.d);
+  for (const b of blocks) b.draw();
+}
+
 async function drawHall() {
-  const c = new Canvas(697, 392, hex("#2a1c1e"));
+  const c = new Canvas(Math.round(H.w / HALL_ART), Math.round(H.h / HALL_ART));
   const iso = new Iso(c, H.x0, H.y0, HALL_ART);
   const { L, S, wall: W } = H;
+  hallCity(c, iso);
 
   iso.box(0, L, -S, S, -18, 0, C.stone, C.rockDark, C.rock);
   iso.floor(0, 0, L, -S, S, hallFloor);
   // Bayangan dinding di lantai.
-  iso.floor(0, 0, L, -S, -S + 26, (l, s, x, y) => (bayer(x, y) < 0.55 ? C.stoneDark : null));
-  iso.floor(0, L - 26, L, -S, S, (l, s, x, y) => (bayer(x, y) < 0.55 ? C.stoneDark : null));
+  iso.floor(0, 0, L, -S, -S + 30, (l, s, x, y) => (bayer(x, y) < 0.55 ? C.stoneDark : null));
+  iso.floor(0, L - 30, L, -S, S, (l, s, x, y) => (bayer(x, y) < 0.55 ? C.stoneDark : null));
   iso.floor(0, -24, H.stepL + 2, -46, 46, carpet);
 
   // Dinding belakang: tiang kayu, jendela lengkung, spanduk, dan bagian tengahnya dinding foto penuh.
@@ -704,33 +773,33 @@ async function drawHall() {
     const i = Math.min(7, Math.floor(l / BAY));
     const u = l - (i + 0.5) * BAY;
     const base = hallWall(z, W);
-    if (Math.abs(u) > BAY / 2 - 9) return z < 10 ? C.rockDark : Math.abs(u) > BAY / 2 - 3 ? C.dark : C.wood;
-    if (i >= 3 && i <= 5) {
+    if (Math.abs(u) > BAY / 2 - 10) return z < 10 ? C.rockDark : Math.abs(u) > BAY / 2 - 3 ? C.dark : C.wood;
+    if (i >= 3 && i <= 4) {
       if (z < 46 || z > W - 13) return base;
-      const pu = (u + BAY / 2) % 32;
+      const pu = (u + BAY / 2) % 34;
       const zz = z - 47;
-      const row = zz < 28 ? 0 : 1;
-      const pv = row ? zz - 29 : zz;
-      if (pu > 1 && pu < 31 && pv > 0 && pv < 27) return photo(pu - 1, pv, 30, 27, i * 7 + Math.floor((u + BAY / 2) / 32) * 3 + row * 5);
+      const row = Math.floor(zz / 30);
+      const pv = zz % 30;
+      if (pu > 1 && pu < 33 && pv > 1 && pv < 29) return photo(pu - 1, pv - 1, 32, 28, i * 7 + Math.floor((u + BAY / 2) / 34) * 3 + row * 5);
       return C.timber;
     }
-    if (i === 1 || i === 6) return bannerAt(u, z - 26, 22, 72) ?? base;
-    return z > 44 ? (archWindow(u, z - 46, 26, 54) ?? base) : base;
+    if (i === 1 || i === 6) return bannerAt(u, z - 34, 28, 92) ?? base;
+    return z > 44 ? (archWindow(u, z - 48, 34, 82) ?? base) : base;
   });
 
-  // Dinding ujung: latar pelaminan di sumbu karpet.
+  // Dinding ujung: latar pelaminan di sumbu karpet, jendela di kanan dan kirinya.
   iso.wallL(L, -S, S, 0, W, (s, z) => {
     const a = Math.abs(s);
     const base = hallWall(z, W);
-    if (a < 170) {
+    if (a < 210) {
       if (z < 10) return C.rockDark;
       if (z > W - 12) return base;
-      if (a > 134) return Math.floor(a / 7) % 2 ? C.wine : C.wineLight;
-      if (a > 130) return C.glowDark;
-      return flower(s, z - 92, 14, C.glow, C.white) ?? (Math.floor((s + 300) / 18) % 2 ? C.plasterLight : C.plaster);
+      if (a > 174) return Math.floor(a / 7) % 2 ? C.wine : C.wineLight;
+      if (a > 170) return C.glowDark;
+      return flower(s, z - 112, 18, C.glow, C.white) ?? (Math.floor((s + 300) / 18) % 2 ? C.plasterLight : C.plaster);
     }
-    if (a > 240 || a < 182) return z < 10 ? C.rockDark : a > 240 || a < 176 ? C.wood : C.dark;
-    return z > 44 ? (archWindow(a - 211, z - 46, 22, 54) ?? base) : base;
+    if (a > 386 || a < 222) return z < 10 ? C.rockDark : a > 386 || a < 216 ? C.wood : C.dark;
+    return z > 44 ? (archWindow(a - 304, z - 48, 44, 82) ?? base) : base;
   });
 
   // Balok atas dinding, seperti atap yang dibuka.
@@ -743,52 +812,52 @@ async function drawHall() {
   iso.floor(SZ, SL, L, -SS, SS, (l, s) => {
     if (l < SL + 3 || Math.abs(s) > SS - 3) return C.dark;
     const k = Math.abs(s);
-    if (k < 140 && l < L - 8) {
-      if (k > 134 || l < SL + 8) return k > 137 || l < SL + 5 ? C.dark : C.tilePale;
-      return flower(l - 950, s, 22, C.tilePale, C.glow) ?? C.wine;
+    if (k < 190 && l < L - 8) {
+      if (k > 184 || l < SL + 8) return k > 187 || l < SL + 5 ? C.dark : C.tilePale;
+      return flower(l - (SL + L) / 2, s, 26, C.tilePale, C.glow) ?? C.wine;
     }
-    const b = Math.floor((s + 600) / 22);
-    return (l + b * 37) % 90 < 3 || (s + 600) % 22 < 2 ? C.wood : b % 3 ? C.woodPale : C.woodLight;
+    const b = Math.floor((s + 900) / 22);
+    return (l + b * 37) % 90 < 3 || (s + 900) % 22 < 2 ? C.wood : b % 3 ? C.woodPale : C.woodLight;
   });
   iso.box(TL, SL, -TS, TS, 0, SZ / 2, C.wineLight, C.wineDark, C.wineDark);
   iso.box(TL + 17, SL, -TS, TS, SZ / 2, SZ, C.wine, C.wineDark, C.wineDark);
 
   // Sofa kayu berbantal krem.
   const onStage = iso.raised(SZ);
-  onStage.box(1022, 1042, -56, 56, 0, 14, C.cloth, C.clothDark, C.cloth);
-  onStage.box(1036, 1044, -56, 56, 14, 30, C.cloth, C.clothDark, C.cloth);
-  onStage.box(1022, 1042, -64, -54, 0, 20, C.woodLight, C.wood, C.woodLight);
-  onStage.box(1022, 1042, 54, 64, 0, 20, C.woodLight, C.wood, C.woodLight);
+  onStage.box(L - 38, L - 18, -56, 56, 0, 14, C.cloth, C.clothDark, C.cloth);
+  onStage.box(L - 24, L - 16, -56, 56, 14, 30, C.cloth, C.clothDark, C.cloth);
+  onStage.box(L - 38, L - 18, -64, -54, 0, 20, C.woodLight, C.wood, C.woodLight);
+  onStage.box(L - 38, L - 18, 54, 64, 0, 20, C.woodLight, C.wood, C.woodLight);
 
   // Lengkung sulur berbunga, simetris terhadap sumbu.
-  for (let i = -12; i <= 12; i++) {
-    const t = i / 12;
-    const [x, y] = iso.xy(L - 3, t * 132, 38 + Math.sqrt(1 - t * t * 0.98) * 66);
-    bush(c, x, y, i % 2 ? 6 : 7.5, 40 + Math.abs(i), Math.abs(i) % 3 ? C.white : C.blush);
+  for (let i = -14; i <= 14; i++) {
+    const t = i / 14;
+    const [x, y] = iso.xy(L - 3, t * 164, 44 + Math.sqrt(1 - t * t * 0.98) * 84);
+    bush(c, x, y, i % 2 ? 6.5 : 8, 40 + Math.abs(i), Math.abs(i) % 3 ? C.white : C.blush);
   }
   for (const k of [-1, 1]) {
-    terracottaPot(onStage, 1036, k * 92, 7 + k, 1.2, C.white);
-    terracottaPot(onStage, 1030, k * 172, 11 + k, 1.3, C.blush);
-    lanternPost(onStage, 880, k * 182, 40);
-    terracottaPot(iso, TL - 14, k * 128, 21 + k, 1.3, C.white);
+    terracottaPot(onStage, L - 24, k * 110, 7 + k, 1.25, C.white);
+    terracottaPot(onStage, L - 30, k * 240, 11 + k, 1.4, C.blush);
+    lanternPost(onStage, SL + 20, k * 262, 40);
+    terracottaPot(iso, TL - 14, k * 150, 21 + k, 1.4, C.white);
   }
 
   // Pot dan lentera di kaki dinding belakang, mengikuti tiang.
   for (let i = 1; i < 8; i++) {
     if (i === 4) continue;
     const l = i * BAY;
-    if (i % 2) terracottaPot(iso, l, -S + 18, 100 + i, 1.05, i % 4 === 1 ? C.white : C.blush);
-    else lanternPost(iso, l, -S + 16, 40);
+    if (i % 2) terracottaPot(iso, l, -S + 20, 100 + i, 1.15, i % 4 === 1 ? C.white : C.blush);
+    else lanternPost(iso, l, -S + 18, 44);
   }
 
   // Tembok batu rendah di sisi dekat kamera, supaya isi aula tetap terlihat. Kanan dan kiri pintu sama panjang.
   const LOW = 22;
   const brick = (a: number, z: number): Rgb => ((Math.floor((z + 40) / 11) * 11 + a + 2000) % 34 < 3 || (z + 40) % 11 < 2 ? C.rockDark : hash(Math.floor(a / 34), Math.floor((z + 40) / 11)) > 0.5 ? C.stoneDark : C.rock);
   iso.box(0, L + 16, S, S + 16, -18, LOW, C.stoneMid, C.rock, C.rock);
-  iso.wallS(S + 16, 0, L + 16, -18, LOW, (l, z) => mossAt(l, z * 3, 0.14) ?? brick(l, z));
+  iso.wallS(S + 16, 0, L + 16, -18, LOW, (l, z) => brick(l, z));
   for (const [a, b] of [[58, S + 16], [-S - 16, -58]]) {
     iso.box(-16, 0, a, b, -18, LOW, C.stoneMid, C.rock, C.rockDark);
-    iso.wallL(-16, a, b, -18, LOW, (s, z) => mossAt(s + 90, z * 3, 0.14) ?? brick(s, z));
+    iso.wallL(-16, a, b, -18, LOW, (s, z) => brick(s, z));
   }
   for (const k of [-1, 1]) {
     iso.box(-18, 2, k * 62 - 9, k * 62 + 9, -18, 58, C.stoneMid, C.stone, C.stoneDark);
@@ -798,11 +867,11 @@ async function drawHall() {
     c.set(x - 1, y - 1, C.glowLight);
   }
   const low = iso.raised(LOW);
-  for (let i = 0; i <= 6; i++) {
+  for (let i = 0; i <= 9; i++) {
     const [x, y] = low.xy(75 + i * 150, S + 8, 6);
     bush(c, x, y, 7.5, 200 + i, i % 2 ? C.blush : C.white);
   }
-  await c.save("hall.png", 110);
+  await c.save("hall.png", 160);
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -1038,7 +1107,6 @@ type Spec = {
   batik?: boolean;
 };
 
-const shade = (c: Rgb, t: number): Rgb => (t < 0 ? mix(c, C.line, -t) : mix(c, C.white, t));
 
 function character(c: Canvas, ox: number, oy: number, dir: 0 | 1 | 2, frame: 0 | 1 | 2, sp: Spec, flare = 0) {
   const skin = hex(sp.skin);

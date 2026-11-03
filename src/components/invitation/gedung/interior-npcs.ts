@@ -27,20 +27,20 @@ export const NPC_PAUSE = 1.6;
 
 export const NPCS: Npc[] = [
   // Berjalan pelan di karpet merah, dari dekat pintu ke tangga pelaminan dan kembali.
-  { id: "w1", sheet: "kebaya", path: [hallAt(130, 12), hallAt(780, 12)] },
+  { id: "w1", sheet: "kebaya", path: [hallAt(150, 12), hallAt(1180, 12)] },
   // Anak yang berlarian kecil di lantai kanan bawah, dan ibunya yang berjalan di sisi kiri.
-  { id: "w2", sheet: "anak", path: [hallAt(120, 215), hallAt(420, 215)] },
-  { id: "w3", sheet: "ibu", path: [hallAt(350, -210), hallAt(740, -210)] },
+  { id: "w2", sheet: "anak", path: [hallAt(130, 310), hallAt(620, 310)] },
+  { id: "w3", sheet: "ibu", path: [hallAt(450, -300), hallAt(1120, -300)] },
   // Dua tamu mengobrol di lantai kanan.
-  { id: "a1", sheet: "gadis", path: [hallAt(690, 212)], face: 1, chat: "a", lines: ["Dekorasinya cantik ya!", "Sudah foto di galeri?", "Pengantinnya serasi sekali."] },
-  { id: "a2", sheet: "pria", path: [hallAt(740, 212)], face: 1, flip: true, chat: "a", lines: ["Iya, hangat sekali suasananya.", "Nanti, habis ini.", "Betul, ikut bahagia."] },
+  { id: "a1", sheet: "gadis", path: [hallAt(1000, 320)], face: 1, chat: "a", lines: ["Dekorasinya cantik ya!", "Sudah foto di galeri?", "Pengantinnya serasi sekali."] },
+  { id: "a2", sheet: "pria", path: [hallAt(1052, 320)], face: 1, flip: true, chat: "a", lines: ["Iya, hangat sekali suasananya.", "Nanti, habis ini.", "Betul, ikut bahagia."] },
   // Dua tamu mengobrol dekat pintu masuk.
-  { id: "b1", sheet: "bapak", path: [hallAt(120, -190)], face: 1, chat: "b", lines: ["Sudah isi buku tamu?", "Ayo ke pelaminan!", "Jangan lupa amplopnya."] },
-  { id: "b2", sheet: "wanita", path: [hallAt(170, -190)], face: 1, flip: true, chat: "b", lines: ["Sudah, barusan.", "Yuk, foto bareng.", "Aman, sudah siap."] },
+  { id: "b1", sheet: "bapak", path: [hallAt(150, -280)], face: 1, chat: "b", lines: ["Sudah isi buku tamu?", "Ayo ke pelaminan!", "Jangan lupa amplopnya."] },
+  { id: "b2", sheet: "wanita", path: [hallAt(202, -280)], face: 1, flip: true, chat: "b", lines: ["Sudah, barusan.", "Yuk, foto bareng.", "Aman, sudah siap."] },
   // Melihat-lihat dinding foto dari tepi karpet.
-  { id: "v1", sheet: "kakek", path: [hallAt(690, -66)], face: 2, chat: "v", lines: ["Fotonya bagus-bagus...", "Ini waktu lamaran ya?"] },
+  { id: "v1", sheet: "kakek", path: [hallAt(745, -100)], face: 2, chat: "v", lines: ["Fotonya bagus-bagus...", "Ini waktu lamaran ya?"] },
   // Berdiri sendiri di samping panggung.
-  { id: "v2", sheet: "hijau", path: [hallAt(880, 226)], face: 0 },
+  { id: "v2", sheet: "hijau", path: [hallAt(1300, 340)], face: 0 },
 ];
 
 export type NpcState = { p: Point; next: number; wait: number; walked: number };
