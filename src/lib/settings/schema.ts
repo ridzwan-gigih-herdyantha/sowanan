@@ -52,6 +52,7 @@ export const SYSTEM_KEYS = {
   font_varian: "Membuka pilihan pasangan font dan font nama mempelai di editor undangan",
   font_custom: "Membuka font kustom dari Google Fonts di editor undangan",
   video_youtube: "Membuka isian video YouTube di editor undangan",
+  gambar_story: "Membuka unduh gambar story di admin undangan",
   cerita: "Membuka bagian Cerita di editor undangan",
   nama_tamu: "Membuka halaman nama tamu",
   ekspor_excel: "Membuka unduh Excel di halaman RSVP dan daftar tamu",

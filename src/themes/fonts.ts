@@ -188,6 +188,14 @@ export function resolveFonts(theme: string, style?: InvitationData["style"]): Re
   };
 }
 
+// Font gambar story: font custom, lalu pilihan undangan, lalu bawaan tema. Font nama mengikuti font judul kalau kosong.
+export function storyFonts(theme: string, style?: InvitationData["style"]) {
+  const base = FONT_PRESETS[theme]?.[0];
+  const vars = resolveFonts(theme, style);
+  const display = vars["--inv-display"] ?? (base ? fontStack(base.display, "display") : SERIF);
+  return { display, body: vars["--inv-body"] ?? (base ? fontStack(base.body, "body") : SANS), name: vars["--inv-script"] ?? display };
+}
+
 // Tautan stylesheet font custom, satu per font supaya satu nama yang salah tidak menggagalkan yang lain.
 // API css versi lama dipakai karena melewati ketebalan yang tidak dimiliki font itu, sedangkan css2 menolaknya.
 export function customFontLinks(style?: InvitationData["style"]): string[] {
