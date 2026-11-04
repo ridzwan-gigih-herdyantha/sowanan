@@ -6,6 +6,7 @@ import { Hero } from "@/components/home/hero";
 import { Pricing } from "@/components/home/pricing";
 import { SiteHeader } from "@/components/home/site-header";
 import { Steps } from "@/components/home/steps";
+import { Testimonials } from "@/components/home/testimonials";
 import { Themes } from "@/components/home/themes";
 import { plain } from "@/components/rich-text";
 import { fill, formatRupiah, generalWaLink, getSettings, highestPrice, lowestPrice, slaRange, socialUrl, textVars, type Settings } from "@/lib/settings";
@@ -78,6 +79,7 @@ export default async function Home() {
         <Features settings={s} vars={vars} />
         <Pricing settings={s} vars={vars} />
         <Steps settings={s} vars={vars} />
+        <Testimonials settings={s} />
         <Faq settings={s} vars={vars} />
         <ClosingCta settings={s} vars={vars} waHref={wa} />
       </main>

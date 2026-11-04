@@ -247,6 +247,7 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     addon: { title: "Tambahan di luar paket", sub: "Bisa ditambahkan saat memesan. Sebutkan saja lewat WhatsApp." },
     cara: { title: "Cara pesan", sub: "" },
+    testi: { title: "Kata mereka" },
     faq: {
       title: "Yang sering ditanyakan",
       sub: "Jawaban seputar harga, waktu pengerjaan, dan fitur undangan pernikahan digital Sowanan.",
@@ -305,6 +306,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "rafi-kayla", on: true, name: "Isometrik", slug: "rafi-kayla", demo: "/rafi-kayla", tier: "lengkap", category: "game", style: "peta isometrik / gedung", image: "/img/rafi-kayla/cover.webp", screen: "/img/rafi-kayla/hero.webp" },
   ],
   themeFaq: THEME_FAQ,
+  testimonials: { items: [] },
   homeThemes: ["senja", "ruang", "herba", "kelir"],
   faq: [
     { id: "lama", on: true, q: "Berapa lama jadinya?", a: "Undangan pernikahan digital Sowanan jadi dalam {waktu}, tergantung paket: {pengerjaan}. Waktu pengerjaan dihitung setelah data lengkap dan pembayaran masuk, dan pesanan yang masuk setelah pukul 15.00 dihitung mulai hari kerja berikutnya. Perbandingan lengkap tiap paket ada di [bagian harga](#harga)." },

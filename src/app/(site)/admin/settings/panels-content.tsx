@@ -45,6 +45,7 @@ const SECTIONS: [keyof Settings["sections"], string][] = [
   ["harga", "Harga"],
   ["addon", "Tambahan di luar paket"],
   ["cara", "Cara pesan"],
+  ["testi", "Testimoni"],
   ["faq", "Tanya jawab"],
 ];
 
@@ -53,7 +54,7 @@ const OFFER_CARDS = [
   ["harga", "Kartu kebutuhan khusus", "setelah daftar tambahan"],
 ] as const;
 
-const ANCHORS = "#tema, #fitur, #harga, #cara, atau #tanya";
+const ANCHORS = "#tema, #fitur, #harga, #cara, #testimoni, atau #tanya";
 
 export function BerandaPanel() {
   const { s } = useSettings();
@@ -86,7 +87,7 @@ export function BerandaPanel() {
         {SECTIONS.map(([key, label]) => (
           <Row key={key}>
             <Text path={`sections.${key}.title`} label={label} chip="view" max={40} className={width.md} />
-            <Text path={`sections.${key}.sub`} label={`Penjelas ${label.toLowerCase()}`} chip="view" max={240} />
+            {key !== "testi" && <Text path={`sections.${key}.sub`} label={`Penjelas ${label.toLowerCase()}`} chip="view" max={240} />}
           </Row>
         ))}
       </Card>
@@ -290,6 +291,31 @@ function HomeThemesCard() {
       {ids.length < HOME_THEMES && options.length > 0 && (
         <Dropdown label="Tambah tema ke beranda" placeholder="+ Tambah tema ke beranda" value="" options={options} onChange={(v) => write([...ids, v])} className="mt-3 w-full sm:w-[320px]" />
       )}
+    </Card>
+  );
+}
+
+const RATINGS: [string, string][] = [5, 4, 3, 2, 1].map((n) => [String(n), `${n} bintang`]);
+
+export function TestimoniPanel() {
+  return (
+    <Card title="Daftar testimoni" hint="Urutan di sini sama dengan urutan kartu di halaman. Selama belum ada testimoni yang ditampilkan, section ini tidak muncul di homepage. Judul section diatur di tab Beranda.">
+      <RepList
+        path="testimonials.items"
+        noun="testimoni"
+        max={30}
+        blank={() => ({ id: newId(), on: true, name: "", rating: 5, text: "", photo: "" })}
+        render={(_, __, base) => (
+          <>
+            <Row>
+              <Text path={`${base}.name`} label="Nama" max={60} />
+              <Select path={`${base}.rating`} label="Bintang" className={width.sm} options={RATINGS} toValue={Number} />
+            </Row>
+            <Text path={`${base}.text`} label="Pesan" max={600} rows={3} />
+            <ImagePicker path={`${base}.photo`} label="Foto" purpose="avatar" help="Opsional, dipotong persegi otomatis. Kosong berarti memakai huruf pertama nama." />
+          </>
+        )}
+      />
     </Card>
   );
 }

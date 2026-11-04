@@ -4,13 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type 
 import type { Settings } from "@/lib/settings/schema";
 import { reloadSettings, saveSettings } from "../actions";
 import { FormCtx, setIn } from "./form-context";
-import { BerandaPanel, KetentuanPanel, TanyaPanel, TemaPanel } from "./panels-content";
+import { BerandaPanel, KetentuanPanel, TanyaPanel, TemaPanel, TestimoniPanel } from "./panels-content";
 import { AddonPanel, KontakPanel, PaketPanel, PembayaranPanel } from "./panels-data";
 import { button, cx } from "./ui";
 
 const TABS = [
   { key: "beranda", label: "Beranda", group: "Konten", paths: ["hero", "sections", "features", "steps", "closing", "footer"], Panel: BerandaPanel },
   { key: "tema", label: "Tema", group: "Konten", paths: ["themes"], Panel: TemaPanel },
+  { key: "testimoni", label: "Testimoni", group: "Konten", paths: ["testimonials"], Panel: TestimoniPanel },
   { key: "tanya", label: "Tanya Jawab", group: "Konten", paths: ["faq", "themeFaq"], Panel: TanyaPanel },
   { key: "ketentuan", label: "Ketentuan", group: "Konten", paths: ["terms"], Panel: KetentuanPanel },
   { key: "paket", label: "Paket", group: "Data", paths: ["packages", "matrix"], Panel: PaketPanel },

@@ -169,6 +169,8 @@ export const settingsSchema = z
       }),
       addon: section("tambahan"),
       cara: section("cara pesan"),
+      // Default dipakai untuk data lama, supaya isi sections yang tersimpan tidak diganti nilai bawaan.
+      testi: z.object({ title: req("Judul testimoni", 40) }).default({ title: "Kata mereka" }),
       // Tautan WhatsApp di bawah judul tanya jawab. Kosong berarti disembunyikan.
       faq: section("tanya jawab").extend({ cta: str("Label tautan WhatsApp tanya jawab", 40).default("Belum terjawab? Tanya lewat WhatsApp") }),
     }),
@@ -217,6 +219,14 @@ export const settingsSchema = z
       .array(z.object({ id, on: z.boolean(), q: req("Pertanyaan", 80), a: req("Jawaban", 600) }))
       .max(20, "Tanya jawab tema maksimal 20.")
       .default(THEME_FAQ),
+    // Daftar kosong berarti section testimoni tidak tampil.
+    testimonials: z
+      .object({
+        items: z
+          .array(z.object({ id, on: z.boolean(), name: req("Nama", 60), rating: count("Bintang", 1, 5), text: req("Pesan", 600), photo: str("Foto", 300) }))
+          .max(30, "Testimoni maksimal 30."),
+      })
+      .default({ items: [] }),
     terms: z.object({
       date: req("Tanggal berlaku", 40),
       title: req("Judul halaman", 50),
