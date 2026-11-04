@@ -9,6 +9,7 @@ import { Watermark } from "@/components/invitation/watermark";
 import { isDemo } from "@/lib/invitation/archive";
 import { applyPackage, demoHref, demoOrderLink, demoPackages, TOP_PACKAGE, type DemoDevice, type DemoPackage } from "@/lib/invitation/demo-packages";
 import { getInvitation } from "@/lib/invitation/load";
+import { requirementsText } from "@/lib/invitation/requirements-text";
 import { limitExtras } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
 import { getSettings, packageRules, type PackageId } from "@/lib/settings";
@@ -43,6 +44,7 @@ export async function loadInvitationPage(slug: string, demoPkg?: PackageId) {
     pkg: demo ? (pkg as PackageId) : null,
     packages,
     orderHref: demo ? demoOrderLink(settings, THEME_NAMES[inv.theme] ?? inv.theme, pkg as PackageId) : "",
+    dataList: demo ? requirementsText(inv.theme, THEME_NAMES[inv.theme] ?? inv.theme, rules) : "",
     guestNames: !rules.locked.nama_tamu && !archived,
     view,
   };
@@ -95,7 +97,7 @@ export function InvitationBody({ found }: { found: InvitationPageData }) {
       {!found.paid && <Watermark />}
       {found.demo && found.pkg && (
         <>
-          <DemoViewSwitch {...demoSwitchLinks(found.view.slug, found.pkg, "desktop", found.packages)} />
+          <DemoViewSwitch {...demoSwitchLinks(found.view.slug, found.pkg, "desktop", found.packages)} dataList={found.dataList} />
           <DemoOrderButton href={found.orderHref} theme={THEME_NAMES[found.view.slug] ?? found.view.slug}>
             <WaIcon className="size-6" />
           </DemoOrderButton>

@@ -6,7 +6,7 @@ import { forTheme, GROUPS, type Field } from "./spec";
 // Kebutuhan data klien dari isian editor sesuai tema, paket, bagian yang dipakai, dan bagian tambahan pilihan
 // admin. key adalah jalur isian, dipakai untuk melewatkan isian opsional yang tidak diminta.
 
-export type ReqRow = { key: string; label: string; type: string; note?: string; required: boolean; depth: number; heading?: boolean };
+export type ReqRow = { key: string; label: string; type: string; note?: string; required: boolean; depth: number; heading?: boolean; count?: string };
 export type ReqSection = { key: string; title: string; note?: string; section?: string; rows: ReqRow[] };
 
 // Keterangan tambahan per kegunaan foto, misalnya orientasi yang paling pas.
@@ -76,7 +76,7 @@ function rowsOf(fields: Field[], ctx: Ctx, depth: number, prefix = "", parentOpt
       const cap = f.path === "sections.gallery.photos" ? rules.photos?.max : f.path === "extras" ? rules.extras?.max : undefined;
       const max = cap === undefined ? f.max : Math.min(cap, f.max ?? cap);
       const count = [f.min ? `minimal ${f.min}` : "", max ? `maksimal ${max}` : ""].filter(Boolean).join(", ");
-      out.push({ key, label: f.label, type: `Daftar ${f.item.toLowerCase()}${count ? `, ${count}` : ""}`, note: f.hint, required, depth, heading: true });
+      out.push({ key, label: f.label, type: `Daftar ${f.item.toLowerCase()}${count ? `, ${count}` : ""}`, note: f.hint, required, depth, heading: true, count });
       out.push(...rowsOf(f.fields, ctx, depth + 1, `${key}.`, !f.min || parentOptional, variant));
       continue;
     }
