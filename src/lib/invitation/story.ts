@@ -12,7 +12,8 @@ export type StoryData = {
   city: string;
   link: string;
   colors: { paper: string; ink: string; accent: string; gold: string };
-  fonts: { display: string; body: string; name: string };
+  // plain berarti ligatur font itu dimatikan.
+  fonts: { display: string; body: string; name: string; plainDisplay: boolean; plainName: boolean };
 };
 
 // Isi gambar story: nama, tanggal, lokasi, dan alamat link, dengan palet dan font undangan.

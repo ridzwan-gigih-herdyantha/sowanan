@@ -11,6 +11,8 @@ const H = 1920;
 const CX = W / 2;
 const TEXT_W = 800;
 const NAME_WRAP = 96;
+// Canvas tidak punya pengaturan ligatur, tapi browser melewati ligatur pada teks yang punya jarak huruf.
+const NO_LIGATURES = "0.01px";
 
 // Ukuran terbesar yang muat selebar teks, supaya nama panjang tidak terpotong.
 function fit(ctx: CanvasRenderingContext2D, text: string, font: (size: number) => string, max: number, min: number) {
@@ -67,7 +69,10 @@ function draw(canvas: HTMLCanvasElement, d: StoryData) {
   ctx.letterSpacing = "0px";
 
   const nameFont = (size: number) => `400 ${size}px ${d.fonts.name}`;
+  const nameSpacing = d.fonts.plainName ? NO_LIGATURES : "0px";
+  const displaySpacing = d.fonts.plainDisplay ? NO_LIGATURES : "0px";
   // Nama panjang dibagi dua baris, lalu ukurannya disamakan supaya kedua nama seimbang.
+  ctx.letterSpacing = nameSpacing;
   ctx.font = nameFont(NAME_WRAP);
   const groom = lines(ctx, d.groom);
   const bride = lines(ctx, d.bride);
@@ -86,6 +91,7 @@ function draw(canvas: HTMLCanvasElement, d: StoryData) {
   ctx.fillText("&", CX, name);
   name += size * 0.95;
   writeName(bride);
+  ctx.letterSpacing = "0px";
 
   const rule = name + 100;
   ctx.strokeStyle = gold;
@@ -102,8 +108,10 @@ function draw(canvas: HTMLCanvasElement, d: StoryData) {
   let y = rule + 88;
   const dateFont = (s: number) => `400 ${s}px ${d.fonts.display}`;
   ctx.fillStyle = ink;
+  ctx.letterSpacing = displaySpacing;
   ctx.font = dateFont(fit(ctx, d.date, dateFont, 50, 34));
   ctx.fillText(d.date, CX, y);
+  ctx.letterSpacing = "0px";
   y += 72;
   ctx.font = `400 36px ${d.fonts.body}`;
   for (const line of lines(ctx, d.venue)) {

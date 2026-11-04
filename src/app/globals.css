@@ -167,6 +167,28 @@
   line-height: 1.15;
 }
 
+/* Font custom dekoratif tanpa ligatur. Nilainya dari resolveFonts, per tempat font dipakai. */
+.font-display,
+.rb-label,
+.inv-no-photo,
+.gd-wishes form button[type="submit"] {
+  font-variant-ligatures: var(--inv-liga-display, normal);
+}
+
+.font-script {
+  font-variant-ligatures: var(--inv-liga-script, var(--inv-liga-display, normal));
+}
+
+/* Teks sekunder palet kustom. Teks redup tema memakai warna teks dengan opacity, jadi ditimpa di sini dan hanya aktif
+   saat admin mengisi warnanya. Bagian yang membalik warnanya sendiri memakai warna redup bagian itu. */
+[style*="--inv-muted"] [class*="text-inv-ink/"] {
+  color: var(--inv-muted);
+}
+
+[style*="--inv-muted"] [style*="--inv-ink"] [class*="text-inv-ink/"] {
+  color: var(--inv-gold);
+}
+
 .inv-paper {
   background-color: var(--inv-paper);
   background-image: var(--inv-grain);

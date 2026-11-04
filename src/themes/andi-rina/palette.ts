@@ -69,6 +69,7 @@ export const palette: ThemePalette = {
     { key: "--ar-flap", label: "Tutup amplop" },
     { key: "--inv-line", label: "Garis" },
   ],
+  surface: "--inv-card",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--inv-wash", "--inv-accent", "--inv-night", "--inv-gold-light"],
   checks: [

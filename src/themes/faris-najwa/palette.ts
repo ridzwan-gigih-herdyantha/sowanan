@@ -23,6 +23,7 @@ export const palette: ThemePalette = {
     { id: "zamrud", name: "Laguna & Tembaga", vars: vars({ paper: "#F4EEE2", wash: "#FCF9F2", sand: "#E7D8C4", night: "#163E43", night2: "#24565A", accent: "#397477", ink: "#243232", line: "#D8C8B2", gold: "#B96F4E", glow: "#EBC8A5" }) },
     { id: "pirus", name: "Safir & Pasir", vars: vars({ paper: "#F0F0E9", wash: "#FAFAF5", sand: "#DDE3DF", night: "#20374A", night2: "#304E60", accent: "#4A7882", ink: "#202B32", line: "#CBD4D2", gold: "#B97858", glow: "#E8CEB2" }) },
     { id: "mawar", name: "Mawar Bata", vars: vars({ paper: "#F4ECE6", wash: "#FBF7F2", sand: "#E9D8CF", night: "#493139", night2: "#604047", accent: "#925E66", ink: "#30272A", line: "#DCC8BE", gold: "#B77859", glow: "#EBCBB0" }) },
+    { id: "zaitun", name: "Zaitun & Emas", vars: vars({ paper: "#F2EEE0", wash: "#FBF8EF", sand: "#E3DCC4", night: "#2E3A24", night2: "#434F33", accent: "#5D6F3E", ink: "#2A2E22", line: "#D3CDB4", gold: "#A97A3E", glow: "#E8D3A0" }) },
   ],
   derive: ({ paper, accent, ink }) => vars({
     paper, ink, accent,
@@ -46,6 +47,7 @@ export const palette: ThemePalette = {
     { key: "--inv-gold-light", label: "Emas terang" },
     { key: "--inv-line", label: "Garis" },
   ],
+  surface: "--inv-wash",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--sk-pasir", "--inv-accent", "--inv-night", "--sk-emas"],
   checks: [

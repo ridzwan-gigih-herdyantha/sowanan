@@ -1,8 +1,10 @@
 // Palet warna undangan. Setiap tema punya beberapa palet jadi (preset) dan satu cara menurunkan palet kustom
-// dari tiga warna dasar. Nilai palet dipasang sebagai CSS variable di elemen terluar tema.
+// dari tiga warna dasar. Permukaan dan teks sekunder ikut turunan itu, kecuali admin mengisinya sendiri.
+// Nilai palet dipasang sebagai CSS variable di elemen terluar tema.
 
 export type Vars = Record<`--${string}`, string>;
 export type Base = { paper: string; accent: string; ink: string };
+export type CustomColors = Base & { surface: string; muted: string };
 export type Preset = { id: string; name: string; vars: Vars };
 export type Check = { fg: `--${string}`; bg: `--${string}`; label: string };
 
@@ -13,6 +15,10 @@ export type ThemePalette = {
   roles: Role[];
   derive: (b: Base) => Vars;
   base: (v: Vars) => Base;
+  // Variabel warna kartu atau kotak di tema ini.
+  surface: `--${string}`;
+  // Variabel teks redup, untuk tema yang punya. Teks redup lain memakai warna teks dengan opacity, lihat --inv-muted.
+  muted?: `--${string}`;
   swatch: `--${string}`[];
   checks: Check[];
 };

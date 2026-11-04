@@ -32,7 +32,7 @@ const vars = (c: Gd): Vars => ({
   "--inv-roof": c.roof,
 });
 
-// Palet Isometrik: suasana kota mini pada tiga waktu. Warna dipakai untuk papan, tombol, dan latar di sekitar
+// Palet Isometrik: suasana kota mini pada empat waktu. Warna dipakai untuk papan, tombol, dan latar di sekitar
 // peta, sedangkan gambar peta sendiri tetap sama.
 export const palette: ThemePalette = {
   presets: [
@@ -93,6 +93,25 @@ export const palette: ThemePalette = {
         roof: "#6C7AE0",
       }),
     },
+    {
+      id: "pagi",
+      name: "Pagi",
+      vars: vars({
+        paper: "#F4F8EC",
+        wash: "#E2EED6",
+        night: "#1F3A30",
+        accent: "#2F7D5B",
+        gold: "#4F6B5B",
+        goldLight: "#CDE8B8",
+        ink: "#1F3A30",
+        line: "#1F3A30",
+        card: "#FBFDF5",
+        sky: "#CFE9E4",
+        grass: "#7DB35A",
+        road: "#DDE3C4",
+        roof: "#2F7D5B",
+      }),
+    },
   ],
   derive: ({ paper, accent, ink }) =>
     vars({
@@ -125,6 +144,8 @@ export const palette: ThemePalette = {
     { key: "--inv-road", label: "Jalan" },
     { key: "--inv-roof", label: "Atap" },
   ],
+  surface: "--inv-card",
+  muted: "--inv-gold",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-sky", "--inv-grass", "--inv-paper", "--inv-accent", "--inv-roof"],
   checks: [

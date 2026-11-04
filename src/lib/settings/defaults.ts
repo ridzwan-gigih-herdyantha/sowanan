@@ -39,11 +39,11 @@ Satu tema pilihan Anda dari katalog, ditampilkan apa adanya. Galeri hingga 3 fot
 
 ### Lengkap (Rp199.000)
 
-Seluruh isi paket Dasar, dengan warna tema disesuaikan palet acara Anda. Galeri hingga 15 foto. Musik latar pilihan sendiri, cerita perjalanan, dan nama tamu yang muncul di undangan.
+Seluruh isi paket Dasar, dengan warna tema disesuaikan palet acara Anda. Galeri hingga 15 foto. Musik latar pilihan sendiri, cerita perjalanan, dan nama tamu yang muncul di undangan. Palet warna custom dan font custom dari Google Fonts tersedia sebagai add-on.
 
 ### Istimewa (Rp499.000)
 
-Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Paket ini ditujukan untuk acara dengan jumlah tamu banyak. Pada paket ini Anda juga dapat meminta hingga 2 bagian tambahan yang belum ada di tema.
+Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah palet warna custom, font custom dari Google Fonts, daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Paket ini ditujukan untuk acara dengan jumlah tamu banyak. Pada paket ini Anda juga dapat meminta hingga 2 bagian tambahan yang belum ada di tema.
 
 Bagian tambahan dipilih dari enam berikut, maksimal dua:
 
@@ -383,8 +383,8 @@ export const DEFAULT_SETTINGS: Settings = {
     // Pengganti add-on gaya, dinyalakan bersamaan dengan teks harga dan ketentuan yang baru.
     { id: "palet", on: false, name: "Pilih 1 dari 4 varian palet", price: 25000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
     { id: "font", on: false, name: "Pilih varian font", price: 25000, scope: "Dasar", unlock: "font_varian", amount: 0 },
-    { id: "paletcustom", on: false, name: "Palet warna custom", price: 25000, scope: "Lengkap", unlock: "palet_custom", amount: 0 },
-    { id: "fontcustom", on: false, name: "Font custom dari Google Fonts", price: 25000, scope: "Lengkap", unlock: "font_custom", amount: 0 },
+    { id: "paletcustom", on: true, name: "Palet warna custom", price: 25000, scope: "Lengkap", unlock: "palet_custom", amount: 0 },
+    { id: "fontcustom", on: true, name: "Font custom dari Google Fonts", price: 25000, scope: "Lengkap", unlock: "font_custom", amount: 0 },
     { id: "video", on: false, name: "Video dari YouTube", price: 25000, scope: "Semua paket", unlock: "video_youtube", amount: 0 },
     { id: "story", on: false, name: "Gambar undangan untuk story", price: 25000, scope: "Semua paket", unlock: "gambar_story", amount: 0 },
     { id: "kedua", on: false, name: "Undangan kedua untuk acara terpisah", price: 50000, scope: "Lengkap dan Istimewa", unlock: "undangan_kedua", amount: 0 },

@@ -45,6 +45,11 @@ export const palette: ThemePalette = {
       vars: vars({ paper: "#EFE4D2", wash: "#F8F1E6", night: "#120C0B", accent: "#8E1A1D", gold: "#C59A45", goldLight: "#E6CB8A", ink: "#1E1310", line: "#D3C0A3", merah: "#560E11", putih: "#EFE2CB", langit: "#150E13", senja: "#7E3A28" }),
     },
     {
+      id: "danau-toba",
+      name: "Danau Toba",
+      vars: vars({ paper: "#F1EDE2", wash: "#FAF7EF", night: "#0E1E26", accent: "#1E5B6B", gold: "#B08B3E", goldLight: "#E6D19A", ink: "#1B2428", line: "#D2CFC0", merah: "#15424F", putih: "#F2EDE0", langit: "#1D3F55", senja: "#D48B55" }),
+    },
+    {
       id: "gading-toba",
       name: "Gading Toba",
       vars: vars({ paper: "#F7F0E3", wash: "#FCF8F1", night: "#3B2116", accent: "#9F2A2B", gold: "#A8813A", goldLight: "#EAD6A6", ink: "#301E15", line: "#E0D0B8", merah: "#86292A", putih: "#F7EFE1", langit: "#4F6E86", senja: "#E3B98D" }),
@@ -79,6 +84,7 @@ export const palette: ThemePalette = {
     { key: "--hr-senja", label: "Senja" },
     { key: "--inv-line", label: "Garis" },
   ],
+  surface: "--inv-wash",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--inv-accent", "--hr-merah", "--inv-night", "--inv-gold"],
   checks: [

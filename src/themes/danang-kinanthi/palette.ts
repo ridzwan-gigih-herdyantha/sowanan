@@ -83,6 +83,7 @@ export const palette: ThemePalette = {
     { key: "--pk-ukir", label: "Ukiran" },
     { key: "--inv-line", label: "Garis" },
   ],
+  surface: "--inv-wash",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--pk-pasir", "--inv-accent", "--inv-night", "--pk-lumut"],
   checks: [

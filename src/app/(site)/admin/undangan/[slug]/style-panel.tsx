@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { canonicalFont, CUSTOM_FONT_SLOTS, customFontProblem, type CustomFontSlot } from "@/lib/invitation/custom-font";
 import type { InvitationData } from "@/lib/invitation/schema";
-import { contrast, CUSTOM, isHex, MIN_CONTRAST, type Vars } from "@/themes/palette";
+import { contrast, CUSTOM, isHex, MIN_CONTRAST, mix, type Vars } from "@/themes/palette";
 import { FONT_PRESETS, fontStack, NAME_FONTS } from "@/themes/fonts";
 import { GOOGLE_DECORATIVE_FONTS, GOOGLE_TEXT_FONTS } from "@/themes/google-fonts";
-import { PALETTES, resolvePalette } from "@/themes/palettes";
+import { customChecks, PALETTES, resolvePalette } from "@/themes/palettes";
 import { Spinner } from "./spinner";
 
 type Props = {
@@ -20,11 +20,15 @@ type Props = {
   onChange: (style: InvitationData["style"]) => void;
 };
 
-const BASE_FIELDS = [
+const COLOR_FIELDS = [
   { key: "paper", label: "Latar" },
+  { key: "surface", label: "Permukaan", optional: true },
   { key: "accent", label: "Aksen" },
   { key: "ink", label: "Teks" },
+  { key: "muted", label: "Teks sekunder", optional: true },
 ] as const;
+
+const BASE_KEYS = ["paper", "accent", "ink"] as const;
 
 function Swatch({ vars, keys }: { vars: Vars; keys: string[] }) {
   return (
@@ -33,6 +37,36 @@ function Swatch({ vars, keys }: { vars: Vars; keys: string[] }) {
         <span key={k} className="flex-1" style={{ background: vars[k as `--${string}`] }} />
       ))}
     </span>
+  );
+}
+
+// Isian satu warna. Sama seperti isian font, hanya kode yang sah yang diteruskan ke undangan, jadi warna lain dan
+// pratinjau tidak berubah selama kode masih diketik. Isian opsional boleh kosong.
+function ColorField({ label, value, picker, optional, onChange }: { label: string; value: string; picker: string; optional: boolean; onChange: (value: string) => void }) {
+  const [typing, setTyping] = useState<string | null>(null);
+  const text = typing ?? value;
+  const valid = (s: string) => isHex(s) || (optional && !s);
+  return (
+    <label className="block text-[13px]">
+      {label}
+      <span className="mt-1 flex items-center gap-2 rounded-sm border border-line px-2 py-1.5 focus-within:border-wine">
+        <input type="color" value={picker} onChange={(e) => onChange(e.target.value.toUpperCase())} className="size-7 shrink-0 cursor-pointer border-0 bg-transparent p-0" aria-label={`Pilih warna ${label.toLowerCase()}`} />
+        <input
+          value={text}
+          onChange={(e) => {
+            const hex = e.target.value.replace(/^#+/, "").toUpperCase();
+            const next = optional && !hex ? "" : `#${hex}`;
+            setTyping(next);
+            if (valid(next)) onChange(next);
+          }}
+          onBlur={() => setTyping(null)}
+          maxLength={7}
+          spellCheck={false}
+          placeholder={optional ? "Otomatis" : undefined}
+          className={`w-full bg-transparent font-mono text-[13px] outline-none placeholder:font-sans ${valid(text) ? "" : "text-wine"}`}
+        />
+      </span>
+    </label>
   );
 }
 
@@ -65,15 +99,20 @@ function CustomFontField({ slot, label, value, onChange }: { slot: CustomFontSlo
   );
 }
 
-// Panel gaya: palet jadi, palet kustom dari tiga warna dasar dengan cek kontras, dan pasangan font.
+// Panel gaya: palet jadi, palet kustom sebagai slot kelima dengan cek kontras, dan pasangan font.
 export function StylePanel({ theme, style, couple, locked, applying, onChange }: Props) {
+  // Palet jadi terakhir yang dipilih, sumber warna saat palet kustom dimulai ulang.
+  const [lastPreset, setLastPreset] = useState(style.palette === CUSTOM ? "" : style.palette);
   const p = PALETTES[theme];
   if (!p) return null;
 
   const current = style.palette || p.presets[0].id;
   const custom = current === CUSTOM;
   const active = resolvePalette(theme, style);
-  const base = custom && BASE_FIELDS.every((f) => isHex(style.custom[f.key])) ? style.custom : p.base(active);
+  const saved = BASE_KEYS.every((k) => isHex(style.custom[k]));
+  const savedVars = saved ? resolvePalette(theme, { ...style, palette: CUSTOM }) : null;
+  const seedPreset = p.presets.find((x) => x.id === lastPreset) ?? p.presets[0];
+  const checks = customChecks(theme, style);
   const fonts = FONT_PRESETS[theme] ?? [];
   const font = fonts.find((f) => f.id === style.font) ?? fonts[0];
   const nameFont = NAME_FONTS.find((f) => f.id === style.nameFont);
@@ -87,9 +126,22 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
     { text: locked.customFont, broken: hasCustomFont },
   ].filter((n, i, all): n is { text: string; broken: boolean } => Boolean(n.text) && all.findIndex((m) => m.text === n.text) === i);
 
-  const pick = (id: string) => onChange({ ...style, palette: id === p.presets[0].id ? "" : id });
-  const startCustom = () => onChange({ ...style, palette: CUSTOM, custom: { ...p.base(active) } });
-  const setBase = (key: (typeof BASE_FIELDS)[number]["key"], value: string) => onChange({ ...style, palette: CUSTOM, custom: { ...base, [key]: value.toUpperCase() } });
+  const pick = (id: string) => {
+    setLastPreset(id);
+    onChange({ ...style, palette: id === p.presets[0].id ? "" : id });
+  };
+  // Warna yang sudah diisi tetap tersimpan saat admin mencoba palet jadi lalu kembali ke slot ini.
+  const seed = () => ({ ...p.base(seedPreset.vars), surface: "", muted: "" });
+  const openCustom = () => onChange({ ...style, palette: CUSTOM, custom: saved ? style.custom : seed() });
+  const setColor = (key: (typeof COLOR_FIELDS)[number]["key"], value: string) => onChange({ ...style, palette: CUSTOM, custom: { ...style.custom, [key]: value } });
+  // Warna yang sedang berlaku untuk isian opsional yang masih kosong, sebagai nilai awal pemilih warna.
+  const pickerValue = (key: (typeof COLOR_FIELDS)[number]["key"]) => {
+    const v = style.custom[key];
+    if (isHex(v)) return v;
+    if (key === "surface" && isHex(active[p.surface] ?? "")) return active[p.surface];
+    if (key === "muted" && saved) return mix(style.custom.ink, style.custom.paper, 0.3);
+    return "#000000";
+  };
 
   return (
     <div id="g-gaya">
@@ -110,11 +162,11 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
             </p>
           ))}
 
-          {!locked.palette && (
+          {!(locked.palette && locked.custom) && (
             <>
-            <p className="text-[13px] text-ink-mute">Palet jadi</p>
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {p.presets.map((x, i) => {
+            <p className="text-[13px] text-ink-mute">Palet</p>
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {!locked.palette && p.presets.map((x, i) => {
                 const on = !custom && x.id === current;
                 const busy = applying !== null && (applying === x.id || (i === 0 && applying === "bawaan"));
                 return (
@@ -139,47 +191,43 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
                   </button>
                 );
               })}
+              {!locked.custom && (
+                <button
+                  type="button"
+                  onClick={openCustom}
+                  aria-pressed={custom}
+                  aria-busy={applying === CUSTOM || undefined}
+                  className={`relative rounded-sm border p-2 text-left transition-colors duration-150 ${custom ? "border-wine ring-1 ring-wine" : "border-line hover:border-ink-mute"}`}
+                >
+                  {savedVars ? <Swatch vars={savedVars} keys={p.swatch} /> : <span className="block h-7 rounded-sm border border-dashed border-ink-mute" />}
+                  {applying === CUSTOM && (
+                    <span className="absolute inset-x-2 top-2 flex h-7 items-center justify-center rounded-sm bg-white/70">
+                      <Spinner className="size-4 text-ink" />
+                    </span>
+                  )}
+                  <span className="mt-1.5 block text-[13px]">Kustom</span>
+                </button>
+              )}
             </div>
             </>
           )}
 
           {!locked.custom && (
             <>
-            <div className={`flex items-center justify-between gap-3 ${locked.palette ? "" : "mt-5"}`}>
-              <p className="text-[13px] text-ink-mute">Palet kustom</p>
-              {!custom && (
-                <button type="button" onClick={startCustom} className="rounded-sm border border-ink px-3 py-1.5 text-[13px]">
-                  Buat dari palet ini
-                </button>
-              )}
-            </div>
-
             {custom && (
               <>
-                <div className="mt-2 grid gap-3 sm:grid-cols-3">
-                  {BASE_FIELDS.map((f) => {
-                    const v = style.custom[f.key];
-                    return (
-                      <label key={f.key} className="block text-[13px]">
-                        {f.label}
-                        <span className="mt-1 flex items-center gap-2 rounded-sm border border-line px-2 py-1.5 focus-within:border-wine">
-                          <input type="color" value={isHex(v) ? v : "#000000"} onChange={(e) => setBase(f.key, e.target.value)} className="size-7 shrink-0 cursor-pointer border-0 bg-transparent p-0" aria-label={`Pilih warna ${f.label.toLowerCase()}`} />
-                          <input
-                            value={v}
-                            onChange={(e) => setBase(f.key, e.target.value.startsWith("#") ? e.target.value : `#${e.target.value}`)}
-                            maxLength={7}
-                            spellCheck={false}
-                            className={`w-full bg-transparent font-mono text-[13px] outline-none ${isHex(v) ? "" : "text-wine"}`}
-                          />
-                        </span>
-                      </label>
-                    );
-                  })}
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  {COLOR_FIELDS.map((f) => (
+                    <ColorField key={f.key} label={f.label} value={style.custom[f.key]} picker={pickerValue(f.key)} optional={"optional" in f} onChange={(v) => setColor(f.key, v)} />
+                  ))}
                 </div>
-                <p className="mt-2 text-[12px] text-ink-mute">Warna lain (latar kedua, bagian gelap, garis, emas) diturunkan otomatis dari ketiganya.</p>
+                <p className="mt-2 text-[12px] text-ink-mute">Kosongkan permukaan dan teks sekunder supaya dihitung otomatis. Warna lain (bagian gelap, garis, emas) selalu diturunkan dari latar, aksen, dan teks.</p>
+                <button type="button" onClick={() => onChange({ ...style, palette: CUSTOM, custom: seed() })} className="mt-2 text-[13px] text-wine underline underline-offset-4">
+                  Isi ulang dari palet {seedPreset.name}
+                </button>
 
                 <ul className="mt-3 grid gap-1.5">
-                  {p.checks.map((c) => {
+                  {checks.map((c) => {
                     const fg = active[c.fg];
                     const bg = active[c.bg];
                     const ratio = fg && bg ? contrast(fg, bg) : 0;
@@ -197,8 +245,8 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
                     );
                   })}
                 </ul>
-                {p.checks.some((c) => contrast(active[c.fg], active[c.bg]) < MIN_CONTRAST) && (
-                  <p className="mt-2 text-[12px] text-wine">Ada pasangan yang kontrasnya di bawah {MIN_CONTRAST}. Teksnya bisa sulit dibaca, coba gelapkan warna teks atau terangkan latar.</p>
+                {checks.some((c) => active[c.fg] && active[c.bg] && contrast(active[c.fg], active[c.bg]) < MIN_CONTRAST) && (
+                  <p className="mt-2 text-[12px] text-wine">Ada pasangan yang kontrasnya di bawah {MIN_CONTRAST}. Teksnya bisa sulit dibaca, tapi undangan tetap bisa disimpan.</p>
                 )}
               </>
             )}
@@ -299,7 +347,7 @@ export function StylePanel({ theme, style, couple, locked, applying, onChange }:
           )}
 
           {changed && (
-            <button type="button" onClick={() => onChange({ palette: "", font: "", nameFont: "", customFont: { display: "", body: "", name: "" }, custom: { paper: "", accent: "", ink: "" } })} className="mt-4 text-[13px] text-wine underline underline-offset-4">
+            <button type="button" onClick={() => onChange({ palette: "", font: "", nameFont: "", customFont: { display: "", body: "", name: "" }, custom: { paper: "", accent: "", ink: "", surface: "", muted: "" } })} className="mt-4 text-[13px] text-wine underline underline-offset-4">
               Kembali ke gaya bawaan
             </button>
           )}

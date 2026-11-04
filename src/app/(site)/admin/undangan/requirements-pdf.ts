@@ -70,7 +70,7 @@ function styleChoices(theme: string, couple: string, locked: PackageRules["locke
     .map((f, i) => `<tr class="font"><td class="box"><span></span></td><td class="label">${esc(f.name)}${i === 0 ? " <small>(bawaan)</small>" : ""}</td><td><div class="sample" style="font-family:'${esc(family(f.display))}'">${esc(names)}</div><div class="body" style="font-family:'${esc(family(f.body))}'">Dengan memohon rahmat Tuhan, kami mengundang Anda.</div></td></tr>`)
     .join("");
   const scripts = NAME_FONTS.map((f) => `<tr class="font"><td class="box"><span></span></td><td class="label">${esc(f.name)}</td><td><div class="sample" style="font-family:'${esc(family(f.font))}';font-size:20pt">${esc(names)}</div></td></tr>`).join("");
-  const own = `<div class="pal"><span class="sw"><i style="background:#fff"></i><i style="background:#ddd"></i><i style="background:#999"></i></span><b>Warna sendiri: kirim tiga warna untuk latar, aksen, dan teks</b></div>`;
+  const own = `<div class="pal"><span class="sw"><i style="background:#fff"></i><i style="background:#ddd"></i><i style="background:#999"></i></span><b>Warna sendiri: sebutkan warna yang diinginkan atau kirim kode hex, kami yang menyesuaikan</b></div>`;
   const palettes = `${locked.palet_varian ? "" : pals}${locked.palet_custom ? "" : own}`;
   const fontOpen = !locked.font_varian;
   const customFont = locked.font_custom

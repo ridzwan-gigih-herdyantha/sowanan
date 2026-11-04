@@ -18,6 +18,8 @@ export const canonicalFont = (name: string) => {
   return TEXT.get(key) ?? DECORATIVE.get(key) ?? "";
 };
 
+export const isDecorativeFont = (name: string) => DECORATIVE.has(canonicalFont(name).toLowerCase());
+
 // Alasan nama font tidak bisa dipakai di tempat itu. Kosong berarti boleh.
 export function customFontProblem(slot: CustomFontSlot, name: string): string | undefined {
   const found = canonicalFont(name);

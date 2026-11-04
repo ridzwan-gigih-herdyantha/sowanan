@@ -48,7 +48,7 @@ export const SYSTEM_KEYS = {
   bagian_tambahan: "Membatasi jumlah bagian tambahan di luar tema di editor undangan",
   musik_sendiri: "Membuka unggah musik sendiri di editor undangan",
   palet_varian: "Membuka pilihan varian palet di editor undangan",
-  palet_custom: "Membuka palet kustom dari tiga warna dasar di editor undangan",
+  palet_custom: "Membuka palet kustom, slot kelima di luar varian tema, di editor undangan",
   font_varian: "Membuka pilihan pasangan font dan font nama mempelai di editor undangan",
   font_custom: "Membuka font kustom dari Google Fonts di editor undangan",
   video_youtube: "Membuka isian video YouTube di editor undangan",

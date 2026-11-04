@@ -15,7 +15,7 @@ import { palette as elaris } from "./raka-anindya/palette";
 import { palette as nocturne } from "./damar-elara/palette";
 import { palette as mawaddah } from "./faris-najwa/palette";
 import { palette as isometrik } from "./rafi-kayla/palette";
-import { CUSTOM, isHex, type ThemePalette, type Vars } from "./palette";
+import { CUSTOM, isHex, type Check, type ThemePalette, type Vars } from "./palette";
 
 export const PALETTES: Record<string, ThemePalette> = {
   "andi-rina": andiRina,
@@ -41,8 +41,31 @@ export function resolvePalette(theme: string, style?: InvitationData["style"]): 
   const p = PALETTES[theme];
   if (!p) return {};
   if (style?.palette === CUSTOM) {
-    const { paper, accent, ink } = style.custom;
-    if ([paper, accent, ink].every(isHex)) return p.derive({ paper, accent, ink });
+    const { paper, accent, ink, surface, muted } = style.custom;
+    if ([paper, accent, ink].every(isHex)) {
+      return {
+        ...p.derive({ paper, accent, ink }),
+        ...(isHex(surface) && { [p.surface]: surface }),
+        ...(isHex(muted) && { "--inv-muted": muted, ...(p.muted && { [p.muted]: muted }) }),
+      };
+    }
   }
   return (p.presets.find((x) => x.id === style?.palette) ?? p.presets[0]).vars;
+}
+
+// Pasangan warna yang dicek kontrasnya pada palet kustom: milik tema, ditambah token yang diisi admin.
+export function customChecks(theme: string, style: InvitationData["style"]): Check[] {
+  const p = PALETTES[theme];
+  if (!p) return [];
+  const { surface, muted } = style.custom;
+  const added: Check[] = [
+    ...(isHex(surface) ? [{ fg: "--inv-ink", bg: p.surface, label: "Teks di permukaan" } as const] : []),
+    ...(isHex(muted)
+      ? ([
+          { fg: "--inv-muted", bg: "--inv-paper", label: "Teks sekunder di latar" },
+          { fg: "--inv-muted", bg: p.surface, label: "Teks sekunder di permukaan" },
+        ] as const)
+      : []),
+  ];
+  return [...p.checks, ...added.filter((a) => !p.checks.some((c) => c.fg === a.fg && c.bg === a.bg))];
 }

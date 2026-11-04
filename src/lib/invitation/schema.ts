@@ -121,7 +121,8 @@ export const invitationDataSchema = z.object({
       nameFont: str(),
       // Nama font Google Fonts per tempat, menimpa pilihan font di atas. Kosong berarti tidak dipakai.
       customFont: z.object({ display: str(), body: str(), name: str() }).prefault({}),
-      custom: z.object({ paper: str(), accent: str(), ink: str() }).prefault({}),
+      // Permukaan dan teks sekunder opsional, kosong berarti diturunkan otomatis dari tiga warna lainnya.
+      custom: z.object({ paper: str(), accent: str(), ink: str(), surface: str(), muted: str() }).prefault({}),
     })
     .prefault({}),
   // Foto dari add-on galeri pasca acara, tampil di akhir Galeri. Terpisah dari batas foto paket.

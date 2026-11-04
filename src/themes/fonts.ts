@@ -17,6 +17,7 @@ import {
   Sacramento,
   Work_Sans,
 } from "next/font/google";
+import { isDecorativeFont } from "@/lib/invitation/custom-font";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { defaultFonts as andiRina } from "./andi-rina/fonts";
 import { defaultFonts as arkasaMentari } from "./arkasa-mentari/fonts";
@@ -172,6 +173,11 @@ export const fontStack = (f: Font, kind: "display" | "body") => `${f.style.fontF
 const isFamily = (name?: string): name is string => Boolean(name) && /^[A-Za-z0-9 ]+$/.test(name!);
 const customStack = (name: string, kind: "display" | "body") => fontStack({ style: { fontFamily: `'${name}'` } }, kind);
 
+// Ligatur font dekoratif sering menyatukan huruf jadi sulit dibaca. Alternatif kontekstual tetap hidup karena
+// font tulisan tangan memakainya untuk menyambung huruf, jadi tidak memakai nilai none.
+const NO_LIGATURES = "no-common-ligatures no-discretionary-ligatures no-historical-ligatures";
+const ligatures = (name: string) => (isDecorativeFont(name) ? NO_LIGATURES : "normal");
+
 // Font bawaan memakai pengaturan tema sendiri, jadi hanya pilihan lain yang menimpa variabel font.
 // --inv-script yang kosong membuat nama mempelai kembali ke font judul.
 // Font custom menimpa pilihan di atasnya, per tempat.
@@ -180,6 +186,10 @@ export function resolveFonts(theme: string, style?: InvitationData["style"]): Re
   const name = style?.nameFont && NAME_FONTS.find((x) => x.id === style.nameFont);
   const custom = style?.customFont;
   return {
+    ...(isFamily(custom?.display) && { "--inv-liga-display": ligatures(custom.display) }),
+    // Font nama pilihan tidak mengikuti ligatur font judul.
+    ...(name && { "--inv-liga-script": "normal" }),
+    ...(isFamily(custom?.name) && { "--inv-liga-script": ligatures(custom.name) }),
     ...(preset && { "--inv-display": fontStack(preset.display, "display"), "--inv-body": fontStack(preset.body, "body") }),
     ...(name && { "--inv-script": fontStack(name.font, "display") }),
     ...(isFamily(custom?.display) && { "--inv-display": customStack(custom.display, "display") }),
@@ -193,7 +203,14 @@ export function storyFonts(theme: string, style?: InvitationData["style"]) {
   const base = FONT_PRESETS[theme]?.[0];
   const vars = resolveFonts(theme, style);
   const display = vars["--inv-display"] ?? (base ? fontStack(base.display, "display") : SERIF);
-  return { display, body: vars["--inv-body"] ?? (base ? fontStack(base.body, "body") : SANS), name: vars["--inv-script"] ?? display };
+  const displayLiga = vars["--inv-liga-display"] ?? "normal";
+  return {
+    display,
+    body: vars["--inv-body"] ?? (base ? fontStack(base.body, "body") : SANS),
+    name: vars["--inv-script"] ?? display,
+    plainDisplay: displayLiga === NO_LIGATURES,
+    plainName: (vars["--inv-liga-script"] ?? displayLiga) === NO_LIGATURES,
+  };
 }
 
 // Tautan stylesheet font custom, satu per font supaya satu nama yang salah tidak menggagalkan yang lain.

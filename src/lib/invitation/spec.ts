@@ -523,9 +523,11 @@ export function checkInvitation(data: InvitationData, theme: string): Issue[] {
   const { start, end } = data.event;
   if (start && end && Date.parse(end) < Date.parse(start)) out.push({ path: "event.end", group: "hero", message: "Selesai acara harus setelah mulai acara." });
   // Palet kustom dengan warna tidak sah diam-diam kembali ke palet bawaan, jadi ditahan di sini.
-  const { paper, accent, ink } = data.style.custom;
+  const { paper, accent, ink, surface, muted } = data.style.custom;
   if (data.style.palette === CUSTOM && ![paper, accent, ink].every((c) => HEX.test(c))) {
     out.push({ path: "style.palette", group: "gaya", message: "Palet kustom belum lengkap. Isi warna latar, aksen, dan teks dengan kode seperti #A3B18A, atau pilih palet jadi." });
+  } else if (data.style.palette === CUSTOM && [surface, muted].some((c) => c && !HEX.test(c))) {
+    out.push({ path: "style.palette", group: "gaya", message: "Warna permukaan atau teks sekunder belum lengkap. Isi dengan kode seperti #A3B18A, atau kosongkan supaya otomatis." });
   }
   if (data.video.trim() && !streamOf(data.video.trim(), "", "")?.youtube) {
     out.push({ path: "video", group: "video", message: "Tautan video harus mengarah ke satu video YouTube, bukan saluran atau situs lain." });
