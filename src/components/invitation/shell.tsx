@@ -64,8 +64,14 @@ export const useSkipDoor = () => useContext(SkipDoorContext);
 
 // Nama tamu dari tautan (?to=) hanya dipakai kalau paket undangan menyertakannya.
 const GuestNamesContext = createContext(true);
-export function GuestNames({ allowed, children }: { allowed: boolean; children: ReactNode }) {
-  return <GuestNamesContext.Provider value={allowed}>{children}</GuestNamesContext.Provider>;
+// Di undangan private nama dibaca server dari kode tamu, jadi ?to= yang diubah-ubah tidak berpengaruh.
+const FixedGuestContext = createContext<string | null>(null);
+export function GuestNames({ allowed, fixed, children }: { allowed: boolean; fixed?: string; children: ReactNode }) {
+  return (
+    <GuestNamesContext.Provider value={allowed}>
+      <FixedGuestContext.Provider value={fixed ?? null}>{children}</FixedGuestContext.Provider>
+    </GuestNamesContext.Provider>
+  );
 }
 
 // Saat video atau lagu bagian tambahan diputar, media lain berhenti dan musik latar meredup lalu berhenti.
@@ -166,7 +172,8 @@ const arrow = (
 export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom", musicOnDoor = false }: Props) {
   const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
   const namesAllowed = useContext(GuestNamesContext);
-  const invited = namesAllowed ? fromLink : "";
+  const fixedGuest = useContext(FixedGuestContext);
+  const invited = fixedGuest ?? (namesAllowed ? fromLink : "");
   const slug = useContext(SlugContext);
   const skipDoor = useContext(SkipDoorContext);
 
@@ -176,9 +183,9 @@ export function InvitationShell({ door, music, synth, className, style, children
     if (!slug || !namesAllowed) return;
     const k = new URLSearchParams(window.location.search).get("k");
     if (k && /^[a-z0-9]{8,32}$/i.test(k)) remember(guestCodeKey(slug), k);
-    const to = readGuestParam();
+    const to = fixedGuest ?? readGuestParam();
     if (to) storeGuest(slug, to);
-  }, [slug, namesAllowed]);
+  }, [slug, namesAllowed, fixedGuest]);
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(skipDoor);
   // Naik setiap undangan ditutup kembali ke sampul, supaya sampul dipasang ulang dari keadaan awal.

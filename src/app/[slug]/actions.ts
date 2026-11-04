@@ -5,6 +5,7 @@ import { z } from "zod";
 import { wishesTag, type Wish } from "@/lib/guestbook";
 import { GUEST_NAME_MAX, WISH_MAX } from "@/lib/guest-input";
 import { archiveInfo, isDemo } from "@/lib/invitation/archive";
+import { checkPass } from "@/lib/invitation/private";
 import { invitationDataSchema } from "@/lib/invitation/schema";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -13,6 +14,7 @@ export type ActionResult<T = null> = { ok: true; data: T } | { ok: false; error:
 const NOT_READY = "Maaf, penyimpanan sedang tidak tersedia. Coba lagi nanti.";
 const ARCHIVED = "Undangan ini sudah menjadi arsip, jadi tidak lagi menerima konfirmasi kehadiran atau ucapan baru.";
 const INACTIVE = "Undangan ini belum aktif. Konfirmasi kehadiran dan ucapan bisa dikirim setelah undangan aktif.";
+const PRIVATE = "Undangan ini khusus tamu terundang. Silakan buka lewat link pribadi yang dikirimkan kepadamu.";
 
 const demoMode = () => !hasSupabase() && process.env.NODE_ENV !== "production";
 
@@ -26,18 +28,20 @@ async function retry<T extends { error: { message: string } | null }>(label: str
   return second;
 }
 
-type Target = { id: string; demo: boolean; archived: boolean; inactive: boolean };
+type Target = { id: string; demo: boolean; archived: boolean; inactive: boolean; denied: boolean };
 
 // Dibaca langsung dari database, bukan cache halaman yang menyimpan hasil gagal beberapa menit dan bisa
 // menolak semua RSVP. Pembekuan arsip juga tepat waktu. Undangan contoh dibalas berhasil tanpa disimpan.
-async function target(slug: string): Promise<Target | null> {
+// Undangan private menolak kiriman tanpa kode tamu valid, sama seperti halamannya.
+async function target(slug: string, code: string): Promise<Target | null> {
   const { data, error } = await retry(`Membaca undangan ${slug}`, () =>
-    supabaseAdmin().from("invitations").select("id, slug, theme, data, payment_status").eq("slug", slug).maybeSingle(),
+    supabaseAdmin().from("invitations").select("id, slug, theme, data, payment_status, private").eq("slug", slug).maybeSingle(),
   );
   if (error || !data) return null;
   const demo = isDemo(data.slug, data.theme);
   const parsed = invitationDataSchema.safeParse(data.data);
-  return { id: data.id, demo, archived: parsed.success && archiveInfo(parsed.data, Date.now(), demo).archived, inactive: !demo && data.payment_status === "belum_lunas" };
+  const denied = !demo && data.private && !(await checkPass(data.id, slug, code)).ok;
+  return { id: data.id, demo, archived: parsed.success && archiveInfo(parsed.data, Date.now(), demo).archived, inactive: !demo && data.payment_status === "belum_lunas", denied };
 }
 
 const wishSchema = z.object({
@@ -45,15 +49,16 @@ const wishSchema = z.object({
   message: z.string().trim().min(1, "Pesan wajib diisi.").max(WISH_MAX, `Pesan maksimal ${WISH_MAX} karakter.`),
 });
 
-export async function submitWish(slug: string, input: { name: string; message: string; website?: string }): Promise<ActionResult<Wish>> {
+export async function submitWish(slug: string, input: { name: string; message: string; website?: string }, code = ""): Promise<ActionResult<Wish>> {
   if (input.website) return { ok: true, data: { id: crypto.randomUUID(), name: input.name, message: input.message } };
   const parsed = wishSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   if (demoMode()) return { ok: true, data: { id: crypto.randomUUID(), ...parsed.data } };
-  const inv = await target(slug);
+  const inv = await target(slug, code);
   if (!inv) return { ok: false, error: NOT_READY };
   if (inv.demo) return { ok: true, data: { id: crypto.randomUUID(), ...parsed.data } };
+  if (inv.denied) return { ok: false, error: PRIVATE };
   if (inv.archived) return { ok: false, error: ARCHIVED };
   if (inv.inactive) return { ok: false, error: INACTIVE };
 
@@ -72,14 +77,15 @@ const rsvpSchema = z.object({
   guests: z.number().int().min(0).max(2),
 });
 
-export async function submitRsvp(slug: string, input: z.infer<typeof rsvpSchema>): Promise<ActionResult> {
+export async function submitRsvp(slug: string, input: z.infer<typeof rsvpSchema>, code = ""): Promise<ActionResult> {
   const parsed = rsvpSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   if (demoMode()) return { ok: true, data: null };
-  const inv = await target(slug);
+  const inv = await target(slug, code);
   if (!inv) return { ok: false, error: NOT_READY };
   if (inv.demo) return { ok: true, data: null };
+  if (inv.denied) return { ok: false, error: PRIVATE };
   if (inv.archived) return { ok: false, error: ARCHIVED };
   if (inv.inactive) return { ok: false, error: INACTIVE };
 

@@ -338,6 +338,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "video", label: "Video dari YouTube", kind: "check", unit: "", key: "video_youtube", cells: cells(false, false, false), hidden: true },
     { id: "story", label: "Gambar undangan untuk story", kind: "check", unit: "", key: "gambar_story", cells: cells(false, false, false), hidden: true },
     { id: "kedua", label: "Undangan kedua untuk acara terpisah", kind: "check", unit: "", key: "undangan_kedua", cells: cells(false, false, false), hidden: true },
+    { id: "terundang", label: "Undangan khusus tamu terundang", kind: "check", unit: "", key: "tamu_terundang", cells: cells(false, false, true), hidden: true },
     {
       id: "pasca",
       label: "Galeri pasca acara",
@@ -388,6 +389,8 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "video", on: false, name: "Video dari YouTube", price: 25000, scope: "Semua paket", unlock: "video_youtube", amount: 0 },
     { id: "story", on: false, name: "Gambar undangan untuk story", price: 25000, scope: "Semua paket", unlock: "gambar_story", amount: 0 },
     { id: "kedua", on: false, name: "Undangan kedua untuk acara terpisah", price: 50000, scope: "Lengkap dan Istimewa", unlock: "undangan_kedua", amount: 0 },
+    // Dinyalakan setelah fitur selesai dites, bersamaan dengan teks harga dan ketentuan yang baru.
+    { id: "terundang", on: false, name: "Undangan khusus tamu terundang", price: 50000, scope: "Lengkap", unlock: "tamu_terundang", amount: 0 },
     { id: "pasca", on: false, name: "Galeri pasca acara, per 10 foto", price: 25000, scope: "Semua paket", unlock: "galeri_pasca", amount: 10 },
     { id: "domainmyid", on: true, name: "Alamat domain sendiri (.my.id)", price: 99000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
     { id: "domain", on: true, name: "Alamat domain sendiri (.com)", price: 299000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },

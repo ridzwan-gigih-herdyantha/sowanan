@@ -15,9 +15,9 @@ export type CheckinResult =
   | { status: "unknown" }
   | { status: "closed"; reason: string };
 
-type InvitationRow = { id: string; slug: string; theme: string; data: unknown; package: string | null; addons: Purchased | null; checkin_opened_at: string | null };
+type InvitationRow = { id: string; slug: string; theme: string; data: unknown; package: string | null; addons: Purchased | null; checkin_opened_at: string | null; private: boolean };
 
-const ROW_COLS = "id, slug, theme, data, package, addons, checkin_opened_at";
+const ROW_COLS = "id, slug, theme, data, package, addons, checkin_opened_at, private";
 
 const HOUR = 3_600_000;
 // Absensi buka 3 jam sebelum sampai 3 jam setelah acara,

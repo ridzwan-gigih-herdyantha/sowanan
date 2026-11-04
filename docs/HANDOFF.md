@@ -97,10 +97,24 @@ File utama: `src/app/(site)/admin/undangan/[slug]/editor.tsx`.
 - **Tombol Pesan tema ini** (`DemoOrderButton`) hanya di undangan contoh. Event Lead piksel terkirim otomatis dari `MetaPixel` untuk semua tautan wa.me, tombol ini menambah `klik_whatsapp` di GA4 dengan parameter `tema` dan `posisi`. Kedua parameter perlu didaftarkan sebagai dimensi kustom di GA4 supaya muncul di laporan.
 - **Nama tamu** (`?to=`) hanya dipakai bila paket termasuk nama_tamu. Kode `?k=` adalah pengenal tamu di link pribadinya, bukan QR per tamu: absensi memakai satu QR per undangan (`/absen/<token>`). Cadangannya, penerima tamu mencari nama lalu menandai hadir di dashboard mempelai atau admin.
 
+## Undangan khusus tamu terundang
+
+Add-on Lengkap, termasuk di Istimewa, tidak tersedia untuk Dasar (`ADDON_EXCLUDED`). Kuncinya `tamu_terundang`. Add-on masih `on: false` sampai teks harga dan ketentuan diperbarui, jadi untuk mengetes di Lengkap nilainya diisi lewat kolom `invitations.addons`.
+
+- **Gerbang** (`lib/invitation/private.ts`): `invitations.private` berlaku langsung tanpa Publish. Undangan publik tetap statis. Hanya undangan private yang membaca `searchParams` di dalam `<Suspense>` (`PrivateInvitation`), jadi isinya tidak pernah masuk static shell.
+- **Kode**: kode tamu adalah `guests.qr_token`, kode mempelai `invitations.couple_code`. Keduanya dibuat database. Tamu `walk_in` tidak dihitung, karena barisnya bisa dibuat siapa pun lewat QR absensi. Absen lewat nama tidak mengembalikan kode di undangan private.
+- **Kode salah** dibatasi per IP lewat `login_attempts`, scope `undangan:<slug>`.
+- **Yang diperiksa**: halaman, `/<slug>/kalender`, `submitRsvp`, `submitWish`. Jalur baru yang membuka isi undangan wajib memanggil `checkPass`.
+- **Metadata** undangan private tidak membaca kode dan tidak memuat nama siapa pun.
+- **Analitik**: GA dan Meta Pixel tidak dimuat di alamat berisi `?k=`, supaya kode tidak keluar ke pihak ketiga.
+- **Sesi** (`invitation_sessions`, `guests.session_id`, kosong berarti semua sesi): `withSessions` (`lib/invitation/view.ts`) mengganti `inv.events`, `inv.date`, dan `inv.end` di server. Tema tidak perlu tahu soal sesi, asal memakai `inv.events` untuk jam. `session_item` menentukan item yang dibagi. Kosong berarti seluruh susunan acara diganti.
+- **Duplikat**: add-on ini tidak ikut tersalin dan salinannya mulai dari mode private mati. Harga untuk undangan kedua belum diputuskan.
+- **Batas yang diketahui**: foto tetap di bucket publik. Jam yang ditulis manual di bagian tambahan, misalnya rundown, tidak ikut difilter.
+
 ## Mempelai
 
 - Akun mempelai dibuat admin di tab Akses mempelai, terhubung lewat tabel `invitation_members`.
-- Login di `/dashboard/user/login`, dashboard di `/dashboard/user/<slug>` (`lib/couple-auth.ts`). Mempelai hanya bisa membaca, menyembunyikan ucapan, dan menandai link tamu terkirim.
+- Login di `/dashboard/user/login`, dashboard di `/dashboard/user/<slug>` (`lib/couple-auth.ts`). Mempelai bisa membaca, menyembunyikan ucapan, dan menandai link tamu terkirim. Kalau paket atau add-on menyediakan tamu terundang, mempelai juga bisa mengelola tamu, sesi, dan mode private sampai undangan menjadi arsip (`lib/guest-list.ts`).
 - `src/proxy.ts` menyegarkan sesi Supabase untuk `/admin` dan `/dashboard`.
 
 ## Media
@@ -121,7 +135,7 @@ File utama: `src/app/(site)/admin/undangan/[slug]/editor.tsx`.
 
 ## Database
 
-Tabel utama: `settings` (satu baris JSON), `invitations`, `rsvps`, `wishes`, `guests`, `invitation_members`, `login_attempts`. Semua RLS aktif tanpa policy, aplikasi membaca lewat service role di server.
+Tabel utama: `settings` (satu baris JSON), `invitations`, `rsvps`, `wishes`, `guests`, `invitation_sessions`, `invitation_members`, `login_attempts`. Semua RLS aktif tanpa policy, aplikasi membaca lewat service role di server.
 
 Migrasi dijalankan manual di SQL Editor sesuai urutan nomor. Migrasi data (`0012`, `0013`) aman dijalankan ulang.
 

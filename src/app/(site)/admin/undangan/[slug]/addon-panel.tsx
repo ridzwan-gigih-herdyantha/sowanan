@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
+import { ADDON_EXCLUDED, PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
 import { formatRupiah, type Purchased } from "@/lib/settings/text";
 import { setAddons } from "../actions";
 import { Spinner } from "./spinner";
@@ -25,7 +25,7 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
   const id = pkg && pkg in PACKAGE_NAMES ? (pkg as PackageId) : null;
-  const shown = addons.filter((a) => a.on || (bought[a.id] ?? 0) > 0);
+  const shown = addons.filter((a) => (a.on || (bought[a.id] ?? 0) > 0) && !(id && ADDON_EXCLUDED[a.unlock]?.includes(id)));
   const unlocking = shown.filter((a) => a.unlock);
   const others = shown.filter((a) => !a.unlock);
 

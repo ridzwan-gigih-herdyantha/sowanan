@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { BrandLoader } from "@/components/brand-loader";
 import { listPublishedSlugs } from "@/lib/invitation/load";
-import { InvitationBody, invitationMetadata, invitationViewport, loadInvitationPage } from "./invitation-page";
+import { InvitationBody, invitationMetadata, invitationViewport, loadInvitationPage, PrivateInvitation } from "./invitation-page";
 
 export async function generateStaticParams() {
   const slugs = await listPublishedSlugs();
@@ -17,8 +19,16 @@ export async function generateViewport({ params }: PageProps<"/[slug]">): Promis
   return invitationViewport(await loadInvitationPage((await params).slug));
 }
 
-export default async function InvitationPage({ params }: PageProps<"/[slug]">) {
-  const found = await loadInvitationPage((await params).slug);
+export default async function InvitationPage({ params, searchParams }: PageProps<"/[slug]">) {
+  const { slug } = await params;
+  const found = await loadInvitationPage(slug);
   if (!found) notFound();
+  if (found.private) {
+    return (
+      <Suspense fallback={<BrandLoader />}>
+        <PrivateInvitation slug={slug} searchParams={searchParams} />
+      </Suspense>
+    );
+  }
   return <InvitationBody found={found} />;
 }

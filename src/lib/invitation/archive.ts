@@ -2,6 +2,7 @@ import type { InvitationData } from "./schema";
 
 // Tiga puluh hari setelah acara undangan dibekukan jadi arsip permanen. Isi dan ucapan tetap tampil, sedangkan
 // edit, RSVP, ucapan baru, amplop digital, hitung mundur, dan link nama tamu berhenti. Klien diberi tahu H-7.
+// Arsip undangan private tetap perlu kode, dan link berisi kode tetap menampilkan nama tamunya.
 export const ARCHIVE_AFTER_DAYS = 30;
 export const NOTICE_BEFORE_DAYS = 7;
 // Foto galeri pasca acara bisa ditambah sampai hari ke-21 setelah acara.

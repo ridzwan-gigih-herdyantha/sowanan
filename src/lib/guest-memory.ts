@@ -3,6 +3,9 @@
 export const guestNameKey = (slug: string) => `sowanan:guest:${slug}`;
 export const guestCodeKey = (slug: string) => `sowanan:k:${slug}`;
 
+// Kode tamu dari alamat halaman, ikut dikirim saat RSVP, ucapan, dan unduh kalender di undangan private.
+export const linkCode = () => new URLSearchParams(window.location.search).get("k") ?? "";
+
 export function recall(key: string): string {
   try {
     return localStorage.getItem(key) ?? "";

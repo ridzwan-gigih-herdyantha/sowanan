@@ -20,6 +20,8 @@ type Props = {
   theme: string;
   label: string;
   published: boolean;
+  // Kode mempelai kalau undangan private, supaya tombol View tidak berhenti di halaman khusus tamu terundang.
+  viewCode: string | null;
   paid: boolean;
   pkg: string | null;
   draft: InvitationData;
@@ -114,7 +116,7 @@ function PhoneFrame({ frame, src, fitWidth, overlay }: { frame: RefObject<HTMLIF
   );
 }
 
-export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, packageData, bought: initialBought, dp, archive }: Props) {
+export function Editor({ slug, theme, label, published: initialPublished, viewCode, paid, pkg, draft, live, packageData, bought: initialBought, dp, archive }: Props) {
   // Bagian yang tidak termasuk paket langsung dimatikan, lalu draf tersimpan otomatis.
   const [data, setData] = useState(() =>
     packageRules(packageData, pkg, initialBought).locked.cerita && draft.sections.story.enabled ? setIn(draft, "sections.story.enabled", false) : draft,
@@ -460,7 +462,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
               Live
             </label>
             {published && (
-              <a href={`/${slug}`} target="_blank" rel="noreferrer" className="text-[14px] text-wine underline underline-offset-4">
+              <a href={viewCode ? `/${slug}?k=${viewCode}` : `/${slug}`} target="_blank" rel="noreferrer" className="text-[14px] text-wine underline underline-offset-4">
                 View
               </a>
             )}

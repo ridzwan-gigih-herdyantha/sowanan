@@ -35,7 +35,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const archive = info.archiveAt
     ? { archived: info.archived, locked: editLocked(info, row.unlocked_until), archiveAt: formatDateId(info.archiveAt), unlockedUntil, postGallery: postGalleryWindow(info, live.postGallery.length) }
     : null;
-  return <Editor archive={archive} packageData={{ matrix, addons, packages }} dp={payment.dp} bought={(row.addons as Purchased | undefined) ?? {}} slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
+  return <Editor archive={archive} packageData={{ matrix, addons, packages }} dp={payment.dp} bought={(row.addons as Purchased | undefined) ?? {}} slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} viewCode={row.private ? row.couple_code : null} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
 }
 
 export default function EditInvitationPage({ params }: PageProps<"/admin/undangan/[slug]">) {

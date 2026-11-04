@@ -1,3 +1,4 @@
+import type { GuestSession } from "@/lib/guests";
 import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
 import { customFontLinks, resolveFonts } from "@/themes/fonts";
@@ -8,6 +9,7 @@ import { cleanFrames, frameProps } from "./frame";
 import { streamOf } from "./stream";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
+const OFFSETS = { WIB: "+07:00", WITA: "+08:00", WIT: "+09:00" } as const;
 
 function parts(iso: string, tz: keyof typeof ZONES) {
   const fmt = new Intl.DateTimeFormat("id-ID", {
@@ -141,6 +143,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
 
   return {
     slug,
+    // Kode tamu di undangan private, supaya link di kalender tetap bisa dibuka.
+    accessCode: "",
     // Dipakai komponen bersama, misalnya bagian tambahan, untuk menyesuaikan gaya dengan tema.
     theme,
     monogram: d.monogram,
@@ -221,6 +225,30 @@ export function toView(slug: string, d: InvitationData, theme = "") {
 
 export type InvitationView = ReturnType<typeof toView>;
 
+// Jam acara untuk satu tamu, dihitung di server supaya jam sesi lain tidak ikut terkirim ke browser. only kosong
+// berarti semua sesi. Sesi menggantikan item yang dibagi. Item kosong atau namanya sudah berubah berarti seluruh
+// susunan acara diganti, supaya tamu satu sesi tidak pernah melihat jam di luar sesinya.
+export function withSessions(v: InvitationView, sessions: GuestSession[], item: string | null, only: number | null): InvitationView {
+  const shown = only === null ? sessions : sessions.filter((s) => s.id === only);
+  if (!shown.length) return v;
+  const at = item ? v.events.findIndex((e) => e.name === item) : -1;
+  const base = v.events[at];
+  const entries = shown.map((s) => ({
+    ...(base ?? { date: "", venue: "", address: "", mapUrl: "", dateLabel: v.dateLong, place: v.venue, separate: false }),
+    name: base ? `${base.name}, ${s.name}` : s.name,
+    time: s.time,
+    until: s.until || undefined,
+    clock: `${s.time}${s.until ? ` sampai ${s.until}` : ""} ${v.tz}`,
+  }));
+  const events = at < 0 ? entries : [...v.events.slice(0, at), ...entries, ...v.events.slice(at + 1)];
+  if (only === null || !Date.parse(v.date)) return { ...v, events };
+  // Hitung mundur dan kalender tamu satu sesi mengikuti jam sesinya.
+  const p = parts(v.date, v.tz);
+  const iso = (clock: string) => `${p.yyyy}-${p.mm}-${p.dd}T${clock.replace(".", ":")}:00${OFFSETS[v.tz]}`;
+  const date = iso(shown[0].time);
+  return { ...v, events, date, end: shown[0].until ? iso(shown[0].until) : new Date(Date.parse(date) + 2 * 3600_000).toISOString() };
+}
+
 export function calendarEventOf(v: InvitationView) {
   return {
     title: `Pernikahan ${v.groom.name} & ${v.bride.name}`,
@@ -228,6 +256,6 @@ export function calendarEventOf(v: InvitationView) {
     // Acara beberapa hari disimpan sebagai acara pertama, bukan satu acara sepanjang rentang hari.
     end: v.agenda && v.end.slice(0, 10) !== v.date.slice(0, 10) ? new Date(Date.parse(v.date) + 3 * 3600_000).toISOString() : v.end,
     location: `${v.venue.name}, ${v.venue.address}`,
-    details: `Undangan: https://sowanan.com/${v.slug}`,
+    details: `Undangan: https://sowanan.com/${v.slug}${v.accessCode ? `?k=${v.accessCode}` : ""}`,
   };
 }

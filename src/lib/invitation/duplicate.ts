@@ -107,9 +107,10 @@ export async function duplicateInvitation(slug: string, rawTarget: string): Prom
     copied.push(to);
   }
 
-  // Add-on ikut supaya isi yang tersalin tetap terbuka, kecuali jatah undangan kedua dan kuota pasca acara.
+  // Add-on ikut supaya isi yang tersalin tetap terbuka, kecuali jatah undangan kedua, kuota pasca acara, dan tamu
+  // terundang. Tamu terundang dilepas karena harganya untuk undangan kedua belum diputuskan, centang kalau sudah dibayar.
   const settings = await getSettingsFresh();
-  const drop = new Set(settings.addons.filter((a) => a.unlock === "undangan_kedua" || a.unlock === "galeri_pasca").map((a) => a.id));
+  const drop = new Set(settings.addons.filter((a) => a.unlock === "undangan_kedua" || a.unlock === "galeri_pasca" || a.unlock === "tamu_terundang").map((a) => a.id));
   const addons = Object.fromEntries(Object.entries(row.addons ?? {}).filter(([id]) => !drop.has(id)));
   const { error } = await sb.from("invitations").insert({ slug: target, theme: row.theme, package: row.package, addons, payment_status: row.payment_status, guest_message: row.guest_message, published: false, data, draft: data });
   if (error) {

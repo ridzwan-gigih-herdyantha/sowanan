@@ -1,14 +1,17 @@
 import type { Metadata, Viewport } from "next";
+import { notFound } from "next/navigation";
 import { WaIcon } from "@/components/home/closing";
 import { CustomFontLinks } from "@/components/invitation/custom-font-links";
 import { DemoOrderButton } from "@/components/invitation/demo-order-button";
 import { DemoViewSwitch } from "@/components/invitation/demo-view-switch";
 import { TrackThemeView } from "@/components/meta-pixel";
+import { PrivateNotice } from "@/components/invitation/private-notice";
 import { Archived, GuestNames, Inactive, InvitationSlug } from "@/components/invitation/shell";
 import { Watermark } from "@/components/invitation/watermark";
 import { isDemo } from "@/lib/invitation/archive";
 import { applyPackage, demoHref, demoOrderLink, demoPackages, TOP_PACKAGE, type DemoDevice, type DemoPackage } from "@/lib/invitation/demo-packages";
 import { getInvitation } from "@/lib/invitation/load";
+import { checkPass, guestView } from "@/lib/invitation/private";
 import { requirementsText } from "@/lib/invitation/requirements-text";
 import { limitExtras } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
@@ -37,6 +40,8 @@ export async function loadInvitationPage(slug: string, demoPkg?: PackageId) {
   // Arsip: hitung mundur, RSVP, dan amplop digital disembunyikan. Isi lain dan buku ucapan tetap tampil.
   if (archived) view.on = { ...view.on, countdown: false, rsvp: false, gifts: false };
   return {
+    id: inv.id ?? "",
+    private: Boolean(inv.private),
     theme: THEMES[inv.theme],
     paid: inv.paid,
     archived,
@@ -52,8 +57,21 @@ export async function loadInvitationPage(slug: string, demoPkg?: PackageId) {
 
 export type InvitationPageData = NonNullable<Awaited<ReturnType<typeof loadInvitationPage>>>;
 
+const PRIVATE_TITLE = "Undangan Pernikahan";
+const PRIVATE_DESCRIPTION = "Undangan ini khusus tamu terundang. Silakan buka lewat link pribadi yang dikirimkan kepadamu.";
+
 export function invitationMetadata(found: InvitationPageData | null, path: string): Metadata {
   if (!found) return { robots: { index: false, follow: false } };
+  // Metadata tidak membaca kode, jadi sama untuk semua pembuka link: tanpa nama tamu, mempelai, tanggal, dan foto.
+  if (found.private) {
+    return {
+      title: { absolute: PRIVATE_TITLE },
+      description: PRIVATE_DESCRIPTION,
+      robots: { index: false, follow: false },
+      referrer: "no-referrer",
+      openGraph: { title: PRIVATE_TITLE, description: PRIVATE_DESCRIPTION, url: path },
+    };
+  }
   const { view: v } = found;
   const title = `${v.groom.name} & ${v.bride.name} | ${v.dateLong}`;
   return {
@@ -70,7 +88,18 @@ export function invitationMetadata(found: InvitationPageData | null, path: strin
   };
 }
 
-export const invitationViewport = (found: InvitationPageData | null): Viewport => ({ themeColor: found?.view.pageColor || found?.theme.themeColor || "#FAF7F2" });
+export const invitationViewport = (found: InvitationPageData | null): Viewport => ({ themeColor: (!found?.private && (found?.view.pageColor || found?.theme.themeColor)) || "#FAF7F2" });
+
+// Kode dibaca di sini, di dalam Suspense halaman. Undangan publik tidak melewati komponen ini, jadi tetap statis.
+export async function PrivateInvitation({ slug, searchParams }: { slug: string; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const { k } = await searchParams;
+  const found = await loadInvitationPage(slug);
+  if (!found) notFound();
+  const pass = await checkPass(found.id, slug, typeof k === "string" ? k : "");
+  if (!pass.ok) return <PrivateNotice limited={pass.limited} />;
+  // Nama tamu tetap tampil di arsip, karena pembuka link sudah terbukti pemilik kode.
+  return <InvitationBody found={{ ...found, view: await guestView(found.view, found.id, pass), guestNames: true }} guestName={pass.name} />;
+}
 
 // Tautan sakelar contoh: pilihan paket di perangkat yang sama, dan pilihan perangkat di paket yang sama.
 export function demoSwitchLinks(slug: string, pkg: PackageId, device: DemoDevice, packages: DemoPackage[]) {
@@ -80,14 +109,15 @@ export function demoSwitchLinks(slug: string, pkg: PackageId, device: DemoDevice
   };
 }
 
-export function InvitationBody({ found }: { found: InvitationPageData }) {
+// guestName hanya diisi undangan private, dari kode tamu. Kosong untuk kode mempelai.
+export function InvitationBody({ found, guestName }: { found: InvitationPageData; guestName?: string }) {
   const { Component } = found.theme;
   return (
     <>
       <CustomFontLinks hrefs={found.view.fontLinks} />
       <Archived archived={found.archived}>
         <Inactive inactive={!found.paid && !found.demo}>
-          <GuestNames allowed={found.guestNames}>
+          <GuestNames allowed={found.guestNames} fixed={guestName}>
             <InvitationSlug slug={found.demo ? "" : found.view.slug}>
               <Component inv={found.view} />
             </InvitationSlug>

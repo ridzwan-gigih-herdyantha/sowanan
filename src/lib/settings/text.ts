@@ -1,4 +1,4 @@
-import { FEATURE_KEYS, PACKAGE_IDS, PACKAGE_NAMES, type FeatureKey, type MatrixRow, type PackageId, type Settings, type ThemeTier } from "./schema";
+import { ADDON_EXCLUDED, FEATURE_KEYS, PACKAGE_IDS, PACKAGE_NAMES, type FeatureKey, type MatrixRow, type PackageId, type Settings, type ThemeTier } from "./schema";
 
 export function formatRupiah(value: number): string {
   return "Rp" + value.toLocaleString("id-ID");
@@ -165,6 +165,15 @@ export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string
   const locked: PackageRules["locked"] = {};
   for (const key of FEATURE_KEYS) {
     const row = s.matrix.find((r) => r.key === key);
+    if (ADDON_EXCLUDED[key]?.includes(p)) {
+      locked[key] = `Paket ${name} tidak termasuk ${lowerFirst(row?.label ?? key)}. Ganti ke paket yang menyediakannya.`;
+      continue;
+    }
+    // Baris yang dihapus biasanya berarti tidak dibatasi, tapi mode private add-on berbayar jadi tetap terkunci.
+    if (!row && key === "tamu_terundang" && !unlocking(key).some((a) => units(a.id) > 0)) {
+      locked[key] = `Paket ${name} belum termasuk undangan khusus tamu terundang.`;
+      continue;
+    }
     if (!row || row.cells[p].on || unlocking(key).some((a) => units(a.id) > 0)) continue;
     const addon = unlocking(key)[0];
     locked[key] = `Paket ${name} tidak termasuk ${lowerFirst(row.label)}.${addon ? ` Centang add-on ${addon.name} setelah dibayar.` : " Ganti ke paket yang menyediakannya."}`;

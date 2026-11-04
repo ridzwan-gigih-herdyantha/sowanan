@@ -54,6 +54,7 @@ export const SYSTEM_KEYS = {
   video_youtube: "Membuka isian video YouTube di editor undangan",
   gambar_story: "Membuka unduh gambar story di admin undangan",
   undangan_kedua: "Membuka duplikat undangan untuk acara terpisah di daftar undangan",
+  tamu_terundang: "Membuka mode private, kode tamu, dan pembagian sesi di halaman tamu",
   cerita: "Membuka bagian Cerita di editor undangan",
   nama_tamu: "Membuka halaman nama tamu",
   ekspor_excel: "Membuka unduh Excel di halaman RSVP dan daftar tamu",
@@ -68,6 +69,8 @@ export const FEATURE_KEYS = Object.keys(SYSTEM_KEYS).filter((k) => !COUNT_KEYS.i
 export const AMOUNT_KEYS = ["galeri_foto", "galeri_pasca", "bagian_tambahan"] as const;
 export const UNLOCK_KEYS = [...AMOUNT_KEYS, ...FEATURE_KEYS] as const;
 export type UnlockKey = (typeof UNLOCK_KEYS)[number];
+// Kunci yang tidak bisa dibuka add-on di paket tertentu.
+export const ADDON_EXCLUDED: Partial<Record<string, readonly string[]>> = { tamu_terundang: ["dasar"] };
 
 export const ACTIVE_MONTHS = [3, 6, 12, 24] as const;
 
