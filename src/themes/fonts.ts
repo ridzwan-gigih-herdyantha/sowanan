@@ -21,19 +21,19 @@ import { isDecorativeFont } from "@/lib/invitation/custom-font";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { defaultFonts as andiRina } from "./andi-rina/fonts";
 import { defaultFonts as arkasaMentari } from "./arkasa-mentari/fonts";
-import { defaultFonts as aryaKirana } from "./arya-kirana/fonts";
+import { defaultFonts as aryaKirana, extraFonts as aryaKiranaExtra } from "./arya-kirana/fonts";
 import { defaultFonts as bagasSekar } from "./bagas-sekar/fonts";
 import { defaultFonts as bimaNadia } from "./bima-nadia/fonts";
-import { defaultFonts as toniLayla } from "./toni-layla/fonts";
-import { defaultFonts as danangKinanthi } from "./danang-kinanthi/fonts";
-import { defaultFonts as fadhilNayla } from "./fadhil-nayla/fonts";
+import { defaultFonts as toniLayla, extraFonts as toniLaylaExtra } from "./toni-layla/fonts";
+import { defaultFonts as danangKinanthi, extraFonts as danangKinanthiExtra } from "./danang-kinanthi/fonts";
+import { defaultFonts as fadhilNayla, extraFonts as fadhilNaylaExtra } from "./fadhil-nayla/fonts";
 import { defaultFonts as hendrawanLarasati } from "./hendrawan-larasati/fonts";
 import { defaultFonts as ivanMawar } from "./ivan-mawar/fonts";
-import { defaultFonts as galihArdila } from "./galih-ardila/fonts";
-import { defaultFonts as bonarAnggi } from "./bonar-anggi/fonts";
+import { defaultFonts as galihArdila, extraFonts as galihArdilaExtra } from "./galih-ardila/fonts";
+import { defaultFonts as bonarAnggi, extraFonts as bonarAnggiExtra } from "./bonar-anggi/fonts";
 import { defaultFonts as elaris } from "./raka-anindya/fonts";
 import { defaultFonts as nocturne } from "./damar-elara/fonts";
-import { defaultFonts as mawaddah } from "./faris-najwa/fonts";
+import { defaultFonts as mawaddah, extraFonts as mawaddahExtra } from "./faris-najwa/fonts";
 import { defaultFonts as isometrik } from "./rafi-kayla/fonts";
 
 // Font pilihan add-on ganti font. Di-host lewat next/font tanpa preload, jadi hanya diunduh bila dipakai.
@@ -198,16 +198,35 @@ export function resolveFonts(theme: string, style?: InvitationData["style"]): Re
   };
 }
 
-// Font gambar story: font custom, lalu pilihan undangan, lalu bawaan tema. Font nama mengikuti font judul kalau kosong.
+// Font khas tema di luar pasangan judul dan isi, dipakai gambar story untuk nama, aksara, dan label.
+const EXTRA_FONTS: Record<string, { script?: Font; arab?: Font; jawa?: Font; label?: Font; type?: Font }> = {
+  "arya-kirana": aryaKiranaExtra,
+  "bonar-anggi": bonarAnggiExtra,
+  "toni-layla": toniLaylaExtra,
+  "fadhil-nayla": fadhilNaylaExtra,
+  "faris-najwa": mawaddahExtra,
+  "danang-kinanthi": danangKinanthiExtra,
+  "galih-ardila": galihArdilaExtra,
+};
+
+// Font gambar story: font custom, lalu pilihan undangan, lalu bawaan tema. Font nama mengikuti font skrip tema,
+// lalu font judul kalau keduanya kosong.
 export function storyFonts(theme: string, style?: InvitationData["style"]) {
   const base = FONT_PRESETS[theme]?.[0];
+  const extra = EXTRA_FONTS[theme] ?? {};
   const vars = resolveFonts(theme, style);
   const display = vars["--inv-display"] ?? (base ? fontStack(base.display, "display") : SERIF);
   const displayLiga = vars["--inv-liga-display"] ?? "normal";
+  const body = vars["--inv-body"] ?? (base ? fontStack(base.body, "body") : SANS);
   return {
     display,
-    body: vars["--inv-body"] ?? (base ? fontStack(base.body, "body") : SANS),
-    name: vars["--inv-script"] ?? display,
+    body,
+    name: vars["--inv-script"] ?? (extra.script ? fontStack(extra.script, "display") : display),
+    customName: Boolean(vars["--inv-script"]),
+    arab: extra.arab ? fontStack(extra.arab, "display") : SERIF,
+    jawa: extra.jawa ? fontStack(extra.jawa, "body") : body,
+    label: extra.label ? fontStack(extra.label, "body") : body,
+    type: extra.type ? fontStack(extra.type, "body") : body,
     plainDisplay: displayLiga === NO_LIGATURES,
     plainName: (vars["--inv-liga-script"] ?? displayLiga) === NO_LIGATURES,
   };

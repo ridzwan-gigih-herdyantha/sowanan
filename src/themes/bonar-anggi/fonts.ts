@@ -29,3 +29,6 @@ export const themeFonts = `${cinzel.variable} ${pinyon.variable} ${alegreya.vari
 
 // Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
 export const defaultFonts = { display: cinzel, body: alegreya };
+
+// Font khas di luar pasangan judul dan isi, dipakai gambar story.
+export const extraFonts = { script: pinyon };

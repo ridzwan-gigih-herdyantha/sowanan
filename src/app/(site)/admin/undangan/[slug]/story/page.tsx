@@ -37,7 +37,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
     <>
       <InvitationHeader slug={slug} label={invitationLabel(row.slug, row.theme)} current="story" published={row.published} paid={row.payment_status !== "belum_lunas"} />
       <div className={PAGE}>
-        <PageIntro title="Story">Gambar undangan untuk story, mengikuti palet dan font yang sedang dipakai. Isinya nama mempelai, tanggal, lokasi, dan alamat link.</PageIntro>
+        <PageIntro title="Story">Gambar undangan untuk story, dengan tiga pilihan desain sesuai tema. Isinya foto, nama mempelai, tanggal, lokasi, dan alamat link.</PageIntro>
         {lock ? (
           <p className="mt-6 rounded-sm bg-ivory px-4 py-3 text-[14px] text-ink-mute ring-1 ring-line">{lock}</p>
         ) : story ? (

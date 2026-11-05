@@ -36,3 +36,6 @@ export const themeFonts = `${shrikhand.variable} ${bebas.variable} ${workSans.va
 
 // Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
 export const defaultFonts = { display: shrikhand, body: workSans };
+
+// Font khas di luar pasangan judul dan isi, dipakai gambar story.
+export const extraFonts = { label: bebas, type: elite };

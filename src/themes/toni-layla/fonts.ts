@@ -30,3 +30,6 @@ export const themeFonts = `${archivo.variable} ${instrument.variable} ${serif.va
 
 // Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
 export const defaultFonts = { display: archivo, body: instrument };
+
+// Font khas di luar pasangan judul dan isi, dipakai gambar story.
+export const extraFonts = { script: serif };

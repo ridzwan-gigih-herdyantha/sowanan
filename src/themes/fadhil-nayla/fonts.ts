@@ -28,3 +28,6 @@ export const themeFonts = `${castoro.variable} ${figtree.variable} ${amiri.varia
 
 // Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
 export const defaultFonts = { display: castoro, body: figtree };
+
+// Font khas di luar pasangan judul dan isi, dipakai gambar story.
+export const extraFonts = { arab: amiri };
