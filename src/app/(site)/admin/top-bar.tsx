@@ -6,6 +6,7 @@ import { logout } from "./actions";
 const LINKS = [
   { href: "/admin/undangan", label: "Undangan" },
   { href: "/admin/media", label: "Media" },
+  { href: "/admin/artikel", label: "Artikel" },
   { href: "/admin", label: "Pengaturan" },
 ];
 

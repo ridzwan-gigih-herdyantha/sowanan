@@ -17,6 +17,7 @@ export const RESERVED_SLUGS = new Set([
   "absen",
   "dashboard",
   "login",
+  "artikel",
   "sitemap.xml",
   "robots.txt",
   "favicon.ico",

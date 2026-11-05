@@ -3266,3 +3266,168 @@ html.door-wait [data-fit] {
   line-height: 1;
   white-space: nowrap;
 }
+
+/* Isi artikel di halaman publik. Tag dibatasi sanitizer di lib/article/sanitize.ts. */
+.article-body {
+  max-width: 68ch;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--color-ink-soft);
+}
+
+.article-body::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.article-body p {
+  margin: 0 0 18px;
+}
+
+.article-body h2,
+.article-body h3 {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.article-body h2 {
+  margin: 44px 0 12px;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.article-body h3 {
+  margin: 32px 0 8px;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.article-body strong {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.article-body a {
+  color: var(--color-wine);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.article-body a:focus-visible {
+  outline: 2px solid var(--color-wine);
+  outline-offset: 3px;
+}
+
+.article-body ul,
+.article-body ol {
+  margin: 0 0 18px;
+  padding-left: 22px;
+}
+
+.article-body ul {
+  list-style: disc;
+}
+
+.article-body ol {
+  list-style: decimal;
+}
+
+.article-body li {
+  margin-bottom: 8px;
+}
+
+.article-body blockquote {
+  margin: 24px 0;
+  border-left: 3px solid var(--color-wine);
+  background: var(--color-blush);
+  padding: 18px 22px;
+}
+
+.article-body blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.article-body hr {
+  margin: 36px 0;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  margin: 24px 0;
+  border-radius: 2px;
+}
+
+.article-body img[style*="float: left"],
+.article-body img[style*="float:left"] {
+  margin: 6px 22px 12px 0;
+}
+
+.article-body img[style*="float: right"],
+.article-body img[style*="float:right"] {
+  margin: 6px 0 12px 22px;
+}
+
+.article-body table {
+  display: block;
+  max-width: 100%;
+  margin: 24px 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.article-body th,
+.article-body td {
+  border: 1px solid var(--color-line);
+  padding: 9px 12px;
+  text-align: left;
+}
+
+.article-body th {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+/* Di layar sempit gambar yang diapit teks atau diperkecil kembali selebar kolom. */
+@media (max-width: 559px) {
+  .article-body img {
+    float: none !important;
+    width: 100% !important;
+    margin: 24px 0 !important;
+  }
+}
+
+/* Tambahan editor artikel: elemen yang tidak dipakai editor ketentuan. */
+.sowanan-rte .note-editable h2 {
+  margin: 18px 0 8px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.sowanan-rte .note-editable img {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+}
+
+.sowanan-rte .note-editable hr {
+  margin: 18px 0;
+  border: 0;
+  border-top: 1px solid #e8e0d6;
+}
+
+.sowanan-rte .note-editable table {
+  border-collapse: collapse;
+}
+
+.sowanan-rte .note-editable th,
+.sowanan-rte .note-editable td {
+  border: 1px solid #e8e0d6;
+  padding: 6px 10px;
+}

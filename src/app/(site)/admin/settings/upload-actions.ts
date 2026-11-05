@@ -7,9 +7,10 @@ import { storeMedia } from "@/lib/storage/store";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 type Result<T> = { ok: true; data: T } | { ok: false; error: string };
-export type SitePurpose = "qris" | "cover" | "avatar";
+const SITE_PURPOSES = ["qris", "cover", "avatar", "artcover", "artimg"] as const;
+export type SitePurpose = (typeof SITE_PURPOSES)[number];
 
-// Gambar milik situs (QRIS pembayaran, sampul tema, foto testimoni) disimpan di folder site/, terpisah dari folder undangan.
+// Gambar milik situs (QRIS pembayaran, sampul tema, foto testimoni, gambar artikel) disimpan di folder site/, terpisah dari folder undangan.
 export async function createSiteUpload(type: string, size: number): Promise<Result<{ path: string; token: string }>> {
   if (!(await currentAdmin())) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
   if (!IMAGE_TYPES.includes(type)) return { ok: false, error: "Format gambar harus JPG, PNG, WebP, HEIC, atau AVIF." };
@@ -22,7 +23,7 @@ export async function createSiteUpload(type: string, size: number): Promise<Resu
 
 export async function finalizeSiteUpload(tmpPath: string, type: string, purpose: SitePurpose): Promise<Result<{ path: string; url: string }>> {
   if (!(await currentAdmin())) return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
-  if (!/^tmp\/[0-9a-f-]{36}$/.test(tmpPath) || (purpose !== "qris" && purpose !== "cover" && purpose !== "avatar")) return { ok: false, error: "Permintaan tidak valid." };
+  if (!/^tmp\/[0-9a-f-]{36}$/.test(tmpPath) || !SITE_PURPOSES.includes(purpose)) return { ok: false, error: "Permintaan tidak valid." };
   const bucket = supabaseAdmin().storage.from(BUCKET);
   try {
     const { data, error } = await bucket.download(tmpPath);
@@ -32,7 +33,7 @@ export async function finalizeSiteUpload(tmpPath: string, type: string, purpose:
       purpose,
       buffer: Buffer.from(await data.arrayBuffer()),
       contentType: type,
-      // QRIS selalu satu berkas yang ditimpa. Sampul tema dan foto testimoni mendapat nomor baru tiap unggahan.
+      // QRIS selalu satu berkas yang ditimpa. Gambar lain mendapat nomor baru tiap unggahan.
       index: purpose === "qris" ? 1 : undefined,
     });
     return { ok: true, data: { path: stored.path, url: mediaUrl(stored.path) } };

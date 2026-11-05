@@ -177,6 +177,7 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
     ["/#harga", s.harga.title],
     ["/#cara", s.cara.title],
     ["/#tanya", s.faq.title],
+    ["/artikel", "Artikel"],
   ];
   // Kategori yang punya paling sedikit satu tema aktif, masing-masing menaut ke halaman tema dengan filternya.
   const active = new Set<string>(settings.themes.filter((t) => t.on).map((t) => t.category));
