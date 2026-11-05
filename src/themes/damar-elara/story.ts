@@ -39,7 +39,7 @@ export const story: ThemeStory = {
         const y = 800;
         k.strokePath(circlePath(CX, y, 420), k.c.gold, 1, 0.3);
         ring(k, CX, 610, 92);
-        const c = k.couple({ top: 730, maxH: 520, font: "name", size: 136, color: ink, upper: true, maxW: 840, lineHeight: 1.06, ampGap: 0.42, amp: { font: "body", color: gold, scale: 0.34 } });
+        const c = k.couple({ top: 730, maxH: 520, font: "name", size: 136, color: ink, upper: true, maxW: 840, lineHeight: 1.08, ampGap: 0.5, amp: { font: "body", color: gold, scale: 0.34 } });
         k.line(CX - 120, c.bottom + 40, CX + 120, c.bottom + 40, gold, 1.5, 0.8);
         k.text(k.d.date.toLocaleUpperCase("id-ID"), CX, c.bottom + 106, { size: 28, spacing: 4, color: gold, maxW: 840 });
         k.text([k.d.venue, k.d.city].filter(Boolean).join("  ·  ").toLocaleUpperCase("id-ID"), CX, c.bottom + 158, { size: 25, spacing: 3, color: ink, alpha: 0.82, maxW: 840 });
@@ -58,7 +58,7 @@ export const story: ThemeStory = {
         k.strokePath(rectPath({ x: b.x - 22, y: b.y - 22, w: b.w + 44, h: b.h + 44 }), k.c.gold, 1.5, 0.8);
         k.photo(k.d.photos.closing ?? k.d.photos.hero, b, { tone: "mono", empty: k.c.wash });
         k.rect(b.x, b.y + b.h - 8, b.w, 8, k.c.accent);
-        const c = k.couple({ top: 1158, maxH: 290, font: "name", size: 92, color: ink, upper: true, maxW: 840, lineHeight: 1.04, ampGap: 0.34, amp: { font: "body", color: gold, scale: 0.32 } });
+        const c = k.couple({ top: 1158, maxH: 290, font: "name", size: 92, color: ink, upper: true, maxW: 840, lineHeight: 1.08, ampGap: 0.46, amp: { font: "body", color: gold, scale: 0.32 } });
         k.text(k.d.date.toLocaleUpperCase("id-ID"), CX, c.bottom + 44, { size: 26, spacing: 4, color: gold, maxW: 840 });
         k.text([k.d.venue, k.d.city].filter(Boolean).join("  ·  ").toLocaleUpperCase("id-ID"), CX, c.bottom + 88, { size: 23, spacing: 3, color: ink, alpha: 0.8, maxW: 840 });
         button(k);
@@ -80,7 +80,7 @@ export const story: ThemeStory = {
         header(k);
         k.fillPath(circlePath(CX, 1040, 84), k.c.night);
         ring(k, CX, 1040, 84);
-        const c = k.couple({ top: 1132, maxH: 310, font: "name", size: 104, color: ink, upper: true, maxW: 860, lineHeight: 1.05, ampGap: 0.36, amp: { font: "body", color: gold, scale: 0.32 } });
+        const c = k.couple({ top: 1132, maxH: 310, font: "name", size: 104, color: ink, upper: true, maxW: 860, lineHeight: 1.08, ampGap: 0.46, amp: { font: "body", color: gold, scale: 0.32 } });
         k.text(k.d.date.toLocaleUpperCase("id-ID"), CX, c.bottom + 50, { size: 27, spacing: 4, color: gold, maxW: 840 });
         k.text([k.d.venue, k.d.city].filter(Boolean).join("  ·  ").toLocaleUpperCase("id-ID"), CX, c.bottom + 96, { size: 24, spacing: 3, color: ink, alpha: 0.85, maxW: 840 });
         button(k);

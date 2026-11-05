@@ -17,8 +17,8 @@ export const story: ThemeStory = {
         k.line(0, 760, W, 760, rule, 2);
         k.line(0, 1420, W, 1420, rule, 2);
         k.line(CX, 1420, CX, H, rule, 2);
-        k.text(k.d.groom, 56, 420, { font: "name", size: 118, color: k.c.ink, align: "left", maxW: 460 });
-        k.text(k.d.bride, W - 56, 640, { font: "name", size: 118, color: k.c.ink, align: "right", italic: true, maxW: 460 });
+        k.para(k.d.groom, 56, 420, { font: "name", size: 118, color: k.c.ink, align: "left", width: 460, lineHeight: 1.05 });
+        k.para(k.d.bride, W - 56, 610, { font: "name", size: 118, color: k.c.ink, align: "right", italic: true, width: 460, lineHeight: 1.05 });
         k.photo(k.d.photos.wide, { x: 0, y: 760, w: W, h: 660 }, { tone: "mono", empty: k.c.wash });
         k.text("KAMI MENGUNDANGMU", 56, 1478, { size: 24, spacing: 7, color: k.c.ink, align: "left", alpha: 0.75, maxW: 460 });
         k.text(k.d.dateShort, W - 56, 1478, { font: "display", size: 36, color: k.c.ink, align: "right", spacing: 3 });
