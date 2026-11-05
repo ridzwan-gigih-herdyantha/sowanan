@@ -53,6 +53,21 @@ export function shift(el: HTMLElement, from: Point, to: Point, k: number) {
   el.style.transform = `translate3d(${Math.round((to.x - from.x) * k * dpr) / dpr}px, ${Math.round((to.y - from.y) * k * dpr) / dpr}px, 0)`;
 }
 
+// Saat peta diseret, rute cukup dihitung ulang beberapa kali per detik.
+export const ROUTE_EVERY_MS = 150;
+
+// Arah menuju titik berikutnya di rute. Titik belokan dilewati lebih longgar supaya karakter tidak berhenti sesaat.
+export function routeStep(route: Point[], p: Point) {
+  while (route.length) {
+    const dx = route[0].x - p.x;
+    const dy = route[0].y - p.y;
+    const d = Math.hypot(dx, dy);
+    if (d >= (route.length > 1 ? 12 : 5)) return { x: dx / d, y: dy / d };
+    route.shift();
+  }
+  return null;
+}
+
 // Tanda tujuan di lantai saat tamu mengetuk peta. fresh memulai ulang animasinya; seretan hanya memindahkan tanda.
 export function markTap(el: HTMLElement | null, at: Point, mapW: number, mapH: number, fresh: boolean) {
   if (!el) return;

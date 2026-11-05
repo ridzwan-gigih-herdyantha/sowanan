@@ -3111,6 +3111,48 @@ html.door-wait [data-fit] {
 .gd-pixel {
   image-rendering: pixelated;
 }
+/* Isi aula: tanaman bergoyang pelan dan lampu berkelip. Hanya transform dan opacity, jadi tidak membebani gambar ulang. */
+.gd-sway {
+  animation: gd-sway 6s ease-in-out infinite alternate;
+}
+.gd-twinkle {
+  animation: gd-twinkle 2.4s steps(2, jump-none) infinite alternate;
+}
+/* Cahaya bernapas pelan. Hanya opacity satu gambar, dikerjakan GPU tanpa menggambar ulang peta. */
+.gd-light {
+  animation: gd-light 8s ease-in-out infinite alternate;
+}
+@keyframes gd-light {
+  from {
+    opacity: 0.78;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes gd-sway {
+  from {
+    transform: translateX(calc(var(--gd-sway) * -1));
+  }
+  to {
+    transform: translateX(var(--gd-sway));
+  }
+}
+@keyframes gd-twinkle {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gd-sway,
+  .gd-twinkle,
+  .gd-light {
+    animation: none;
+  }
+}
 /* Tanda tujuan di lantai saat tamu mengetuk peta: cincin yang melebar sekali dan titik yang berdenyut sampai
    karakter tiba. Bentuknya elips 2:1 mengikuti lantai isometrik. */
 .gd-tap {

@@ -3,9 +3,11 @@
 import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type PointerEvent } from "react";
 import { Joystick } from "./joystick";
-import { aimCamera, clearTap, markTap, shift, turn, type Camera, type Facing } from "./motion";
+import { SPRITES, useHeroTint } from "./hero-tint";
+import { aimCamera, clearTap, markTap, ROUTE_EVERY_MS, routeStep, shift, turn, type Camera, type Facing } from "./motion";
 import { useButtonSfx } from "./sfx";
-import { behindArch, DOOR_AT, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, reachable, SIGN_AT, SPAWN, SPEED, type Point } from "./world";
+import { startTownLife, TOWN_LIFE_SRC } from "./town-life";
+import { behindArch, DOOR_AT, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, route, SIGN_AT, SPAWN, SPEED, type Point } from "./world";
 
 export type GedungProps = {
   groom: string;
@@ -25,18 +27,18 @@ const DOOR = { x: (DOOR_AT.x / MAP_W) * 100, y: (DOOR_AT.y / MAP_H) * 100 };
 // Peta sedikit diperbesar supaya kamera punya ruang menaikkan karakter di atas joystick.
 const ZOOM = 1.2;
 const ZOOM_MS = 950;
-// Papan nama menempel di balok gapura, yang miring mengikuti garis isometrik 2:1.
-const BEAM = { x: (SIGN_AT.x / MAP_W) * 100, y: (SIGN_AT.y / MAP_H) * 100, w: 12.9, h: 6.8, tilt: 26.57 };
-// Jumlah huruf yang muat di papan pada ukuran penuh. Teks yang lebih panjang dikecilkan.
-const NAME_FIT = 13;
-const PLACE_FIT = 24;
+// Tulisan langsung di muka balok gapura, yang miring mengikuti garis isometrik 2:1. Lebar dan tinggi di dalam bingkai.
+const BEAM = { x: (SIGN_AT.x / MAP_W) * 100, y: (SIGN_AT.y / MAP_H) * 100, w: 13.8, h: 6.4, tilt: 26.57 };
+// Jumlah huruf yang muat satu baris pada ukuran penuh. Teks lebih panjang dikecilkan sampai batas, lalu turun ke dua baris.
+const NAME_FIT = 16;
+const PLACE_FIT = 30;
+const MIN_SCALE = 0.72;
 
-// Lembar sprite 3 x 3 (sel 32 x 40): baris menghadap bawah, samping kanan, dan atas. Kolom pertama diam,
-// dua kolom lain langkah kaki.
-const SPRITES: Record<Pick, string> = { groom: "/img/rafi-kayla/guest-male.png", bride: "/img/rafi-kayla/guest-female.png" };
-export const CELL = { w: 32, h: 40 };
-// Tinggi tampil karakter dalam piksel peta, sama di halaman depan dan di dalam aula.
-export const HERO_H = 96;
+// Lembar sprite 3 x 3 (sel 28 x 37): baris menghadap bawah, kanan, dan atas, kanan dicerminkan untuk arah kiri.
+// Kolom pertama diam, dua kolom lain langkah kaki.
+export const CELL = { w: 28, h: 37 };
+// Tinggi tampil karakter dalam piksel peta, sepadat gambar peta (2,4 piksel peta per piksel gambar).
+export const HERO_H = 88.8;
 export const STEPS = [1, 0, 2, 0];
 export const STEP_FPS = 8;
 // Sebentar berhenti (terhalang satu frame saat meluncur di dinding) tidak mengulang langkah dari awal.
@@ -78,7 +80,8 @@ export const KEYS: Record<string, [number, number]> = {
 };
 
 export const sprite = (pick: Pick, col = 0, row = 0): CSSProperties => ({
-  backgroundImage: `url(${SPRITES[pick]})`,
+  // Jas mengikuti warna tema setelah useHeroTint selesai, sebelumnya memakai gambar aslinya.
+  backgroundImage: `var(--gd-sheet-${pick}, url(${SPRITES[pick]}))`,
   backgroundSize: "300% 300%",
   backgroundPosition: `${col * 50}% ${row * 50}%`,
 });
@@ -104,14 +107,18 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const heroRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const archRef = useRef<HTMLDivElement>(null);
+  const lifeRefs = useRef<(HTMLCanvasElement | null)[]>([]);
+  const lifeRef = useRef<ReturnType<typeof startTownLife> | null>(null);
   const camRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLElement>(null);
   const tapRef = useRef<HTMLDivElement>(null);
   const joyRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  useHeroTint(rootRef);
   useButtonSfx(rootRef);
   const pos = useRef<Point>({ ...SPAWN });
-  const target = useRef<Point | null>(null);
+  const path = useRef<Point[]>([]);
+  const routedAt = useRef(0);
   const keys = useRef(new Set<string>());
   const dragging = useRef(false);
   const joy = useRef({ x: 0, y: 0 });
@@ -150,6 +157,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
     let last = performance.now();
     let raf = 0;
     let near = false;
+    let wasPassed = false;
 
     const loop = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
@@ -165,30 +173,27 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
       // Joystick analog: makin jauh digeser makin cepat. Papan ketik dan ketukan selalu berkecepatan penuh.
       let power = 1;
       const jm = Math.hypot(joy.current.x, joy.current.y);
-      if (vx || vy) target.current = null;
+      if (vx || vy) path.current = [];
       else if (jm > 0) {
         vx = joy.current.x;
         vy = joy.current.y;
         power = Math.min(1, jm);
-        target.current = null;
-      } else if (target.current) {
-        const dx = target.current.x - p.x;
-        const dy = target.current.y - p.y;
-        const d = Math.hypot(dx, dy);
-        if (d < 5) target.current = null;
-        else {
-          vx = dx / d;
-          vy = dy / d;
+        path.current = [];
+      } else {
+        const dir = routeStep(path.current, p);
+        if (dir) {
+          vx = dir.x;
+          vy = dir.y;
         }
       }
       let moving = false;
       if ((vx || vy) && !enteringRef.current) {
         const len = Math.hypot(vx, vy);
         moving = move(p, (vx / len) * SPEED * power * dt, (vy / len) * SPEED * power * dt);
-        if (!moving) target.current = null;
+        if (!moving) path.current = [];
         else turn(face, vx, vy);
       }
-      clearTap(tapRef.current, !target.current, now);
+      clearTap(tapRef.current, !path.current.length, now);
       if (moving) {
         walked += dt;
         still = 0;
@@ -197,8 +202,15 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
       body.style.backgroundPosition = `${col * 50}% ${face.row * 50}%`;
       body.style.transform = face.row === 1 && face.flip ? "scaleX(-1)" : "";
       shift(hero, SPAWN, p, stage.offsetWidth / MAP_W);
-      // Gapura di depan karakter bila dia lewat di belakangnya, di belakang karakter bila dia di depannya.
-      arch.style.zIndex = behindArch(p) ? "3" : "1";
+      // Gapura di depan karakter bila dia lewat di belakangnya, di belakang karakter bila dia di depannya. Kanvas lapisan
+      // hidup ada di antara keduanya, lihat town-life.ts.
+      const passed = behindArch(p);
+      if (passed !== wasPassed) {
+        wasPassed = passed;
+        arch.style.zIndex = passed ? "4" : "2";
+        hero.style.zIndex = passed ? "2" : "4";
+        lifeRef.current?.repaint();
+      }
 
       // Papan pilih karakter atau joystick yang sedang tampil tidak boleh menutupi karakter.
       const avoid = (boardRef.current ?? joyRef.current)?.getBoundingClientRect();
@@ -234,14 +246,26 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
     };
   }, []);
 
+  useEffect(() => {
+    const canvases = lifeRefs.current.filter((c): c is HTMLCanvasElement => !!c);
+    const life = startTownLife(canvases, () => pos.current);
+    lifeRef.current = life;
+    return () => {
+      lifeRef.current = null;
+      life.stop();
+    };
+  }, []);
+
   // Ketukan atau seretan di peta menjadi titik tujuan, diubah ke koordinat gambar peta.
   const aim = (e: PointerEvent, fresh: boolean) => {
     const stage = stageRef.current;
     if (!stage) return;
     const r = stage.getBoundingClientRect();
     const to = { x: ((e.clientX - r.left) / r.width) * MAP_W, y: ((e.clientY - r.top) / r.height) * MAP_H };
-    target.current = reachable(pos.current, to);
-    markTap(tapRef.current, target.current, MAP_W, MAP_H, fresh);
+    if (!fresh && e.timeStamp - routedAt.current < ROUTE_EVERY_MS) return;
+    routedAt.current = e.timeStamp;
+    path.current = route(pos.current, to);
+    markTap(tapRef.current, path.current[path.current.length - 1], MAP_W, MAP_H, fresh);
   };
   const onDown = (e: PointerEvent) => {
     if (enteringRef.current) return;
@@ -260,7 +284,13 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   };
 
   const name = `${groom} & ${bride}`;
-  const fit = (size: number, text: string, max: number) => `calc(var(--gd-w) * ${(size * Math.min(1, max / text.length)).toFixed(5)})`;
+  const fit = (size: number, text: string, max: number) => `calc(var(--gd-w) * ${(size * Math.max(MIN_SCALE, Math.min(1, max / text.length))).toFixed(5)})`;
+  // Nama pasangan yang tidak muat satu baris dipecah di tanda &, jadi yang dihitung nama terpanjangnya.
+  const nameTwoLines = name.length > NAME_FIT / MIN_SCALE;
+  // Nama tempat yang turun ke dua baris mengambil ruang dari nama pasangan dan tanggal, supaya tetap muat di papan.
+  const placeTwoLines = place.length > PLACE_FIT / MIN_SCALE;
+  const nameSize = nameTwoLines ? fit(placeTwoLines ? 0.008 : 0.0095, groom.length > bride.length ? groom : bride, NAME_FIT) : fit(placeTwoLines ? 0.0115 : 0.0135, name, NAME_FIT);
+  const dateScale = placeTwoLines && nameTwoLines ? 0.006 : placeTwoLines || nameTwoLines ? 0.0068 : 0.0082;
   // Peta menutupi seluruh layar. Kamera digeser loop di atas mengikuti karakter; nilai di sini hanya posisi awal
   // sebelum loop berjalan.
   const camera = {
@@ -277,13 +307,24 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
     <div ref={rootRef} className="gd-door fixed inset-0 z-50 overflow-hidden bg-[#2a1c1e] text-inv-ink" role="dialog" aria-label="Sampul undangan" data-entering={entering}>
       <div ref={camRef} className="gd-pixel absolute top-0 left-0 will-change-transform" style={camera}>
       <div ref={stageRef} className="gd-stage absolute inset-0 touch-none" style={{ transformOrigin: `${DOOR.x}% ${DOOR.y}%` }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
-        <Image src={COVER} alt="" fill priority draggable={false} sizes="100vw" className="pointer-events-none object-cover select-none" />
+        <Image src={COVER} alt="" fill priority unoptimized draggable={false} sizes="100vw" className="pointer-events-none object-cover select-none" />
         {/* Kamera boleh turun melewati tepi bawah peta: peta memudar ke warna latar. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[3%] bg-linear-to-b from-transparent to-[#2a1c1e]" />
-        <div ref={archRef} className="pointer-events-none absolute inset-0 z-[1]">
-          <Image src={GATE} alt="" fill sizes="100vw" draggable={false} className="object-cover select-none" />
+        {[1, 3, 5].map((z, i) => (
+          <canvas
+            key={z}
+            ref={(el) => {
+              lifeRefs.current[i] = el;
+            }}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 size-full"
+            style={{ zIndex: z }}
+          />
+        ))}
+        <div ref={archRef} className="pointer-events-none absolute inset-0 z-[2]">
+          <Image src={GATE} alt="" fill unoptimized sizes="100vw" draggable={false} className="object-cover select-none" />
           <div
-            className="pointer-events-none absolute flex flex-col items-center justify-center whitespace-nowrap border-[0.12em] border-[#2b1a1d] bg-[#39424d] text-center text-[#fff6e0] [text-shadow:0_0.07em_0_#2b1a1d]"
+            className="pointer-events-none absolute flex flex-col items-center justify-center overflow-hidden text-center text-[#fff6e0] [text-shadow:0_0.07em_0_#2b1a1d]"
             style={{
               left: `${BEAM.x}%`,
               top: `${BEAM.y}%`,
@@ -292,13 +333,20 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
               transform: `translate(-50%, -50%) skewY(${BEAM.tilt}deg)`,
             }}
           >
-            <h1 className="font-display leading-none font-semibold" style={{ fontSize: fit(0.0135, name, NAME_FIT) }}>
-              {name}
+            <h1 className="shrink-0 font-display leading-[1.05] font-semibold" style={{ fontSize: nameSize }}>
+              {nameTwoLines ? (
+                <>
+                  <span className="block">{groom} &amp;</span>
+                  <span className="block">{bride}</span>
+                </>
+              ) : (
+                name
+              )}
             </h1>
-            <p className="mt-[0.3em] leading-none font-bold opacity-90" style={{ fontSize: fit(0.0082, place, PLACE_FIT) }}>
+            <p className="mt-[0.25em] line-clamp-2 shrink-0 leading-[1.1] font-bold text-balance opacity-90" style={{ fontSize: fit(0.0082, place, PLACE_FIT) }}>
               {place}
             </p>
-            <p className="mt-[0.25em] leading-none font-bold text-[#ffd98a]" style={{ fontSize: fit(0.0082, date, PLACE_FIT) }}>
+            <p className="mt-[0.2em] shrink-0 leading-none font-bold whitespace-nowrap text-[#ffd98a]" style={{ fontSize: fit(dateScale, date, PLACE_FIT) }}>
               {date}
             </p>
           </div>
@@ -308,17 +356,22 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
 
         <div
           ref={heroRef}
-          className="pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-full"
+          className="pointer-events-none absolute z-[4] -translate-x-1/2 -translate-y-full"
           style={{ left: `${(SPAWN.x / MAP_W) * 100}%`, top: `${(SPAWN.y / MAP_H) * 100}%`, width: heroW, height: `calc(var(--gd-w) * ${(HERO_H / MAP_W).toFixed(5)})` }}
         >
-          <span aria-hidden="true" className="absolute inset-x-[22%] -bottom-[3%] h-[7%] rounded-full bg-black/25" />
+          {/* Bayangan jatuh ke arah jam 11, sama dengan bayangan benda di peta. */}
+          <span aria-hidden="true" className="absolute bottom-0 left-1/2 h-[42%] w-[20%] origin-bottom -translate-x-1/2 -rotate-[30deg] rounded-full bg-[#2b2440]/40" />
+          <span aria-hidden="true" className="absolute inset-x-[26%] -bottom-[2%] h-[6%] rounded-full bg-[#2b2440]/40" />
           <div ref={bodyRef} className="relative size-full bg-no-repeat" style={sprite(chosen)} role="img" aria-label={`Karakter ${chosen === "groom" ? "laki-laki" : "perempuan"}`} />
         </div>
+        {/* Cahaya matahari di atas semua isi peta, jadi karakter ikut kena cahaya. */}
+        <Image src="/img/rafi-kayla/town-light.png" alt="" fill unoptimized sizes="100vw" draggable={false} className="gd-light pointer-events-none z-[5] object-cover select-none" />
         {/* Sprite berupa gambar latar yang tidak ditunggu loader. Salinan tersembunyi ini membuat loader menunggunya,
             jadi saat loader hilang karakter sudah tergambar. */}
         {(["groom", "bride"] as const).map((who) => (
-          <Image key={who} src={SPRITES[who]} alt="" width={96} height={120} preload className="hidden" />
+          <Image key={who} src={SPRITES[who]} alt="" width={84} height={111} unoptimized preload className="hidden" />
         ))}
+        <Image src={TOWN_LIFE_SRC} alt="" width={1024} height={512} unoptimized preload className="hidden" />
 
         {nearDoor && (
           <button
@@ -329,7 +382,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
             // Posisinya tidak ikut berubah saat hover: tombol yang bergeser keluar dari bawah kursor akan bergetar
             // bolak-balik. Hover cukup mencerahkan warna; saat ditekan bayangannya menipis. Tombol menempel di tengah
             // daun pintu, di atas kepala karakter dan jauh dari tombol-tombol di atas layar.
-            className="gd-pill absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[clamp(14px,3.8vw,18px)] leading-none text-inv-paper shadow-[0_5px_0_rgba(0,0,0,.28)] transition-[filter,box-shadow] hover:brightness-110 active:shadow-[0_2px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="gd-pill absolute z-[6] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[clamp(14px,3.8vw,18px)] leading-none text-inv-paper shadow-[0_5px_0_rgba(0,0,0,.28)] transition-[filter,box-shadow] hover:brightness-110 active:shadow-[0_2px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             style={{ left: `${DOOR.x}%`, top: `${DOOR.y + 1}%` }}
           >
             Masuk
@@ -363,7 +416,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
                       aria-pressed={chosen === who}
                       className="group flex items-center justify-center gap-2.5 rounded-2xl border-[3px] border-inv-line bg-inv-wash px-2 py-1.5 shadow-[0_4px_0_rgba(0,0,0,.2)] transition-transform hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 aria-pressed:bg-inv-gold-light"
                     >
-                      <span aria-hidden="true" className="gd-pixel block aspect-[32/40] h-[clamp(40px,8dvh,64px)] shrink-0 bg-no-repeat" style={sprite(who)} />
+                      <span aria-hidden="true" className="gd-pixel block aspect-28/37 h-[clamp(40px,8dvh,64px)] shrink-0 bg-no-repeat" style={sprite(who)} />
                       <span className="font-display text-[14px] leading-none font-semibold">{who === "groom" ? "Laki-laki" : "Perempuan"}</span>
                     </button>
                   ))}
