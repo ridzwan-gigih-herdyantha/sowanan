@@ -114,7 +114,7 @@ Add-on Lengkap, termasuk di Istimewa, tidak tersedia untuk Dasar (`ADDON_EXCLUDE
 ## Mempelai
 
 - Akun mempelai dibuat admin di tab Akses mempelai, terhubung lewat tabel `invitation_members`.
-- Login di `/dashboard/user/login`, dashboard di `/dashboard/user/<slug>` (`lib/couple-auth.ts`). Mempelai bisa membaca, menyembunyikan ucapan, dan menandai link tamu terkirim. Kalau paket atau add-on menyediakan tamu terundang, mempelai juga bisa mengelola tamu, sesi, dan mode private sampai undangan menjadi arsip (`lib/guest-list.ts`).
+- Login di `/dashboard/user/login`, dashboard di `/dashboard/user/<slug>` (`lib/couple-auth.ts`). Mempelai bisa membaca, menyembunyikan ucapan, dan menandai link tamu terkirim. Kalau paket termasuk nama tamu (default Lengkap dan Istimewa) atau tamu terundang, mempelai bisa menambah dan menghapus tamu sendiri. Sesi dan mode private tetap khusus tamu terundang. Semuanya sampai undangan menjadi arsip (`lib/guest-list.ts`).
 - `src/proxy.ts` menyegarkan sesi Supabase untuk `/admin` dan `/dashboard`.
 
 ## Media

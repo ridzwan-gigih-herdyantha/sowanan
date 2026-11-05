@@ -6,7 +6,7 @@ import { checkInManual, manualCheckinClosed, setCheckedIn } from "@/lib/checkin"
 import { coupleEmailForSlug } from "@/lib/couple-account";
 import { coupleInvitation } from "@/lib/couple-auth";
 import * as guestList from "@/lib/guest-list";
-import type { GuestRow, GuestSession } from "@/lib/guests";
+import { guestListOpen, type GuestRow, type GuestSession } from "@/lib/guests";
 import { archiveInfo, isDemo } from "@/lib/invitation/archive";
 import { invitationRules } from "@/lib/invitation/rules";
 import { invitationDataSchema } from "@/lib/invitation/schema";
@@ -96,25 +96,26 @@ export async function coupleAddWalkIn(slug: string, name: string): Promise<{ ok:
   return { ok: true, data: guest as GuestRow };
 }
 
-// Pembeli mengelola tamu, sesi, dan mode private kalau paket atau add-on menyediakannya. Setelah arsip semuanya
-// terkunci, sama seperti editor undangan. Link dan kode yang sudah ada tetap berlaku.
-async function manage(slug: string): Promise<{ id: string } | { error: string }> {
+// Pembeli mengisi daftar tamu sendiri kalau paket menyediakan nama tamu, sedangkan sesi dan mode private khusus tamu
+// terundang. Setelah arsip semuanya terkunci, sama seperti editor undangan. Link dan kode yang sudah ada tetap berlaku.
+async function manage(slug: string, scope: "tamu" | "private" = "private"): Promise<{ id: string } | { error: string }> {
   const found = await coupleInvitation(slug);
   if (!found) return { error: "Sesi berakhir. Silakan masuk lagi." };
   const { id, theme, data } = found.invitation;
   const parsed = invitationDataSchema.safeParse(data);
   if (parsed.success && archiveInfo(parsed.data, Date.now(), isDemo(slug, theme)).archived) return { error: "Undangan sudah menjadi arsip, jadi tidak bisa diubah lagi." };
-  if ((await invitationRules(slug))?.rules.locked.tamu_terundang) return { error: "Fitur ini belum termasuk paket undanganmu." };
+  const locked = (await invitationRules(slug))?.rules.locked ?? {};
+  if (scope === "tamu" ? !guestListOpen(locked) : locked.tamu_terundang) return { error: "Fitur ini belum termasuk paket undanganmu." };
   return { id };
 }
 
 export async function coupleAddGuests(slug: string, input: unknown): Promise<guestList.Result<{ added: GuestRow[]; skipped: number }>> {
-  const ctx = await manage(slug);
+  const ctx = await manage(slug, "tamu");
   return "error" in ctx ? { ok: false, error: ctx.error } : guestList.insertGuests(ctx.id, input);
 }
 
 export async function coupleDeleteGuest(slug: string, guestId: number): Promise<guestList.Result<null>> {
-  const ctx = await manage(slug);
+  const ctx = await manage(slug, "tamu");
   return "error" in ctx ? { ok: false, error: ctx.error } : guestList.removeGuests(ctx.id, [guestId]);
 }
 

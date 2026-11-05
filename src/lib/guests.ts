@@ -9,6 +9,9 @@ export type GuestSession = { id: number; name: string; time: string; until: stri
 export const SESSION_COLS = "id, name, time, until";
 export type GuestRow = { id: number; name: string; phone: string | null; sent_at: string | null; qr_token: string | null; checked_in_at: string | null; walk_in: boolean; session_id: number | null };
 
+// Daftar tamu terbuka kalau paket atau add-on menyediakan nama tamu atau tamu terundang.
+export const guestListOpen = (locked: { nama_tamu?: string; tamu_terundang?: string }) => !locked.nama_tamu || !locked.tamu_terundang;
+
 export function normalizePhone(raw: string): string | null {
   let d = raw.replace(/[^\d+]/g, "");
   if (d.startsWith("+")) d = d.slice(1);

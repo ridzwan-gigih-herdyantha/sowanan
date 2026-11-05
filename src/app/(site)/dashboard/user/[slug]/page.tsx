@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { currentCouple, coupleInvitation } from "@/lib/couple-auth";
-import { DEFAULT_GUEST_MESSAGE, GUEST_COLS, MAX_GUESTS, privateLink, SESSION_COLS, type GuestSession } from "@/lib/guests";
+import { DEFAULT_GUEST_MESSAGE, GUEST_COLS, guestListOpen, MAX_GUESTS, privateLink, SESSION_COLS, type GuestSession } from "@/lib/guests";
 import { archiveInfo, isDemo } from "@/lib/invitation/archive";
 import { invitationRules } from "@/lib/invitation/rules";
 import { invitationDataSchema } from "@/lib/invitation/schema";
@@ -46,8 +46,9 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const locked = info?.rules.locked ?? {};
   const isPrivate = Boolean(extra.data?.private);
   const coupleCode = extra.data?.couple_code ?? "";
-  const available = !locked.tamu_terundang && !isDemo(invitation.slug, invitation.theme);
-  const archived = archiveInfo(d, undefined, isDemo(invitation.slug, invitation.theme)).archived;
+  const demo = isDemo(invitation.slug, invitation.theme);
+  const available = !locked.tamu_terundang && !demo;
+  const archived = archiveInfo(d, undefined, demo).archived;
 
   return (
     <CoupleFrame>
@@ -69,7 +70,8 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         qr={!locked.qr_absensi && !locked.nama_tamu}
         personalLinks={!locked.nama_tamu || available || isPrivate}
         codeLinks={!locked.qr_absensi || available}
-        manage={available && !archived}
+        manageGuests={guestListOpen(locked) && !demo && !archived}
+        managePrivate={available && !archived}
         privateMode={{
           on: isPrivate,
           coupleCode,

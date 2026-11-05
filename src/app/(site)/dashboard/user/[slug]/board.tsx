@@ -24,8 +24,10 @@ type Props = {
   personalLinks: boolean;
   // Link tamu memuat kode (?k=), untuk QR absensi dan add-on tamu terundang.
   codeLinks: boolean;
-  // Pembeli boleh menambah tamu, membagi sesi, dan menyalakan mode private.
-  manage: boolean;
+  // Pembeli boleh menambah dan menghapus tamu.
+  manageGuests: boolean;
+  // Pembeli boleh membagi sesi dan menyalakan mode private.
+  managePrivate: boolean;
   privateMode: PrivateMode;
   // Template pesan WhatsApp dari admin, beserta isian {mempelai} dan {tanggal}.
   template: string;
@@ -56,7 +58,7 @@ function Stat({ label, value, note }: { label: string; value: number | string; n
 
 // Isi dashboard mempelai. Data lain hanya dibaca, kecuali tombol sembunyikan ucapan, tanda link terkirim, tanda hadir
 // sebagai cadangan kalau pemindaian QR bermasalah, dan daftar tamu serta sesi kalau paket atau add-on menyediakannya.
-export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests: initialGuests, excel, qr, personalLinks, codeLinks, manage, privateMode, template, couple, date }: Props) {
+export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests: initialGuests, excel, qr, personalLinks, codeLinks, manageGuests, managePrivate, privateMode, template, couple, date }: Props) {
   const [wishes, setWishes] = useState(initialWishes);
   const [guests, setGuests] = useState(initialGuests);
   const [isPrivate, setIsPrivate] = useState(privateMode.on);
@@ -121,7 +123,7 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
   }
 
   function removeGuest(g: BoardGuest) {
-    if (!confirm(`Hapus ${g.name} dari daftar tamu? Link pribadinya tidak bisa dibuka lagi.`)) return;
+    if (!confirm(`Hapus ${g.name} dari daftar tamu?${isPrivate ? " Link pribadinya tidak bisa dibuka lagi." : ""}`)) return;
     run(`hapus:${g.id}`, async () => {
       const res = await coupleDeleteGuest(slug, g.id);
       if (!res.ok) return setError(res.error);
@@ -290,19 +292,21 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
         )}
       </div>
 
-      {tab === "guest" && manage && (
+      {tab === "guest" && (manageGuests || managePrivate) && (
         <div className="mt-5 grid gap-5">
-          <PrivatePanel slug={slug} origin={origin} mode={privateMode} on={isPrivate} onToggle={setIsPrivate} sessions={sessions} onSessions={setSessions} actions={privateActions} />
-          <section className="rounded-sm border border-line bg-white p-5">
-            <label className="block text-[14px] font-medium" htmlFor="tamu-baru">
-              Tambah tamu
-            </label>
-            <textarea id="tamu-baru" rows={4} value={newGuests} onChange={(e) => setNewGuests(e.target.value)} placeholder={"Budi Santoso 081234567890\nKeluarga Pak RT"} className={`${field} mt-2 resize-y`} />
-            <p className="mt-1.5 text-[13px] text-ink-mute">Pisahkan dengan baris baru atau koma. Nomor WhatsApp di akhir nama ikut terbaca. Kode tamu dibuat otomatis.</p>
-            <button type="button" onClick={addGuests} disabled={working !== null || !newGuests.trim()} className="mt-3 rounded-sm bg-wine px-4 py-2.5 text-[14px] text-white disabled:opacity-60">
-              {working === "tambah" ? "Menyimpan..." : "Tambahkan"}
-            </button>
-          </section>
+          {managePrivate && <PrivatePanel slug={slug} origin={origin} mode={privateMode} on={isPrivate} onToggle={setIsPrivate} sessions={sessions} onSessions={setSessions} actions={privateActions} />}
+          {manageGuests && (
+            <section className="rounded-sm border border-line bg-white p-5">
+              <label className="block text-[14px] font-medium" htmlFor="tamu-baru">
+                Tambah tamu
+              </label>
+              <textarea id="tamu-baru" rows={4} value={newGuests} onChange={(e) => setNewGuests(e.target.value)} placeholder={"Budi Santoso 081234567890\nKeluarga Pak RT"} className={`${field} mt-2 resize-y`} />
+              <p className="mt-1.5 text-[13px] text-ink-mute">Pisahkan dengan baris baru atau koma. Nomor WhatsApp di akhir nama ikut terbaca.{codeLinks && " Kode tamu dibuat otomatis."}</p>
+              <button type="button" onClick={addGuests} disabled={working !== null || !newGuests.trim()} className="mt-3 rounded-sm bg-wine px-4 py-2.5 text-[14px] text-white disabled:opacity-60">
+                {working === "tambah" ? "Menyimpan..." : "Tambahkan"}
+              </button>
+            </section>
+          )}
         </div>
       )}
       {tab === "checkin" && <p className="mt-3 text-[13px] text-ink-mute">Kalau pemindaian QR bermasalah, cari nama tamu di sini lalu tandai hadir.</p>}
@@ -358,7 +362,7 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
                   {qr && g.checked_in_at && ` · hadir ${clockFmt.format(new Date(g.checked_in_at))}`}
                 </p>
               </div>
-              {manage && isPrivate && sessions.length > 0 && <SessionSelect sessions={sessions} value={g.session_id} disabled={working !== null} onChange={(id) => chooseSession(g, id)} label={`Sesi ${g.name}`} />}
+              {managePrivate && isPrivate && sessions.length > 0 && <SessionSelect sessions={sessions} value={g.session_id} disabled={working !== null} onChange={(id) => chooseSession(g, id)} label={`Sesi ${g.name}`} />}
               {personalLinks && (
                 <span className="flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
                   <button type="button" onClick={() => send(g)} className="text-wine underline underline-offset-4">
@@ -372,7 +376,7 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
                   </button>
                 </span>
               )}
-              {manage && (
+              {manageGuests && (
                 <button type="button" onClick={() => removeGuest(g)} disabled={working !== null} className="text-[14px] text-ink-mute hover:text-wine disabled:opacity-60">
                   {working === `hapus:${g.id}` ? "Menghapus..." : "Hapus"}
                 </button>
