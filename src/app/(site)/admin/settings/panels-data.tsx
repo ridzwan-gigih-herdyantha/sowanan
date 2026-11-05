@@ -289,7 +289,7 @@ export function PaketPanel() {
 
 export function AddonPanel() {
   return (
-    <Card title="Tambahan di luar paket" hint="Kolom Berlaku untuk muncul sebagai baris kecil di bawah nama. Yang dimatikan tetap tersimpan, hanya tidak ditampilkan.">
+    <Card title="Tambahan di luar paket" hint="Kolom Berlaku untuk muncul sebagai baris kecil di bawah nama. Add-on yang tidak membuka fitur bisa dihitung per unit dengan mengisi Jumlah per unit, misalnya 100 untuk per 100 nama. Isi 0 kalau sekali beli. Yang dimatikan tetap tersimpan, hanya tidak ditampilkan.">
       <RepList
         path="addons"
         noun="item"
@@ -313,6 +313,7 @@ export function AddonPanel() {
               />
               {(item.unlock === "galeri_foto" || item.unlock === "galeri_pasca") && <NumberField path={`${base}.amount`} label="Foto per unit" chip="sys" suffix="foto" className={width.sm} />}
               {item.unlock === "bagian_tambahan" && <NumberField path={`${base}.amount`} label="Bagian per unit" chip="sys" suffix="bagian" className={width.sm} />}
+              {!item.unlock && <NumberField path={`${base}.amount`} label="Jumlah per unit" chip="sys" className={width.sm} />}
             </Row>
           </>
         )}

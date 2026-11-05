@@ -391,6 +391,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "kedua", on: false, name: "Undangan kedua untuk acara terpisah", price: 50000, scope: "Lengkap dan Istimewa", unlock: "undangan_kedua", amount: 0 },
     // Dinyalakan setelah fitur selesai dites, bersamaan dengan teks harga dan ketentuan yang baru.
     { id: "terundang", on: false, name: "Undangan khusus tamu terundang", price: 50000, scope: "Lengkap", unlock: "tamu_terundang", amount: 0 },
+    { id: "inputtamu", on: false, name: "Kami inputkan daftar tamu, per 100 nama", price: 25000, scope: "Lengkap dan Istimewa", unlock: "", amount: 100 },
     { id: "pasca", on: false, name: "Galeri pasca acara, per 10 foto", price: 25000, scope: "Semua paket", unlock: "galeri_pasca", amount: 10 },
     { id: "domainmyid", on: true, name: "Alamat domain sendiri (.my.id)", price: 99000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
     { id: "domain", on: true, name: "Alamat domain sendiri (.com)", price: 299000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
