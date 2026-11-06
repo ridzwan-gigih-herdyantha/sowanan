@@ -5,7 +5,9 @@ import { CustomFontLinks } from "@/components/invitation/custom-font-links";
 import { currentAdmin } from "@/lib/admin-auth";
 import { invitationRules } from "@/lib/invitation/rules";
 import { invitationDataSchema } from "@/lib/invitation/schema";
-import { storyData } from "@/lib/invitation/story";
+import { storyData, type StoryData } from "@/lib/invitation/story";
+import { isPurpose, PURPOSES } from "@/lib/storage/media";
+import { listMedia } from "../../../media/actions";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { customFontLinks } from "@/themes/fonts";
 import { invitationLabel, THEME_NAMES } from "@/themes/media";
@@ -17,6 +19,24 @@ export const metadata: Metadata = {
   title: "Gambar story",
   robots: { index: false, follow: false },
 };
+
+// Gambar yang bukan foto acara, seperti QRIS, preview WhatsApp, atau denah, tidak ditawarkan untuk story.
+const NOT_PHOTOS = new Set(["og", "qris", "avatar", "thumb", "cover", "plan", "artcover", "artimg"]);
+
+// Pilihan foto story: foto yang sedang dipakai undangan, lalu semua foto lain yang pernah diunggah ke storage.
+async function photoChoices(slug: string, story: StoryData): Promise<string[]> {
+  const p = story.photos;
+  const used = [p.hero, p.wide, p.couple, p.closing, p.venue, p.groom, p.bride, ...p.extra].flatMap((x) => (x ? [x.src] : []));
+  const media = await listMedia(slug);
+  const uploaded = media.ok ? media.data.filter((f) => isPurpose(f.purpose) && PURPOSES[f.purpose].kind === "image" && !NOT_PHOTOS.has(f.purpose)).map((f) => f.url) : [];
+  const seen = new Set<string>();
+  return [...used, ...uploaded].filter((src) => {
+    const key = src.split("?")[0];
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   if (!hasSupabase()) {
@@ -32,6 +52,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const d = invitationDataSchema.parse(row.draft ?? row.data ?? {});
   const lock = (await invitationRules(slug))?.rules.locked.gambar_story;
   const story = lock ? null : storyData(row.slug, d, row.theme);
+  const choices = story ? await photoChoices(slug, story) : [];
 
   return (
     <>
@@ -43,7 +64,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         ) : story ? (
           <>
             <CustomFontLinks hrefs={customFontLinks(d.style)} />
-            <StorySheet data={story} />
+            <StorySheet data={story} choices={choices} />
           </>
         ) : (
           <p className="mt-6 rounded-sm bg-ivory px-4 py-3 text-[14px] text-ink-mute ring-1 ring-line">Isi nama kedua mempelai dan tanggal acara dulu di editor.</p>

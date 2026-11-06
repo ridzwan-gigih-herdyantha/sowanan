@@ -133,7 +133,12 @@ export const heartPath = (cx: number, cy: number, s: number) => {
   return p;
 };
 
-export function createKit(ctx: CanvasRenderingContext2D, d: StoryData, images: Map<string, HTMLImageElement>, onFont?: (font: string, text: string) => void) {
+// Bingkai foto dinomori sesuai urutan k.photo dipanggil di template. override mengganti foto bingkai ke-n dengan
+// pilihan pengguna, seen mencatat foto bawaan tiap bingkai supaya halaman story tahu ada berapa bingkai.
+export type PhotoSlots = { override?: (StoryPhoto | undefined)[]; seen?: (StoryPhoto | null)[] };
+
+export function createKit(ctx: CanvasRenderingContext2D, d: StoryData, images: Map<string, HTMLImageElement>, onFont?: (font: string, text: string) => void, slots?: PhotoSlots) {
+  let frame = 0;
   const c = {
     paper: d.colors.paper,
     ink: d.colors.ink,
@@ -412,7 +417,10 @@ export function createKit(ctx: CanvasRenderingContext2D, d: StoryData, images: M
 
   // Foto mengisi kotak mengikuti titik fokus dan zoom dari editor. Tanpa foto, kotak menampilkan monogram seperti
   // tempat foto kosong di undangan, karena undangan boleh tidak memakai foto.
-  const photo = (p: StoryPhoto | null | undefined, box: Box, o: PhotoOpts = {}) => {
+  const photo = (given: StoryPhoto | null | undefined, box: Box, o: PhotoOpts = {}) => {
+    const n = frame++;
+    slots?.seen?.push(given ?? null);
+    const p = slots?.override?.[n] ?? given;
     const path = o.path ?? rectPath(box);
     const img = p ? images.get(p.src) : undefined;
     ctx.save();
