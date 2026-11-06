@@ -115,7 +115,8 @@ export function ArticleForm({ article, categories }: { article?: EditableArticle
         <ArticleEditor initial={article?.content ?? ""} error={fields.content} onChange={touched(setContent)} />
       </Card>
 
-      <div>
+      {/* Tetap di layar saat isi artikel di-scroll, di bawah top bar admin yang juga sticky. */}
+      <div className="lg:sticky lg:top-[72px] lg:max-h-[calc(100dvh-88px)] lg:overflow-y-auto">
         <Card title="Publikasi" hint={published ? "Artikel ini tayang di situs." : "Draf belum terlihat oleh pengunjung."}>
           <div className="grid gap-2">
             <button type="button" disabled={working !== null || uploading} onClick={() => save(true)} className={button.primary}>
