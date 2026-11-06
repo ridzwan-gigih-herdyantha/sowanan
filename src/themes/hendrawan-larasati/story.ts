@@ -6,20 +6,31 @@ const tape = (k: Kit, x: number, y: number, w: number, rot: number) => {
   k.group(() => k.rect(x - w / 2, y - 24, w, 48, k.v("--hl-tape", k.c.goldLight), 0.68), { at: [x, y], rot });
 };
 
-// Foto ditempel seperti lembar herbarium: kertas putih, bayangan tipis, dan selotip di tepinya.
-const pinned = (k: Kit, p: Kit["d"]["photos"]["hero"], x: number, y: number, w: number, h: number, rot: number, mat = 18) => {
-  const cx = x + w / 2;
-  const cy = y + h / 2;
-  k.group(
-    () => {
-      k.fillPath(roundPath({ x, y, w, h }, 2), k.c.wash, { color: "#00000055", blur: 34, y: 14 });
-      k.photo(p, { x: x + mat, y: y + mat, w: w - mat * 2, h: h - mat * 2 }, { empty: k.c.paper });
-    },
-    { at: [cx, cy], rot },
-  );
+// Ranting daun herbarium: batang melengkung dengan daun berselang kiri dan kanan.
+const sprig = (k: Kit, x: number, base: number, h: number) => {
+  const color = k.c.accent;
+  const top = base - h;
+  const at = (t: number) => ({ x: x + Math.sin(t * Math.PI) * 26, y: base - t * h });
+  const stem = new Path2D();
+  stem.moveTo(x, base);
+  stem.quadraticCurveTo(x + 52, base - h / 2, x, top);
+  k.strokePath(stem, color, 5);
+  for (let i = 1; i <= 7; i += 1) {
+    const t = i / 8;
+    const p = at(t);
+    const side = i % 2 ? -1 : 1;
+    const len = 70 * (1 - t * 0.45);
+    const leaf = new Path2D();
+    leaf.ellipse(p.x + side * len * 0.8, p.y - len * 0.25, len, len * 0.36, side * -0.5, 0, Math.PI * 2);
+    k.fillPath(leaf, k.alpha(color, 0.85));
+    k.line(p.x, p.y, p.x + side * len * 1.5, p.y - len * 0.6, k.c.wash, 2, 0.6);
+  }
+  const tip = new Path2D();
+  tip.ellipse(x, top - 34, 22, 48, 0, 0, Math.PI * 2);
+  k.fillPath(tip, k.alpha(color, 0.85));
 };
 
-const labelNo = (k: Kit) => k.d.dateShort.replace(/\D/g, "").slice(0, 4);
+const labelNo =(k: Kit) => k.d.dateShort.replace(/\D/g, "").slice(0, 4);
 
 // Herbarium: lembar koleksi botani, selotip, label bergaris, dan nama latin mempelai.
 export const story: ThemeStory = {
@@ -68,10 +79,29 @@ export const story: ThemeStory = {
         const name = k.text(k.d.groom, CX, 470, { font: "name", size: 104, color: k.c.accent, maxW: 900 });
         k.text(`& ${k.d.bride}`, CX, 576, { font: "name", size: name, color: k.c.accent, maxW: 900 });
         if (k.d.latinPair) k.text(k.d.latinPair, CX, 640, { font: "display", size: 34, italic: true, color: k.c.ink, alpha: 0.72, maxW: 840 });
-        pinned(k, k.d.photos.hero, 92, 690, 800, 720, -0.012);
-        tape(k, 480, 690, 210, 0.03);
-        pinned(k, k.d.photos.extra[0] ?? k.d.photos.couple, 748, 628, 256, 290, 0.08, 14);
-        tape(k, 874, 628, 110, -0.05);
+        // Lembar spesimen tanpa foto: ranting daun digambar, ditempel selotip, dengan tabel label koleksi.
+        const card = { x: 92, y: 690, w: 896, h: 730 };
+        k.group(
+          () => {
+            k.fillPath(roundPath(card, 2), k.c.wash, { color: "#00000044", blur: 30, y: 12 });
+            sprig(k, CX, 1100, 300);
+            const rows: [string, string][] = [
+              ["NAMA", `${k.d.groom} & ${k.d.bride}`],
+              ["TANGGAL", k.d.date],
+              ["LOKASI", [k.d.venue, k.d.city].filter(Boolean).join(", ")],
+            ];
+            k.line(140, 1130, 940, 1130, k.c.line, 2);
+            rows.forEach(([label, value], i) => {
+              const y = 1130 + (i + 1) * 86;
+              k.text(label, 140, y - 30, { size: 20, spacing: 5, color: k.c.ink, align: "left", alpha: 0.7 });
+              k.text(value, 330, y - 28, { font: "display", size: 34, color: k.c.ink, align: "left", maxW: 610 });
+              k.line(140, y, 940, y, k.c.line, 1.5, 0.7);
+            });
+          },
+          { at: [CX, card.y + card.h / 2], rot: -0.01 },
+        );
+        tape(k, CX - 10, 1085, 160, 0.05);
+        tape(k, 230, 700, 170, -0.06);
         k.text([k.d.dateShort, k.d.city].filter(Boolean).join("   ·   "), CX, 1488, { size: 29, spacing: 4, color: k.c.ink, upper: true, maxW: 940 });
         k.link({ fill: k.c.accent, label: "", y: 1540, radius: 4 });
       },

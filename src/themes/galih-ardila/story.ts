@@ -121,9 +121,14 @@ export const story: ThemeStory = {
         const c = k.couple({ top: 462, font: "name", size: 100, color: pop(k), maxW: W - 130, lineHeight: 1.02, ampGap: 0.42, amp: { color: k.c.ink, scale: 0.38 } });
         const y = c.bottom + 8;
         const box = { x: 60, y, w: W - 120, h: 1280 - y };
-        k.photo(k.d.photos.couple ?? k.d.photos.hero, box, { tone: "mono", empty: k.c.paper });
+        // Kolom berita utama berisi tanggal besar di atas raster titik, sebagai ganti foto.
+        k.rect(box.x, box.y, box.w, box.h, k.mix(k.c.card, sun(k), 0.3));
         dots(k, box, k.alpha(ink, 0.14), 11, 2.2);
         k.strokePath(rectPath(box), ink, 4);
+        const big = Math.round(Math.min(280, box.h * 0.48));
+        k.text("EDISI HARI BAHAGIA", box.x + box.w / 2, box.y + 64, { font: "label", size: 34, spacing: 3, color: ink, maxW: 560 });
+        retro(k, k.d.day, CX, box.y + box.h / 2 + big * 0.36, big, pop(k), 600);
+        k.text(`${k.d.weekday}, ${k.d.month} ${k.d.year}`.toLocaleUpperCase("id-ID"), CX, box.y + box.h - 34, { font: "label", size: 34, spacing: 2, color: ink, maxW: 860 });
         sticker(k, "Sah!", 924, y + 60, 100, sun(k), 0.2);
         k.line(CX, 1306, CX, 1500, ink, 2);
         const body = { font: "type" as const, size: 28, color: ink, align: "left" as const, width: 440, lineHeight: 1.36, maxLines: 5 };

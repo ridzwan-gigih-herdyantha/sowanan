@@ -30,8 +30,7 @@ export const story: ThemeStory = {
       name: "Surat Malam",
       draw: (k) => {
         k.bg(k.c.night);
-        k.group(() => k.photo(k.d.photos.hero, { x: 0, y: 0, w: W, h: H }, { tone: "mono", empty: k.c.night, emptyInk: k.c.night }), { alpha: 0.42 });
-        k.bg(k.radial(CX, 860, 120, 1130, [[0, k.alpha(k.c.night, 0.3)], [1, k.alpha(k.c.night, 0.96)]]));
+        k.bg(k.radial(CX, 860, 80, 1130, [[0, k.alpha(k.mix(k.c.night, k.c.gold, 0.18), 0.9)], [1, k.alpha(k.c.night, 0)]]));
         frame(k);
         header(k);
         const { ink, gold } = on(k, k.c.night);

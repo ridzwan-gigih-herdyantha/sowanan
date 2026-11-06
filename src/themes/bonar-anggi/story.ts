@@ -1,4 +1,4 @@
-import { archPath, circlePath, CX, H, W, type Kit, type ThemeStory } from "../story-kit";
+import { archPath, circlePath, CX, H, roundPath, W, type Kit, type ThemeStory } from "../story-kit";
 
 const A = "/img/bonar-anggi";
 
@@ -71,23 +71,27 @@ export const story: ThemeStory = {
         ulos(k);
         k.bg(k.alpha(k.c.night, 0.08));
         k.link({ fill: k.c.goldLight, ink: k.c.night, label: "", y: 1520, radius: 6, h: 96, stroke: k.c.night, shadow: { color: "#00000080", blur: 26, y: 10 } });
-        const y = 880;
-        const r = 480;
+        // Foto bundar berbingkai di atas tenun, nama di panel gelap di bawahnya.
+        const y = 600;
+        const r = 280;
         k.fillPath(circlePath(CX, y, r + 26), k.c.accent, { color: "#00000099", blur: 50, y: 14 });
-        k.fillPath(circlePath(CX, y, r), k.c.night);
-        k.strokePath(circlePath(CX, y, r - 18), k.c.gold, 3);
-        k.text("U N D A N G A N", CX, y - 300, { size: 26, spacing: 6, color: k.c.goldLight });
-        const c = k.couple({ center: y - 40, maxH: 460, font: "name", size: 136, color: k.c.goldLight, maxW: 720, lineHeight: 1.12, ampGap: 0.4, amp: { color: k.c.gold, scale: 0.34 } });
-        for (let x = CX - 180; x <= CX + 180; x += 40) {
+        k.photo(k.d.photos.couple ?? k.d.photos.hero, { x: CX - r, y: y - r, w: r * 2, h: r * 2 }, { path: circlePath(CX, y, r), empty: k.c.night });
+        k.strokePath(circlePath(CX, y, r - 14), k.c.gold, 3);
+        const box = { x: 110, y: 940, w: 860, h: 540 };
+        k.fillPath(roundPath(box, 8), k.c.night, { color: "#00000099", blur: 40, y: 12 });
+        k.strokePath(roundPath({ x: box.x + 16, y: box.y + 16, w: box.w - 32, h: box.h - 32 }, 4), k.c.gold, 3);
+        k.text("U N D A N G A N", CX, 1010, { size: 26, spacing: 6, color: k.c.goldLight });
+        const c = k.couple({ top: 1034, maxH: 250, font: "name", size: 110, color: k.c.goldLight, maxW: 740, lineHeight: 1.1, ampGap: 0.4, amp: { color: k.c.gold, scale: 0.34 } });
+        for (let x = CX - 140; x <= CX + 140; x += 40) {
           const p = new Path2D();
-          p.moveTo(x - 20, c.bottom + 38);
-          p.lineTo(x + 20, c.bottom + 38);
-          p.lineTo(x, c.bottom + 62);
+          p.moveTo(x - 20, c.bottom + 24);
+          p.lineTo(x + 20, c.bottom + 24);
+          p.lineTo(x, c.bottom + 48);
           p.closePath();
           k.fillPath(p, k.c.gold);
         }
-        k.text(k.d.date, CX, c.bottom + 118, { size: 34, color: k.c.goldLight, maxW: 660 });
-        k.text([k.d.venue, k.d.city].filter(Boolean).join(", "), CX, c.bottom + 162, { size: 27, color: k.c.goldLight, alpha: 0.82, maxW: 660 });
+        k.text(k.d.date, CX, c.bottom + 100, { size: 34, color: k.c.goldLight, maxW: 740 });
+        k.text([k.d.venue, k.d.city].filter(Boolean).join(", "), CX, c.bottom + 144, { size: 27, color: k.c.goldLight, alpha: 0.82, maxW: 740 });
       },
     },
     {

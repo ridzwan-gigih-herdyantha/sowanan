@@ -56,9 +56,14 @@ export const story: ThemeStory = {
       name: "Judul Kota",
       draw: (k) => {
         const light = "#FFFFFF";
-        k.photo(k.d.photos.hero, { x: 0, y: 0, w: W, h: H }, { blur: 26, empty: "#171615", emptyInk: "#171615" });
-        k.bg("#00000066");
-        k.bg(k.radial(CX, 860, 160, 1100, [[0, "#00000000"], [1, "#000000C0"]]));
+        // Layar bioskop gelap dengan sorot proyektor hangat, tanpa foto.
+        k.bg("#121110");
+        k.bg(k.radial(CX, 860, 60, 1000, [[0, k.alpha(STAMP, 0.26)], [0.55, k.alpha(STAMP, 0.06)], [1, "#00000000"]]));
+        k.rect(0, 0, W, 200, "#000000");
+        k.rect(0, H - 200, W, 200, "#000000");
+        k.line(70, 620, W - 70, 620, light, 2, 0.35);
+        k.line(70, 1250, W - 70, 1250, light, 2, 0.35);
+        stamp(k, W - 70, 1220);
         k.text("Halo! Kamu diundang ke", CX, 730, { size: 36, color: light });
         k.text(k.d.headline.toLocaleUpperCase("id-ID"), CX, 880, { font: "display", size: 158, weight: 800, color: light, maxW: 980 });
         k.text(`Pernikahan ${k.d.groom} & ${k.d.bride}`, CX, 964, { size: 38, color: light, maxW: 900 });

@@ -2,7 +2,7 @@ import { archPath, CX, H, W, type ThemeStory } from "../story-kit";
 
 const GRAIN = "/img/bagas-sekar/grain.webp";
 
-// Ruang: garis denah arsitektur, nama yang berseberangan, dan foto hitam putih.
+// Ruang: garis denah arsitektur, nama yang berseberangan, dan foto hitam putih. Template Denah sengaja tanpa foto.
 export const story: ThemeStory = {
   assets: () => [GRAIN],
   templates: [
@@ -19,9 +19,18 @@ export const story: ThemeStory = {
         k.line(CX, 1420, CX, H, rule, 2);
         k.para(k.d.groom, 56, 420, { font: "name", size: 118, color: k.c.ink, align: "left", width: 460, lineHeight: 1.05 });
         k.para(k.d.bride, W - 56, 610, { font: "name", size: 118, color: k.c.ink, align: "right", italic: true, width: 460, lineHeight: 1.05 });
-        k.photo(k.d.photos.wide, { x: 0, y: 760, w: W, h: 660 }, { tone: "mono", empty: k.c.wash });
+        // Petak tengah berisi kisi denah dan tanggal besar sebagai ganti foto.
+        for (let x = 60; x < W; x += 60) k.line(x, 760, x, 1420, rule, 1, 0.45);
+        for (let y = 820; y < 1420; y += 60) k.line(0, y, W, y, rule, 1, 0.45);
+        k.rect(56, 860, 450, 460, k.c.paper);
+        k.text(k.d.day, 281, 1210, { font: "display", size: 360, color: k.c.ink, maxW: 430 });
+        k.rect(W - 506, 860, 450, 460, k.c.paper);
+        k.text(k.d.month.toLocaleUpperCase("id-ID"), W - 76, 960, { font: "display", size: 52, spacing: 4, color: k.c.ink, align: "right", maxW: 410 });
+        k.text(k.d.year, W - 76, 1030, { font: "display", size: 52, spacing: 4, color: k.c.ink, align: "right", alpha: 0.7 });
+        k.line(W - 486, 1080, W - 76, 1080, k.c.ink, 2, 0.5);
+        k.para([k.d.venue, k.d.city].filter(Boolean).join(", "), W - 76, 1140, { size: 30, color: k.c.ink, align: "right", width: 410, maxLines: 4, lineHeight: 1.3 });
         k.text("KAMI MENGUNDANGMU", 56, 1478, { size: 24, spacing: 7, color: k.c.ink, align: "left", alpha: 0.75, maxW: 460 });
-        k.text(k.d.dateShort, W - 56, 1478, { font: "display", size: 36, color: k.c.ink, align: "right", spacing: 3 });
+        k.text(k.d.weekday, W - 56, 1478, { font: "display", size: 36, color: k.c.ink, align: "right", spacing: 3, maxW: 460 });
         k.link({ fill: k.c.ink, label: "", y: 1540, radius: 4, size: 34 });
       },
     },

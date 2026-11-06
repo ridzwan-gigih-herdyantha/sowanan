@@ -49,6 +49,7 @@ function paint(canvas: HTMLCanvasElement, data: StoryData, t: StoryTemplate, ima
     for (const ch of text) fonts.get(font)!.add(ch);
   });
   t.draw(kit);
+  kit.watermark();
 }
 
 const fileName = (link: string, template: string) => `story-${link.split("/").pop()}-${template}.png`;

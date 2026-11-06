@@ -1,4 +1,4 @@
-import { archPath, CX, H, W, type Kit, type ThemeStory } from "../story-kit";
+import { archPath, CX, H, roundPath, W, type Kit, type ThemeStory } from "../story-kit";
 
 const A = "/img/danang-kinanthi";
 const dated = (k: Kit) => k.d.date.replace(",", ` ${k.d.pasaran},`);
@@ -55,10 +55,14 @@ export const story: ThemeStory = {
         k.tile(`${A}/parang.webp`, 120, 1, { x: 0, y: H - 120, w: W, h: 120 });
         k.rect(0, 120, W, 5, k.c.gold);
         k.rect(0, H - 125, W, 5, k.c.gold);
-        k.art(`${A}/gunungan.webp`, CX, 980, 420, { alpha: 0.26 });
+        // Foto menjadi kelir yang diterangi blencong, wayang berdiri di depannya.
+        const screen = { x: 170, y: 660, w: 740, h: 690 };
+        k.strokePath(roundPath({ x: screen.x - 14, y: screen.y - 14, w: screen.w + 28, h: screen.h + 28 }, 12), k.c.gold, 5);
+        k.photo(k.d.photos.couple ?? k.d.photos.hero, screen, { path: roundPath(screen, 6), empty: k.mix(base, lamp, 0.25), emptyInk: lamp });
+        k.fillPath(roundPath(screen, 6), k.radial(CX, 1000, 220, 560, [[0, k.alpha(base, 0)], [1, k.alpha(base, 0.55)]]));
         const glow = { color: k.alpha("#000000", 0.6), blur: 32, x: 0, y: 14 };
-        k.art(`${A}/kamajaya.webp`, 236, 1010, 300, { shadow: glow });
-        k.art(`${A}/kamaratih.webp`, 824, 1010, 440, { shadow: glow });
+        k.art(`${A}/kamajaya.webp`, 150, 1100, 190, { shadow: glow });
+        k.art(`${A}/kamaratih.webp`, 930, 1100, 280, { shadow: glow });
         const light = k.mix(lamp, "#FFFFFF", 0.3);
         k.text("PAHARGYAN PAWIWAHAN", CX, 296, { size: 25, spacing: 8, color: lamp });
         const c = k.couple({ top: 312, maxH: 270, font: "name", size: 96, color: light, maxW: 800, lineHeight: 1, ampGap: 0.5, amp: { color: lamp, scale: 0.46 } });
@@ -74,7 +78,7 @@ export const story: ThemeStory = {
       draw: (k) => {
         k.bg(k.c.paper);
         corners(k, 260, true, true);
-        k.art(`${A}/lung-mahkota.webp`, CX, 302, 520, { tint: k.c.gold });
+        k.art(`${A}/lung-mahkota.webp`, CX, 326, 440, { tint: k.c.gold });
         const arch = { x: 140, y: 380, w: 800, h: 960 };
         k.strokePath(archPath({ x: 112, y: 352, w: 856, h: 1016 }), k.c.gold, 5);
         k.strokePath(archPath({ x: 126, y: 366, w: 828, h: 988 }), k.c.gold, 1.5);

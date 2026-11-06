@@ -60,7 +60,12 @@ export const story: ThemeStory = {
         chip(k, "SELAMAT DATANG DI AULA", 268, 26);
         const name = k.text(k.d.groom, CX, 470, { font: "name", weight: 600, size: 106, color: "#FFFFFF", maxW: 900, stroke: { color: k.c.night, width: 14 } });
         k.text(`& ${k.d.bride}`, CX, 584, { font: "name", weight: 600, size: name, color: k.v("--inv-gold-light", "#F2D28A"), maxW: 900, stroke: { color: k.c.night, width: 14 } });
-        coupleSprite(k, CX, 1040, 420);
+        // Foto dipajang di panggung aula seperti layar besar, sprite pengantin berdiri di sudutnya.
+        card(k, { x: 140, y: 630, w: 800, h: 600 });
+        const p = { x: 170, y: 660, w: 740, h: 540 };
+        k.photo(k.d.photos.closing ?? k.d.photos.hero, p, { path: roundPath(p, 22), empty: k.c.wash });
+        k.strokePath(roundPath(p, 22), k.c.night, 5);
+        coupleSprite(k, 860, 1190, 200);
         const b = { x: 110, y: 1270, w: 860, h: 240 };
         card(k, b);
         k.text(k.d.date, CX, b.y + 76, { font: "display", size: 38, weight: 600, color: k.c.ink, maxW: 790 });

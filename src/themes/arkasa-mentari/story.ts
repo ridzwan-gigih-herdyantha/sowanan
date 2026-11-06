@@ -136,17 +136,21 @@ export const story: ThemeStory = {
         k.sprite(COIN, 744, 266, 4, COIN_COLORS);
         k.text(k.d.dateShort.replace(/\s/g, ""), W - 70, 296, { ...hud, align: "right", maxW: 190 });
         k.rect(70, 320, W - 140, 6, "#FFFFFF", 0.65);
-        k.text("PEMAIN 1 + PEMAIN 2", CX, 452, { font: "display", size: 34, spacing: 4, color: k.v("--inv-sun", "#FFE27A"), maxW: 900 });
-        logo(k, k.d.groom, 600, 132);
-        k.sprite(HEART, CX - 42, 636, 12, HEART_COLORS);
-        logo(k, k.d.bride, 840, 132);
-        k.sprite(FLAG, 800, 1360 - FLAG.length * 7, 7, FLAG_COLORS);
-        k.sprite(COIN, 120, 1110, 8, COIN_COLORS);
-        k.sprite(COIN, 220, 1070, 8, COIN_COLORS);
-        k.sprite(COIN, 320, 1110, 8, COIN_COLORS);
-        k.text(k.d.date, CX, 950, { font: "display", size: 38, spacing: 2, color: "#FFFFFF", maxW: 930 });
-        k.text([k.d.venue, k.d.city].filter(Boolean).join(", "), CX, 1006, { size: 30, color: "#FFFFFF", maxW: 930 });
-        couple(k, CX, 1360, 7);
+        k.text("PEMAIN 1 + PEMAIN 2", CX, 396, { font: "display", size: 30, spacing: 4, color: k.v("--inv-sun", "#FFE27A"), maxW: 900 });
+        logo(k, k.d.groom, 480, 84);
+        k.sprite(HEART, CX - 25, 498, 7, HEART_COLORS);
+        logo(k, k.d.bride, 620, 84);
+        // Foto piksel dalam bingkai seperti layar kemenangan di akhir level.
+        const shot = { x: 184, y: 684, w: 712, h: 392 };
+        panel(k, 160, 660, 760, 440, k.c.card);
+        k.photo(k.d.photos.closing ?? k.d.photos.hero, shot, { pixel: 150, empty: k.c.wash });
+        k.strokePath(rectPath(shot), night, 6);
+        k.text(k.d.date, CX, 1160, { font: "display", size: 36, spacing: 2, color: "#FFFFFF", maxW: 900 });
+        k.text([k.d.venue, k.d.city].filter(Boolean).join(", "), CX, 1210, { size: 28, color: "#FFFFFF", maxW: 760 });
+        k.sprite(FLAG, 940, 1360 - FLAG.length * 4, 4, FLAG_COLORS);
+        k.sprite(COIN, 110, 1270, 6, COIN_COLORS);
+        k.sprite(COIN, 190, 1270, 6, COIN_COLORS);
+        couple(k, CX, 1360, 5);
         start(k);
       },
     },

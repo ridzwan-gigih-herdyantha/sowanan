@@ -7,6 +7,9 @@ import { contrast, isHex, mix } from "./palette";
 export const W = 1080;
 export const H = 1920;
 export const CX = W / 2;
+// Watermark di semua template, digambar setelah template selesai. Template jangan menaruh teks di atas y 250.
+export const WATERMARK = "sowanan.com";
+export const WATERMARK_Y = 230;
 
 export type StoryTemplate = { id: string; name: string; draw: (k: Kit) => void };
 // assets berisi gambar tema yang harus dimuat sebelum template digambar.
@@ -488,7 +491,30 @@ export function createKit(ctx: CanvasRenderingContext2D, d: StoryData, images: M
     return box;
   };
 
-  return { ctx, d, c, v, text, para, wrap, couple, rect, bg, linear, radial, fillPath, strokePath, line, rule, group: groupWith, art, tile, grain, photo, sprite, link, fit: fitSize, mix, readable, alpha, measure };
+  // Watermark kecil di tengah atas, tepat di atas area aman. Bagian tengah biasanya kosong karena nama akun story ada
+  // di kiri dan tombol di kanan. Warnanya mengikuti terang latar yang sudah tergambar di bawahnya.
+  const watermark = () => {
+    const y = WATERMARK_Y;
+    let dark = false;
+    try {
+      const px = ctx.getImageData(CX - 160, y - 26, 320, 32).data;
+      let sum = 0;
+      for (let i = 0; i < px.length; i += 4) sum += 0.2126 * px[i] + 0.7152 * px[i + 1] + 0.0722 * px[i + 2];
+      dark = sum / (px.length / 4) > 150;
+    } catch {
+      // Kanvas tercemar gambar lintas asal: pakai teks putih berbayang yang terbaca di hampir semua latar.
+    }
+    text(WATERMARK, CX, y, {
+      size: 24,
+      weight: 600,
+      spacing: 3,
+      color: dark ? "#1A1A1A" : "#FFFFFF",
+      alpha: 0.72,
+      shadow: { color: dark ? "#FFFFFF66" : "#00000088", blur: 8 },
+    });
+  };
+
+  return { ctx, d, c, v, text, para, wrap, couple, rect, bg, linear, radial, fillPath, strokePath, line, rule, group: groupWith, art, tile, grain, photo, sprite, link, watermark, fit: fitSize, mix, readable, alpha, measure };
 }
 
 export type Kit = ReturnType<typeof createKit>;
