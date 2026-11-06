@@ -94,7 +94,7 @@ export function ArticleForm({ article, categories }: { article?: EditableArticle
             />
           )}
         </Field>
-        <Field label="Alamat" help={`sowanan.com/artikel/${slug || "..."}${article?.published ? ". Mengubah alamat artikel yang sudah tayang membuat tautan lama tidak berlaku." : ""}`} error={fields.slug}>
+        <Field label="Slug" help={`sowanan.com/artikel/${slug || "..."}${article?.published ? ". Mengubah alamat artikel yang sudah tayang membuat tautan lama tidak berlaku." : ""}`} error={fields.slug}>
           {(id, describedBy) => (
             <input
               id={id}
