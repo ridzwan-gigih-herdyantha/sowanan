@@ -5,8 +5,7 @@ import { TrackThemeView } from "@/components/meta-pixel";
 import { isDemo } from "@/lib/invitation/archive";
 import { demoHref, demoPackages, TOP_PACKAGE } from "@/lib/invitation/demo-packages";
 import { getInvitation } from "@/lib/invitation/load";
-import { requirementsText } from "@/lib/invitation/requirements-text";
-import { getSettings, packageRules, type PackageId } from "@/lib/settings";
+import { getSettings, type PackageId } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
 import { THEME_NAMES } from "@/themes/media";
 import { DemoViewSwitch } from "./demo-view-switch";
@@ -40,7 +39,7 @@ export async function DevicePreview({ slug, device, pkg = TOP_PACKAGE }: { slug:
         title={`Contoh undangan tema ${THEME_NAMES[inv.theme]} di ${label}`}
         w={w}
         h={h}
-        aside={<DemoViewSwitch {...demoSwitchLinks(slug, pkg, device, packages)} dataList={requirementsText(inv.theme, THEME_NAMES[inv.theme] ?? inv.theme, packageRules(settings, pkg))} attached />}
+        aside={<DemoViewSwitch {...demoSwitchLinks(slug, pkg, device, packages)} attached />}
       />
       <TrackThemeView theme={inv.theme} name={THEME_NAMES[inv.theme] ?? inv.theme} pkg={pkg} device={device} />
     </main>

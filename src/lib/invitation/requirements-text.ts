@@ -1,9 +1,9 @@
 import { PACKAGE_NAMES } from "@/lib/settings/schema";
 import type { PackageRules } from "@/lib/settings/text";
 import { requirements, type ReqRow } from "./requirements";
-import { EXTRA_KINDS, invitationDataSchema, type ExtraKind } from "./schema";
+import { EXTRA_KINDS, invitationDataSchema, type ExtraKind, type InvitationData } from "./schema";
 
-// Daftar data yang disalin dari halaman contoh, siap ditempel ke WhatsApp. Isiannya mengikuti requirements(), jadi
+// Template pesan daftar data untuk klien dari Daftar kebutuhan data di admin, siap ditempel ke WhatsApp. Isiannya mengikuti requirements(), jadi
 // isian baru di spec otomatis ikut. Dua daftar di bawah ini yang disesuaikan dengan balasan Checklist data di SOP.
 
 // Isian yang diisi tim, tidak ditanyakan ke pembeli.
@@ -48,20 +48,29 @@ function addonLines(rules: PackageRules) {
   ];
 }
 
-export function requirementsText(theme: string, themeName: string, rules: PackageRules) {
-  // Semua bagian dianggap terpakai karena daftar ini untuk calon pembeli, bukan untuk undangan tertentu.
-  const { sections } = requirements(theme, rules, invitationDataSchema.parse({}));
+// chosen berisi pilihan admin di Daftar kebutuhan data: bagian yang dipakai, isian opsional yang dilepas, dan bagian
+// tambahan yang sudah disepakati. Tanpa chosen, semua bagian dianggap terpakai seperti untuk calon pembeli umum.
+type Chosen = { data: InvitationData; skip: ReadonlySet<string>; couple?: string; demoUrl?: string };
+
+export function requirementsText(theme: string, themeName: string, rules: PackageRules, chosen?: Chosen) {
+  const { sections } = requirements(theme, rules, chosen?.data ?? invitationDataSchema.parse({}), chosen?.skip);
   const blocks = sections.flatMap((s) => {
     const rows = s.rows.filter((r) => !HIDDEN.has(r.key));
     return rows.length ? [`*${s.title}*\n${rows.map((r) => lineOf(r, rules)).join("\n")}`] : [];
   });
   blocks.push(`*Warna dan font*\n- ${styleLine(rules)} (opsional)`);
-  const addons = addonLines(rules);
-  if (addons.length) blocks.push(`*Kalau mengambil tambahan*\n${addons.map((l) => `- ${l} (opsional)`).join("\n")}`);
-  if (rules.extras?.max) {
-    const kinds = (Object.keys(EXTRA_KINDS) as ExtraKind[]).filter((k) => k !== "bebas").map((k) => EXTRA_KINDS[k]);
-    blocks.push(`*Bagian tambahan*\n- Pilih maksimal ${rules.extras.max} (opsional): ${kinds.join(", ")}`);
+  // Add-on dan bagian tambahan sudah dipilih admin kalau ada chosen, jadi tawarannya tidak perlu disebut lagi.
+  if (!chosen) {
+    const addons = addonLines(rules);
+    if (addons.length) blocks.push(`*Kalau mengambil tambahan*\n${addons.map((l) => `- ${l} (opsional)`).join("\n")}`);
+    if (rules.extras?.max) {
+      const kinds = (Object.keys(EXTRA_KINDS) as ExtraKind[]).filter((k) => k !== "bebas").map((k) => EXTRA_KINDS[k]);
+      blocks.push(`*Bagian tambahan*\n- Pilih maksimal ${rules.extras.max} (opsional): ${kinds.join(", ")}`);
+    }
   }
   const pkg = rules.pkg ? `, paket ${PACKAGE_NAMES[rules.pkg]}` : "";
-  return [`*Data undangan tema ${themeName}${pkg}*\nSemua foto opsional, boleh juga tanpa foto.`, ...blocks, "Boleh dikirim sekaligus ya, supaya pengerjaannya bisa langsung jalan."].join("\n\n");
+  const couple = chosen?.couple ? ` - ${chosen.couple}` : "";
+  const intro = [`*Data undangan tema ${themeName}${pkg}${couple}*`, "Semua foto opsional, boleh juga tanpa foto.", ...(chosen?.demoUrl ? [`Contoh temanya: ${chosen.demoUrl}`] : [])].join("\n");
+  const tips = "*Tips foto*\n- Kirim sebagai dokumen di WhatsApp supaya tidak terkompres.\n- Cahaya cukup dan wajah tidak terpotong akan tampil paling bagus.";
+  return [intro, ...blocks, ...(chosen ? [tips] : []), "Boleh dikirim sekaligus ya, supaya pengerjaannya bisa langsung jalan."].join("\n\n");
 }

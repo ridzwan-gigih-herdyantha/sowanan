@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { demoHref, TOP_PACKAGE } from "@/lib/invitation/demo-packages";
 import { requirements, sectionLocked } from "@/lib/invitation/requirements";
+import { requirementsText } from "@/lib/invitation/requirements-text";
 import { EXTRA_KINDS, invitationDataSchema, type ExtraKind } from "@/lib/invitation/schema";
 import { forTheme, GROUPS } from "@/lib/invitation/spec";
-import { PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
+import type { PackageId, Settings } from "@/lib/settings/schema";
 import { packageRules, type Purchased } from "@/lib/settings/text";
 import { SITE_URL } from "@/lib/site";
 import { Dropdown } from "../dropdown";
@@ -18,7 +19,7 @@ const field = "block w-full rounded-sm border border-line bg-white px-3 py-2 tex
 const MULTI = new Set(["galeri_foto", "galeri_pasca", "bagian_tambahan"]);
 
 // Daftar kebutuhan data untuk calon klien, disusun sebelum undangannya dibuat: tema, paket, add-on, bagian yang
-// dipakai, isian opsional yang diminta, dan bagian tambahan. Hasilnya disimpan sebagai PDF dari dialog cetak.
+// dipakai, isian opsional yang diminta, dan bagian tambahan. Hasilnya teks pesan yang disalin ke WhatsApp klien.
 export function RequirementsBuilder({ packages, themes, matrix, addons }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [opened, setOpened] = useState(0);
@@ -31,7 +32,7 @@ export function RequirementsBuilder({ packages, themes, matrix, addons }: Props)
   const [extras, setExtras] = useState<Extra[]>([]);
   const [kind, setKind] = useState<ExtraKind>("rundown");
   const [title, setTitle] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState<"idle" | "done" | "failed">("idle");
 
   useEffect(() => {
     if (opened) dialog.current?.showModal();
@@ -62,30 +63,31 @@ export function RequirementsBuilder({ packages, themes, matrix, addons }: Props)
     setTitle("");
   };
 
-  async function download() {
-    if (!chosen) return;
-    setBusy(true);
-    try {
-      const { printRequirements } = await import("./requirements-pdf");
-      await printRequirements({
-        theme: chosen,
-        themeName: themes.find((t) => t.key === chosen)?.name ?? chosen,
-        pkgName: rules.pkg ? PACKAGE_NAMES[rules.pkg] : "",
-        rules,
+  const message = chosen
+    ? requirementsText(chosen, themes.find((t) => t.key === chosen)?.name ?? chosen, rules, {
         data,
         skip,
-        demoUrl: `${SITE_URL}${demoHref(chosen, (rules.pkg ?? TOP_PACKAGE) as PackageId)}`,
         couple: couple.trim(),
-      });
-    } finally {
-      setBusy(false);
+        demoUrl: `${SITE_URL}${demoHref(chosen, (rules.pkg ?? TOP_PACKAGE) as PackageId)}`,
+      })
+    : "";
+
+  async function copy() {
+    if (!message) return;
+    let ok = true;
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch {
+      ok = false;
     }
+    setCopied(ok ? "done" : "failed");
+    window.setTimeout(() => setCopied("idle"), 1600);
   }
 
   return (
     <>
       <button type="button" onClick={() => setOpened((n) => n + 1)} className="text-[14px] text-wine underline underline-offset-4">
-        Daftar kebutuhan data (PDF)
+        Daftar kebutuhan data
       </button>
       <dialog
         ref={dialog}
@@ -203,14 +205,21 @@ export function RequirementsBuilder({ packages, themes, matrix, addons }: Props)
               </div>
             </>
           ) : null}
+
+          {message && (
+            <label className="mt-7 block text-[14px] font-medium">
+              Pesan untuk klien
+              <textarea readOnly value={message} rows={12} onFocus={(e) => e.target.select()} className={`${field} mt-2 font-mono text-[13px] leading-relaxed`} />
+            </label>
+          )}
         </div>
 
         <div className="sticky bottom-0 flex justify-end gap-3 border-t border-line bg-ivory px-5 py-3 sm:px-6">
           <button type="button" onClick={() => dialog.current?.close()} className="rounded-sm border border-line px-4 py-2 text-[14px]">
             Tutup
           </button>
-          <button type="button" onClick={download} disabled={!chosen || busy} className="rounded-sm bg-wine px-4 py-2 text-[14px] text-white disabled:opacity-50">
-            {busy ? "Menyiapkan..." : "Unduh PDF"}
+          <button type="button" onClick={copy} disabled={!message} className="rounded-sm bg-wine px-4 py-2 text-[14px] text-white disabled:opacity-50">
+            <span aria-live="polite">{copied === "done" ? "Pesan tersalin" : copied === "failed" ? "Gagal menyalin, salin dari kotak" : "Salin pesan"}</span>
           </button>
         </div>
       </dialog>
