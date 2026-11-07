@@ -39,11 +39,11 @@ Satu tema pilihan Anda dari katalog, ditampilkan apa adanya. Galeri hingga 3 fot
 
 ### Lengkap (Rp199.000)
 
-Seluruh isi paket Dasar, dengan warna tema disesuaikan palet acara Anda. Galeri hingga 15 foto. Musik latar pilihan sendiri, cerita perjalanan, dan nama tamu yang muncul di undangan.
+Seluruh isi paket Dasar, dengan warna tema disesuaikan palet acara Anda. Galeri hingga 15 foto. Musik latar pilihan sendiri, cerita perjalanan, dan nama tamu yang muncul di undangan. Palet warna custom dan font custom dari Google Fonts tersedia sebagai add-on.
 
 ### Istimewa (Rp499.000)
 
-Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Paket ini ditujukan untuk acara dengan jumlah tamu banyak. Pada paket ini Anda juga dapat meminta hingga 2 bagian tambahan yang belum ada di tema.
+Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah palet warna custom, font custom dari Google Fonts, daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Paket ini ditujukan untuk acara dengan jumlah tamu banyak. Pada paket ini Anda juga dapat meminta hingga 2 bagian tambahan yang belum ada di tema.
 
 Bagian tambahan dipilih dari enam berikut, maksimal dua:
 
@@ -247,6 +247,7 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     addon: { title: "Tambahan di luar paket", sub: "Bisa ditambahkan saat memesan. Sebutkan saja lewat WhatsApp." },
     cara: { title: "Cara pesan", sub: "" },
+    testi: { title: "Kata mereka" },
     faq: {
       title: "Yang sering ditanyakan",
       sub: "Jawaban seputar harga, waktu pengerjaan, dan fitur undangan pernikahan digital Sowanan.",
@@ -303,8 +304,10 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "kabar-retro", on: true, name: "Kabar Retro No. 27", slug: "galih-ardila", demo: "/galih-ardila", tier: "lengkap", category: "vintage", style: "tabloid / retro pop", image: "/img/tema-galih-ardila-buka.webp", screen: "" },
     { id: "horas", on: true, name: "Horas", slug: "bonar-anggi", demo: "/bonar-anggi", tier: "lengkap", category: "adat", style: "batak toba / ulos", image: "/img/tema-bonar-anggi-buka.webp", screen: "" },
     { id: "rafi-kayla", on: true, name: "Isometrik", slug: "rafi-kayla", demo: "/rafi-kayla", tier: "lengkap", category: "game", style: "peta isometrik / gedung", image: "/img/rafi-kayla/cover.webp", screen: "/img/rafi-kayla/hero.webp" },
+    { id: "dimas-salsa", on: true, name: "Piksel", slug: "dimas-salsa", demo: "/dimas-salsa", tier: "lengkap", category: "game", style: "kota piksel / gedung", image: "/img/dimas-salsa/cover.webp", screen: "/img/dimas-salsa/hero.webp" },
   ],
   themeFaq: THEME_FAQ,
+  testimonials: { items: [] },
   homeThemes: ["senja", "ruang", "herba", "kelir"],
   faq: [
     { id: "lama", on: true, q: "Berapa lama jadinya?", a: "Undangan pernikahan digital Sowanan jadi dalam {waktu}, tergantung paket: {pengerjaan}. Waktu pengerjaan dihitung setelah data lengkap dan pembayaran masuk, dan pesanan yang masuk setelah pukul 15.00 dihitung mulai hari kerja berikutnya. Perbandingan lengkap tiap paket ada di [bagian harga](#harga)." },
@@ -329,7 +332,23 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   matrix: [
     { id: "katalog", label: "Bebas pilih satu tema dari katalog", kind: "check", unit: "", key: "", cells: all },
-    { id: "warna", label: "Warna tema disesuaikan palet acara", kind: "check", unit: "", key: "warna_tema", cells: cells(false, true, true) },
+    { id: "warna", label: "Warna tema disesuaikan palet acara", kind: "check", unit: "", key: "palet_varian", cells: cells(false, true, true) },
+    { id: "font", label: "Font, pilih dari varian", kind: "check", unit: "", key: "font_varian", cells: cells(false, true, true), hidden: true },
+    { id: "paletcustom", label: "Palet warna custom sesuai acara", kind: "check", unit: "", key: "palet_custom", cells: cells(false, false, true), hidden: true },
+    { id: "fontcustom", label: "Font custom dari Google Fonts", kind: "check", unit: "", key: "font_custom", cells: cells(false, false, true), hidden: true },
+    { id: "video", label: "Video dari YouTube", kind: "check", unit: "", key: "video_youtube", cells: cells(false, false, false), hidden: true },
+    { id: "story", label: "Gambar undangan untuk story", kind: "check", unit: "", key: "gambar_story", cells: cells(false, false, false), hidden: true },
+    { id: "kedua", label: "Undangan kedua untuk acara terpisah", kind: "check", unit: "", key: "undangan_kedua", cells: cells(false, false, false), hidden: true },
+    { id: "terundang", label: "Undangan khusus tamu terundang", kind: "check", unit: "", key: "tamu_terundang", cells: cells(false, false, true), hidden: true },
+    {
+      id: "pasca",
+      label: "Galeri pasca acara",
+      kind: "count",
+      unit: "{n} foto",
+      key: "galeri_pasca",
+      cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: false, n: null } },
+      hidden: true,
+    },
     {
       id: "bagian",
       label: "Bagian tambahan di luar tema",
@@ -362,7 +381,19 @@ export const DEFAULT_SETTINGS: Settings = {
   addons: [
     { id: "foto", on: true, name: "Tambah 10 foto galeri", price: 25000, scope: "Dasar dan Lengkap", unlock: "galeri_foto", amount: 10 },
     { id: "musik", on: true, name: "Musik latar pilihan sendiri", price: 25000, scope: "Dasar", unlock: "musik_sendiri", amount: 0 },
-    { id: "gaya", on: true, name: "Ganti font atau palet warna", price: 35000, scope: "Dasar", unlock: "warna_tema", amount: 0 },
+    { id: "gaya", on: true, name: "Ganti font atau palet warna", price: 35000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
+    // Pengganti add-on gaya, dinyalakan bersamaan dengan teks harga dan ketentuan yang baru.
+    { id: "palet", on: false, name: "Pilih 1 dari 4 varian palet", price: 25000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
+    { id: "font", on: false, name: "Pilih varian font", price: 25000, scope: "Dasar", unlock: "font_varian", amount: 0 },
+    { id: "paletcustom", on: true, name: "Palet warna custom", price: 25000, scope: "Lengkap", unlock: "palet_custom", amount: 0 },
+    { id: "fontcustom", on: true, name: "Font custom dari Google Fonts", price: 25000, scope: "Lengkap", unlock: "font_custom", amount: 0 },
+    { id: "video", on: false, name: "Video dari YouTube", price: 25000, scope: "Semua paket", unlock: "video_youtube", amount: 0 },
+    { id: "story", on: false, name: "Gambar undangan untuk story", price: 25000, scope: "Semua paket", unlock: "gambar_story", amount: 0 },
+    { id: "kedua", on: false, name: "Undangan kedua untuk acara terpisah", price: 50000, scope: "Lengkap dan Istimewa", unlock: "undangan_kedua", amount: 0 },
+    // Dinyalakan setelah fitur selesai dites, bersamaan dengan teks harga dan ketentuan yang baru.
+    { id: "terundang", on: false, name: "Undangan khusus tamu terundang", price: 50000, scope: "Lengkap", unlock: "tamu_terundang", amount: 0 },
+    { id: "inputtamu", on: false, name: "Kami inputkan daftar tamu, per 100 nama", price: 25000, scope: "Lengkap dan Istimewa", unlock: "", amount: 100 },
+    { id: "pasca", on: false, name: "Galeri pasca acara, per 10 foto", price: 25000, scope: "Semua paket", unlock: "galeri_pasca", amount: 10 },
     { id: "domainmyid", on: true, name: "Alamat domain sendiri (.my.id)", price: 99000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
     { id: "domain", on: true, name: "Alamat domain sendiri (.com)", price: 299000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
     { id: "excel", on: false, name: "Ekspor daftar tamu ke Excel", price: 50000, scope: "Lengkap", unlock: "ekspor_excel", amount: 0 },

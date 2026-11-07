@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
+import { ADDON_EXCLUDED, PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
 import { formatRupiah, type Purchased } from "@/lib/settings/text";
 import { setAddons } from "../actions";
 import { Spinner } from "./spinner";
@@ -25,7 +25,7 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
   const id = pkg && pkg in PACKAGE_NAMES ? (pkg as PackageId) : null;
-  const shown = addons.filter((a) => a.on || (bought[a.id] ?? 0) > 0);
+  const shown = addons.filter((a) => (a.on || (bought[a.id] ?? 0) > 0) && !(id && ADDON_EXCLUDED[a.unlock]?.includes(id)));
   const unlocking = shown.filter((a) => a.unlock);
   const others = shown.filter((a) => !a.unlock);
 
@@ -56,7 +56,8 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
 
   const row = (a: Addon) => {
     const units = bought[a.id] ?? 0;
-    const multi = a.unlock === "galeri_foto" || a.unlock === "bagian_tambahan";
+    // Add-on yang tidak membuka fitur dihitung per unit kalau jumlah per unitnya diisi, misalnya per 100 nama.
+    const multi = a.unlock === "galeri_foto" || a.unlock === "galeri_pasca" || a.unlock === "bagian_tambahan" || (!a.unlock && a.amount > 0);
     return (
       <li key={a.id} className="flex items-center gap-3 rounded-sm border border-line px-3 py-2 text-[14px]">
         {multi ? (
@@ -64,7 +65,7 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
             <span className="min-w-0 flex-1">
               {a.name}
               <span className="block text-[12px] text-ink-mute">
-                {formatRupiah(a.price)} per unit, +{a.amount} {a.unlock === "galeri_foto" ? "foto" : "bagian"}
+                {formatRupiah(a.price)} per unit{a.unlock && `, +${a.amount} ${a.unlock === "bagian_tambahan" ? "bagian" : "foto"}`}
               </span>
             </span>
             <span className="flex items-center gap-1">

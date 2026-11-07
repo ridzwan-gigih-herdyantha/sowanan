@@ -8,7 +8,21 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
-    if (open && !d.open) d.showModal();
+    if (open && !d.open) {
+      // Tanpa autofocus, showModal memfokuskan tombol atau kolom isian pertama di isi, yang bisa berada jauh di
+      // bawah. Di HP, fokus ke kolom isian juga memunculkan keyboard dan browser menggulir dialog ke kolom itu
+      // belakangan, setelah kode di bawah berjalan. Dengan autofocus pada dialog, dialog sendiri yang difokus.
+      d.setAttribute("autofocus", "");
+      d.showModal();
+      // Elemen dialog yang sama dipakai ulang dengan posisi gulir terakhirnya, jadi isi dikembalikan ke atas
+      // sekarang dan sekali lagi di frame berikutnya setelah isi dan transisi pembukaan tersusun.
+      d.focus({ preventScroll: true });
+      d.scrollTop = 0;
+      const raf = requestAnimationFrame(() => {
+        d.scrollTop = 0;
+      });
+      return () => cancelAnimationFrame(raf);
+    }
     if (!open && d.open) d.close();
   }, [open]);
 
@@ -16,9 +30,10 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
     <dialog
       ref={ref}
       aria-label={label}
+      tabIndex={-1}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="inv-dialog m-auto max-h-[92dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto bg-inv-paper p-0 text-inv-ink"
+      className="inv-dialog m-auto max-h-[92dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto bg-inv-paper p-0 text-inv-ink outline-none"
     >
       {open && children}
       <button

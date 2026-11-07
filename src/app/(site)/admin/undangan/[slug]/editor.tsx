@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { InvitationData } from "@/lib/invitation/schema";
-import { packageIssues } from "@/lib/invitation/package-check";
+import type { PostGalleryWindow } from "@/lib/invitation/archive";
+import { packageIssues, postGalleryCap } from "@/lib/invitation/package-check";
 import { checkInvitation, fieldPatterns, forTheme, GROUPS, patternOf, setIn, type Group, type Issue } from "@/lib/invitation/spec";
 import type { Settings } from "@/lib/settings/schema";
 import { packageRules, type Purchased } from "@/lib/settings/text";
@@ -19,6 +20,8 @@ type Props = {
   theme: string;
   label: string;
   published: boolean;
+  // Kode mempelai kalau undangan private, supaya tombol View tidak berhenti di halaman khusus tamu terundang.
+  viewCode: string | null;
   paid: boolean;
   pkg: string | null;
   draft: InvitationData;
@@ -27,7 +30,7 @@ type Props = {
   bought: Purchased;
   dp: number;
   // Status arsip. Kosong berarti tanggal acara belum diisi atau undangan contoh.
-  archive: { archived: boolean; locked: boolean; archiveAt: string; unlockedUntil: string | null } | null;
+  archive: { archived: boolean; locked: boolean; archiveAt: string; unlockedUntil: string | null; postGallery?: PostGalleryWindow } | null;
 };
 type Toast = { tone: "ok" | "error"; text: string } | null;
 
@@ -40,7 +43,7 @@ const SETUP = [
   { key: "package", title: "Package & add-ons" },
   { key: "style", title: "Style" },
 ];
-const MORE = new Set(["extras", "share"]);
+const MORE = new Set(["pasca", "video", "extras", "share"]);
 const TITLES: Record<string, string> = { extras: "Custom sections", share: "Footer & share" };
 const panelOfIssue = (group: string) => (group === "gaya" ? "style" : group);
 
@@ -113,7 +116,7 @@ function PhoneFrame({ frame, src, fitWidth, overlay }: { frame: RefObject<HTMLIF
   );
 }
 
-export function Editor({ slug, theme, label, published: initialPublished, paid, pkg, draft, live, packageData, bought: initialBought, dp, archive }: Props) {
+export function Editor({ slug, theme, label, published: initialPublished, viewCode, paid, pkg, draft, live, packageData, bought: initialBought, dp, archive }: Props) {
   // Bagian yang tidak termasuk paket langsung dimatikan, lalu draf tersimpan otomatis.
   const [data, setData] = useState(() =>
     packageRules(packageData, pkg, initialBought).locked.cerita && draft.sections.story.enabled ? setIn(draft, "sections.story.enabled", false) : draft,
@@ -149,12 +152,17 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
     const out: Record<string, { max: number; note: string }> = {};
     if (rules.photos) out["sections.gallery.photos"] = rules.photos;
     if (rules.extras) out.extras = rules.extras;
+    const post = postGalleryCap(rules, archive?.postGallery);
+    if (post) out.postGallery = post;
     return out;
-  }, [rules]);
-  const locks = useMemo(() => (rules.locked.musik_sendiri ? { "media.music": rules.locked.musik_sendiri } : undefined), [rules]);
+  }, [rules, archive]);
+  const locks = useMemo(
+    () => ({ ...(rules.locked.musik_sendiri && { "media.music": rules.locked.musik_sendiri }), ...(rules.locked.video_youtube && { video: rules.locked.video_youtube }) }),
+    [rules],
+  );
 
   const groups = useMemo(() => forTheme(GROUPS, theme), [theme]);
-  const issues = useMemo(() => [...checkInvitation(data, theme), ...packageIssues(data, theme, rules)], [data, theme, rules]);
+  const issues = useMemo(() => [...checkInvitation(data, theme), ...packageIssues(data, theme, rules, archive?.postGallery)], [data, theme, rules, archive]);
   const errors = useMemo(() => (showIssues ? Object.fromEntries(issues.map((i) => [i.path, i.message])) : {}), [issues, showIssues]);
   const dirty = JSON.stringify(data) !== saved;
   const names = [data.couple.groom.name, data.couple.bride.name].filter(Boolean).join(" dan ") || "mempelai";
@@ -202,7 +210,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
 
   const jump = useCallback((path: string) => {
     setMobilePreview(false);
-    if (path === "style") return open("style");
+    if (path.startsWith("style")) return open("style");
     const g = groupOf(path);
     if (g) setActive(g);
     setFocus(path);
@@ -362,6 +370,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
         <>
           <PanelHead title="Package & add-ons" note="Paket dipilih di daftar undangan. Centang add-on yang sudah dibayar supaya batas isian dan total harga ikut menyesuaikan." />
           <div className="pt-5">
+            {data.copyOf && <p className="mb-4 rounded-sm bg-ivory px-3 py-2 text-[13px] text-ink-soft ring-1 ring-line">Salinan dari sowanan.com/{data.copyOf} lewat add-on undangan kedua. Paket dan add-on di bawah sudah dibayar di undangan pertama, jadi rincian harganya tidak ditagih lagi.</p>}
             <AddonPanel slug={slug} pkg={pkg} packages={packageData.packages} addons={packageData.addons} bought={bought} dp={dp} onChange={setBought} />
           </div>
         </>
@@ -376,16 +385,18 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
               theme={theme}
               style={data.style}
               couple={[data.couple.groom.name, data.couple.bride.name].filter(Boolean).join(" & ") || "Andi & Rina"}
-              locked={rules.locked.warna_tema}
+              locked={{ palette: rules.locked.palet_varian, custom: rules.locked.palet_custom, font: rules.locked.font_varian, customFont: rules.locked.font_custom }}
               applying={applying}
               onChange={(style) => {
                 if (JSON.stringify(style) === JSON.stringify(data.style)) return;
                 setApplying(
-                  style.font !== data.style.font
-                    ? `font:${style.font || "bawaan"}`
-                    : style.nameFont !== data.style.nameFont
-                      ? `nama:${style.nameFont || "bawaan"}`
-                      : style.palette || "bawaan",
+                  JSON.stringify(style.customFont) !== JSON.stringify(data.style.customFont)
+                    ? "font:custom"
+                    : style.font !== data.style.font
+                      ? `font:${style.font || "bawaan"}`
+                      : style.nameFont !== data.style.nameFont
+                        ? `nama:${style.nameFont || "bawaan"}`
+                        : style.palette || "bawaan",
                 );
                 setData((d) => ({ ...d, style }));
               }}
@@ -399,7 +410,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
     const lock = lockOf(g);
     const on = isOn(g);
     const fields = forTheme(g.fields, theme);
-    const note = lock ?? (g.key === "extras" ? "Bagian di luar isi tema, misalnya susunan acara, denah, atau dress code." : g.section ? undefined : g.note);
+    const note = lock ?? (g.key === "pasca" ? limits.postGallery?.note ?? g.note : g.key === "extras" ? "Bagian di luar isi tema, misalnya susunan acara, denah, atau dress code." : g.section ? undefined : g.note);
     return (
       <>
         <PanelHead title={titleOf(g.key)} note={note} action={g.section && <Switch on={on} disabled={Boolean(lock)} onChange={(v) => setSection(g.section!, v)} label={`Tampilkan ${g.title}`} />} />
@@ -451,7 +462,7 @@ export function Editor({ slug, theme, label, published: initialPublished, paid, 
               Live
             </label>
             {published && (
-              <a href={`/${slug}`} target="_blank" rel="noreferrer" className="text-[14px] text-wine underline underline-offset-4">
+              <a href={viewCode ? `/${slug}?k=${viewCode}` : `/${slug}`} target="_blank" rel="noreferrer" className="text-[14px] text-wine underline underline-offset-4">
                 View
               </a>
             )}

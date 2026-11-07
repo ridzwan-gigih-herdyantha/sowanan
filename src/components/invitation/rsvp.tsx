@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState, useTransition } from "react";
 import { submitRsvp } from "@/app/[slug]/actions";
+import { linkCode } from "@/lib/guest-memory";
 import { GUEST_NAME_MAX } from "@/lib/guest-input";
 import { useArchived, useGuest, useInactive } from "./shell";
 
@@ -31,7 +32,7 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
   const send = () =>
     start(async () => {
       setError("");
-      const res = await submitRsvp(slug, { name: value, attending, guests: attending ? guests : 0 }).catch(() => ({ ok: false as const, error: OFFLINE }));
+      const res = await submitRsvp(slug, { name: value, attending, guests: attending ? guests : 0 }, linkCode()).catch(() => ({ ok: false as const, error: OFFLINE }));
       if (!res.ok) return setError(res.error);
       setGuest(value.trim());
       setStep("done");
@@ -40,7 +41,7 @@ export function Rsvp({ slug, deadline }: { slug: string; deadline: string }) {
   if (archived) return <p className="text-[15px] text-inv-ink/75">Konfirmasi kehadiran sudah ditutup karena undangan ini sudah menjadi arsip.</p>;
 
   return (
-    <div aria-live="polite">
+    <div data-inv-rsvp aria-live="polite">
       {step === "attend" && (
         <fieldset key="attend" disabled={inactive} className="animate-[inv-pop_.3s_ease-out]">
           <legend className="font-display text-[32px] leading-tight text-inv-accent">Kamu bisa datang?</legend>

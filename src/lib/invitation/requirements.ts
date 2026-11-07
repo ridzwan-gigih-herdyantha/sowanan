@@ -6,7 +6,7 @@ import { forTheme, GROUPS, type Field } from "./spec";
 // Kebutuhan data klien dari isian editor sesuai tema, paket, bagian yang dipakai, dan bagian tambahan pilihan
 // admin. key adalah jalur isian, dipakai untuk melewatkan isian opsional yang tidak diminta.
 
-export type ReqRow = { key: string; label: string; type: string; note?: string; required: boolean; depth: number; heading?: boolean };
+export type ReqRow = { key: string; label: string; type: string; note?: string; required: boolean; depth: number; heading?: boolean; count?: string };
 export type ReqSection = { key: string; title: string; note?: string; section?: string; rows: ReqRow[] };
 
 // Keterangan tambahan per kegunaan foto, misalnya orientasi yang paling pas.
@@ -76,7 +76,7 @@ function rowsOf(fields: Field[], ctx: Ctx, depth: number, prefix = "", parentOpt
       const cap = f.path === "sections.gallery.photos" ? rules.photos?.max : f.path === "extras" ? rules.extras?.max : undefined;
       const max = cap === undefined ? f.max : Math.min(cap, f.max ?? cap);
       const count = [f.min ? `minimal ${f.min}` : "", max ? `maksimal ${max}` : ""].filter(Boolean).join(", ");
-      out.push({ key, label: f.label, type: `Daftar ${f.item.toLowerCase()}${count ? `, ${count}` : ""}`, note: f.hint, required, depth, heading: true });
+      out.push({ key, label: f.label, type: `Daftar ${f.item.toLowerCase()}${count ? `, ${count}` : ""}`, note: f.hint, required, depth, heading: true, count });
       out.push(...rowsOf(f.fields, ctx, depth + 1, `${key}.`, !f.min || parentOptional, variant));
       continue;
     }
@@ -97,7 +97,7 @@ function extraRows(list: Extract<Field, { kind: "list" }>, data: InvitationData,
 }
 
 // Bagian yang tidak bisa dipakai di paket ini, misalnya Cerita yang tidak termasuk paket.
-export const sectionLocked = (key: string, rules: PackageRules) => (key === "story" && Boolean(rules.locked.cerita)) || (key === "gallery" && rules.photos?.max === 0);
+export const sectionLocked = (key: string, rules: PackageRules) => (key === "story" && Boolean(rules.locked.cerita)) || (key === "gallery" && rules.photos?.max === 0) || (key === "video" && Boolean(rules.locked.video_youtube));
 
 // skip berisi key isian opsional yang tidak diminta. Isian wajib selalu dicantumkan.
 export function requirements(theme: string, rules: PackageRules, data: InvitationData, skip: ReadonlySet<string> = new Set()): { sections: ReqSection[]; automatic: string[] } {
@@ -105,7 +105,8 @@ export function requirements(theme: string, rules: PackageRules, data: Invitatio
   const sections: ReqSection[] = [];
   const automatic: string[] = [];
   for (const g of forTheme(GROUPS, theme)) {
-    if ((g.section && !data.sections[g.section].enabled) || sectionLocked(g.key, rules)) continue;
+    // Foto pasca acara dikirim setelah acara, jadi tidak ditanyakan di formulir awal.
+    if (g.key === "pasca" || (g.section && !data.sections[g.section].enabled) || sectionLocked(g.key, rules)) continue;
     const list = g.key === "extras" ? g.fields.find((f) => f.kind === "list") : undefined;
     const rows = list?.kind === "list" ? extraRows(list, data, ctx) : rowsOf(g.fields, ctx, 0);
     if (!rows.length) {

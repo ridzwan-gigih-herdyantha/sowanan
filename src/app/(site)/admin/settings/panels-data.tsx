@@ -34,7 +34,7 @@ function PackageCard({ id }: { id: PackageId }) {
 }
 
 const KEY_OPTIONS: [string, string][] = [["", "Tanpa kunci"], ...Object.keys(SYSTEM_KEYS).map((k): [string, string] => [k, k])];
-const UNLOCK_OPTIONS: [string, string][] = [["", "Tidak membuka apa pun"], ...UNLOCK_KEYS.map((k): [string, string] => [k, k === "galeri_foto" ? "galeri_foto (tambah foto)" : k === "bagian_tambahan" ? "bagian_tambahan (tambah bagian)" : k])];
+const UNLOCK_OPTIONS: [string, string][] = [["", "Tidak membuka apa pun"], ...UNLOCK_KEYS.map((k): [string, string] => [k, k === "galeri_foto" ? "galeri_foto (tambah foto)" : k === "galeri_pasca" ? "galeri_pasca (foto pasca acara)" : k === "bagian_tambahan" ? "bagian_tambahan (tambah bagian)" : k])];
 const SOCIAL_OPTIONS = Object.entries(SOCIALS).map(([k, v]): [string, string] => [k, v.name]);
 const COLS ="grid-cols-[26px_minmax(170px,1fr)_118px_140px_repeat(3,96px)_34px]";
 
@@ -147,6 +147,26 @@ function Matrix() {
                       className={cx(input, "border-[#E8E0D6] px-2.5! py-1.5! text-ink-mute sm:text-[12px]!")}
                     />
                   )}
+                  <details open={PACKAGE_IDS.some((p) => r.cells[p].label)} className="text-[12px] text-ink-mute">
+                    <summary className="cursor-pointer select-none hover:text-wine">Teks per paket</summary>
+                    <div className="mt-1.5 flex flex-col gap-1.5">
+                      {PACKAGE_IDS.map((p) => (
+                        <input
+                          key={p}
+                          value={r.cells[p].label ?? ""}
+                          placeholder={`${PACKAGE_NAMES[p]}: kosong berarti sama`}
+                          aria-label={`Teks khusus paket ${PACKAGE_NAMES[p]} baris ${i + 1}`}
+                          aria-invalid={!!errors[`matrix.${i}.cells.${p}.label`]}
+                          onChange={(e) => edit(i, `cells.${p}.label`, e.target.value)}
+                          className={cx(input, "px-2.5! py-1.5! sm:text-[12px]!", errors[`matrix.${i}.cells.${p}.label`] ? "border-wine" : "border-[#E8E0D6]")}
+                        />
+                      ))}
+                    </div>
+                  </details>
+                  <label className="flex w-fit cursor-pointer items-center gap-1.5 text-[12px] text-ink-mute hover:text-wine">
+                    <input type="checkbox" checked={Boolean(r.hidden)} onChange={(e) => edit(i, "hidden", e.target.checked)} className="accent-wine" />
+                    Sembunyikan di kartu harga
+                  </label>
                 </span>
                 <span role="cell">
                   <SelectBox
@@ -254,7 +274,7 @@ export function PaketPanel() {
       </Card>
       <Card
         title="Isi paket"
-        hint="Satu baris sama dengan satu baris di kartu harga, urutannya berlaku untuk ketiga paket supaya kartu tetap sejajar. Baris tanpa kunci sistem hanya tampilan, bebas ditambah atau diubah kapan saja."
+        hint="Satu baris sama dengan satu baris di kartu harga, urutannya berlaku untuk ketiga paket supaya kartu tetap sejajar. Baris tanpa kunci sistem hanya tampilan, bebas ditambah atau diubah kapan saja. Teks per paket menggantikan nama baris di kartu paket itu dan selalu tampil termasuk, sedangkan kunci sistem tetap mengikuti centangnya. Baris yang disembunyikan tidak tampil di kartu harga tapi kuncinya tetap berlaku."
         tools={
           <a href="/#harga" target="_blank" rel="noopener" className={cx(button.quiet, button.sm)}>
             Lihat halaman harga
@@ -269,7 +289,7 @@ export function PaketPanel() {
 
 export function AddonPanel() {
   return (
-    <Card title="Tambahan di luar paket" hint="Kolom Berlaku untuk muncul sebagai baris kecil di bawah nama. Yang dimatikan tetap tersimpan, hanya tidak ditampilkan.">
+    <Card title="Tambahan di luar paket" hint="Kolom Berlaku untuk muncul sebagai baris kecil di bawah nama. Add-on yang tidak membuka fitur bisa dihitung per unit dengan mengisi Jumlah per unit, misalnya 100 untuk per 100 nama. Isi 0 kalau sekali beli. Yang dimatikan tetap tersimpan, hanya tidak ditampilkan.">
       <RepList
         path="addons"
         noun="item"
@@ -278,7 +298,7 @@ export function AddonPanel() {
         render={(item, __, base) => (
           <>
             <Row>
-              <Text path={`${base}.name`} label="Nama tambahan" max={46} />
+              <Text path={`${base}.name`} label="Nama tambahan" max={90} />
               <NumberField path={`${base}.price`} label="Harga" chip="view" prefix="Rp" rupiah className={width.sm} />
               <Text path={`${base}.scope`} label="Berlaku untuk" max={60} />
             </Row>
@@ -291,8 +311,9 @@ export function AddonPanel() {
                 options={UNLOCK_OPTIONS}
                 help="Dicentang per undangan setelah dibayar, lalu membuka isian di luar paket."
               />
-              {item.unlock === "galeri_foto" && <NumberField path={`${base}.amount`} label="Foto per unit" chip="sys" suffix="foto" className={width.sm} />}
+              {(item.unlock === "galeri_foto" || item.unlock === "galeri_pasca") && <NumberField path={`${base}.amount`} label="Foto per unit" chip="sys" suffix="foto" className={width.sm} />}
               {item.unlock === "bagian_tambahan" && <NumberField path={`${base}.amount`} label="Bagian per unit" chip="sys" suffix="bagian" className={width.sm} />}
+              {!item.unlock && <NumberField path={`${base}.amount`} label="Jumlah per unit" chip="sys" className={width.sm} />}
             </Row>
           </>
         )}

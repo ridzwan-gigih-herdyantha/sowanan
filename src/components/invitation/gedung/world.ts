@@ -33,7 +33,7 @@ export type Area = [number, number][];
 
 // Arah yang dicoba berurutan saat terhalang: lurus, lalu membelok makin tajam ke dua sisi supaya karakter
 // meluncur di sepanjang dinding (gapura, semak) dan tidak macet di sudut.
-const SLIDES = [0, 0.4, -0.4, 0.8, -0.8, 1.2, -1.2, Math.PI / 2, -Math.PI / 2];
+const SLIDES = [0.4, -0.4, 0.8, -0.8, 1.2, -1.2];
 
 // Dunia berisi himpunan area yang boleh dilalui. bodyR adalah setengah lebar badan karakter: titik di kiri dan
 // kanan kakinya juga harus berada di area. holes adalah rintangan di dalam area, misalnya kios.
@@ -50,8 +50,36 @@ export function makeWorld(areas: Area[], bodyR = 11, holes: Area[] = []) {
     const base = Math.atan2(dy, dx);
     const step = len / n;
     let moved = false;
+    const sx = (dx / len) * step;
+    const sy = (dy / len) * step;
+    // Tepi peta (gapura, bedeng, dinding) sejajar sumbu isometrik 2:1. Bila lurus terhalang, karakter meluncur
+    // sepanjang sumbu yang paling searah dengan geraknya. Ini mencegah zig-zag bergantian kiri-kanan yang membuat
+    // karakter bergetar saat menempel di tiang gapura. Belokan SLIDES hanya cadangan untuk sudut.
+    const glide = [
+      { x: 1, y: -0.5, d: (sx - 2 * sy) / 2 },
+      { x: 1, y: 0.5, d: (sx + 2 * sy) / 2 },
+    ]
+      .sort((a, b) => Math.abs(b.d) - Math.abs(a.d))
+      .map((a) => {
+        const k = (Math.sign(a.d) * step) / Math.hypot(a.x, a.y);
+        return { x: a.x * k, y: a.y * k, d: Math.abs(a.d) };
+      });
     for (let i = 0; i < n; i++) {
       let ok = false;
+      if (canStand({ x: p.x + sx, y: p.y + sy })) {
+        p.x += sx;
+        p.y += sy;
+        moved = true;
+        continue;
+      }
+      for (const g of glide) {
+        if (g.d < step * 0.05 || !canStand({ x: p.x + g.x, y: p.y + g.y })) continue;
+        p.x += g.x;
+        p.y += g.y;
+        ok = moved = true;
+        break;
+      }
+      if (ok) continue;
       for (const turn of SLIDES) {
         const a = base + turn;
         const next = { x: p.x + Math.cos(a) * step * Math.cos(turn), y: p.y + Math.sin(a) * step * Math.cos(turn) };
@@ -90,6 +118,15 @@ export const { walkable, canStand, move, reachable } = cover;
 // belakang bidang gapura, jadi balok dan papannya harus menutupi dia. Di bawah garis dia berada di depan gapura.
 const ARCH_BASE = { x: 768, y: 625, slope: 0.48 };
 export const behindArch = (p: Point) => p.y < ARCH_BASE.y + ARCH_BASE.slope * (p.x - ARCH_BASE.x);
+// Sama seperti behindArch, tapi sisi baru dipakai hanya setelah kaki melewati garis lebih dari ARCH_HYST piksel.
+// Karakter yang meluncur tepat di garis dasar gapura tidak membuat gapura berkedip maju-mundur.
+const ARCH_HYST = 3;
+export function archSide(p: Point, wasBehind: boolean) {
+  const d = p.y - (ARCH_BASE.y + ARCH_BASE.slope * (p.x - ARCH_BASE.x));
+  if (d < -ARCH_HYST) return true;
+  if (d > ARCH_HYST) return false;
+  return wasBehind;
+}
 
 // Siluet balok gapura (termasuk daun merambat di atasnya) dalam piksel gambar. Salinan peta yang dipotong
 // sepanjang garis ini dipasang di atas karakter ketika dia berada di belakang gapura.

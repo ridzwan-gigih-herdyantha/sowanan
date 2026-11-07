@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useId, useRef, useState, type CSSProperties, type SyntheticEvent } from "react";
 import type { ExtraView } from "@/lib/invitation/view";
 import { useInvitationMedia } from "./shell";

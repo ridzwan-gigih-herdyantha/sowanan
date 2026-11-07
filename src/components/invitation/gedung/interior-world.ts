@@ -54,6 +54,7 @@ const ART: Partial<Record<BoothKind, BoothArt>> = {
   // Meja miring isometrik: sisi panjangnya sejajar karpet dan menghadap ke kanan bawah, jadi tamu berdiri di
   // depan sisi itu.
   acara: { src: "/img/rafi-kayla/acara-booth.png", w: 300, h: 200, ax: 0.54, ay: 0.81, foot: { l: -80, r: 80, d: 46 }, front: { x: 25, y: 52 } },
+  video: { src: "/img/rafi-kayla/video-booth.png", w: 217, h: 145, ax: 0.51, ay: 0.88, foot: { l: -88, r: 88, d: 40 }, front: { x: 20, y: 46 } },
   cerita: { src: "/img/rafi-kayla/story-booth.png", w: 217, h: 145, ax: 0.54, ay: 0.84, foot: { l: -84, r: 80, d: 40 }, front: { x: 20, y: 46 } },
   mempelai: { src: "/img/rafi-kayla/mempelai.png", w: 200, h: 162, ax: 0.48, ay: 0.87, foot: { l: -93, r: 93, d: 51 } },
   galeri: { src: "/img/rafi-kayla/gallery-both.png", w: 200, h: 150, ax: 0.52, ay: 0.86, foot: { l: -95, r: 90, d: 50 } },

@@ -26,3 +26,6 @@ const arab = Amiri({
 
 export const themeFonts = `${display.variable} ${body.variable} ${arab.variable}`;
 export const defaultFonts = { display, body };
+
+// Font khas di luar pasangan judul dan isi, dipakai gambar story.
+export const extraFonts = { arab };

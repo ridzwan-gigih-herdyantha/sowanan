@@ -26,6 +26,11 @@ export async function recordAttempt(scope: string, ip: string) {
   await supabaseAdmin().from("login_attempts").insert({ scope, ip });
 }
 
+// Membuang catatan lama satu scope, supaya tebakan kode yang terus datang tidak menumpuk selamanya.
+export async function pruneAttempts(scope: string, olderThanMs: number) {
+  await supabaseAdmin().from("login_attempts").delete().eq("scope", scope).lt("created_at", new Date(Date.now() - olderThanMs).toISOString());
+}
+
 export async function clearAttempts(scope: string, ip?: string) {
   let q = supabaseAdmin().from("login_attempts").delete().eq("scope", scope);
   if (ip) q = q.eq("ip", ip);

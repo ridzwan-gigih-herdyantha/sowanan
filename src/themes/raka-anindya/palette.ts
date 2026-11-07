@@ -27,6 +27,7 @@ export const palette: ThemePalette = {
     { key: "--inv-gold-light", label: "Aksen muda" }, { key: "--inv-line", label: "Garis" },
     { key: "--inv-night", label: "Gelap" },
   ],
+  surface: "--inv-card",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--inv-wash", "--inv-gold-light", "--inv-gold", "--inv-accent"],
   checks: [{ fg: "--inv-ink", bg: "--inv-paper", label: "Teks di latar" }, { fg: "--inv-card", bg: "--inv-accent", label: "Teks di tombol" }],

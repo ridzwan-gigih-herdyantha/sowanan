@@ -1,4 +1,5 @@
-import Image, { getImageProps } from "next/image";
+import { getImageProps } from "next/image";
+import Image, { NoPhoto } from "@/components/invitation/photo";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { Extras } from "@/components/invitation/extras";
@@ -49,6 +50,7 @@ function Label({ children, className = "" }: { children: ReactNode; className?: 
 }
 
 function HeroPhoto({ inv }: { inv: InvitationView }) {
+  if (!inv.images.hero) return <NoPhoto />;
   const common = { alt: `${inv.groom.name} dan ${inv.bride.name} berdiri berdampingan membawa buket`, fetchPriority: "high" as const };
   const { props: { srcSet: wide } } = getImageProps({ ...common, src: inv.images.heroWide, width: 2400, height: 1600, sizes: "100vw" });
   const { props: { srcSet: tall, ...rest } } = getImageProps({ ...common, src: inv.images.hero, width: 1600, height: 2135, sizes: "100vw" });
@@ -252,7 +254,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
     <section className="bg-inv-night text-inv-ink" style={dark}>
       <div className="lg:grid lg:grid-cols-2">
         <div className="relative aspect-[3/2] lg:aspect-auto lg:min-h-[640px]">
-          <Image {...inv.frame.rsvp} src={inv.images.rsvp} alt="" fill sizes="(min-width: 980px) 50vw, 100vw" className="object-cover opacity-80" />
+          {inv.images.rsvp && <Image {...inv.frame.rsvp} src={inv.images.rsvp} alt="" fill sizes="(min-width: 980px) 50vw, 100vw" className="object-cover opacity-80" />}
           <div className="absolute inset-0 bg-gradient-to-t from-inv-night via-inv-night/30 to-transparent" />
           <p className="absolute inset-x-5 bottom-6 max-w-[18ch] font-display text-[clamp(28px,7vw,44px)] leading-tight text-bs-paper italic sm:inset-x-8 lg:inset-x-12 lg:bottom-12">
             {inv.rsvpQuote}

@@ -148,6 +148,8 @@ export const palette: ThemePalette = {
     { key: "--inv-hill", label: "Bukit" },
     { key: "--inv-sun", label: "Matahari" },
   ],
+  surface: "--inv-card",
+  muted: "--inv-gold",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-sky", "--inv-horizon", "--inv-paper", "--inv-accent", "--inv-hill"],
   checks: [

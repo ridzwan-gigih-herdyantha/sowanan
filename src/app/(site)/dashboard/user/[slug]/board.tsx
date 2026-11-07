@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { useWorking } from "@/app/(site)/admin/use-working";
+import { PrivatePanel, SessionSelect, type PrivateActions, type PrivateMode } from "@/components/private-panel";
 import { rsvpSheet } from "@/lib/export/rsvp-sheet";
-import { fillGuestMessage, guestLink } from "@/lib/guests";
-import { coupleHideWish, coupleMarkSent } from "../actions";
+import { fillGuestMessage, guestLink, parseGuestText, privateLink, type GuestRow } from "@/lib/guests";
+import { coupleAddGuests, coupleAddSession, coupleAddWalkIn, coupleDeleteGuest, coupleHideWish, coupleMarkSent, coupleRemoveSession, coupleSetGuestSession, coupleSetPresent, coupleSetPrivate, coupleSetSessionItem, coupleUpdateSession } from "../actions";
 
 export type BoardRsvp = { id: number; name: string; attending: boolean; guests: number; created_at: string };
 export type BoardWish = { id: number; name: string; message: string; created_at: string; hidden_at: string | null; hidden_by: "admin" | "mempelai" | null };
-export type BoardGuest = { id: number; name: string; phone: string | null; sent_at: string | null; qr_token: string | null; checked_in_at: string | null; walk_in: boolean };
+export type BoardGuest = GuestRow;
 
 type Tab = "rsvp" | "wish" | "guest" | "checkin";
 type Props = {
@@ -21,6 +22,13 @@ type Props = {
   excel: boolean;
   qr: boolean;
   personalLinks: boolean;
+  // Link tamu memuat kode (?k=), untuk QR absensi dan add-on tamu terundang.
+  codeLinks: boolean;
+  // Pembeli boleh menambah dan menghapus tamu.
+  manageGuests: boolean;
+  // Pembeli boleh membagi sesi dan menyalakan mode private.
+  managePrivate: boolean;
+  privateMode: PrivateMode;
   // Template pesan WhatsApp dari admin, beserta isian {mempelai} dan {tanggal}.
   template: string;
   couple: string;
@@ -48,10 +56,21 @@ function Stat({ label, value, note }: { label: string; value: number | string; n
   );
 }
 
-// Isi dashboard mempelai. Semua data hanya dibaca, kecuali tombol sembunyikan ucapan dan tanda link terkirim.
-export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests: initialGuests, excel, qr, personalLinks, template, couple, date }: Props) {
+// Isi dashboard mempelai. Data lain hanya dibaca, kecuali tombol sembunyikan ucapan, tanda link terkirim, tanda hadir
+// sebagai cadangan kalau pemindaian QR bermasalah, dan daftar tamu serta sesi kalau paket atau add-on menyediakannya.
+export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests: initialGuests, excel, qr, personalLinks, codeLinks, manageGuests, managePrivate, privateMode, template, couple, date }: Props) {
   const [wishes, setWishes] = useState(initialWishes);
   const [guests, setGuests] = useState(initialGuests);
+  const [isPrivate, setIsPrivate] = useState(privateMode.on);
+  const [sessions, setSessions] = useState(privateMode.sessions);
+  const [newGuests, setNewGuests] = useState("");
+  const privateActions: PrivateActions = {
+    setPrivate: (on) => coupleSetPrivate(slug, on),
+    addSession: (input) => coupleAddSession(slug, input),
+    updateSession: (id, input) => coupleUpdateSession(slug, id, input),
+    removeSession: (id) => coupleRemoveSession(slug, id),
+    setSessionItem: (name) => coupleSetSessionItem(slug, name),
+  };
   const [tab, setTab] = useState<Tab>("rsvp");
   const [filter, setFilter] = useState<"all" | "yes" | "no">("all");
   const [query, setQuery] = useState("");
@@ -71,7 +90,7 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
   const present = useMemo(() => guests.filter((g) => g.checked_in_at).sort((a, b) => Date.parse(b.checked_in_at!) - Date.parse(a.checked_in_at!)), [guests]);
   const invited = guests.filter((g) => !g.walk_in);
   const hiddenCount = wishes.filter((w) => w.hidden_at).length;
-  const link = (g: BoardGuest) => guestLink(origin, slug, g.name, qr ? g.qr_token : null);
+  const link = (g: BoardGuest) => (isPrivate ? privateLink(origin, slug, g.qr_token) : guestLink(origin, slug, g.name, codeLinks ? g.qr_token : null));
   const message = (g: BoardGuest) => fillGuestMessage(template, { nama: g.name, link: link(g), mempelai: couple, tanggal: date });
 
   // WhatsApp dibuka langsung, tanda terkirim menyusul di latar.
@@ -91,12 +110,63 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
     setTimeout(() => setCopied((c) => (c === `${what}:${g.id}` ? null : c)), 1500);
   }
 
+  function addGuests() {
+    const list = parseGuestText(newGuests);
+    if (!list.length) return setError("Tulis nama tamu lebih dulu.");
+    run("tambah", async () => {
+      const res = await coupleAddGuests(slug, list);
+      if (!res.ok) return setError(res.error);
+      setError(res.data.skipped ? `${res.data.skipped} nama dilewati karena sudah ada.` : "");
+      setGuests((g) => [...g, ...res.data.added]);
+      setNewGuests("");
+    });
+  }
+
+  function removeGuest(g: BoardGuest) {
+    if (!confirm(`Hapus ${g.name} dari daftar tamu?${isPrivate ? " Link pribadinya tidak bisa dibuka lagi." : ""}`)) return;
+    run(`hapus:${g.id}`, async () => {
+      const res = await coupleDeleteGuest(slug, g.id);
+      if (!res.ok) return setError(res.error);
+      setError("");
+      setGuests((list) => list.filter((x) => x.id !== g.id));
+    });
+  }
+
+  const chooseSession = (g: BoardGuest, sessionId: number | null) =>
+    run(`sesi:${g.id}`, async () => {
+      const res = await coupleSetGuestSession(slug, g.id, sessionId);
+      if (!res.ok) return setError(res.error);
+      setError("");
+      setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, session_id: res.data } : x)));
+    });
+
+  function togglePresent(g: BoardGuest) {
+    if (g.checked_in_at && !confirm(`Batalkan tanda hadir ${g.name}?`)) return;
+    run(`hadir:${g.id}`, async () => {
+      const res = await coupleSetPresent(slug, g.id, !g.checked_in_at);
+      if (!res.ok) return setError(res.error);
+      setError("");
+      setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, checked_in_at: res.data } : x)));
+    });
+  }
+
+  function addWalkIn(name: string) {
+    run("datang", async () => {
+      const res = await coupleAddWalkIn(slug, name);
+      if (!res.ok) return setError(res.error);
+      setError("");
+      setGuests((list) => (list.some((x) => x.id === res.data.id) ? list.map((x) => (x.id === res.data.id ? res.data : x)) : [...list, res.data]));
+      setQuery("");
+    });
+  }
+
   const q = key(query);
   const lists = {
     rsvp: rsvps.filter((r) => (filter === "all" || r.attending === (filter === "yes")) && (!q || key(r.name).includes(q))),
     wish: wishes.filter((w) => !q || key(w.name).includes(q) || w.message.toLowerCase().includes(q)),
     guest: invited.filter((g) => !q || key(g.name).includes(q)),
-    checkin: present.filter((g) => !q || key(g.name).includes(q)),
+    // Saat mencari, tamu yang belum hadir ikut tampil supaya bisa ditandai.
+    checkin: q ? guests.filter((g) => key(g.name).includes(q)) : present,
   };
   const list = lists[tab];
 
@@ -188,7 +258,7 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
             setQuery(e.target.value);
             setLimit(PAGE);
           }}
-          placeholder={tab === "wish" ? "Cari nama atau isi ucapan" : "Cari nama"}
+          placeholder={tab === "wish" ? "Cari nama atau isi ucapan" : tab === "checkin" ? "Cari nama tamu" : "Cari nama"}
           className={`${field} w-full sm:max-w-xs sm:flex-1`}
         />
         {tab === "rsvp" && (
@@ -222,8 +292,31 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
         )}
       </div>
 
+      {tab === "guest" && (manageGuests || managePrivate) && (
+        <div className="mt-5 grid gap-5">
+          {managePrivate && <PrivatePanel slug={slug} origin={origin} mode={privateMode} on={isPrivate} onToggle={setIsPrivate} sessions={sessions} onSessions={setSessions} actions={privateActions} />}
+          {manageGuests && (
+            <section className="rounded-sm border border-line bg-white p-5">
+              <label className="block text-[14px] font-medium" htmlFor="tamu-baru">
+                Tambah tamu
+              </label>
+              <textarea id="tamu-baru" rows={4} value={newGuests} onChange={(e) => setNewGuests(e.target.value)} placeholder={"Budi Santoso 081234567890\nKeluarga Pak RT"} className={`${field} mt-2 resize-y`} />
+              <p className="mt-1.5 text-[13px] text-ink-mute">Pisahkan dengan baris baru atau koma. Nomor WhatsApp di akhir nama ikut terbaca.{codeLinks && " Kode tamu dibuat otomatis."}</p>
+              <button type="button" onClick={addGuests} disabled={working !== null || !newGuests.trim()} className="mt-3 rounded-sm bg-wine px-4 py-2.5 text-[14px] text-white disabled:opacity-60">
+                {working === "tambah" ? "Menyimpan..." : "Tambahkan"}
+              </button>
+            </section>
+          )}
+        </div>
+      )}
+      {tab === "checkin" && <p className="mt-3 text-[13px] text-ink-mute">Kalau pemindaian QR bermasalah, cari nama tamu di sini lalu tandai hadir.</p>}
       {error && <p className="mt-3 rounded-sm bg-blush px-4 py-3 text-[14px] text-wine">{error}</p>}
       {!list.length && <p className="mt-6 text-[15px] text-ink-mute">{query ? "Tidak ada yang cocok." : empty}</p>}
+      {tab === "checkin" && !list.length && query.trim().length >= 2 && (
+        <button type="button" onClick={() => addWalkIn(query)} disabled={working !== null} className="mt-3 rounded-sm bg-wine px-4 py-2.5 text-[14px] text-white disabled:opacity-60">
+          {working === "datang" ? "Mencatat..." : `Catat "${query.trim()}" sebagai datang langsung`}
+        </button>
+      )}
 
       <ul className="mt-4 divide-y divide-line border-y border-line empty:border-0">
         {tab === "rsvp" &&
@@ -269,6 +362,7 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
                   {qr && g.checked_in_at && ` · hadir ${clockFmt.format(new Date(g.checked_in_at))}`}
                 </p>
               </div>
+              {managePrivate && isPrivate && sessions.length > 0 && <SessionSelect sessions={sessions} value={g.session_id} disabled={working !== null} onChange={(id) => chooseSession(g, id)} label={`Sesi ${g.name}`} />}
               {personalLinks && (
                 <span className="flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
                   <button type="button" onClick={() => send(g)} className="text-wine underline underline-offset-4">
@@ -282,6 +376,11 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
                   </button>
                 </span>
               )}
+              {manageGuests && (
+                <button type="button" onClick={() => removeGuest(g)} disabled={working !== null} className="text-[14px] text-ink-mute hover:text-wine disabled:opacity-60">
+                  {working === `hapus:${g.id}` ? "Menghapus..." : "Hapus"}
+                </button>
+              )}
             </li>
           ))}
         {tab === "checkin" &&
@@ -289,7 +388,18 @@ export function CoupleBoard({ slug, origin, rsvps, wishes: initialWishes, guests
             <li key={g.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3">
               <p className="min-w-0 flex-1 basis-40 truncate font-medium">{g.name}</p>
               {g.walk_in && <span className="rounded-full bg-blush px-2.5 py-0.5 text-[12px] text-ink-soft">Datang langsung</span>}
-              <span className="text-[14px] text-ink-soft tabular-nums">{clockFmt.format(new Date(g.checked_in_at!))}</span>
+              {g.checked_in_at ? (
+                <>
+                  <span className="text-[14px] text-ink-soft tabular-nums">{clockFmt.format(new Date(g.checked_in_at))}</span>
+                  <button type="button" onClick={() => togglePresent(g)} disabled={working !== null} className="text-[14px] text-ink-mute hover:text-wine disabled:opacity-60">
+                    {working === `hadir:${g.id}` ? "Menyimpan..." : "Batalkan"}
+                  </button>
+                </>
+              ) : (
+                <button type="button" onClick={() => togglePresent(g)} disabled={working !== null} className="rounded-sm border border-wine px-3 py-1.5 text-[14px] text-wine disabled:opacity-60">
+                  {working === `hadir:${g.id}` ? "Menyimpan..." : "Tandai hadir"}
+                </button>
+              )}
             </li>
           ))}
       </ul>

@@ -44,9 +44,17 @@ export type ThemeCategory = keyof typeof THEME_CATEGORIES;
 export const SYSTEM_KEYS = {
   jumlah_tema: "Dihitung otomatis dari tab Tema",
   galeri_foto: "Membatasi jumlah foto galeri di editor undangan",
+  galeri_pasca: "Membatasi jumlah foto galeri pasca acara di editor undangan",
   bagian_tambahan: "Membatasi jumlah bagian tambahan di luar tema di editor undangan",
   musik_sendiri: "Membuka unggah musik sendiri di editor undangan",
-  warna_tema: "Membuka ganti palet dan font di editor undangan",
+  palet_varian: "Membuka pilihan varian palet di editor undangan",
+  palet_custom: "Membuka palet kustom, slot kelima di luar varian tema, di editor undangan",
+  font_varian: "Membuka pilihan pasangan font dan font nama mempelai di editor undangan",
+  font_custom: "Membuka font kustom dari Google Fonts di editor undangan",
+  video_youtube: "Membuka isian video YouTube di editor undangan",
+  gambar_story: "Membuka unduh gambar story di admin undangan",
+  undangan_kedua: "Membuka duplikat undangan untuk acara terpisah di daftar undangan",
+  tamu_terundang: "Membuka mode private, kode tamu, dan pembagian sesi di halaman tamu",
   cerita: "Membuka bagian Cerita di editor undangan",
   nama_tamu: "Membuka halaman nama tamu",
   ekspor_excel: "Membuka unduh Excel di halaman RSVP dan daftar tamu",
@@ -54,13 +62,15 @@ export const SYSTEM_KEYS = {
 } as const;
 export type SystemKey = keyof typeof SYSTEM_KEYS;
 // Kunci berjumlah dicatat sebagai angka, sisanya cukup termasuk atau tidak.
-export const COUNT_KEYS: SystemKey[] = ["jumlah_tema", "galeri_foto", "bagian_tambahan"];
-export type FeatureKey = Exclude<SystemKey, "jumlah_tema" | "galeri_foto" | "bagian_tambahan">;
+export const COUNT_KEYS: SystemKey[] = ["jumlah_tema", "galeri_foto", "galeri_pasca", "bagian_tambahan"];
+export type FeatureKey = Exclude<SystemKey, "jumlah_tema" | "galeri_foto" | "galeri_pasca" | "bagian_tambahan">;
 export const FEATURE_KEYS = Object.keys(SYSTEM_KEYS).filter((k) => !COUNT_KEYS.includes(k as SystemKey)) as FeatureKey[];
 // Add-on bisa membuka satu kunci. Untuk kunci berjumlah, tambahan per unit diisi di kolom amount.
-export const AMOUNT_KEYS = ["galeri_foto", "bagian_tambahan"] as const;
+export const AMOUNT_KEYS = ["galeri_foto", "galeri_pasca", "bagian_tambahan"] as const;
 export const UNLOCK_KEYS = [...AMOUNT_KEYS, ...FEATURE_KEYS] as const;
 export type UnlockKey = (typeof UNLOCK_KEYS)[number];
+// Kunci yang tidak bisa dibuka add-on di paket tertentu.
+export const ADDON_EXCLUDED: Partial<Record<string, readonly string[]>> = { tamu_terundang: ["dasar"] };
 
 export const ACTIVE_MONTHS = [3, 6, 12, 24] as const;
 
@@ -107,7 +117,7 @@ const offerCardShape = (label: string) =>
 export type OfferCardData = z.infer<ReturnType<typeof offerCardShape>>;
 const offerCard = (label: string, fallback: OfferCardData) => offerCardShape(label).default(fallback);
 
-const cell = z.object({ on: z.boolean(), n: count("Jumlah", 0, 9999).nullable() });
+const cell = z.object({ on: z.boolean(), n: count("Jumlah", 0, 9999).nullable(), label: str("Teks khusus paket", 60).optional() });
 
 const pkg = (name: string) =>
   z.object({
@@ -162,13 +172,15 @@ export const settingsSchema = z
       }),
       addon: section("tambahan"),
       cara: section("cara pesan"),
+      // Default dipakai untuk data lama, supaya isi sections yang tersimpan tidak diganti nilai bawaan.
+      testi: z.object({ title: req("Judul testimoni", 40) }).default({ title: "Kata mereka" }),
       // Tautan WhatsApp di bawah judul tanya jawab. Kosong berarti disembunyikan.
       faq: section("tanya jawab").extend({ cta: str("Label tautan WhatsApp tanya jawab", 40).default("Belum terjawab? Tanya lewat WhatsApp") }),
     }),
     features: z
-      .array(z.object({ id, on: z.boolean(), name: req("Nama fitur", 30), text: str("Keterangan fitur", 90), icon: z.enum(Object.keys(ICONS) as [IconId, ...IconId[]]), label: str("Label fitur", 30) }))
+      .array(z.object({ id, on: z.boolean(), name: req("Nama fitur", 30), text: str("Keterangan fitur", 120), icon: z.enum(Object.keys(ICONS) as [IconId, ...IconId[]]), label: str("Label fitur", 30) }))
       .max(30, "Fitur maksimal 30."),
-    steps: z.array(z.object({ id, title: req("Judul langkah", 24), text: str("Penjelasan langkah", 110) })).max(8, "Langkah maksimal 8."),
+    steps: z.array(z.object({ id, title: req("Judul langkah", 24), text: str("Penjelasan langkah", 130) })).max(8, "Langkah maksimal 8."),
     closing: z.object({
       title: req("Judul penutup", 50),
       text: str("Kalimat penutup", 160),
@@ -210,6 +222,14 @@ export const settingsSchema = z
       .array(z.object({ id, on: z.boolean(), q: req("Pertanyaan", 80), a: req("Jawaban", 600) }))
       .max(20, "Tanya jawab tema maksimal 20.")
       .default(THEME_FAQ),
+    // Daftar kosong berarti section testimoni tidak tampil.
+    testimonials: z
+      .object({
+        items: z
+          .array(z.object({ id, on: z.boolean(), name: req("Nama", 60), rating: count("Bintang", 1, 5), text: req("Pesan", 600), photo: str("Foto", 300) }))
+          .max(30, "Testimoni maksimal 30."),
+      })
+      .default({ items: [] }),
     terms: z.object({
       date: req("Tanggal berlaku", 40),
       title: req("Judul halaman", 50),
@@ -227,6 +247,8 @@ export const settingsSchema = z
           unit: str("Format jumlah", 40).default(""),
           key: z.enum(["", ...(Object.keys(SYSTEM_KEYS) as SystemKey[])]),
           cells: z.object({ dasar: cell, lengkap: cell, istimewa: cell }),
+          // Baris yang hanya mengatur kunci sistem, tidak tampil di kartu harga.
+          hidden: z.boolean().optional(),
         }),
       )
       .max(40, "Isi paket maksimal 40 baris."),
@@ -235,7 +257,7 @@ export const settingsSchema = z
         z.object({
           id,
           on: z.boolean(),
-          name: req("Nama tambahan", 46),
+          name: req("Nama tambahan", 90),
           price: rupiah("Harga tambahan"),
           scope: str("Berlaku untuk", 60),
           unlock: z.enum(["", ...UNLOCK_KEYS]).default(""),
@@ -310,7 +332,7 @@ export const settingsSchema = z
     if (!PACKAGE_IDS.some((p) => s.packages[p].on)) ctx.addIssue({ code: "custom", path: ["packages", "dasar", "on"], message: "Minimal satu paket harus tampil." });
     s.addons.forEach((a, i) => {
       if ((AMOUNT_KEYS as readonly string[]).includes(a.unlock) && a.amount < 1) {
-        ctx.addIssue({ code: "custom", path: ["addons", i, "amount"], message: a.unlock === "galeri_foto" ? "Isi jumlah foto yang ditambahkan per unit." : "Isi jumlah bagian yang ditambahkan per unit." });
+        ctx.addIssue({ code: "custom", path: ["addons", i, "amount"], message: a.unlock === "bagian_tambahan" ? "Isi jumlah bagian yang ditambahkan per unit." : "Isi jumlah foto yang ditambahkan per unit." });
       }
     });
     if (s.contact.open >= s.contact.close) ctx.addIssue({ code: "custom", path: ["contact", "close"], message: "Jam tutup harus setelah jam buka." });

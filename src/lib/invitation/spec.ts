@@ -1,5 +1,7 @@
 import type { Purpose } from "@/lib/storage/media";
+import { CUSTOM } from "../../themes/palette.ts";
 import { EXTRA_KINDS, EXTRA_TONES, RULE_ICONS, type ExtraAnchor, type ExtraKind, type InvitationData, type SectionKey } from "./schema.ts";
+import { streamOf } from "./stream.ts";
 
 const A = "andi-rina";
 const B = "bagas-sekar";
@@ -17,6 +19,7 @@ const M = "ivan-mawar";
 const G = "galih-ardila";
 const T = "bonar-anggi";
 const RK = "rafi-kayla";
+const DS = "dimas-salsa";
 
 // when: isian item daftar yang hanya tampil dan diperiksa untuk jenis item tertentu (lihat Variants).
 type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean; when?: string[] };
@@ -75,13 +78,21 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
 
 const person = (key: "groom" | "bride", title: string): Field[] => [
   { kind: "heading", path: `couple.${key}`, label: title },
-  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S, F, E, EL, N, R, L, P, M, G, T, RK] }),
+  text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S, F, E, EL, N, R, L, P, M, G, T, RK, DS] }),
   text(`couple.${key}.role`, "Keterangan", 40, { placeholder: key === "groom" ? "Putra dari" : "Putri dari" }),
   area(`couple.${key}.parents`, "Nama orang tua", 160, { placeholder: "Bapak ... & Ibu ..." }),
-  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S, F, E, EL, N, R, L, P, M, G, T, RK], ...optional, hint: "Kosong berarti memakai foto hero." }),
+  media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S, F, E, EL, N, R, L, P, M, G, T, RK, DS], ...optional, hint: "Kosong berarti memakai foto hero." }),
   text(`couple.${key}.flower`, "Bunga", 60, { themes: [H], ...optional }),
   text(`couple.${key}.latin`, "Nama latin bunga", 80, { themes: [H], ...optional }),
   text(`couple.${key}.aksara`, "Nama dalam aksara Jawa", 80, { themes: [J], ...optional, hint: "Diketik manual dan dicek klien. Tidak diterjemahkan otomatis." }),
+];
+
+const GALLERY_BLANK = { src: "", w: 0, h: 0, alt: "", caption: "", no: "" };
+const GALLERY_FIELDS: Field[] = [
+  media("src", "Foto", "gallery", { dims: true }),
+  text("alt", "Keterangan foto", 160),
+  text("caption", "Judul kecil", 60, { themes: [H], ...optional }),
+  text("no", "Nomor", 10, { themes: [H], ...optional }),
 ];
 
 export const GROUPS: Group[] = [
@@ -97,12 +108,12 @@ export const GROUPS: Group[] = [
       { kind: "datetime", path: "event.end", label: "Selesai acara", required: true, hint: "Kalau acara beberapa hari, isi selesainya acara terakhir. Arsip dihitung dari sini." },
       { kind: "select", path: "event.timezone", label: "Zona waktu", options: ["WIB", "WITA", "WIT"] },
       text("event.city", "Kota", 60, { placeholder: "Bandung, Jawa Barat" }),
-      text("copy.tagline", "Tagline", 120, { themes: [A, B, E, EL, N, R, L, P, M, G, RK], ...optional }),
+      text("copy.tagline", "Tagline", 120, { themes: [A, B, E, EL, N, R, L, P, M, G, RK, DS], ...optional }),
       text("copy.headline", "Judul besar", 24, { themes: [L], ...optional, placeholder: "YOGYAKARTA", hint: "Kosong berarti memakai nama kota." }),
       text("copy.latinPair", "Pasangan nama latin", 80, { themes: [H], ...optional }),
       text("copy.collection", "Nomor koleksi", 20, { themes: [H], ...optional, placeholder: "No. 0508" }),
-      media("media.hero", "Foto hero (potret)", "hero"),
-      media("media.heroWide", "Foto hero lebar", "herowide", { hint: "Tampil di layar lebar." }),
+      media("media.hero", "Foto hero (potret)", "hero", { ...optional, hint: "Boleh kosong. Undangan tanpa foto menampilkan monogram mempelai dengan warna tema." }),
+      media("media.heroWide", "Foto hero lebar", "herowide", { ...optional, hint: "Tampil di layar lebar. Kosong berarti memakai foto hero." }),
       media("media.music", "Musik latar", "music", { ...optional, hint: "Kosong berarti memakai lagu bawaan tema." }),
       area("copy.ayat", "Ayat (teks Arab)", 600, { themes: [S, F], ...optional, hint: "Kosong berarti memakai QS. Ar-Rum ayat 21." }),
       area("copy.ayatArti", "Arti ayat", 600, { themes: [S, F], ...optional }),
@@ -113,7 +124,6 @@ export const GROUPS: Group[] = [
         label: "Spesimen bunga",
         item: "Spesimen",
         themes: [H],
-        min: 2,
         max: 6,
         blank: { src: "", w: 0, h: 0, latin: "", local: "", no: "" },
         fields: [media("src", "Foto", "specimen", { dims: true }), text("latin", "Nama latin", 80), text("local", "Nama lokal", 60), text("no", "Nomor", 10)],
@@ -151,7 +161,7 @@ export const GROUPS: Group[] = [
           text("date", "Tanggal", 20, { ...optional, placeholder: "14.02.2020" }),
           text("place", "Tempat", 60, { themes: [H], ...optional }),
           text("no", "Nomor", 10, { themes: [H], ...optional }),
-          media("image", "Foto", "story"),
+          media("image", "Foto", "story", optional),
           area("short", "Ringkasan", 200, { ...optional, hint: "Kosong berarti diambil dari awal cerita lengkap." }),
           area("long", "Cerita lengkap", 1200),
           media("video.src", "Video", "video", { ...optional, hint: "Opsional. Menggantikan foto saat dibuka." }),
@@ -172,7 +182,6 @@ export const GROUPS: Group[] = [
         path: "sections.collage.polaroids",
         label: "Polaroid",
         item: "Polaroid",
-        min: 1,
         max: 6,
         blank: { src: "", caption: "", rotate: 0 },
         fields: [media("src", "Foto", "polaroid"), text("caption", "Tulisan", 40), { kind: "number", path: "rotate", label: "Kemiringan (derajat)", min: -15, max: 15 }],
@@ -221,15 +230,10 @@ export const GROUPS: Group[] = [
         path: "sections.gallery.photos",
         label: "Foto galeri",
         item: "Foto",
-        min: 1,
+        hint: "Boleh kosong. Tanpa foto, bagian Galeri tidak tampil.",
         max: 24,
-        blank: { src: "", w: 0, h: 0, alt: "", caption: "", no: "" },
-        fields: [
-          media("src", "Foto", "gallery", { dims: true }),
-          text("alt", "Keterangan foto", 160),
-          text("caption", "Judul kecil", 60, { themes: [H], ...optional }),
-          text("no", "Nomor", 10, { themes: [H], ...optional }),
-        ],
+        blank: GALLERY_BLANK,
+        fields: GALLERY_FIELDS,
       },
     ],
   },
@@ -268,11 +272,30 @@ export const GROUPS: Group[] = [
     title: "Penutup",
     section: "closing",
     fields: [
-      media("media.closing", "Foto penutup", "closing", { themes: [A, E, EL, N, R, L, P, M, G, T, RK], ...optional, hint: "Kosong berarti memakai foto hero." }),
+      media("media.closing", "Foto penutup", "closing", { themes: [A, E, EL, N, R, L, P, M, G, T, RK, DS], ...optional, hint: "Kosong berarti memakai foto hero." }),
       text("copy.sesanti", "Sesanti (pepatah Jawa)", 120, { themes: [J], ...optional, placeholder: "Witing tresna jalaran saka kulina" }),
       text("copy.sesantiArti", "Arti sesanti", 160, { themes: [J], ...optional, placeholder: "Cinta tumbuh karena terbiasa bersama" }),
       area("copy.umpasa", "Pantun berkat", 200, { themes: [T], ...optional, hint: "Satu baris per larik. Boleh berbahasa Indonesia, atau umpasa Batak yang dipilih atau dicek oleh keluarga." }),
       text("copy.umpasaArti", "Arti pantun", 200, { themes: [T], ...optional, hint: "Isi bila pantunnya berbahasa daerah." }),
+    ],
+  },
+  {
+    key: "pasca",
+    title: "Galeri pasca acara",
+    note: "Foto tambahan setelah undangan disebar, tampil di akhir Galeri.",
+    fields: [{ kind: "list", path: "postGallery", label: "Foto pasca acara", item: "Foto", blank: GALLERY_BLANK, fields: GALLERY_FIELDS }],
+  },
+  {
+    key: "video",
+    title: "Video YouTube",
+    note: "Satu video per undangan, tampil setelah Galeri di semua tema. Musik latar berhenti otomatis saat video diputar.",
+    fields: [
+      text("video", "Tautan YouTube", 300, {
+        ...optional,
+        format: "url",
+        placeholder: "https://youtu.be/...",
+        hint: "Video harus berstatus Publik atau Unlisted, dengan izin penyematan aktif. Tidak ada unggah berkas video.",
+      }),
     ],
   },
   {
@@ -415,7 +438,7 @@ export const GROUPS: Group[] = [
       text("copy.credit", "Kredit foto", 120, optional),
       area("share.description", "Deskripsi untuk mesin pencari", 200),
       area("share.ogDescription", "Deskripsi preview WhatsApp", 160),
-      media("media.og", "Gambar preview WhatsApp", "og", { hint: "Dipotong otomatis ke 1200x630." }),
+      media("media.og", "Gambar preview WhatsApp", "og", { ...optional, hint: "Dipotong otomatis ke 1200x630. Kosong berarti memakai gambar bawaan situs." }),
     ],
   },
 ];
@@ -500,6 +523,16 @@ export function checkInvitation(data: InvitationData, theme: string): Issue[] {
   }
   const { start, end } = data.event;
   if (start && end && Date.parse(end) < Date.parse(start)) out.push({ path: "event.end", group: "hero", message: "Selesai acara harus setelah mulai acara." });
+  // Palet kustom dengan warna tidak sah diam-diam kembali ke palet bawaan, jadi ditahan di sini.
+  const { paper, accent, ink, surface, muted } = data.style.custom;
+  if (data.style.palette === CUSTOM && ![paper, accent, ink].every((c) => HEX.test(c))) {
+    out.push({ path: "style.palette", group: "gaya", message: "Palet kustom belum lengkap. Isi warna latar, aksen, dan teks dengan kode seperti #A3B18A, atau pilih palet jadi." });
+  } else if (data.style.palette === CUSTOM && [surface, muted].some((c) => c && !HEX.test(c))) {
+    out.push({ path: "style.palette", group: "gaya", message: "Warna permukaan atau teks sekunder belum lengkap. Isi dengan kode seperti #A3B18A, atau kosongkan supaya otomatis." });
+  }
+  if (data.video.trim() && !streamOf(data.video.trim(), "", "")?.youtube) {
+    out.push({ path: "video", group: "video", message: "Tautan video harus mengarah ke satu video YouTube, bukan saluran atau situs lain." });
+  }
   if (data.sections.gifts.enabled && !data.sections.gifts.accounts.length && !data.sections.gifts.qris) {
     out.push({ path: "sections.gifts.accounts", group: "gifts", message: "Isi minimal satu rekening atau QRIS, atau matikan section Hadiah." });
   }

@@ -1,4 +1,4 @@
-import { FEATURE_KEYS, PACKAGE_IDS, PACKAGE_NAMES, type FeatureKey, type MatrixRow, type PackageId, type Settings, type ThemeTier } from "./schema";
+import { ADDON_EXCLUDED, FEATURE_KEYS, PACKAGE_IDS, PACKAGE_NAMES, type FeatureKey, type MatrixRow, type PackageId, type Settings, type ThemeTier } from "./schema";
 
 export function formatRupiah(value: number): string {
   return "Rp" + value.toLocaleString("id-ID");
@@ -145,6 +145,7 @@ export type PackageRules = {
   pkg: PackageId | null;
   // Tidak ada berarti jumlahnya tidak dibatasi paket.
   photos?: { max: number; note: string };
+  postGallery?: { max: number; note: string };
   extras?: { max: number; note: string };
   // Fitur yang terkunci beserta alasannya.
   locked: Partial<Record<FeatureKey, string>>;
@@ -164,13 +165,22 @@ export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string
   const locked: PackageRules["locked"] = {};
   for (const key of FEATURE_KEYS) {
     const row = s.matrix.find((r) => r.key === key);
+    if (ADDON_EXCLUDED[key]?.includes(p)) {
+      locked[key] = `Paket ${name} tidak termasuk ${lowerFirst(row?.label ?? key)}. Ganti ke paket yang menyediakannya.`;
+      continue;
+    }
+    // Baris yang dihapus biasanya berarti tidak dibatasi, tapi mode private add-on berbayar jadi tetap terkunci.
+    if (!row && key === "tamu_terundang" && !unlocking(key).some((a) => units(a.id) > 0)) {
+      locked[key] = `Paket ${name} belum termasuk undangan khusus tamu terundang.`;
+      continue;
+    }
     if (!row || row.cells[p].on || unlocking(key).some((a) => units(a.id) > 0)) continue;
     const addon = unlocking(key)[0];
     locked[key] = `Paket ${name} tidak termasuk ${lowerFirst(row.label)}.${addon ? ` Centang add-on ${addon.name} setelah dibayar.` : " Ganti ke paket yang menyediakannya."}`;
   }
 
   // Baris berjumlah yang dihapus atau bertanda tanpa batas berarti tidak dibatasi.
-  const limit = (key: "galeri_foto" | "bagian_tambahan", unit: string, none: string) => {
+  const limit = (key: "galeri_foto" | "galeri_pasca" | "bagian_tambahan", unit: string, none: string) => {
     const row = s.matrix.find((r) => r.key === key);
     const base = row ? (row.cells[p].on ? row.cells[p].n : 0) : null;
     if (base === null) return undefined;
@@ -183,5 +193,6 @@ export function packageRules(s: Pick<Settings, "matrix" | "addons">, pkg: string
   };
   const photos = limit("galeri_foto", "foto", "tidak termasuk galeri foto");
   const extras = limit("bagian_tambahan", "bagian tambahan", "tidak termasuk bagian tambahan di luar tema");
-  return { pkg: p, photos, extras, locked };
+  const postGallery = limit("galeri_pasca", "foto", "tidak termasuk galeri pasca acara");
+  return { pkg: p, photos, postGallery, extras, locked };
 }

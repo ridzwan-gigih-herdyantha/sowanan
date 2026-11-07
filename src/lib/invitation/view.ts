@@ -1,6 +1,7 @@
+import type { GuestSession } from "@/lib/guests";
 import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
-import { resolveFonts } from "@/themes/fonts";
+import { customFontLinks, resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
 import { RULE_ICONS, type ExtraAnchor, type ExtraKind, type ExtraTone, type InvitationData, type RuleIcon, type SectionKey } from "./schema";
 import { extraAnchors, HEX } from "./spec";
@@ -8,6 +9,7 @@ import { cleanFrames, frameProps } from "./frame";
 import { streamOf } from "./stream";
 
 const ZONES = { WIB: "Asia/Jakarta", WITA: "Asia/Makassar", WIT: "Asia/Jayapura" } as const;
+const OFFSETS = { WIB: "+07:00", WITA: "+08:00", WIT: "+09:00" } as const;
 
 function parts(iso: string, tz: keyof typeof ZONES) {
   const fmt = new Intl.DateTimeFormat("id-ID", {
@@ -46,6 +48,8 @@ export type ExtraView = {
   videos: { src: string; poster: string }[];
   tracks: { src: string; cover: string; title: string; artist: string }[];
   youtube: { id: string; title: string }[];
+  // Video dari add-on, bukan bagian tambahan isian admin.
+  video?: boolean;
 };
 
 // Dikelompokkan per posisi. Posisi yang tidak ada di tema (misal setelah ganti tema) tampil sebelum Penutup.
@@ -86,6 +90,27 @@ function groupExtras(d: InvitationData, theme: string) {
       youtube: bebas ? youtube : [],
     });
   }
+  // Video add-on selalu di posisi yang sama di semua tema: setelah Galeri, mendahului bagian tambahan di sana.
+  const video = streamOf(d.video.trim(), "", "");
+  if (video?.youtube) {
+    (out.gallery ??= []).unshift({
+      kind: "siaran",
+      title: "Video Kami",
+      video: true,
+      body: "",
+      rundown: [],
+      plan: null,
+      colors: [],
+      rules: [],
+      stream: { ...video, platform: "" },
+      note: "",
+      tone: "paper",
+      photos: [],
+      videos: [],
+      tracks: [],
+      youtube: [],
+    });
+  }
   return out;
 }
 
@@ -94,6 +119,12 @@ export function toView(slug: string, d: InvitationData, theme = "") {
   const s = d.sections;
   const palette = resolvePalette(theme, d.style);
   const enabled = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, Boolean(v.enabled)])) as Record<SectionKey, boolean>;
+  // Foto pasca acara sudah dibayar terpisah, jadi tetap tampil walau bagian Galeri dimatikan.
+  if (d.postGallery.length) enabled.gallery = true;
+  // Undangan tanpa foto boleh: bagian yang isinya hanya foto disembunyikan.
+  if (!s.gallery.photos.length && !d.postGallery.length) enabled.gallery = false;
+  if (!s.collage.polaroids.length) enabled.collage = false;
+  if (!s.specimens.items.length) enabled.specimens = false;
   const frames = cleanFrames(d.frames);
   const dateLong = `${p.weekday}, ${p.day} ${p.month} ${p.year}`;
   const events = d.event.schedule.map((e) => {
@@ -112,6 +143,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
 
   return {
     slug,
+    // Kode tamu di undangan private, supaya link di kalender tetap bisa dibuka.
+    accessCode: "",
     // Dipakai komponen bersama, misalnya bagian tambahan, untuk menyesuaikan gaya dengan tema.
     theme,
     monogram: d.monogram,
@@ -152,8 +185,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     ayatSumber: d.copy.ayatSumber,
     share: d.share,
     images: {
-      hero: u(d.media.hero),
-      heroWide: u(d.media.heroWide),
+      hero: u(d.media.hero || d.media.heroWide),
+      heroWide: u(d.media.heroWide || d.media.hero),
       og: u(d.media.og),
       venue: u(d.media.venue || d.media.hero),
       couple: u(d.media.couple || s.couple.photos[0]?.src || d.media.heroWide),
@@ -175,7 +208,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     giftNote: s.gifts.note,
     music: u(d.media.music || THEME_MUSIC[theme] || ""),
     story: s.story.items.map((i) => ({ ...i, short: i.short.trim() || excerpt(i.long), image: u(i.image), video: i.video?.src ? { src: u(i.video.src), poster: u(i.video.poster || i.image) } : undefined })),
-    gallery: s.gallery.photos.map((p) => ({ ...p, src: u(p.src) })),
+    gallery: [...s.gallery.photos, ...d.postGallery].map((p) => ({ ...p, src: u(p.src) })),
     gifts: s.gifts.accounts,
     couplePhotos: s.couple.photos.map((p) => ({ ...p, src: u(p.src) })),
     polaroids: s.collage.polaroids.map((p) => ({ ...p, src: u(p.src) })),
@@ -183,12 +216,38 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     on: enabled,
     extras: groupExtras(d, theme),
     palette,
-    fonts: resolveFonts(theme, d.style),
+    // Monogram ikut sebagai variabel supaya tempat foto yang kosong bisa menampilkannya tanpa perlu props.
+    fonts: { ...resolveFonts(theme, d.style), "--inv-monogram": JSON.stringify(d.monogram || [d.couple.groom.name, d.couple.bride.name].map((n) => n.trim().charAt(0)).filter(Boolean).join(" & ")) },
+    fontLinks: customFontLinks(d.style),
     pageColor: palette["--inv-paper"] ?? "",
   };
 }
 
 export type InvitationView = ReturnType<typeof toView>;
+
+// Jam acara untuk satu tamu, dihitung di server supaya jam sesi lain tidak ikut terkirim ke browser. only kosong
+// berarti semua sesi. Sesi menggantikan item yang dibagi. Item kosong atau namanya sudah berubah berarti seluruh
+// susunan acara diganti, supaya tamu satu sesi tidak pernah melihat jam di luar sesinya.
+export function withSessions(v: InvitationView, sessions: GuestSession[], item: string | null, only: number | null): InvitationView {
+  const shown = only === null ? sessions : sessions.filter((s) => s.id === only);
+  if (!shown.length) return v;
+  const at = item ? v.events.findIndex((e) => e.name === item) : -1;
+  const base = v.events[at];
+  const entries = shown.map((s) => ({
+    ...(base ?? { date: "", venue: "", address: "", mapUrl: "", dateLabel: v.dateLong, place: v.venue, separate: false }),
+    name: base ? `${base.name}, ${s.name}` : s.name,
+    time: s.time,
+    until: s.until || undefined,
+    clock: `${s.time}${s.until ? ` sampai ${s.until}` : ""} ${v.tz}`,
+  }));
+  const events = at < 0 ? entries : [...v.events.slice(0, at), ...entries, ...v.events.slice(at + 1)];
+  if (only === null || !Date.parse(v.date)) return { ...v, events };
+  // Hitung mundur dan kalender tamu satu sesi mengikuti jam sesinya.
+  const p = parts(v.date, v.tz);
+  const iso = (clock: string) => `${p.yyyy}-${p.mm}-${p.dd}T${clock.replace(".", ":")}:00${OFFSETS[v.tz]}`;
+  const date = iso(shown[0].time);
+  return { ...v, events, date, end: shown[0].until ? iso(shown[0].until) : new Date(Date.parse(date) + 2 * 3600_000).toISOString() };
+}
 
 export function calendarEventOf(v: InvitationView) {
   return {
@@ -197,6 +256,6 @@ export function calendarEventOf(v: InvitationView) {
     // Acara beberapa hari disimpan sebagai acara pertama, bukan satu acara sepanjang rentang hari.
     end: v.agenda && v.end.slice(0, 10) !== v.date.slice(0, 10) ? new Date(Date.parse(v.date) + 3 * 3600_000).toISOString() : v.end,
     location: `${v.venue.name}, ${v.venue.address}`,
-    details: `Undangan: https://sowanan.com/${v.slug}`,
+    details: `Undangan: https://sowanan.com/${v.slug}${v.accessCode ? `?k=${v.accessCode}` : ""}`,
   };
 }

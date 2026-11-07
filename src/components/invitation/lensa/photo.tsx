@@ -4,6 +4,7 @@ import type { FrameProps } from "@/lib/invitation/frame";
 // Foto layar penuh Lensa: potret di HP, lebar di layar besar. Pembuka dan hero memakai susunan yang sama
 // supaya tidak ada pergeseran saat pembuka dilepas.
 export function LensaPhoto({ portrait, wide, frame, alt, className = "", priority = false }: { portrait: string; wide: string; frame?: FrameProps; alt: string; className?: string; priority?: boolean }) {
+  if (!portrait) return null;
   const common = { alt, sizes: "100vw", ...(priority ? { fetchPriority: "high" as const, loading: "eager" as const } : {}) };
   const { props: { srcSet: wideSet } } = getImageProps({ ...common, src: wide, width: 2400, height: 1600 });
   const { props: { srcSet, ...rest } } = getImageProps({ ...common, src: portrait, width: 1600, height: 2135 });

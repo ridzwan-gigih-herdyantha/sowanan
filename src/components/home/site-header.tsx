@@ -1,15 +1,17 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { LogoMark } from "@/components/logo";
 import { Container, btn, cx } from "@/components/ui";
 import type { Settings } from "@/lib/settings";
 
-export function SiteHeader({ settings, waHref }: { settings: Settings; waHref: string }) {
+export function SiteHeader({ settings, waHref, children }: { settings: Settings; waHref: string; children?: ReactNode }) {
   const sec = settings.sections;
   const links = [
     { href: "/tema", label: sec.tema.title },
     { href: "/#fitur", label: sec.fitur.title },
     { href: "/#harga", label: sec.harga.title },
     { href: "/#tanya", label: sec.faq.title },
+    { href: "/artikel", label: "Artikel" },
   ];
   // Menempel di atas saat digulir, dengan latar kaca buram supaya isi di belakangnya tetap terasa.
   return (
@@ -39,6 +41,7 @@ export function SiteHeader({ settings, waHref }: { settings: Settings; waHref: s
           </a>
         </nav>
       </Container>
+      {children}
     </header>
   );
 }

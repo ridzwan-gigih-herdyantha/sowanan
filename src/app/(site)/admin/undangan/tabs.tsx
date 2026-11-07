@@ -7,6 +7,7 @@ const TABS = [
   { key: "tamu", label: "Tamu", href: "/tamu" },
   { key: "respon", label: "RSVP & ucapan", href: "/respon" },
   { key: "palet", label: "Palet", href: "/palet" },
+  { key: "story", label: "Story", href: "/story" },
   { key: "akses", label: "Akses mempelai", href: "/akses" },
 ];
 

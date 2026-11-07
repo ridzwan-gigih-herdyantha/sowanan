@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { qrEnabled, windowForSlug } from "@/lib/checkin";
-import { DEFAULT_GUEST_MESSAGE, GUEST_COLS, MAX_GUESTS } from "@/lib/guests";
+import { DEFAULT_GUEST_MESSAGE, GUEST_COLS, MAX_GUESTS, SESSION_COLS, type GuestSession } from "@/lib/guests";
+import { isDemo } from "@/lib/invitation/archive";
 import { invitationRules } from "@/lib/invitation/rules";
 import { invitationDataSchema } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
@@ -13,6 +14,7 @@ import { LoginForm } from "../../../login-form";
 import { InvitationHeader, PAGE, PageIntro } from "../../tabs";
 import type { Guest } from "./actions";
 import { GuestManager } from "./guest-manager";
+import { PrivateOff } from "./private-off";
 
 export const metadata: Metadata = {
   title: "Daftar tamu",
@@ -27,11 +29,12 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 
   const { slug } = await params;
   const sb = supabaseAdmin();
-  const { data: row } = await sb.from("invitations").select("id, slug, theme, published, data, draft, guest_message, payment_status").eq("slug", slug).maybeSingle();
+  const { data: row } = await sb.from("invitations").select("id, slug, theme, published, data, draft, guest_message, payment_status, private, couple_code, session_item").eq("slug", slug).maybeSingle();
   if (!row || !THEME_NAMES[row.theme]) notFound();
 
   const rules = (await invitationRules(slug))?.rules;
-  const lock = rules?.locked.nama_tamu;
+  // Add-on tamu terundang juga membuka halaman ini, karena kode tamu dibuat dari daftar tamu.
+  const lock = rules?.locked.tamu_terundang ? rules.locked.nama_tamu : undefined;
   if (lock) {
     return (
       <>
@@ -39,6 +42,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         <div className={PAGE}>
           <PageIntro title="Tamu">Tambah nama tamu, kirim link undangan pribadi lewat WhatsApp, dan pantau siapa yang sudah hadir.</PageIntro>
           <p className="rounded-sm bg-blush px-4 py-3 text-[14px]">{lock}</p>
+          {row.private && <PrivateOff slug={slug} />}
         </div>
       </>
     );
@@ -47,6 +51,8 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const res = await sb.from("guests").select(GUEST_COLS).eq("invitation_id", row.id).order("created_at", { ascending: true }).order("id", { ascending: true }).limit(MAX_GUESTS);
   if (res.error) return <p className="rounded-sm bg-blush px-4 py-3 text-[15px]">Gagal memuat daftar tamu. Muat ulang halaman.</p>;
   const guests = res.data as unknown as Guest[];
+  const { data: sessions } = await sb.from("invitation_sessions").select(SESSION_COLS).eq("invitation_id", row.id).order("time").order("id");
+  const live = invitationDataSchema.parse(row.data ?? {});
 
   const d = invitationDataSchema.parse(row.draft ?? row.data ?? {});
   const couple = [d.couple.groom.name, d.couple.bride.name].filter(Boolean).join(" & ");
@@ -71,6 +77,14 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
           excelLock={rules?.locked.ekspor_excel ?? null}
           window={qr.enabled ? await windowForSlug(slug) : null}
           qr={qr.enabled ? { on: true } : { on: false, reason: qr.reason ?? null }}
+          privateMode={{
+            on: row.private,
+            coupleCode: row.couple_code ?? "",
+            sessions: (sessions ?? []) as GuestSession[],
+            sessionItem: row.session_item ?? "",
+            scheduleNames: [...new Set(live.event.schedule.map((e) => e.name).filter(Boolean))],
+            lock: isDemo(row.slug, row.theme) ? "Undangan contoh tidak bisa dibuat private." : (rules?.locked.tamu_terundang ?? null),
+          }}
         />
       </div>
     </>

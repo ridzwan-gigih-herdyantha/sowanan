@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { invitationDataSchema } from "@/lib/invitation/schema";
-import { activeUnlock, archiveInfo, editLocked, formatDateId, isDemo } from "@/lib/invitation/archive";
+import { activeUnlock, archiveInfo, editLocked, formatDateId, isDemo, postGalleryWindow } from "@/lib/invitation/archive";
 import { getSettingsFresh, type Purchased } from "@/lib/settings";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { invitationLabel, THEME_NAMES } from "@/themes/media";
@@ -33,9 +33,9 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const info = archiveInfo(live, undefined, isDemo(row.slug, row.theme));
   const unlockedUntil = info.archived ? activeUnlock(row.unlocked_until) : null;
   const archive = info.archiveAt
-    ? { archived: info.archived, locked: editLocked(info, row.unlocked_until), archiveAt: formatDateId(info.archiveAt), unlockedUntil }
+    ? { archived: info.archived, locked: editLocked(info, row.unlocked_until), archiveAt: formatDateId(info.archiveAt), unlockedUntil, postGallery: postGalleryWindow(info, live.postGallery.length) }
     : null;
-  return <Editor archive={archive} packageData={{ matrix, addons, packages }} dp={payment.dp} bought={(row.addons as Purchased | undefined) ?? {}} slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
+  return <Editor archive={archive} packageData={{ matrix, addons, packages }} dp={payment.dp} bought={(row.addons as Purchased | undefined) ?? {}} slug={row.slug} theme={row.theme} label={invitationLabel(row.slug, row.theme)} published={row.published} viewCode={row.private ? row.couple_code : null} paid={row.payment_status !== "belum_lunas"} pkg={row.package ?? null} draft={draft} live={live} />;
 }
 
 export default function EditInvitationPage({ params }: PageProps<"/admin/undangan/[slug]">) {

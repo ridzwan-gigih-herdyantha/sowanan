@@ -2,20 +2,22 @@ import "server-only";
 import { randomBytes } from "node:crypto";
 import { archiveInfo, isDemo } from "@/lib/invitation/archive";
 import { invitationDataSchema, type InvitationData } from "@/lib/invitation/schema";
+import { GUEST_COLS } from "@/lib/guests";
 import { getSettingsFresh, packageRules, type Purchased } from "@/lib/settings";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
-// QR absensi mempelai dipasang di lokasi, berisi link /absen/<checkin_token>. Tamu yang pernah buka link
-// pribadinya (?k=) langsung dikenali, sisanya mengetik nama. Nama di luar daftar tamu dicatat sebagai walk_in.
+// Satu QR absensi per undangan dipasang di meja penerima tamu, berisi link /absen/<checkin_token>. Tamu yang pernah
+// buka link pribadinya (?k=) langsung dikenali, sisanya mengetik nama. Nama di luar daftar tamu dicatat sebagai
+// walk_in. Kalau pemindaian bermasalah, penerima tamu mencari nama di dashboard dan menandainya hadir.
 
 export type CheckinResult =
   | { status: "ok" | "already"; name: string; at: string }
   | { status: "unknown" }
   | { status: "closed"; reason: string };
 
-type InvitationRow = { id: string; slug: string; theme: string; data: unknown; package: string | null; addons: Purchased | null; checkin_opened_at: string | null };
+type InvitationRow = { id: string; slug: string; theme: string; data: unknown; package: string | null; addons: Purchased | null; checkin_opened_at: string | null; private: boolean };
 
-const ROW_COLS = "id, slug, theme, data, package, addons, checkin_opened_at";
+const ROW_COLS = "id, slug, theme, data, package, addons, checkin_opened_at, private";
 
 const HOUR = 3_600_000;
 // Absensi buka 3 jam sebelum sampai 3 jam setelah acara,
@@ -61,6 +63,29 @@ export async function qrEnabled(slug: string): Promise<{ enabled: boolean; reaso
   return lock ? { enabled: false, reason: lock } : { enabled: true };
 }
 
+// Alasan absensi tidak bisa dipakai sekarang. Kosong berarti terbuka.
+async function closedReason(row: InvitationRow, data: InvitationData | null, now: number): Promise<string | null> {
+  if (await rulesLock(row)) return "Absensi untuk undangan ini belum tersedia.";
+  if (!data) return "Data undangan belum lengkap.";
+  const demo = isDemo(row.slug, row.theme);
+  if (archiveInfo(data, now, demo).archived) return "Acara sudah lama selesai, absensi ditutup.";
+  // Undangan contoh selalu terbuka untuk demo.
+  const w = checkinWindow(data, row.checkin_opened_at);
+  if (!demo && w) {
+    if (now < w.from.getTime()) return `Absensi dibuka mulai ${formatWhen(w.from)}.`;
+    if (now > w.until.getTime()) return "Acara sudah selesai, absensi ditutup.";
+  }
+  return null;
+}
+
+// Pencatatan manual dari dashboard mempelai mengikuti jam absensi yang sama dengan QR.
+export async function manualCheckinClosed(slug: string, now = Date.now()): Promise<string | null> {
+  const row = await bySlug(slug);
+  if (!row) return "Undangan tidak ditemukan.";
+  const parsed = invitationDataSchema.safeParse(row.data);
+  return closedReason(row, parsed.success ? parsed.data : null, now);
+}
+
 export type CheckinPage = { row: InvitationRow; couple: string; open: true } | { row: InvitationRow; couple: string; open: false; reason: string };
 
 // Halaman yang terbuka setelah tamu memindai QR mempelai. Kode yang salah berarti halaman tidak ditemukan.
@@ -71,20 +96,8 @@ export async function checkinPage(token: string, now = Date.now()): Promise<Chec
   if (!row) return null;
   const parsed = invitationDataSchema.safeParse(row.data);
   const couple = parsed.success ? [parsed.data.couple.groom.name, parsed.data.couple.bride.name].filter(Boolean).join(" & ") : row.slug;
-  const closed = (reason: string): CheckinPage => ({ row, couple, open: false, reason });
-
-  const lock = await rulesLock(row);
-  if (lock) return closed("Absensi untuk undangan ini belum tersedia.");
-  if (!parsed.success) return closed("Data undangan belum lengkap.");
-  const demo = isDemo(row.slug, row.theme);
-  if (archiveInfo(parsed.data, now, demo).archived) return closed("Acara sudah lama selesai, absensi ditutup.");
-  // Undangan contoh selalu terbuka untuk demo.
-  const w = checkinWindow(parsed.data, row.checkin_opened_at);
-  if (!demo && w) {
-    if (now < w.from.getTime()) return closed(`Absensi dibuka mulai ${formatWhen(w.from)}.`);
-    if (now > w.until.getTime()) return closed("Acara sudah selesai, absensi ditutup.");
-  }
-  return { row, couple, open: true };
+  const reason = await closedReason(row, parsed.success ? parsed.data : null, now);
+  return reason ? { row, couple, open: false, reason } : { row, couple, open: true };
 }
 
 const result = (status: "ok" | "already", g: { name: string; checked_in_at: string | null }): CheckinResult => ({ status, name: g.name, at: g.checked_in_at ?? new Date().toISOString() });
@@ -127,14 +140,31 @@ export async function checkInByName(invitationId: string, raw: string): Promise<
   return { ...result("ok", walkIn), k: walkIn.qr_token ?? undefined };
 }
 
-export async function setCheckedIn(invitationId: string, guestId: number, present: boolean): Promise<{ checked_in_at: string | null } | null> {
+// Catat lewat nama yang diketik penerima tamu, lalu kembalikan baris tamunya untuk ditampilkan di daftar.
+export async function checkInManual(invitationId: string, raw: string) {
+  const res = await checkInByName(invitationId, raw);
+  if (res.status !== "ok" && res.status !== "already") return null;
   const { data } = await supabaseAdmin()
     .from("guests")
-    .update({ checked_in_at: present ? new Date().toISOString() : null })
+    .select(GUEST_COLS)
     .eq("invitation_id", invitationId)
-    .eq("id", guestId)
-    .select("checked_in_at")
+    .ilike("name", res.name.replace(/[%_\\]/g, "\\$&"))
+    .not("checked_in_at", "is", null)
+    .order("id", { ascending: false })
+    .limit(1)
     .maybeSingle();
+  return data;
+}
+
+export async function setCheckedIn(invitationId: string, guestId: number, present: boolean): Promise<{ checked_in_at: string | null } | null> {
+  const sb = supabaseAdmin();
+  const guest = () => sb.from("guests").select("checked_in_at").eq("invitation_id", invitationId).eq("id", guestId).maybeSingle();
+  if (present) {
+    // Layar penerima tamu bisa tertinggal dari QR, jadi jam hadir pertama tidak tertimpa.
+    const { data } = await sb.from("guests").update({ checked_in_at: new Date().toISOString() }).eq("invitation_id", invitationId).eq("id", guestId).is("checked_in_at", null).select("checked_in_at").maybeSingle();
+    return data ?? (await guest()).data ?? null;
+  }
+  const { data } = await sb.from("guests").update({ checked_in_at: null }).eq("invitation_id", invitationId).eq("id", guestId).select("checked_in_at").maybeSingle();
   return data ?? null;
 }
 

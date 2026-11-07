@@ -43,6 +43,7 @@ export const palette: ThemePalette = {
     { key: "--inv-gold", label: "Pendamping" },
     { key: "--tp-sun", label: "Mustard" },
   ],
+  surface: "--inv-card",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--inv-card", "--inv-accent", "--tp-sun", "--inv-gold"],
   checks: [

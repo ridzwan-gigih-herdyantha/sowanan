@@ -29,3 +29,6 @@ export const themeFonts = `${marcellus.variable} ${alegreya.variable} ${javanese
 
 // Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
 export const defaultFonts = { display: marcellus, body: alegreya };
+
+// Font khas di luar pasangan judul dan isi, dipakai gambar story.
+export const extraFonts = { jawa: javanese };

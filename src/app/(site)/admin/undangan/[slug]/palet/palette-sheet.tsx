@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { saveBlob as save, toBlob } from "@/lib/export/canvas-file";
 import { jpegPdf } from "@/lib/export/image-pdf";
 import { luminance } from "@/themes/palette";
 import { Spinner } from "../spinner";
@@ -114,17 +115,6 @@ function render(theme: string, list: SheetPalette[], scale = 2) {
   ctx.font = `400 15px ${sans}`;
   ctx.fillText("sowanan.com", PAD, H - PAD + 30);
   return canvas;
-}
-
-const toBlob = (c: HTMLCanvasElement, type: string, q?: number) => new Promise<Blob>((ok, fail) => c.toBlob((b) => (b ? ok(b) : fail(new Error("Gagal membuat gambar"))), type, q));
-
-function save(blob: Blob, name: string) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  a.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

@@ -25,7 +25,8 @@ export const demoSlugs = () => Object.keys(THEME_NAMES).map((slug) => ({ slug })
 export async function DevicePreview({ slug, device, pkg = TOP_PACKAGE }: { slug: string; device: keyof typeof DEVICES; pkg?: PackageId }) {
   const inv = await getInvitation(slug);
   if (!inv || !inv.published || !isDemo(inv.slug, inv.theme)) notFound();
-  const packages = demoPackages(await getSettings(), inv.theme);
+  const settings = await getSettings();
+  const packages = demoPackages(settings, inv.theme);
   if (!packages.some((p) => p.id === pkg && p.available)) notFound();
   const { w, h, label } = DEVICES[device];
   const backdrop = mediaUrl(inv.data.media.heroWide || inv.data.media.hero);

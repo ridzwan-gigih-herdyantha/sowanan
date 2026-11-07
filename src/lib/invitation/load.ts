@@ -18,6 +18,8 @@ export type InvitationRecord = {
   addons?: Record<string, number>;
   // Sudah dibekukan menjadi arsip permanen, 30 hari setelah acara.
   archived?: boolean;
+  // Hanya terbuka lewat link berisi kode tamu. Undangan contoh tidak pernah private.
+  private?: boolean;
 };
 
 export const invitationTag = (slug: string) => `invitation-${slug}`;
@@ -73,6 +75,7 @@ export async function getInvitation(slug: string): Promise<InvitationRecord | nu
     pkg: data.package ?? null,
     addons: data.addons ?? {},
     archived: archive.archived,
+    private: Boolean(data.private) && !isDemo(data.slug, data.theme),
   };
 }
 

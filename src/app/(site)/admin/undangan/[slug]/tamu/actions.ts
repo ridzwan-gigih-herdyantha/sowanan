@@ -1,9 +1,9 @@
 "use server";
 
-import { z } from "zod";
 import { currentAdmin } from "@/lib/admin-auth";
-import { newCheckinToken, setCheckedIn } from "@/lib/checkin";
-import { GUEST_COLS, MAX_GUESTS, normalizePhone } from "@/lib/guests";
+import { checkInManual, newCheckinToken, setCheckedIn } from "@/lib/checkin";
+import * as guestList from "@/lib/guest-list";
+import { GUEST_COLS, normalizePhone, type GuestSession } from "@/lib/guests";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export type Guest = {
@@ -15,6 +15,8 @@ export type Guest = {
   checked_in_at?: string | null;
   // Tercatat lewat QR mempelai di lokasi tapi tidak ada di daftar tamu.
   walk_in?: boolean;
+  // Kosong berarti semua sesi.
+  session_id?: number | null;
 };
 type Result<T> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -26,33 +28,10 @@ async function invitationId(slug: string): Promise<string | null> {
   return data?.id ?? null;
 }
 
-const guestsInput = z
-  .array(z.object({ name: z.string().trim().min(1).max(80), phone: z.string().nullable() }))
-  .min(1, "Belum ada nama.")
-  .max(1000, "Maksimal 1000 tamu sekali tambah.");
-
 export async function addGuests(slug: string, input: unknown): Promise<Result<{ added: Guest[]; skipped: number }>> {
   const id = await invitationId(slug);
   if (!id) return { ok: false, error: SESSION_ENDED };
-  const parsed = guestsInput.safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
-
-  const sb = supabaseAdmin();
-  const { data: existing } = await sb.from("guests").select("name").eq("invitation_id", id).limit(MAX_GUESTS + 1);
-  const seen = new Set((existing ?? []).map((g) => g.name.toLowerCase()));
-  const fresh = parsed.data.filter((g) => {
-    const key = g.name.toLowerCase();
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-  if ((existing?.length ?? 0) + fresh.length > MAX_GUESTS) return { ok: false, error: `Maksimal ${MAX_GUESTS} tamu per undangan.` };
-  if (!fresh.length) return { ok: true, data: { added: [], skipped: parsed.data.length } };
-
-  const rows = fresh.map((g) => ({ invitation_id: id, name: g.name, phone: g.phone ? normalizePhone(g.phone) : null }));
-  const { data, error } = await sb.from("guests").insert(rows).select(GUEST_COLS);
-  if (error) return { ok: false, error: "Gagal menyimpan daftar tamu." };
-  return { ok: true, data: { added: data as unknown as Guest[], skipped: parsed.data.length - fresh.length } };
+  return guestList.insertGuests(id, input);
 }
 
 export async function updateGuest(slug: string, guestId: number, name: string, phone: string): Promise<Result<Guest>> {
@@ -72,11 +51,42 @@ export async function updateGuest(slug: string, guestId: number, name: string, p
 export async function deleteGuests(slug: string, ids: number[] | "all"): Promise<Result<null>> {
   const id = await invitationId(slug);
   if (!id) return { ok: false, error: SESSION_ENDED };
-  let q = supabaseAdmin().from("guests").delete().eq("invitation_id", id);
-  if (ids !== "all") q = q.in("id", ids.slice(0, 1000));
-  const { error } = await q;
-  if (error) return { ok: false, error: "Gagal menghapus." };
-  return { ok: true, data: null };
+  return guestList.removeGuests(id, ids);
+}
+
+export async function setPrivateMode(slug: string, on: boolean): Promise<Result<null>> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  return guestList.switchPrivate(slug, on);
+}
+
+export async function setGuestSession(slug: string, guestId: number, sessionId: number | null): Promise<Result<number | null>> {
+  const id = await invitationId(slug);
+  if (!id) return { ok: false, error: SESSION_ENDED };
+  return guestList.assignSession(id, guestId, sessionId);
+}
+
+export async function createSession(slug: string, input: unknown): Promise<Result<GuestSession>> {
+  const id = await invitationId(slug);
+  if (!id) return { ok: false, error: SESSION_ENDED };
+  return guestList.addSession(id, input);
+}
+
+export async function editSession(slug: string, sessionId: number, input: unknown): Promise<Result<GuestSession>> {
+  const id = await invitationId(slug);
+  if (!id) return { ok: false, error: SESSION_ENDED };
+  return guestList.updateSession(id, sessionId, input);
+}
+
+export async function deleteSession(slug: string, sessionId: number): Promise<Result<null>> {
+  const id = await invitationId(slug);
+  if (!id) return { ok: false, error: SESSION_ENDED };
+  return guestList.removeSession(id, sessionId);
+}
+
+export async function setSessionItem(slug: string, name: string): Promise<Result<null>> {
+  const id = await invitationId(slug);
+  if (!id) return { ok: false, error: SESSION_ENDED };
+  return guestList.saveSessionItem(id, name);
 }
 
 export async function markSent(slug: string, guestId: number, sent: boolean): Promise<Result<string | null>> {
@@ -104,6 +114,15 @@ export async function setGuestCheckin(slug: string, guestId: number, present: bo
   const guest = await setCheckedIn(id, guestId, present);
   if (!guest) return { ok: false, error: "Gagal menyimpan." };
   return { ok: true, data: guest.checked_in_at };
+}
+
+// Nama yang tidak ada di daftar tamu dicatat sebagai datang langsung oleh penerima tamu.
+export async function addWalkIn(slug: string, name: string): Promise<Result<Guest>> {
+  const id = await invitationId(slug);
+  if (!id) return { ok: false, error: SESSION_ENDED };
+  const guest = await checkInManual(id, name);
+  if (!guest) return { ok: false, error: "Gagal mencatat. Coba lagi." };
+  return { ok: true, data: guest as Guest };
 }
 
 // Buka absensi sekarang walaupun belum jadwalnya, atau kembalikan ke jadwal acara.

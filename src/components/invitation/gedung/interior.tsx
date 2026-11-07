@@ -1,14 +1,15 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import { Modal } from "../modal";
 import { useCloseInvitation } from "../shell";
-import { CELL, HERO_H, KEYS, sprite, STEPS, STEP_FPS, type Pick } from "./door";
+import { CELL, footAnchor, HERO_H, KEYS, sprite, STEPS, STEP_FPS, STEP_GRACE, type Pick } from "./door";
 import { Booth, BOOTH, type BoothKind } from "./booth";
 import { type BoothArt, COUPLE, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, poiDistance, type PoiId, STAGE } from "./interior-world";
 import { NPC_CELL, NPC_SHEETS, NPCS, npcStart, stepNpc, type NpcState } from "./interior-npcs";
 import { Joystick } from "./joystick";
+import { aimCamera, shift, turn, type Camera, type Facing } from "./motion";
 import { useButtonSfx } from "./sfx";
 import { SPEED, type Point } from "./world";
 
@@ -41,7 +42,6 @@ function talk(tick: number) {
     return [{ n, line: n.lines![round % n.lines!.length] }];
   });
 }
-const FOLLOW = 4;
 const MAP = "/img/rafi-kayla/inside-map.webp";
 
 // Karakter yang dipilih di cover disimpan di sessionStorage oleh GedungDoor.
@@ -70,6 +70,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
   const finished = useRef(false);
   const [debug, setDebug] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const camRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   useButtonSfx(rootRef);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -138,19 +139,22 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
 
   useEffect(() => {
     if (!open) return;
+    const root = rootRef.current;
+    const camEl = camRef.current;
     const stage = stageRef.current;
     const heroEl = heroRef.current;
     const body = bodyRef.current;
-    if (!stage || !heroEl || !body) return;
-    const cam = { x: IN_SPAWN.x / IN_W, y: IN_SPAWN.y / IN_H };
+    if (!root || !camEl || !stage || !heroEl || !body) return;
+    const cam: Camera = { x: 0, y: 0, ready: false };
     const held = keys.current;
-    let facing = 0;
-    let flip = false;
+    const face: Facing = { row: 0, flip: false };
     let walked = 0;
+    let still = 0;
     let last = performance.now();
     let raf = 0;
     let current: PoiId | null = null;
     const crowd: NpcState[] = NPCS.map(npcStart);
+    const crowdFace: Facing[] = NPCS.map((n) => ({ row: (n.face ?? 0) as Facing["row"], flip: !!n.flip }));
 
     const loop = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
@@ -186,36 +190,19 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
       let moving = false;
       if (vx || vy) {
         const len = Math.hypot(vx, vy);
-        const prev = { ...p };
         moving = worldRef.current.move(p, (vx / len) * SPEED * power * dt, (vy / len) * SPEED * power * dt);
-        // Joystick menutupi layar, jadi karakter tidak boleh berjalan masuk ke belakangnya.
-        const jr = joyRef.current?.getBoundingClientRect();
-        if (moving && jr) {
-          const sr = stage.getBoundingClientRect();
-          const sx = sr.left + (p.x / IN_W) * sr.width;
-          const sy = sr.top + (p.y / IN_H) * sr.height;
-          const py = sr.top + (prev.y / IN_H) * sr.height;
-          if (sy > jr.top - 6 && sx > jr.left - 28 && sx < jr.right + 28 && sy >= py) {
-            p.x = prev.x;
-            p.y = prev.y;
-            moving = false;
-          }
-        }
         if (!moving) target.current = null;
+        else turn(face, vx, vy);
       }
       if (moving) {
         walked += dt;
-        if (Math.abs(vy) > Math.abs(vx)) facing = vy < 0 ? 2 : 0;
-        else {
-          facing = 1;
-          flip = vx < 0;
-        }
-      } else walked = 0;
-      const col = moving ? STEPS[Math.floor(walked * STEP_FPS) % STEPS.length] : 0;
-      body.style.backgroundPosition = `${col * 50}% ${facing * 50}%`;
-      body.style.transform = facing === 1 && flip ? "scaleX(-1)" : "";
-      heroEl.style.left = `${(p.x / IN_W) * 100}%`;
-      heroEl.style.top = `${(p.y / IN_H) * 100}%`;
+        still = 0;
+      } else if ((still += dt) > STEP_GRACE) walked = 0;
+      const col = walked > 0 ? STEPS[Math.floor(walked * STEP_FPS) % STEPS.length] : 0;
+      body.style.backgroundPosition = `${col * 50}% ${face.row * 50}%`;
+      body.style.transform = face.row === 1 && face.flip ? "scaleX(-1)" : "";
+      const scale = stage.offsetWidth / IN_W;
+      shift(heroEl, IN_SPAWN, p, scale);
       heroEl.style.zIndex = String(Math.round(p.y));
 
       // Tamu lain yang berjalan: posisi, arah hadap, dan langkah kakinya.
@@ -225,21 +212,17 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         const dir = stepNpc(n, s, dt);
         if (!el || n.path.length < 2) return;
         s.walked = dir ? s.walked + dt : 0;
-        const face = dir ? (Math.abs(dir.y) > Math.abs(dir.x) ? (dir.y < 0 ? 2 : 0) : 1) : 0;
+        const f = crowdFace[i];
+        if (dir) turn(f, dir.x, dir.y);
         const npcCol = dir ? STEPS[Math.floor(s.walked * STEP_FPS) % STEPS.length] : 0;
         const npcBody = el.lastElementChild as HTMLElement;
-        npcBody.style.backgroundPosition = `${npcCol * 50}% ${face * 50}%`;
-        npcBody.style.transform = face === 1 && dir && dir.x < 0 ? "scaleX(-1)" : "";
-        el.style.left = `${(s.p.x / IN_W) * 100}%`;
-        el.style.top = `${(s.p.y / IN_H) * 100}%`;
+        npcBody.style.backgroundPosition = `${npcCol * 50}% ${f.row * 50}%`;
+        npcBody.style.transform = f.row === 1 && f.flip ? "scaleX(-1)" : "";
+        shift(el, n.path[0], s.p, scale);
         el.style.zIndex = String(Math.round(s.p.y));
       });
 
-      const k = Math.min(1, dt * FOLLOW);
-      cam.x += (p.x / IN_W - cam.x) * k;
-      cam.y += (p.y / IN_H - cam.y) * k;
-      stage.style.setProperty("--gd-fx", cam.x.toFixed(4));
-      stage.style.setProperty("--gd-fy", cam.y.toFixed(4));
+      aimCamera(cam, camEl, root, { x: p.x / IN_W, y: p.y / IN_H }, footAnchor(root.clientHeight), joyRef.current?.getBoundingClientRect(), dt);
 
       let best: PoiId | null = null;
       let bestD = IN_NEAR;
@@ -291,15 +274,13 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
     aim(e);
   };
 
-  const stage = {
+  // Kamera digeser loop mengikuti karakter; transform di sini hanya posisi awal sebelum loop berjalan.
+  const camera = {
     "--gd-w": `calc(max(100vw, calc(100dvh * ${RATIO})) * ${ZOOM})`,
     "--gd-h": `calc(max(100dvh, calc(100vw / ${RATIO})) * ${ZOOM})`,
-    "--gd-fx": IN_SPAWN.x / IN_W,
-    "--gd-fy": IN_SPAWN.y / IN_H,
     width: "var(--gd-w)",
     height: "var(--gd-h)",
-    left: "clamp(calc(100vw - var(--gd-w)), calc(50vw - var(--gd-w) * var(--gd-fx)), 0px)",
-    top: "clamp(calc(100dvh - var(--gd-h)), calc(44dvh - var(--gd-h) * var(--gd-fy)), 0px)",
+    transform: `translate(clamp(calc(100vw - var(--gd-w)), calc(50vw - var(--gd-w) * ${(IN_SPAWN.x / IN_W).toFixed(4)}), 0px), clamp(calc(100dvh - var(--gd-h)), calc(44dvh - var(--gd-h) * ${(IN_SPAWN.y / IN_H).toFixed(4)}), 0px))`,
   } as CSSProperties;
   const heroW = `calc(var(--gd-w) * ${((HERO * CELL.w) / CELL.h / IN_W).toFixed(5)})`;
   const heroH = `calc(var(--gd-w) * ${(HERO / IN_W).toFixed(5)})`;
@@ -329,7 +310,8 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
 
   return (
     <div ref={rootRef} className="gd-interior fixed inset-0 z-40 overflow-hidden bg-inv-night text-inv-ink">
-      <div ref={stageRef} className="absolute isolate touch-none" style={stage} onPointerDown={onDown} onPointerMove={(e) => dragging.current && aim(e)} onPointerUp={() => (dragging.current = false)} onPointerCancel={() => (dragging.current = false)}>
+      <div ref={camRef} className="absolute top-0 left-0 will-change-transform" style={camera}>
+      <div ref={stageRef} className="absolute inset-0 isolate touch-none" onPointerDown={onDown} onPointerMove={(e) => dragging.current && aim(e)} onPointerUp={() => (dragging.current = false)} onPointerCancel={() => (dragging.current = false)}>
         <Image src={MAP} alt="" fill sizes="(min-width: 900px) 100vw, 160vw" draggable={false} className="pointer-events-none object-cover select-none" />
 
         {debug && (
@@ -361,7 +343,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
 
         <div
           className="pointer-events-none absolute"
-          style={{ left: `${((COUPLE.x - COUPLE.w / 2) / IN_W) * 100}%`, top: `${((COUPLE.y - COUPLE.h) / IN_H) * 100}%`, width: `${(COUPLE.w / IN_W) * 100}%`, height: `${(COUPLE.h / IN_H) * 100}%`, zIndex: COUPLE.y }}
+          style={{ left: `${((COUPLE.x - COUPLE.w / 2) / IN_W) * 100}%`, top: `${((COUPLE.y - COUPLE.h) / IN_H) * 100}%`, width: `${(COUPLE.w / IN_W) * 100}%`, height: `${(COUPLE.h / IN_H) * 100}%`, zIndex: Math.round(COUPLE.y) }}
         >
           <Image src={COUPLE.src} alt="Pengantin di pelaminan" fill sizes="15vw" draggable={false} className="object-contain select-none" />
         </div>
@@ -369,7 +351,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         <div
           ref={heroRef}
           className="pointer-events-none absolute -translate-x-1/2 -translate-y-full"
-          style={{ left: `${(IN_SPAWN.x / IN_W) * 100}%`, top: `${(IN_SPAWN.y / IN_H) * 100}%`, width: heroW, height: heroH, zIndex: IN_SPAWN.y }}
+          style={{ left: `${(IN_SPAWN.x / IN_W) * 100}%`, top: `${(IN_SPAWN.y / IN_H) * 100}%`, width: heroW, height: heroH, zIndex: Math.round(IN_SPAWN.y) }}
         >
           <span aria-hidden="true" className="absolute inset-x-[18%] -bottom-[3%] h-[8%] rounded-full bg-black/25 blur-[1px]" />
           <div ref={bodyRef} className="relative size-full bg-no-repeat" style={sprite(hero)} role="img" aria-label="Karakter kamu" />
@@ -386,7 +368,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
               }}
               aria-hidden="true"
               className="pointer-events-none absolute -translate-x-1/2 -translate-y-full"
-              style={{ left: `${(at.x / IN_W) * 100}%`, top: `${(at.y / IN_H) * 100}%`, width: npcW, height: heroH, zIndex: at.y }}
+              style={{ left: `${(at.x / IN_W) * 100}%`, top: `${(at.y / IN_H) * 100}%`, width: npcW, height: heroH, zIndex: Math.round(at.y) }}
             >
               <span className="absolute inset-x-[18%] -bottom-[3%] h-[8%] rounded-full bg-black/25 blur-[1px]" />
               <div className="relative size-full bg-no-repeat" style={{ backgroundImage: `url(${NPC_SHEETS[n.sheet]})`, backgroundSize: "300% 300%", backgroundPosition: `0% ${(n.face ?? 0) * 50}%`, filter: n.tint, transform: n.flip ? "scaleX(-1)" : undefined }} />
@@ -429,8 +411,9 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
           );
         })}
       </div>
+      </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-[max(12px,2.2dvh)] z-10 flex flex-col items-center gap-2 px-3">
+      <div className="pointer-events-none absolute inset-x-0 top-[max(12px,2.2dvh)] z-[999] flex flex-col items-center gap-2 px-3">
         {/* Satu papan di tengah atas: nama aula dan sambutan di kiri, daftar isi di kanan, supaya tidak menumpuk
             jadi tiga kotak yang menutupi peta. Daftar isi berisi semua pos dengan centang yang sudah dibuka;
             mengetuk pos memindahkan karakter ke sana. */}
@@ -480,7 +463,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         )}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-10 flex justify-center">
+      <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-[999] flex justify-center">
         <div ref={joyRef} className="pointer-events-auto opacity-80">
           <Joystick onMove={(x, y) => (joy.current = { x, y })} />
         </div>
@@ -505,7 +488,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
       {/* Semua pos sudah dibuka: penutup "Tamat" berisi kredit dari tema, dan satu jalan keluar kembali ke sampul.
           Isi aula diatur ulang supaya kunjungan berikutnya mulai dari awal. */}
       {phase === "done" && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/65 p-3 sm:p-6">
+        <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-black/65 p-3 sm:p-6">
           <div role="dialog" aria-modal="true" aria-label="Tamat" className="gd-pill flex max-h-full w-[min(520px,100%)] flex-col overflow-hidden rounded-3xl border-[3px] border-inv-line bg-inv-paper shadow-[0_8px_0_rgba(0,0,0,.35)]">
             <div className="gd-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">{finale}</div>
             <button

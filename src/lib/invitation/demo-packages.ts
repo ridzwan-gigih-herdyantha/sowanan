@@ -1,5 +1,6 @@
 import { PACKAGE_IDS, PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
-import { themeAvailable, type PackageRules } from "@/lib/settings/text";
+import { themeAvailable, waLink, type PackageRules } from "@/lib/settings/text";
+import { paletteLocked } from "./package-check";
 import { limitExtras, type InvitationData } from "./schema";
 
 // Undangan contoh bisa dilihat per paket. Paket tertinggi tampil di alamat demo biasa (/slug), paket lain di
@@ -13,6 +14,9 @@ export function demoHref(slug: string, pkg: PackageId, device: DemoDevice = "des
   const base = pkg === TOP_PACKAGE ? `/${slug}` : `/${slug}/paket/${pkg}`;
   return device === "desktop" ? base : `${base}/${device}`;
 }
+
+// Tautan WhatsApp tombol pesan di undangan contoh, berisi tema dan paket yang sedang dilihat.
+export const demoOrderLink = (s: Settings, themeName: string, pkg: PackageId) => waLink(s.contact.wa, `Halo Sowanan, saya mau pesan tema ${themeName}, paket ${PACKAGE_NAMES[pkg]}. Tanggal acara saya:`);
 
 export type DemoPackage = { id: PackageId; name: string; available: boolean; note?: string };
 
@@ -37,8 +41,12 @@ export function applyPackage(d: InvitationData, rules: PackageRules): Invitation
     const gallery = out.sections.gallery;
     out = { ...out, sections: { ...out.sections, gallery: { ...gallery, enabled: gallery.enabled && max > 0, photos: gallery.photos.slice(0, max) } } };
   }
+  if (rules.postGallery) out = { ...out, postGallery: out.postGallery.slice(0, rules.postGallery.max) };
   if (rules.extras) out = { ...out, extras: limitExtras(out.extras, rules.extras.max) };
   if (rules.locked.musik_sendiri) out = { ...out, media: { ...out.media, music: "" } };
-  if (rules.locked.warna_tema) out = { ...out, style: { ...out.style, palette: "", font: "", nameFont: "" } };
+  if (paletteLocked(out.style.palette, rules)) out = { ...out, style: { ...out.style, palette: "" } };
+  if (rules.locked.font_varian) out = { ...out, style: { ...out.style, font: "", nameFont: "" } };
+  if (rules.locked.video_youtube) out = { ...out, video: "" };
+  if (rules.locked.font_custom) out = { ...out, style: { ...out.style, customFont: { display: "", body: "", name: "" } } };
   return out;
 }

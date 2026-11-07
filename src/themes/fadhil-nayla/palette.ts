@@ -83,6 +83,7 @@ export const palette: ThemePalette = {
     { key: "--sk-glow", label: "Cahaya lentera" },
     { key: "--inv-line", label: "Garis" },
   ],
+  surface: "--inv-wash",
   base: (v) => ({ paper: v["--inv-paper"], accent: v["--inv-accent"], ink: v["--inv-ink"] }),
   swatch: ["--inv-paper", "--sk-pasir", "--inv-accent", "--inv-night", "--sk-emas"],
   checks: [

@@ -28,3 +28,6 @@ export const themeFonts = `${gilda.variable} ${pinyon.variable} ${lora.variable}
 
 // Pasangan font bawaan, dipakai juga sebagai pilihan pertama di panel gaya.
 export const defaultFonts = { display: gilda, body: lora };
+
+// Font khas di luar pasangan judul dan isi, dipakai gambar story.
+export const extraFonts = { script: pinyon };

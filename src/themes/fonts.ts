@@ -17,23 +17,25 @@ import {
   Sacramento,
   Work_Sans,
 } from "next/font/google";
+import { isDecorativeFont } from "@/lib/invitation/custom-font";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { defaultFonts as andiRina } from "./andi-rina/fonts";
 import { defaultFonts as arkasaMentari } from "./arkasa-mentari/fonts";
-import { defaultFonts as aryaKirana } from "./arya-kirana/fonts";
+import { defaultFonts as aryaKirana, extraFonts as aryaKiranaExtra } from "./arya-kirana/fonts";
 import { defaultFonts as bagasSekar } from "./bagas-sekar/fonts";
 import { defaultFonts as bimaNadia } from "./bima-nadia/fonts";
-import { defaultFonts as toniLayla } from "./toni-layla/fonts";
-import { defaultFonts as danangKinanthi } from "./danang-kinanthi/fonts";
-import { defaultFonts as fadhilNayla } from "./fadhil-nayla/fonts";
+import { defaultFonts as toniLayla, extraFonts as toniLaylaExtra } from "./toni-layla/fonts";
+import { defaultFonts as danangKinanthi, extraFonts as danangKinanthiExtra } from "./danang-kinanthi/fonts";
+import { defaultFonts as fadhilNayla, extraFonts as fadhilNaylaExtra } from "./fadhil-nayla/fonts";
 import { defaultFonts as hendrawanLarasati } from "./hendrawan-larasati/fonts";
 import { defaultFonts as ivanMawar } from "./ivan-mawar/fonts";
-import { defaultFonts as galihArdila } from "./galih-ardila/fonts";
-import { defaultFonts as bonarAnggi } from "./bonar-anggi/fonts";
+import { defaultFonts as galihArdila, extraFonts as galihArdilaExtra } from "./galih-ardila/fonts";
+import { defaultFonts as bonarAnggi, extraFonts as bonarAnggiExtra } from "./bonar-anggi/fonts";
 import { defaultFonts as elaris } from "./raka-anindya/fonts";
 import { defaultFonts as nocturne } from "./damar-elara/fonts";
-import { defaultFonts as mawaddah } from "./faris-najwa/fonts";
+import { defaultFonts as mawaddah, extraFonts as mawaddahExtra } from "./faris-najwa/fonts";
 import { defaultFonts as isometrik } from "./rafi-kayla/fonts";
+import { defaultFonts as piksel } from "./dimas-salsa/fonts";
 
 // Font pilihan add-on ganti font. Di-host lewat next/font tanpa preload, jadi hanya diunduh bila dipakai.
 // Argumen font loader harus literal, jadi setiap pemanggilan ditulis lengkap.
@@ -158,6 +160,11 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
     { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
     { id: "tegas", name: "DM Serif & Inter", display: dmSerif, body: inter },
   ],
+  "dimas-salsa": [
+    { id: "", name: "Fredoka & Nunito", ...piksel },
+    { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
+    { id: "tegas", name: "DM Serif & Inter", display: dmSerif, body: inter },
+  ],
   "damar-elara": [
     { id: "", name: "Cinzel & DM Sans", ...nocturne },
     { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
@@ -168,13 +175,73 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
 
 export const fontStack = (f: Font, kind: "display" | "body") => `${f.style.fontFamily}, ${kind === "display" ? SERIF : SANS}`;
 
+// Semua nama keluarga di Google Fonts hanya memakai huruf, angka, dan spasi.
+const isFamily = (name?: string): name is string => Boolean(name) && /^[A-Za-z0-9 ]+$/.test(name!);
+const customStack = (name: string, kind: "display" | "body") => fontStack({ style: { fontFamily: `'${name}'` } }, kind);
+
+// Ligatur font dekoratif sering menyatukan huruf jadi sulit dibaca. Alternatif kontekstual tetap hidup karena
+// font tulisan tangan memakainya untuk menyambung huruf, jadi tidak memakai nilai none.
+const NO_LIGATURES = "no-common-ligatures no-discretionary-ligatures no-historical-ligatures";
+const ligatures = (name: string) => (isDecorativeFont(name) ? NO_LIGATURES : "normal");
+
 // Font bawaan memakai pengaturan tema sendiri, jadi hanya pilihan lain yang menimpa variabel font.
 // --inv-script yang kosong membuat nama mempelai kembali ke font judul.
+// Font custom menimpa pilihan di atasnya, per tempat.
 export function resolveFonts(theme: string, style?: InvitationData["style"]): Record<string, string> {
   const preset = style?.font && FONT_PRESETS[theme]?.find((x) => x.id === style.font);
   const name = style?.nameFont && NAME_FONTS.find((x) => x.id === style.nameFont);
+  const custom = style?.customFont;
   return {
+    ...(isFamily(custom?.display) && { "--inv-liga-display": ligatures(custom.display) }),
+    // Font nama pilihan tidak mengikuti ligatur font judul.
+    ...(name && { "--inv-liga-script": "normal" }),
+    ...(isFamily(custom?.name) && { "--inv-liga-script": ligatures(custom.name) }),
     ...(preset && { "--inv-display": fontStack(preset.display, "display"), "--inv-body": fontStack(preset.body, "body") }),
     ...(name && { "--inv-script": fontStack(name.font, "display") }),
+    ...(isFamily(custom?.display) && { "--inv-display": customStack(custom.display, "display") }),
+    ...(isFamily(custom?.body) && { "--inv-body": customStack(custom.body, "body") }),
+    ...(isFamily(custom?.name) && { "--inv-script": customStack(custom.name, "display") }),
   };
+}
+
+// Font khas tema di luar pasangan judul dan isi, dipakai gambar story untuk nama, aksara, dan label.
+const EXTRA_FONTS: Record<string, { script?: Font; arab?: Font; jawa?: Font; label?: Font; type?: Font }> = {
+  "arya-kirana": aryaKiranaExtra,
+  "bonar-anggi": bonarAnggiExtra,
+  "toni-layla": toniLaylaExtra,
+  "fadhil-nayla": fadhilNaylaExtra,
+  "faris-najwa": mawaddahExtra,
+  "danang-kinanthi": danangKinanthiExtra,
+  "galih-ardila": galihArdilaExtra,
+};
+
+// Font gambar story: font custom, lalu pilihan undangan, lalu bawaan tema. Font nama mengikuti font skrip tema,
+// lalu font judul kalau keduanya kosong.
+export function storyFonts(theme: string, style?: InvitationData["style"]) {
+  const base = FONT_PRESETS[theme]?.[0];
+  const extra = EXTRA_FONTS[theme] ?? {};
+  const vars = resolveFonts(theme, style);
+  const display = vars["--inv-display"] ?? (base ? fontStack(base.display, "display") : SERIF);
+  const displayLiga = vars["--inv-liga-display"] ?? "normal";
+  const body = vars["--inv-body"] ?? (base ? fontStack(base.body, "body") : SANS);
+  return {
+    display,
+    body,
+    name: vars["--inv-script"] ?? (extra.script ? fontStack(extra.script, "display") : display),
+    customName: Boolean(vars["--inv-script"]),
+    arab: extra.arab ? fontStack(extra.arab, "display") : SERIF,
+    jawa: extra.jawa ? fontStack(extra.jawa, "body") : body,
+    label: extra.label ? fontStack(extra.label, "body") : body,
+    type: extra.type ? fontStack(extra.type, "body") : body,
+    plainDisplay: displayLiga === NO_LIGATURES,
+    plainName: (vars["--inv-liga-script"] ?? displayLiga) === NO_LIGATURES,
+  };
+}
+
+// Tautan stylesheet font custom, satu per font supaya satu nama yang salah tidak menggagalkan yang lain.
+// API css versi lama dipakai karena melewati ketebalan yang tidak dimiliki font itu, sedangkan css2 menolaknya.
+export function customFontLinks(style?: InvitationData["style"]): string[] {
+  const c = style?.customFont;
+  const names = [c?.display, c?.body, c?.name].filter(isFamily);
+  return [...new Set(names)].map((name) => `https://fonts.googleapis.com/css?family=${name.replace(/ /g, "+")}:300,300i,400,400i,500,500i,600,600i,700,700i&display=swap`);
 }

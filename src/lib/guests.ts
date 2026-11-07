@@ -2,7 +2,15 @@ export type GuestInput = { name: string; phone: string | null };
 
 export const MAX_GUESTS = 2000;
 
-export const GUEST_COLS = "id, name, phone, sent_at, qr_token, checked_in_at, walk_in";
+export const GUEST_COLS = "id, name, phone, sent_at, qr_token, checked_in_at, walk_in, session_id";
+
+// Satu sesi: satu tanggal dan satu lokasi yang sama, beda jam. Jam ditulis dengan titik, sama seperti susunan acara.
+export type GuestSession = { id: number; name: string; time: string; until: string };
+export const SESSION_COLS = "id, name, time, until";
+export type GuestRow = { id: number; name: string; phone: string | null; sent_at: string | null; qr_token: string | null; checked_in_at: string | null; walk_in: boolean; session_id: number | null };
+
+// Daftar tamu terbuka kalau paket atau add-on menyediakan nama tamu atau tamu terundang.
+export const guestListOpen = (locked: { nama_tamu?: string; tamu_terundang?: string }) => !locked.nama_tamu || !locked.tamu_terundang;
 
 export function normalizePhone(raw: string): string | null {
   let d = raw.replace(/[^\d+]/g, "");
@@ -93,10 +101,14 @@ Terima kasih.
 // sedangkan tanda kurung, kutip, dan titik di ujung bisa memotong link. Contoh: "Pak Joko (RT 05)".
 const strictEncode = (s: string) => encodeURIComponent(s).replace(/[!'()*~_.]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
 
-// k adalah kode QR kehadiran tamu, hanya ikut kalau undangan memakai QR absensi.
+// k adalah kode pengenal tamu di link pribadinya, supaya langsung dikenali saat memindai QR undangan di lokasi.
+// Hanya ikut kalau undangan memakai QR absensi atau add-on tamu terundang.
 export function guestLink(origin: string, slug: string, name: string, k?: string | null) {
   return `${origin}/${slug}?to=${strictEncode(name).replace(/%20/g, "+")}${k ? `&k=${k}` : ""}`;
 }
+
+// Link undangan private hanya berisi kode. Nama tamu dibaca server dari kode, jadi tidak terlihat di alamat.
+export const privateLink = (origin: string, slug: string, k: string | null | undefined) => `${origin}/${slug}?k=${k ?? ""}`;
 
 export function fillGuestMessage(template: string, vars: { nama: string; link: string; mempelai: string; tanggal: string }) {
   return template.replace(/\{(nama|link|mempelai|tanggal)\}/g, (_, k: keyof typeof vars) => vars[k]);

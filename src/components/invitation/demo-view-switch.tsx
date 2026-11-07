@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 
-const noop = () => () => {};
+const noop = () => () => { };
 const inFrame = () => window.self !== window.top;
 // Link iklan memakai ?ads (nilai apa pun): demo tampil di paket teratas tanpa pilihan paket dan perangkat.
 const fromAds = () => new URLSearchParams(window.location.search).has("ads");
@@ -49,12 +49,29 @@ type DeviceLink = { id: DemoView; href: string; on: boolean };
 const item = "flex size-10 flex-col items-center justify-center gap-0.5 rounded-lg text-[9px] no-underline transition-colors duration-150 lg:size-12 lg:text-[10px]";
 const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 const tone = (on: boolean) => (on ? "bg-paper text-night" : "text-white/75 hover:bg-white/10 hover:text-white");
+const divider = <span aria-hidden="true" className="mx-2.5 my-1 h-px bg-white/15" />;
 
 // Pilih paket dan tampilan desktop, tablet, atau HP. Disembunyikan di dalam layar perangkat supaya tidak dobel.
 // <a> biasa, bukan Link, karena Link menyimpan halaman lama sehingga musik latarnya bisa tetap berbunyi.
 export function DemoViewSwitch({ packages = [], devices, attached }: { packages?: PackageLink[]; devices: DeviceLink[]; attached?: boolean }) {
   // null sampai hidrasi selesai, supaya tidak sempat muncul di dalam layar perangkat.
   const framed = useSyncExternalStore(noop, inFrame, () => null);
+  const [open, setOpen] = useState(false);
+  const [inside, setInside] = useState(false);
+
+  // Di cover menempati posisi tombol musik, di dalam undangan naik ke atas tombol WA. Saat ditempel ke layar perangkat,
+  // undangannya ada di dalam iframe.
+  useEffect(() => {
+    if (framed !== false) return;
+    const check = () => {
+      const doc = attached ? document.querySelector<HTMLIFrameElement>("[data-device-screen]")?.contentDocument : document;
+      setInside(doc?.querySelector("[data-inv-state]")?.getAttribute("data-inv-state") === "open");
+    };
+    check();
+    const t = window.setInterval(check, 300);
+    return () => window.clearInterval(t);
+  }, [framed, attached]);
+
   const ads = useSyncExternalStore(noop, fromAds, () => true);
   // Di dalam layar perangkat, scrollbar disembunyikan seperti di HP dan tablet sungguhan.
   useEffect(() => {
@@ -64,44 +81,74 @@ export function DemoViewSwitch({ packages = [], devices, attached }: { packages?
       delete document.documentElement.dataset.deviceFrame;
     };
   }, [framed]);
+
+  // Tutup dengan tombol Esc
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   if (framed !== false || ads) return null;
   const withPackages = packages.length > 1;
+  const position = attached
+    ? `pointer-events-auto absolute right-(--demo-right) ${inside ? "bottom-(--demo-inside)" : "bottom-(--demo-cover)"}`
+    : `fixed right-4 z-70 sm:right-6 ${inside ? "bottom-36 sm:bottom-42" : "bottom-4 sm:bottom-6"}`;
+
   return (
-    <nav
-      aria-label="Contoh undangan"
-      className={`${attached ? "" : "fixed top-1/2 right-2 z-70 -translate-y-1/2 lg:right-4"} ${withPackages ? "flex" : "hidden lg:flex"} flex-col gap-0.5 rounded-xl bg-night/90 p-1 font-sans opacity-80 shadow-[0_8px_24px_rgba(0,0,0,.25)] backdrop-blur`}
-    >
-      {withPackages && (
-        <>
-          <p className="pt-1 text-center text-[9px] text-white/55">Paket</p>
-          {packages.map((p) =>
-            p.available ? (
-              <a key={p.id} href={p.href} aria-current={p.on ? "page" : undefined} className={`${item} ${focus} ${tone(p.on)}`}>
-                {p.name}
-              </a>
-            ) : (
-              <span key={p.id} aria-disabled="true" title={p.note} className={`${item} cursor-not-allowed text-white/30`}>
-                {p.name}
-                <span className="sr-only">, {p.note}</span>
-              </span>
-            ),
+    <div className={`${position} ${withPackages ? "flex" : "hidden lg:flex"} flex-col items-end gap-2 font-sans transition-[bottom] duration-200 motion-reduce:transition-none`}>
+      {open && (
+        <nav
+          id="demo-switch-panel"
+          aria-label="Contoh undangan"
+          className="flex max-h-[60vh] flex-col gap-0.5 overflow-y-auto rounded-xl bg-night/90 p-1 opacity-95 shadow-[0_8px_24px_rgba(0,0,0,.25)] backdrop-blur"
+        >
+          {withPackages && (
+            <>
+              <p className="pt-1 text-center text-[9px] text-white/55">Paket</p>
+              {packages.map((p) =>
+                p.available ? (
+                  <a key={p.id} href={p.href} aria-current={p.on ? "page" : undefined} className={`${item} ${focus} ${tone(p.on)}`}>
+                    {p.name}
+                  </a>
+                ) : (
+                  <span key={p.id} aria-disabled="true" title={p.note} className={`${item} cursor-not-allowed text-white/30`}>
+                    {p.name}
+                    <span className="sr-only">, {p.note}</span>
+                  </span>
+                ),
+              )}
+            </>
           )}
-        </>
+
+          <div className="hidden flex-col gap-0.5 lg:flex">
+            {withPackages && (
+              <>
+                {divider}
+                <p className="text-center text-[9px] text-white/55">Tampilan</p>
+              </>
+            )}
+            {devices.map((d) => (
+              <a key={d.id} href={d.href} aria-current={d.on ? "page" : undefined} className={`${item} ${focus} ${tone(d.on)}`}>
+                {DEVICES[d.id].icon}
+                {DEVICES[d.id].label}
+              </a>
+            ))}
+          </div>
+        </nav>
       )}
-      <div className="hidden flex-col gap-0.5 lg:flex">
-        {withPackages && (
-          <>
-            <span aria-hidden="true" className="mx-2.5 my-1 h-px bg-white/15" />
-            <p className="text-center text-[9px] text-white/55">Tampilan</p>
-          </>
-        )}
-        {devices.map((d) => (
-          <a key={d.id} href={d.href} aria-current={d.on ? "page" : undefined} className={`${item} ${focus} ${tone(d.on)}`}>
-            {DEVICES[d.id].icon}
-            {DEVICES[d.id].label}
-          </a>
-        ))}
-      </div>
-    </nav>
+
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls="demo-switch-panel"
+        aria-label={open ? "Tutup menu contoh" : "Buka menu contoh"}
+        className={`${focus} ${attached ? "size-(--demo-size)" : "size-12"} flex cursor-pointer items-center justify-center rounded-full bg-night/90 text-white shadow-[0_8px_24px_rgba(0,0,0,.25)] backdrop-blur transition-colors duration-150 hover:bg-night`}
+      >
+        {svg(open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />)}
+      </button>
+    </div>
   );
 }

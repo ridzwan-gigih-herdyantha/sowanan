@@ -66,7 +66,7 @@ export function CheckinForm({ token, slug, demo }: { token: string; slug: string
         <p className="mt-2 text-[16px] text-ink-soft">
           {done.status === "ok" ? "Kehadiranmu sudah tercatat" : "Kehadiranmu sudah tercatat sebelumnya"} pukul {timeFmt.format(new Date(done.at))}.
         </p>
-        <Link href={`/${slug}`} className="mt-8 inline-block text-[15px] text-wine underline underline-offset-4">
+        <Link href={code ? `/${slug}?k=${encodeURIComponent(code)}` : `/${slug}`} className="mt-8 inline-block text-[15px] text-wine underline underline-offset-4">
           Buka undangan
         </Link>
       </div>

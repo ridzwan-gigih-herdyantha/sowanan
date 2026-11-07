@@ -77,7 +77,11 @@ File utama: `src/app/(site)/admin/undangan/[slug]/editor.tsx`.
 
 ## Paket dan add-on
 
-- Isi paket diatur di admin pengaturan (matrix fitur per paket). Kunci sistem ada di `SYSTEM_KEYS` (`lib/settings/schema.ts`): galeri_foto, bagian_tambahan, musik_sendiri, warna_tema, cerita, nama_tamu, ekspor_excel, qr_absensi.
+- Isi paket diatur di admin pengaturan (matrix fitur per paket). Kunci sistem ada di `SYSTEM_KEYS` (`lib/settings/schema.ts`): undangan_kedua, galeri_foto, galeri_pasca, bagian_tambahan, musik_sendiri, palet_varian, palet_custom, font_varian, font_custom, video_youtube, gambar_story, cerita, nama_tamu, ekspor_excel, qr_absensi.
+- Palet custom (`style.custom`) adalah slot kelima di luar 4 varian tema, diisi admin. Latar, aksen, dan teks wajib, sisanya diturunkan lewat `derive`. Permukaan dan teks sekunder opsional: `resolvePalette` menimpa variabel `surface` dan `muted` milik tema, dan `--inv-muted` menimpa teks redup `text-inv-ink/NN` lewat `globals.css`. Peringatan kontras (`customChecks`) tidak memblokir penyimpanan.
+- Font custom (`style.customFont`) menyimpan nama font Google Fonts untuk judul, isi, dan nama mempelai, dimuat lewat stylesheet Google saat undangan dibuka. Nama dicek ke katalog `themes/google-fonts.ts`, yang diperbarui dengan `pnpm google-fonts`. Ligatur font dekoratif dimatikan lewat `--inv-liga-display` dan `--inv-liga-script` dari `resolveFonts`.
+- Galeri pasca acara (`data.postGallery`) adalah daftar foto terpisah dari batas foto paket, tampil di akhir Galeri. Kuotanya dari add-on (`galeri_pasca`). Setelah hari ke-21 acara jumlahnya tidak boleh bertambah dari versi tayang (`postGalleryCap`), dan saat arsip seluruh editor terkunci.
+- Video add-on (`data.video`) berisi satu tautan YouTube dan selalu tampil setelah Galeri lewat `groupExtras` (`lib/invitation/view.ts`), jadi tidak perlu diubah per tema. Tidak termasuk paket mana pun, hanya terbuka lewat add-on. Musik latar berhenti lewat `claim` di `YoutubeStream`.
 - `packageRules(settings, pkg, addons)` (`lib/settings/text.ts`) menghasilkan `locked` (fitur yang terkunci beserta alasannya), batas foto galeri, dan batas bagian tambahan.
 - Teks alasan di `locked` ditulis untuk admin. Jangan tampilkan ke tamu atau mempelai, cukup sembunyikan fiturnya.
 - Undangan contoh (`slug === theme`) tampil sebagai paket tertinggi, versi paket lain di `/<slug>/paket/<id>`.
@@ -86,12 +90,31 @@ File utama: `src/app/(site)/admin/undangan/[slug]/editor.tsx`.
 
 - **Belum lunas** (`payment_status = 'belum_lunas'`): watermark tampil, RSVP dan ucapan dimatikan dengan pesan "undangan belum aktif". Aksi server juga menolak kiriman.
 - **Arsip**: 30 hari setelah acara (`lib/invitation/archive.ts`). RSVP, ucapan baru, amplop, hitung mundur, dan link nama tamu berhenti. Admin bisa membuka kunci 24 jam untuk koreksi. Pemberitahuan ke klien muncul 7 hari sebelumnya di tab RSVP.
-- **Nama tamu** (`?to=`) hanya dipakai bila paket termasuk nama_tamu. Kode `?k=` adalah token QR kehadiran per tamu.
+- **Undangan tanpa foto** boleh, semua foto opsional. Foto undangan memakai `components/invitation/photo.tsx`, bukan `next/image` langsung: kalau kosong tampil monogram dengan warna tema, dan foto latar selebar layar cukup warna section-nya. Galeri, kolase, dan spesimen tanpa isi disembunyikan di `toView`. Tema baru harus memakai komponen ini.
+- **Gambar story** (`admin/undangan/<slug>/story`) digambar di canvas browser, 1080 x 1920, dari `storyData` (`lib/invitation/story.ts`). Palet dan font mengikuti draf undangan. Terbuka lewat add-on `gambar_story`.
+- **Tombol salin data** (`DemoViewSwitch`) hanya di undangan contoh, menyalin daftar isian tema untuk paket yang sedang dilihat sebagai teks WhatsApp. Teksnya dibuat `requirementsText` (`lib/invitation/requirements-text.ts`) dari `requirements()`, jadi isian baru di spec otomatis ikut. Isian yang tidak ditanyakan ke pembeli dan namanya untuk pembeli diatur di konstanta `HIDDEN` dan `LABELS` di file itu.
+- **Duplikat undangan** (`lib/invitation/duplicate.ts`, menu Kelola di daftar undangan) untuk add-on `undangan_kedua`. Berkas disalin ke folder undangan baru karena menghapus undangan menghapus foldernya. Tanggal, lokasi, susunan acara, denah, siaran, dan foto pasca acara dikosongkan. `data.copyOf` mencatat asalnya dan dipakai menghitung jatah: satu unit satu salinan.
+- **Tombol Pesan tema ini** (`DemoOrderButton`) hanya di undangan contoh. Event Lead piksel terkirim otomatis dari `MetaPixel` untuk semua tautan wa.me, tombol ini menambah `klik_whatsapp` di GA4 dengan parameter `tema` dan `posisi`. Kedua parameter perlu didaftarkan sebagai dimensi kustom di GA4 supaya muncul di laporan.
+- **Nama tamu** (`?to=`) hanya dipakai bila paket termasuk nama_tamu. Kode `?k=` adalah pengenal tamu di link pribadinya, bukan QR per tamu: absensi memakai satu QR per undangan (`/absen/<token>`). Cadangannya, penerima tamu mencari nama lalu menandai hadir di dashboard mempelai atau admin.
+
+## Undangan khusus tamu terundang
+
+Add-on Lengkap, termasuk di Istimewa, tidak tersedia untuk Dasar (`ADDON_EXCLUDED`). Kuncinya `tamu_terundang`. Add-on masih `on: false` sampai teks harga dan ketentuan diperbarui, jadi untuk mengetes di Lengkap nilainya diisi lewat kolom `invitations.addons`.
+
+- **Gerbang** (`lib/invitation/private.ts`): `invitations.private` berlaku langsung tanpa Publish. Undangan publik tetap statis. Hanya undangan private yang membaca `searchParams` di dalam `<Suspense>` (`PrivateInvitation`), jadi isinya tidak pernah masuk static shell.
+- **Kode**: kode tamu adalah `guests.qr_token`, kode mempelai `invitations.couple_code`. Keduanya dibuat database. Tamu `walk_in` tidak dihitung, karena barisnya bisa dibuat siapa pun lewat QR absensi. Absen lewat nama tidak mengembalikan kode di undangan private.
+- **Kode salah** dibatasi per IP lewat `login_attempts`, scope `undangan:<slug>`.
+- **Yang diperiksa**: halaman, `/<slug>/kalender`, `submitRsvp`, `submitWish`. Jalur baru yang membuka isi undangan wajib memanggil `checkPass`.
+- **Metadata** undangan private tidak membaca kode dan tidak memuat nama siapa pun.
+- **Analitik**: GA dan Meta Pixel tidak dimuat di alamat berisi `?k=`, supaya kode tidak keluar ke pihak ketiga.
+- **Sesi** (`invitation_sessions`, `guests.session_id`, kosong berarti semua sesi): `withSessions` (`lib/invitation/view.ts`) mengganti `inv.events`, `inv.date`, dan `inv.end` di server. Tema tidak perlu tahu soal sesi, asal memakai `inv.events` untuk jam. `session_item` menentukan item yang dibagi. Kosong berarti seluruh susunan acara diganti.
+- **Duplikat**: add-on ini tidak ikut tersalin dan salinannya mulai dari mode private mati. Harga untuk undangan kedua belum diputuskan.
+- **Batas yang diketahui**: foto tetap di bucket publik. Jam yang ditulis manual di bagian tambahan, misalnya rundown, tidak ikut difilter.
 
 ## Mempelai
 
 - Akun mempelai dibuat admin di tab Akses mempelai, terhubung lewat tabel `invitation_members`.
-- Login di `/dashboard/user/login`, dashboard di `/dashboard/user/<slug>` (`lib/couple-auth.ts`). Mempelai hanya bisa membaca, menyembunyikan ucapan, dan menandai link tamu terkirim.
+- Login di `/dashboard/user/login`, dashboard di `/dashboard/user/<slug>` (`lib/couple-auth.ts`). Mempelai bisa membaca, menyembunyikan ucapan, dan menandai link tamu terkirim. Kalau paket termasuk nama tamu (default Lengkap dan Istimewa) atau tamu terundang, mempelai bisa menambah dan menghapus tamu sendiri. Sesi dan mode private tetap khusus tamu terundang. Semuanya sampai undangan menjadi arsip (`lib/guest-list.ts`). Add-on `inputtamu` (Rp25.000 per 100 nama) hanya jasa dan baris harga: tim yang mengisi tamu, dan tidak membuka fitur apa pun.
 - `src/proxy.ts` menyegarkan sesi Supabase untuk `/admin` dan `/dashboard`.
 
 ## Media
@@ -112,7 +135,7 @@ File utama: `src/app/(site)/admin/undangan/[slug]/editor.tsx`.
 
 ## Database
 
-Tabel utama: `settings` (satu baris JSON), `invitations`, `rsvps`, `wishes`, `guests`, `invitation_members`, `login_attempts`. Semua RLS aktif tanpa policy, aplikasi membaca lewat service role di server.
+Tabel utama: `settings` (satu baris JSON), `invitations`, `rsvps`, `wishes`, `guests`, `invitation_sessions`, `invitation_members`, `login_attempts`. Semua RLS aktif tanpa policy, aplikasi membaca lewat service role di server.
 
 Migrasi dijalankan manual di SQL Editor sesuai urutan nomor. Migrasi data (`0012`, `0013`) aman dijalankan ulang.
 

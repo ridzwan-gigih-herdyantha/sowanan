@@ -4,11 +4,13 @@ import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { currentAdmin } from "@/lib/admin-auth";
 import { INVITATIONS_TAG, invitationTag } from "@/lib/invitation/load";
+import { duplicateAllowance, duplicateInvitation, type DuplicateResult } from "@/lib/invitation/duplicate";
 import { packageIssues } from "@/lib/invitation/package-check";
-import { archiveInfo, editLocked, isDemo } from "@/lib/invitation/archive";
+import { archiveInfo, editLocked, isDemo, postGalleryWindow } from "@/lib/invitation/archive";
 import { invitationRules } from "@/lib/invitation/rules";
 import { emptyInvitationData, invitationDataSchema, type InvitationData } from "@/lib/invitation/schema";
 import { checkInvitation, type Issue } from "@/lib/invitation/spec";
+import { ADDON_EXCLUDED } from "@/lib/settings/schema";
 import { getSettingsFresh, PACKAGE_IDS, PACKAGE_NAMES, packageRules, themeAvailable, type PackageId, type Purchased, type Settings } from "@/lib/settings";
 import { validateSlug } from "@/lib/reserved-slugs";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -43,7 +45,11 @@ const FROZEN = "Undangan ini sudah menjadi arsip dan tidak bisa diubah. Buka kun
 
 async function issuesFor(data: InvitationData, slug: string, theme: string): Promise<Issue[]> {
   const info = await invitationRules(slug);
-  return [...checkInvitation(data, theme), ...(info ? packageIssues(data, theme, info.rules) : [])];
+  // Masa tambah foto pasca acara dihitung dari versi tayang, sama seperti arsip.
+  const { data: row } = await supabaseAdmin().from("invitations").select("data").eq("slug", slug).maybeSingle();
+  const live = invitationDataSchema.safeParse(row?.data ?? {});
+  const win = live.success ? postGalleryWindow(archiveInfo(live.data, Date.now(), isDemo(slug, theme)), live.data.postGallery.length) : undefined;
+  return [...checkInvitation(data, theme), ...(info ? packageIssues(data, theme, info.rules, win) : [])];
 }
 
 // Tema hanya boleh dipakai paket di kolom Tersedia di paket, selama isi paket punya baris jumlah_tema.
@@ -156,7 +162,9 @@ export async function setPackage(slug: string, pkg: string): Promise<Result> {
 // Add-on yang sudah dibayar. Hanya id add-on di pengaturan yang disimpan, jumlahnya 0 sampai 20 unit.
 export async function setAddons(slug: string, addons: Purchased): Promise<Result> {
   if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
-  const known = new Set((await getSettingsFresh()).addons.map((a) => a.id));
+  const { data: row } = await supabaseAdmin().from("invitations").select("package").eq("slug", slug).maybeSingle();
+  // Add-on yang tidak tersedia untuk paket undangan ini tidak disimpan, supaya tidak ikut terhitung di tagihan.
+  const known = new Set((await getSettingsFresh()).addons.filter((a) => !ADDON_EXCLUDED[a.unlock]?.includes(row?.package ?? "")).map((a) => a.id));
   const clean: Purchased = {};
   for (const [id, n] of Object.entries(addons ?? {})) {
     const units = Math.floor(Number(n));
@@ -184,6 +192,20 @@ export async function markArchiveNotified(slug: string, notified: boolean): Prom
   const { error } = await supabaseAdmin().from("invitations").update({ archive_notified_at: at }).eq("slug", slug);
   if (error) return { ok: false, error: "Gagal menyimpan." };
   return { ok: true, at: at ?? "" };
+}
+
+// Jatah duplikat, ditampilkan di dialog sebelum admin mengisi alamat baru.
+export async function duplicateInfo(slug: string): Promise<{ ok: true; data: { couple: string; left: number; reason?: string } } | { ok: false; error: string }> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  const info = await duplicateAllowance(slug);
+  return info ? { ok: true, data: info } : { ok: false, error: "Undangan tidak ditemukan." };
+}
+
+export async function duplicateTo(slug: string, target: string): Promise<DuplicateResult> {
+  if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
+  const res = await duplicateInvitation(slug, target);
+  if (res.ok) refresh(res.slug);
+  return res;
 }
 
 type DeleteSummary = { couple: string; rsvps: number; wishes: number; guests: number; files: number };

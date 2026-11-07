@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useRef, useState } from "react";
 
 type Photo = { src: string; alt: string };

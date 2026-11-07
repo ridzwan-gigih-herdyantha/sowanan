@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-export type BoothKind = "mempelai" | "galeri" | "cerita" | "acara" | "rsvp" | "angpao" | "slot" | "dresscode" | "rundown" | "denah" | "imbauan" | "siaran";
+export type BoothKind = "mempelai" | "galeri" | "cerita" | "acara" | "rsvp" | "angpao" | "slot" | "dresscode" | "rundown" | "denah" | "imbauan" | "siaran" | "video";
 export type BoothTone = "accent" | "gold" | "roof";
 
 // Ukuran kios dalam piksel peta. Kios digambar isometrik 2:1, sama dengan peta: sumbu a ke kanan atas, sumbu b
@@ -35,6 +35,7 @@ const ICONS: Record<BoothKind, string> = {
   denah: "M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z M12 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4z",
   imbauan: "M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M12 11v5 M12 8h.01",
   siaran: "M5 6h14v12H5z M10 9.5v5l4-2.5z",
+  video: "M5 6h14v12H5z M10 9.5v5l4-2.5z",
   slot: "M12 4l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z",
 };
 

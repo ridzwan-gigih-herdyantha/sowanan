@@ -16,6 +16,7 @@ import { Elaris } from "./raka-anindya";
 import { Nocturne } from "./damar-elara";
 import { FarisNajwa } from "./faris-najwa";
 import { RafiKayla } from "./rafi-kayla";
+import { DimasSalsa } from "./dimas-salsa";
 import { THEME_NAMES } from "./media";
 
 export type Theme = { name: string; Component: ComponentType<{ inv: InvitationView }>; themeColor: string };
@@ -36,5 +37,6 @@ export const THEMES: Record<string, Theme> = {
   "raka-anindya": { name: THEME_NAMES["raka-anindya"], Component: Elaris, themeColor: "#F5F2E9" },
   "damar-elara": { name: THEME_NAMES["damar-elara"], Component: Nocturne, themeColor: "#160F12" },
   "rafi-kayla": { name: THEME_NAMES["rafi-kayla"], Component: RafiKayla, themeColor: "#8FD07A" },
+  "dimas-salsa": { name: THEME_NAMES["dimas-salsa"], Component: DimasSalsa, themeColor: "#94A032" },
   "faris-najwa": { name: THEME_NAMES["faris-najwa"], Component: FarisNajwa, themeColor: "#163E43" },
 };

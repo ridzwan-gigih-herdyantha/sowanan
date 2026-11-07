@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { CustomFontLinks } from "@/components/invitation/custom-font-links";
 import { SkipDoor } from "@/components/invitation/shell";
 import { currentAdmin } from "@/lib/admin-auth";
 import { getInvitation } from "@/lib/invitation/load";
@@ -29,15 +30,17 @@ async function Preview({ params, searchParams }: { params: Promise<{ slug: strin
   const { data, filled } = fillPreview(draft, sample);
   const { texts, media } = editableMap(data, mediaUrl);
   const { Component } = theme;
+  const view = toView(slug, data, row.theme);
 
   return (
     <>
+      <CustomFontLinks hrefs={view.fontLinks} />
       {framing ? (
         <SkipDoor>
-          <Component inv={toView(slug, data, row.theme)} />
+          <Component inv={view} />
         </SkipDoor>
       ) : (
-        <Component inv={toView(slug, data, row.theme)} />
+        <Component inv={view} />
       )}
       <PreviewBridge texts={texts} media={media} sample={filled} />
     </>

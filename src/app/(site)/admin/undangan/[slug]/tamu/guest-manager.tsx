@@ -3,10 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useWorking } from "../../../use-working";
 import { useMemo, useState } from "react";
+import { PrivatePanel, SessionSelect, type PrivateActions, type PrivateMode } from "@/components/private-panel";
 import { downloadQr, QrCode } from "@/components/qr-code";
-import { fillGuestMessage, guestLink, MAX_GUESTS, parseCsv, parseGuestRows, parseGuestText, type GuestInput } from "@/lib/guests";
+import { fillGuestMessage, guestLink, MAX_GUESTS, parseCsv, parseGuestRows, parseGuestText, privateLink, type GuestInput } from "@/lib/guests";
 import type { CheckinSchedule } from "@/lib/checkin";
-import { addGuests, checkinLink, deleteGuests, openCheckinNow, markSent, saveGuestMessage, setGuestCheckin, updateGuest, type Guest } from "./actions";
+import { addGuests, addWalkIn, checkinLink, createSession, deleteGuests, deleteSession, editSession, openCheckinNow, markSent, saveGuestMessage, setGuestCheckin, setGuestSession, setPrivateMode, setSessionItem, updateGuest, type Guest } from "./actions";
 
 type Props = {
   slug: string;
@@ -20,6 +21,7 @@ type Props = {
   qr: { on: true } | { on: false; reason: string | null };
   // Jadwal absensi di lokasi, kosong kalau tanggal acara belum diisi atau undangan contoh.
   window: CheckinSchedule | null;
+  privateMode: PrivateMode;
 };
 type Notice = { tone: "ok" | "error"; text: string } | null;
 
@@ -161,8 +163,17 @@ function Preview({ list, existing }: { list: GuestInput[]; existing: Set<string>
   );
 }
 
-export function GuestManager({ slug, origin, initial, template: initialTemplate, couple, date, excelLock, qr, window: checkinWindow }: Props) {
+export function GuestManager({ slug, origin, initial, template: initialTemplate, couple, date, excelLock, qr, window: checkinWindow, privateMode }: Props) {
   const [guests, setGuests] = useState(initial);
+  const [isPrivate, setIsPrivate] = useState(privateMode.on);
+  const [sessions, setSessions] = useState(privateMode.sessions);
+  const privateActions: PrivateActions = {
+    setPrivate: (on) => setPrivateMode(slug, on),
+    addSession: (input) => createSession(slug, input),
+    updateSession: (id, input) => editSession(slug, id, input),
+    removeSession: (id) => deleteSession(slug, id),
+    setSessionItem: (name) => setSessionItem(slug, name),
+  };
   const [tab, setTab] = useState<"paste" | "excel">("paste");
   const [text, setText] = useState("");
   const [sheet, setSheet] = useState<{ name: string; list: GuestInput[] } | null>(null);
@@ -188,7 +199,10 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
   const walkInCount = guests.filter((g) => g.walk_in).length;
   const invitedCount = guests.length - walkInCount;
 
-  const link = (g: Guest) => guestLink(origin, slug, g.name, qr.on ? g.qr_token : null);
+  // Kode sudah ikut sejak add-on aktif, supaya link yang telanjur dikirim tetap terbuka saat mode private dinyalakan.
+  const link = (g: Guest) => (isPrivate ? privateLink(origin, slug, g.qr_token) : guestLink(origin, slug, g.name, qr.on || !privateMode.lock ? g.qr_token : null));
+  // Tamu datang langsung tercatat lewat QR, kodenya tidak membuka undangan private.
+  const noLink = (g: Guest) => isPrivate && g.walk_in;
   const message = (g: Guest) => fillGuestMessage(template, { nama: g.name, link: link(g), mempelai: couple, tanggal: date });
 
   const readFile = (file: File) =>
@@ -279,12 +293,28 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
       setSavedTemplate(template);
     });
 
+  const chooseSession = (g: Guest, sessionId: number | null) =>
+    run(`sesi:${g.id}`, async () => {
+      const res = await setGuestSession(slug, g.id, sessionId);
+      if (res.ok) setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, session_id: res.data } : x)));
+      else setNotice({ tone: "error", text: res.error });
+    });
+
   function togglePresent(g: Guest) {
     if (g.checked_in_at && !confirm(`Batalkan tanda hadir ${g.name}?`)) return;
     run(`hadir:${g.id}`, async () => {
       const res = await setGuestCheckin(slug, g.id, !g.checked_in_at);
       if (!res.ok) return setNotice({ tone: "error", text: res.error });
       setGuests((list) => list.map((x) => (x.id === g.id ? { ...x, checked_in_at: res.data } : x)));
+    });
+  }
+
+  function recordWalkIn(name: string) {
+    run("datang", async () => {
+      const res = await addWalkIn(slug, name);
+      if (!res.ok) return setNotice({ tone: "error", text: res.error });
+      setGuests((list) => (list.some((x) => x.id === res.data.id) ? list.map((x) => (x.id === res.data.id ? res.data : x)) : [...list, res.data]));
+      setQuery("");
     });
   }
 
@@ -295,7 +325,7 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
     const rows = guests.map((g) => [
       g.name,
       g.phone ? `+${g.phone}` : "",
-      link(g),
+      noLink(g) ? "" : link(g),
       g.sent_at ? fullFmt.format(new Date(g.sent_at)) : "",
       ...(qr.on ? [g.checked_in_at ? fullFmt.format(new Date(g.checked_in_at)) : "", g.walk_in ? "Datang langsung" : "Tamu undangan"] : []),
     ]);
@@ -308,6 +338,12 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
 
   return (
     <div className="mt-8 grid gap-10">
+      {privateMode.lock && !isPrivate ? (
+        <p className="rounded-sm bg-ivory px-4 py-3 text-[13px] text-ink-mute">Khusus tamu terundang: {privateMode.lock}</p>
+      ) : (
+        <PrivatePanel slug={slug} origin={origin} mode={privateMode} on={isPrivate} onToggle={setIsPrivate} sessions={sessions} onSessions={setSessions} actions={privateActions} />
+      )}
+
       <section>
         <h2 className="font-serif text-2xl">Tambah tamu</h2>
         <div role="tablist" className="mt-3 flex border-b border-line text-[14px]">
@@ -446,6 +482,11 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
         )}
 
         {!guests.length && <p className="mt-4 text-[15px] text-ink-mute">Belum ada tamu.</p>}
+        {qr.on && guests.length > 0 && !filtered.length && query.trim().length >= 2 && (
+          <button type="button" onClick={() => recordWalkIn(query)} disabled={working !== null} className="mt-3 rounded-sm border border-wine px-4 py-2 text-[14px] text-wine transition-colors duration-150 hover:bg-wine hover:text-white disabled:opacity-60">
+            {working === "datang" ? "Mencatat..." : `Catat "${query.trim()}" sebagai datang langsung`}
+          </button>
+        )}
 
         <ul className="mt-4 divide-y divide-line border-y border-line">
           {filtered.slice(0, limit).map((g) => (
@@ -484,16 +525,21 @@ export function GuestManager({ slug, origin, initial, template: initialTemplate,
                       )}
                     </p>
                   </div>
-                  <span className="flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
-                    <button type="button" onClick={() => send(g)} className="text-wine underline underline-offset-4">
-                      {working === `terkirim:${g.id}` ? "Menandai terkirim..." : "Kirim WA"}
-                    </button>
-                    <button type="button" onClick={() => copy(g, "link")} className="text-ink-soft hover:text-wine">
-                      {copied === g.id ? "Tersalin" : "Salin link"}
-                    </button>
-                    <button type="button" onClick={() => copy(g, "pesan")} className="text-ink-soft hover:text-wine">
-                      Salin pesan
-                    </button>
+                  <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
+                    {isPrivate && sessions.length > 0 && !g.walk_in && <SessionSelect sessions={sessions} value={g.session_id} disabled={working !== null} onChange={(id) => chooseSession(g, id)} label={`Sesi ${g.name}`} />}
+                    {!noLink(g) && (
+                      <>
+                        <button type="button" onClick={() => send(g)} className="text-wine underline underline-offset-4">
+                          {working === `terkirim:${g.id}` ? "Menandai terkirim..." : "Kirim WA"}
+                        </button>
+                        <button type="button" onClick={() => copy(g, "link")} className="text-ink-soft hover:text-wine">
+                          {copied === g.id ? "Tersalin" : "Salin link"}
+                        </button>
+                        <button type="button" onClick={() => copy(g, "pesan")} className="text-ink-soft hover:text-wine">
+                          Salin pesan
+                        </button>
+                      </>
+                    )}
                     {qr.on && !g.checked_in_at && (
                       <button type="button" onClick={() => togglePresent(g)} disabled={working !== null} className="text-ink-soft hover:text-wine disabled:opacity-60">
                         {working === `hadir:${g.id}` ? "Menyimpan..." : "Tandai hadir"}

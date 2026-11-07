@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState, useTransition } from "react";
 import { submitWish } from "@/app/[slug]/actions";
+import { linkCode } from "@/lib/guest-memory";
 import { GUEST_NAME_MAX, WISH_MAX } from "@/lib/guest-input";
 import type { Wish } from "@/lib/guestbook";
 import { useArchived, useGuest, useInactive } from "./shell";
@@ -61,7 +62,7 @@ export function Wishes({ slug, initial, variant = "notes", desktop = "split" }: 
     }
     start(async () => {
       setError("");
-      const res = await submitWish(slug, { name: nameValue, message, website: String(form.get("website") ?? "") }).catch(() => ({ ok: false as const, error: OFFLINE }));
+      const res = await submitWish(slug, { name: nameValue, message, website: String(form.get("website") ?? "") }, linkCode()).catch(() => ({ ok: false as const, error: OFFLINE }));
       if (!res.ok) return setError(res.error);
       setMine((m) => [res.data, ...m]);
       setGuest(res.data.name);

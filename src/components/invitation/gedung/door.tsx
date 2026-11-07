@@ -1,10 +1,11 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { Joystick } from "./joystick";
+import { aimCamera, shift, turn, type Camera, type Facing } from "./motion";
 import { useButtonSfx } from "./sfx";
-import { ARCH_BEAM, behindArch, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, reachable, SPAWN, SPEED, type Point } from "./world";
+import { ARCH_BEAM, archSide, behindArch, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, reachable, SPAWN, SPEED, type Point } from "./world";
 
 export type GedungProps = {
   groom: string;
@@ -20,8 +21,6 @@ export type Pick = "groom" | "bride";
 // Peta cover berukuran 1672 x 941. Pintu gedung ada di sekitar 61,5% x 40% gambar.
 const RATIO = MAP_W / MAP_H;
 const DOOR = { x: 61.5, y: 40 };
-// Titik gambar yang diusahakan tetap terlihat di tengah layar sempit, antara gapura dan pintu.
-const FOCUS = { x: 0.54, y: 0.5 };
 // Peta sedikit diperbesar supaya kamera punya ruang menaikkan karakter di atas joystick.
 const ZOOM = 1.2;
 const ZOOM_MS = 950;
@@ -40,8 +39,11 @@ export const CELL = { w: 130, h: 215 };
 export const HERO_H = 120;
 export const STEPS = [1, 0, 2, 0];
 export const STEP_FPS = 8;
-// Seberapa cepat kamera menyusul karakter (per detik).
-const FOLLOW = 4;
+// Sebentar berhenti (terhalang satu frame saat meluncur di dinding) tidak mengulang langkah dari awal.
+export const STEP_GRACE = 0.1;
+// Posisi kaki karakter di layar, dibanding tinggi layar. Layar pendek (HP mendatar) menaruhnya lebih bawah supaya
+// tidak tertutup papan di atas.
+export const footAnchor = (vh: number) => vh * (vh < 520 ? 0.78 : 0.5);
 
 export const KEYS: Record<string, [number, number]> = {
   ArrowLeft: [-1, 0],
@@ -76,6 +78,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const heroRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const archRef = useRef<HTMLDivElement>(null);
+  const camRef = useRef<HTMLDivElement>(null);
   const joyRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   useButtonSfx(rootRef);
@@ -105,16 +108,19 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   // ulang komponen tiap frame.
   useEffect(() => {
     if (!chosen || choosing) return;
+    const root = rootRef.current;
+    const camEl = camRef.current;
     const stage = stageRef.current;
     const hero = heroRef.current;
     const body = bodyRef.current;
     const arch = archRef.current;
-    if (!stage || !hero || !body || !arch) return;
-    const cam = { x: Number(stage.style.getPropertyValue("--gd-fx")) || FOCUS.x, y: Number(stage.style.getPropertyValue("--gd-fy")) || FOCUS.y };
+    if (!root || !camEl || !stage || !hero || !body || !arch) return;
+    const cam: Camera = { x: 0, y: 0, ready: false };
     const held = keys.current;
-    let facing = 0;
-    let flip = false;
+    const face: Facing = { row: 0, flip: false };
     let walked = 0;
+    let still = 0;
+    let behind = behindArch(pos.current);
     let last = performance.now();
     let raf = 0;
     let near = false;
@@ -152,44 +158,24 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
       let moving = false;
       if ((vx || vy) && !enteringRef.current) {
         const len = Math.hypot(vx, vy);
-        const prev = { ...p };
         moving = move(p, (vx / len) * SPEED * power * dt, (vy / len) * SPEED * power * dt);
-        // Joystick menutupi layar, jadi karakter tidak boleh berjalan masuk ke belakangnya.
-        const jr = joyRef.current?.getBoundingClientRect();
-        if (moving && jr) {
-          const sr = stage.getBoundingClientRect();
-          const sx = sr.left + (p.x / MAP_W) * sr.width;
-          const sy = sr.top + (p.y / MAP_H) * sr.height;
-          const py = sr.top + (prev.y / MAP_H) * sr.height;
-          if (sy > jr.top - 6 && sx > jr.left - 28 && sx < jr.right + 28 && sy >= py) {
-            p.x = prev.x;
-            p.y = prev.y;
-            moving = false;
-          }
-        }
         if (!moving) target.current = null;
+        else turn(face, vx, vy);
       }
       if (moving) {
         walked += dt;
-        if (Math.abs(vy) > Math.abs(vx)) facing = vy < 0 ? 2 : 0;
-        else {
-          facing = 1;
-          flip = vx < 0;
-        }
-      } else walked = 0;
-      const col = moving ? STEPS[Math.floor(walked * STEP_FPS) % STEPS.length] : 0;
-      body.style.backgroundPosition = `${col * 50}% ${facing * 50}%`;
-      body.style.transform = facing === 1 && flip ? "scaleX(-1)" : "";
-      hero.style.left = `${(p.x / MAP_W) * 100}%`;
-      hero.style.top = `${(p.y / MAP_H) * 100}%`;
+        still = 0;
+      } else if ((still += dt) > STEP_GRACE) walked = 0;
+      const col = walked > 0 ? STEPS[Math.floor(walked * STEP_FPS) % STEPS.length] : 0;
+      body.style.backgroundPosition = `${col * 50}% ${face.row * 50}%`;
+      body.style.transform = face.row === 1 && face.flip ? "scaleX(-1)" : "";
+      shift(hero, SPAWN, p, stage.offsetWidth / MAP_W);
       // Gapura di depan karakter bila dia lewat di belakangnya, di belakang karakter bila dia di depannya.
-      arch.style.zIndex = behindArch(p) ? "3" : "1";
+      behind = archSide(p, behind);
+      arch.style.zIndex = behind ? "3" : "1";
 
-      const k = Math.min(1, dt * FOLLOW);
-      cam.x += (p.x / MAP_W - cam.x) * k;
-      cam.y += (p.y / MAP_H - cam.y) * k;
-      stage.style.setProperty("--gd-fx", cam.x.toFixed(4));
-      stage.style.setProperty("--gd-fy", cam.y.toFixed(4));
+      // Kamera mengikuti karakter tanpa membiarkan joystick menutupinya.
+      aimCamera(cam, camEl, root, { x: p.x / MAP_W, y: p.y / MAP_H }, footAnchor(root.clientHeight), joyRef.current?.getBoundingClientRect(), dt);
 
       const nowNear = Math.hypot(p.x - DOOR_TARGET.x, p.y - DOOR_TARGET.y) < NEAR_RADIUS;
       if (nowNear !== near) {
@@ -248,26 +234,25 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
 
   const name = `${groom} & ${bride}`;
   const fit = (size: number, text: string, max: number) => `calc(var(--gd-w) * ${(size * Math.min(1, max / text.length)).toFixed(5)})`;
-  // Peta menutupi seluruh layar. Titik yang dipusatkan (--gd-fx, --gd-fy) mengikuti karakter, dan batas clamp
-  // menjaga tepi peta tidak pernah terlihat.
-  const stage = {
+  // Peta menutupi seluruh layar. Kamera digeser loop di atas mengikuti karakter; nilai di sini hanya posisi awal
+  // sebelum loop berjalan, dipusatkan di titik muncul.
+  const camera = {
     "--gd-w": `calc(max(100vw, calc(100dvh * ${RATIO})) * ${ZOOM})`,
     "--gd-h": `calc(max(100dvh, calc(100vw / ${RATIO})) * ${ZOOM})`,
-    "--gd-fx": FOCUS.x,
-    "--gd-fy": FOCUS.y,
     width: "var(--gd-w)",
     height: "var(--gd-h)",
-    left: "clamp(calc(100vw - var(--gd-w)), calc(50vw - var(--gd-w) * var(--gd-fx)), 0px)",
-    top: "clamp(calc(100dvh - var(--gd-h)), calc(44dvh - var(--gd-h) * var(--gd-fy)), 0px)",
-    transformOrigin: `${DOOR.x}% ${DOOR.y}%`,
+    transform: `translate(clamp(calc(100vw - var(--gd-w)), calc(50vw - var(--gd-w) * ${(SPAWN.x / MAP_W).toFixed(4)}), 0px), clamp(calc(100dvh - var(--gd-h)), calc(44dvh - var(--gd-h) * ${(SPAWN.y / MAP_H).toFixed(4)}), 0px))`,
   } as CSSProperties;
 
   const heroW = `calc(var(--gd-w) * ${((HERO_H * CELL.w) / CELL.h / MAP_W).toFixed(5)})`;
 
   return (
-    <div ref={rootRef} className="gd-door fixed inset-0 z-50 overflow-hidden bg-inv-sky text-inv-ink" role="dialog" aria-label="Sampul undangan" data-entering={entering}>
-      <div ref={stageRef} className="gd-stage absolute touch-none" style={stage} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
+    <div ref={rootRef} className="gd-door fixed inset-0 z-50 overflow-hidden bg-inv-night text-inv-ink" role="dialog" aria-label="Sampul undangan" data-entering={entering}>
+      <div ref={camRef} className="absolute top-0 left-0 will-change-transform" style={camera}>
+      <div ref={stageRef} className="gd-stage absolute inset-0 touch-none" style={{ transformOrigin: `${DOOR.x}% ${DOOR.y}%` }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
         <Image src="/img/rafi-kayla/cover-map.webp" alt="" fill priority draggable={false} sizes="(min-width: 900px) 100vw, 160vw" className="pointer-events-none object-cover select-none" />
+        {/* Kamera boleh turun sedikit melewati tepi bawah peta supaya karakter tidak tertutup joystick. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[3%] bg-linear-to-b from-transparent to-inv-night" />
         <div ref={archRef} className="pointer-events-none absolute inset-0 z-[1]">
           <Image src="/img/rafi-kayla/cover-map.webp" alt="" fill sizes="(min-width: 900px) 100vw, 160vw" draggable={false} className="object-cover select-none" style={{ clipPath: BEAM_CLIP }} />
           <div
@@ -295,11 +280,14 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
         {chosen && (
           <div
             ref={heroRef}
-            className={`gd-spawn pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-full${choosing ? " invisible" : ""}`}
+            className={`pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-full${choosing ? " invisible" : ""}`}
             style={{ left: `${(SPAWN.x / MAP_W) * 100}%`, top: `${(SPAWN.y / MAP_H) * 100}%`, width: heroW, height: `calc(var(--gd-w) * ${(HERO_H / MAP_W).toFixed(5)})` }}
           >
-            <span aria-hidden="true" className="absolute inset-x-[18%] -bottom-[3%] h-[8%] rounded-full bg-black/25 blur-[1px]" />
-            <div ref={bodyRef} className="relative size-full bg-no-repeat" style={sprite(chosen)} role="img" aria-label={`Karakter ${chosen === "groom" ? "laki-laki" : "perempuan"}`} />
+            {/* Animasi muncul di lapisan dalam, supaya tidak bertabrakan dengan transform posisi dari loop. */}
+            <div className="gd-spawn relative size-full">
+              <span aria-hidden="true" className="absolute inset-x-[18%] -bottom-[3%] h-[8%] rounded-full bg-black/25 blur-[1px]" />
+              <div ref={bodyRef} className="relative size-full bg-no-repeat" style={sprite(chosen)} role="img" aria-label={`Karakter ${chosen === "groom" ? "laki-laki" : "perempuan"}`} />
+            </div>
           </div>
         )}
 
@@ -319,12 +307,13 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
           </button>
         )}
       </div>
+      </div>
 
-      <p className="gd-fade pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] flex justify-center">
+      <p className="gd-fade pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] z-[999] flex justify-center">
         <span className="rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-1.5 font-display text-[clamp(11px,3vw,14px)] tracking-[.14em] uppercase shadow-[0_4px_0_rgba(0,0,0,.2)]">Undangan pernikahan</span>
       </p>
 
-      <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-[max(14px,2.4dvh)]">
+      <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-0 z-[999] flex flex-col items-center px-4 pb-[max(14px,2.4dvh)]">
         {choosing && (
           <section className="gd-board pointer-events-auto w-full max-w-[420px] rounded-[22px] border-[3px] border-inv-line bg-inv-card px-5 pt-4 pb-4 text-center shadow-[0_7px_0_rgba(0,0,0,.28)]">
             {invited && (
@@ -360,7 +349,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
 
       {chosen && !choosing && (
         <>
-          <div className="gd-fade pointer-events-none absolute inset-x-0 top-[max(56px,7.4dvh)] flex flex-col items-center gap-2.5 px-4">
+          <div className="gd-fade pointer-events-none absolute inset-x-0 top-[max(56px,7.4dvh)] z-[999] flex flex-col items-center gap-2.5 px-4">
             <div className="max-w-[360px] rounded-2xl border-[3px] border-inv-line bg-inv-card px-4 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,.25)]">
               {invited && (
                 <p className="text-[12px] text-inv-gold">
@@ -379,7 +368,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
               </button>
             </div>
           </div>
-          <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] flex justify-center">
+          <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-[999] flex justify-center">
             <div ref={joyRef} className="pointer-events-auto opacity-80">
               <Joystick onMove={(x, y) => (joy.current = { x, y })} />
             </div>

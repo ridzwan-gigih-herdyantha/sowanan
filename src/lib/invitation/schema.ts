@@ -74,6 +74,8 @@ export function limitExtras<T extends { kind: ExtraKind }>(extras: T[], max: num
 export const TIMEZONES = { WIB: "+07:00", WITA: "+08:00", WIT: "+09:00" } as const;
 
 export const invitationDataSchema = z.object({
+  // Alamat undangan asal kalau ini salinan dari add-on undangan kedua.
+  copyOf: str(),
   monogram: str(),
   couple: z.object({ groom: person, bride: person }).prefault({}),
   event: z
@@ -117,9 +119,16 @@ export const invitationDataSchema = z.object({
       font: str(),
       // Font skrip khusus nama mempelai. Kosong berarti sama dengan font judul.
       nameFont: str(),
-      custom: z.object({ paper: str(), accent: str(), ink: str() }).prefault({}),
+      // Nama font Google Fonts per tempat, menimpa pilihan font di atas. Kosong berarti tidak dipakai.
+      customFont: z.object({ display: str(), body: str(), name: str() }).prefault({}),
+      // Permukaan dan teks sekunder opsional, kosong berarti diturunkan otomatis dari tiga warna lainnya.
+      custom: z.object({ paper: str(), accent: str(), ink: str(), surface: str(), muted: str() }).prefault({}),
     })
     .prefault({}),
+  // Foto dari add-on galeri pasca acara, tampil di akhir Galeri. Terpisah dari batas foto paket.
+  postGallery: list(photo),
+  // Tautan YouTube dari add-on video. Satu video per undangan, tanpa unggah berkas.
+  video: str(),
   media: z
     .object({ hero: str(), heroWide: str(), og: str(), music: str(), venue: str(), couple: str(), closing: str(), detail: str(), rsvp: str() })
     .prefault({}),

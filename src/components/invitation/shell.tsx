@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { BrandLoader } from "@/components/brand-loader";
 import { AutoReveal, type RevealMode } from "./auto-reveal";
@@ -21,6 +21,7 @@ import { ElarisDoor, type ElarisDoorProps } from "./elaris-door";
 import { MawaddahDoor, type MawaddahDoorProps } from "./mawaddah-door";
 import { NocturneDoor, type NocturneDoorProps } from "./nocturne-door";
 import { GedungDoor, type GedungProps } from "./gedung/door";
+import { PikselDoor, type PikselProps } from "./piksel/door";
 
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
@@ -64,8 +65,14 @@ export const useSkipDoor = () => useContext(SkipDoorContext);
 
 // Nama tamu dari tautan (?to=) hanya dipakai kalau paket undangan menyertakannya.
 const GuestNamesContext = createContext(true);
-export function GuestNames({ allowed, children }: { allowed: boolean; children: ReactNode }) {
-  return <GuestNamesContext.Provider value={allowed}>{children}</GuestNamesContext.Provider>;
+// Di undangan private nama dibaca server dari kode tamu, jadi ?to= yang diubah-ubah tidak berpengaruh.
+const FixedGuestContext = createContext<string | null>(null);
+export function GuestNames({ allowed, fixed, children }: { allowed: boolean; fixed?: string; children: ReactNode }) {
+  return (
+    <GuestNamesContext.Provider value={allowed}>
+      <FixedGuestContext.Provider value={fixed ?? null}>{children}</FixedGuestContext.Provider>
+    </GuestNamesContext.Provider>
+  );
 }
 
 // Saat video atau lagu bagian tambahan diputar, media lain berhenti dan musik latar meredup lalu berhenti.
@@ -126,7 +133,8 @@ type Door =
   | ({ kind: "mekar" } & Omit<MekarProps, "invited" | "onOpen">)
   | ({ kind: "tabloid" } & Omit<TabloidProps, "invited" | "onOpen">)
   | ({ kind: "ulos" } & Omit<UlosProps, "invited" | "onOpen">)
-  | ({ kind: "gedung" } & Omit<GedungProps, "invited" | "onOpen">);
+  | ({ kind: "gedung" } & Omit<GedungProps, "invited" | "onOpen">)
+  | ({ kind: "piksel" } & Omit<PikselProps, "invited" | "onOpen">);
 
 // Musik bawaan yang dibentuk langsung di browser, dipakai bila undangan tidak punya berkas musik.
 const SYNTHS = { gending, chiptune };
@@ -166,7 +174,8 @@ const arrow = (
 export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom", musicOnDoor = false }: Props) {
   const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
   const namesAllowed = useContext(GuestNamesContext);
-  const invited = namesAllowed ? fromLink : "";
+  const fixedGuest = useContext(FixedGuestContext);
+  const invited = fixedGuest ?? (namesAllowed ? fromLink : "");
   const slug = useContext(SlugContext);
   const skipDoor = useContext(SkipDoorContext);
 
@@ -176,9 +185,9 @@ export function InvitationShell({ door, music, synth, className, style, children
     if (!slug || !namesAllowed) return;
     const k = new URLSearchParams(window.location.search).get("k");
     if (k && /^[a-z0-9]{8,32}$/i.test(k)) remember(guestCodeKey(slug), k);
-    const to = readGuestParam();
+    const to = fixedGuest ?? readGuestParam();
     if (to) storeGuest(slug, to);
-  }, [slug, namesAllowed]);
+  }, [slug, namesAllowed, fixedGuest]);
   const [typed, setTyped] = useState<string | null>(null);
   const [open, setOpen] = useState(skipDoor);
   // Naik setiap undangan ditutup kembali ke sampul, supaya sampul dipasang ulang dari keadaan awal.
@@ -476,11 +485,12 @@ export function InvitationShell({ door, music, synth, className, style, children
 
           {door.kind === "ulos" && <UlosDoor groom={door.groom} bride={door.bride} date={door.date} invited={invited} onOpen={openInvitation} />}
           {door.kind === "gedung" && <GedungDoor key={doorRound} groom={door.groom} bride={door.bride} date={door.date} place={door.place} invited={invited} onOpen={openInvitation} />}
+          {door.kind === "piksel" && <PikselDoor key={doorRound} groom={door.groom} bride={door.bride} date={door.date} place={door.place} invited={invited} onOpen={openInvitation} />}
           {door.kind === "elaris" && <ElarisDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
           {door.kind === "mawaddah" && <MawaddahDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
           {door.kind === "nocturne" && <NocturneDoor {...door} invited={invited} guestField={<GuestField invited={invited} greeting="Kepada Yth." />} open={open} onOpen={openInvitation} />}
 
-          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" || door.kind === "elaris" || door.kind === "mawaddah" || door.kind === "nocturne" || door.kind === "gedung" ? null : door.kind === "seal" ? (
+          {door.kind === "vellum" || door.kind === "kelir" || door.kind === "pintu" || door.kind === "medali" || door.kind === "bulan" || door.kind === "lensa" || door.kind === "mulai" || door.kind === "mekar" || door.kind === "tabloid" || door.kind === "ulos" || door.kind === "elaris" || door.kind === "mawaddah" || door.kind === "nocturne" || door.kind === "gedung" || door.kind === "piksel" ? null : door.kind === "seal" ? (
             <div
               className="inv-door inv-paper fixed inset-0 z-50 flex flex-col items-center justify-center px-8 text-center"
               aria-hidden={open}

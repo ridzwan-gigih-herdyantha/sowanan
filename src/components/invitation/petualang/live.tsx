@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { pad, useTimeLeft } from "@/components/countdown";
 

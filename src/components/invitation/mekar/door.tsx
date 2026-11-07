@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
-import Image from "next/image";
+import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState } from "react";
 import type { FrameProps } from "@/lib/invitation/frame";
 import { doorFit, useDoorFit } from "../door-fit";

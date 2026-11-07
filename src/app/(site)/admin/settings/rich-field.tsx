@@ -6,11 +6,11 @@ import { isEmptyHtml, toHtml } from "@/lib/settings/html";
 import { getIn, useSettings } from "./form-context";
 import { Chip, cx } from "./ui";
 
-type JQ = ((el: Element) => { summernote: (...args: unknown[]) => unknown; find: (sel: string) => { attr: (a: Record<string, string>) => void } }) & Record<string, unknown>;
+export type JQ = ((el: Element) => { summernote: (...args: unknown[]) => unknown; find: (sel: string) => { attr: (a: Record<string, string>) => void } }) & Record<string, unknown>;
 
 // jQuery dan Summernote hanya dimuat saat editor pertama kali dibuka, tidak ikut ke halaman lain.
 let loading: Promise<JQ> | null = null;
-function loadSummernote(): Promise<JQ> {
+export function loadSummernote(): Promise<JQ> {
   loading ??= (async () => {
     const $ = (await import("jquery")).default as unknown as JQ;
     Object.assign(window, { jQuery: $, $ });

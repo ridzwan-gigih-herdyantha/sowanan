@@ -167,6 +167,28 @@
   line-height: 1.15;
 }
 
+/* Font custom dekoratif tanpa ligatur. Nilainya dari resolveFonts, per tempat font dipakai. */
+.font-display,
+.rb-label,
+.inv-no-photo,
+.gd-wishes form button[type="submit"] {
+  font-variant-ligatures: var(--inv-liga-display, normal);
+}
+
+.font-script {
+  font-variant-ligatures: var(--inv-liga-script, var(--inv-liga-display, normal));
+}
+
+/* Teks sekunder palet kustom. Teks redup tema memakai warna teks dengan opacity, jadi ditimpa di sini dan hanya aktif
+   saat admin mengisi warnanya. Bagian yang membalik warnanya sendiri memakai warna redup bagian itu. */
+[style*="--inv-muted"] [class*="text-inv-ink/"] {
+  color: var(--inv-muted);
+}
+
+[style*="--inv-muted"] [style*="--inv-ink"] [class*="text-inv-ink/"] {
+  color: var(--inv-gold);
+}
+
 .inv-paper {
   background-color: var(--inv-paper);
   background-image: var(--inv-grain);
@@ -3085,6 +3107,60 @@ html.door-wait [data-fit] {
 .gd-pill {
   animation: gd-pop 0.4s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
+/* Semua gambar peta dan karakter adalah pixel art, jadi diperbesar tanpa dihaluskan. */
+.gd-pixel {
+  image-rendering: pixelated;
+}
+/* Tanda tujuan di lantai saat tamu mengetuk peta: cincin yang melebar sekali dan titik yang berdenyut sampai
+   karakter tiba. Bentuknya elips 2:1 mengikuti lantai isometrik. */
+.gd-tap {
+  position: absolute;
+  width: 3.4%;
+  aspect-ratio: 2;
+  translate: -50% -50%;
+  pointer-events: none;
+  opacity: 0;
+}
+.gd-tap[data-on="true"] {
+  opacity: 1;
+}
+.gd-tap::before,
+.gd-tap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.gd-tap::before {
+  border: 3px solid var(--inv-accent);
+  box-shadow: 0 0 0 2px var(--inv-paper);
+}
+.gd-tap::after {
+  inset: 32%;
+  background: var(--inv-accent);
+  box-shadow: 0 0 0 2px var(--inv-paper);
+}
+.gd-tap[data-on="true"]::before {
+  animation: gd-tap-ring 0.9s ease-out infinite;
+}
+.gd-tap[data-on="true"]::after {
+  animation: gd-tap-dot 0.9s ease-in-out infinite;
+}
+@keyframes gd-tap-ring {
+  from {
+    opacity: 1;
+    scale: 0.35;
+  }
+  to {
+    opacity: 0;
+    scale: 1.15;
+  }
+}
+@keyframes gd-tap-dot {
+  50% {
+    scale: 0.7;
+  }
+}
 /* Panel di dalam gedung Isometrik: bingkai tebal bersudut bulat seperti kartu tema, dan scrollbar tipis berwarna
    aksen tanpa tombol panah. Jalurnya berhenti sebelum sudut supaya tidak menabrak lengkungan bingkai. */
 .gd-interior .inv-dialog {
@@ -3146,6 +3222,7 @@ html.door-wait [data-fit] {
   animation: gd-rise 0.6s cubic-bezier(0.22, 0.9, 0.3, 1.2) 0.15s both;
   pointer-events: auto;
 }
+/* Isometrik: karakter muncul jatuh pelan ke peta. */
 .gd-spawn {
   animation: gd-spawn 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
@@ -3175,7 +3252,193 @@ html.door-wait [data-fit] {
   }
   .gd-pill,
   .gd-board,
-  .gd-spawn {
+  .gd-spawn,
+  .gd-tap[data-on="true"]::before,
+  .gd-tap[data-on="true"]::after {
     animation: none;
   }
+}
+
+/* Tempat foto saat undangan tidak memakai foto. Ukuran monogram mengikuti ukuran tempatnya. */
+.inv-no-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  container-type: size;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--inv-accent) 9%, var(--inv-paper));
+  color: var(--inv-accent);
+  font-family: var(--inv-display);
+  object-fit: unset;
+}
+.inv-no-photo::before {
+  content: var(--inv-monogram, "");
+  font-size: clamp(16px, 22cqmin, 84px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Isi artikel di halaman publik. Tag dibatasi sanitizer di lib/article/sanitize.ts. */
+.article-body {
+  max-width: 68ch;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--color-ink-soft);
+}
+
+.article-body::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.article-body p {
+  margin: 0 0 18px;
+}
+
+.article-body h2,
+.article-body h3 {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.article-body h2 {
+  margin: 44px 0 12px;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.article-body h3 {
+  margin: 32px 0 8px;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.article-body strong {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.article-body a {
+  color: var(--color-wine);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.article-body a:focus-visible {
+  outline: 2px solid var(--color-wine);
+  outline-offset: 3px;
+}
+
+.article-body ul,
+.article-body ol {
+  margin: 0 0 18px;
+  padding-left: 22px;
+}
+
+.article-body ul {
+  list-style: disc;
+}
+
+.article-body ol {
+  list-style: decimal;
+}
+
+.article-body li {
+  margin-bottom: 8px;
+}
+
+.article-body blockquote {
+  margin: 24px 0;
+  border-left: 3px solid var(--color-wine);
+  background: var(--color-blush);
+  padding: 18px 22px;
+}
+
+.article-body blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.article-body hr {
+  margin: 36px 0;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  margin: 24px 0;
+  border-radius: 2px;
+}
+
+.article-body img[style*="float: left"],
+.article-body img[style*="float:left"] {
+  margin: 6px 22px 12px 0;
+}
+
+.article-body img[style*="float: right"],
+.article-body img[style*="float:right"] {
+  margin: 6px 0 12px 22px;
+}
+
+.article-body table {
+  display: block;
+  max-width: 100%;
+  margin: 24px 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.article-body th,
+.article-body td {
+  border: 1px solid var(--color-line);
+  padding: 9px 12px;
+  text-align: left;
+}
+
+.article-body th {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+/* Di layar sempit gambar yang diapit teks atau diperkecil kembali selebar kolom. */
+@media (max-width: 559px) {
+  .article-body img {
+    float: none !important;
+    width: 100% !important;
+    margin: 24px 0 !important;
+  }
+}
+
+/* Tambahan editor artikel: elemen yang tidak dipakai editor ketentuan. */
+.sowanan-rte .note-editable h2 {
+  margin: 18px 0 8px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.sowanan-rte .note-editable img {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+}
+
+.sowanan-rte .note-editable hr {
+  margin: 18px 0;
+  border: 0;
+  border-top: 1px solid #e8e0d6;
+}
+
+.sowanan-rte .note-editable table {
+  border-collapse: collapse;
+}
+
+.sowanan-rte .note-editable th,
+.sowanan-rte .note-editable td {
+  border: 1px solid #e8e0d6;
+  padding: 6px 10px;
 }

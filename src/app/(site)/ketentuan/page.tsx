@@ -6,12 +6,15 @@ import { renderHtml } from "@/lib/settings/sanitize";
 import { OG_BASE } from "@/lib/site";
 import { TERMS_CSS } from "./terms-css";
 
+const description = "Syarat dan ketentuan layanan undangan pernikahan digital Sowanan: pemesanan, pembayaran, revisi, arsip permanen, dan kebijakan data tamu.";
+
 export const metadata: Metadata = {
   title: "Syarat dan Ketentuan",
-  description: "Syarat dan ketentuan layanan undangan pernikahan digital Sowanan: pemesanan, pembayaran, revisi, masa aktif, dan kebijakan data tamu.",
+  description,
   alternates: { canonical: "/ketentuan" },
   robots: { index: true, follow: true },
-  openGraph: { ...OG_BASE, title: "Syarat dan Ketentuan | Sowanan", url: "/ketentuan", images: [{ url: "/img/og.jpg", width: 1200, height: 630 }] },
+  openGraph: { ...OG_BASE, title: "Syarat dan Ketentuan | Sowanan", description, url: "/ketentuan", images: [{ url: "/img/og.jpg", width: 1200, height: 630 }] },
+  twitter: { card: "summary_large_image", title: "Syarat dan Ketentuan | Sowanan", description },
 };
 
 export default async function TermsPage() {
