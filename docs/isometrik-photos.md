@@ -1,6 +1,6 @@
-# Foto demo tema Isometrik
+# Foto demo tema Isometrik dan Piksel
 
-Foto contoh di `public/img/rafi-kayla/` berasal dari Unsplash, memakai [Unsplash License](https://unsplash.com/license): gratis untuk keperluan bisnis, tanpa wajib kredit, dan tidak boleh dijual tanpa perubahan berarti.
+Foto contoh di `public/img/rafi-kayla/` dan `public/img/dimas-salsa/` (salinan yang sama) berasal dari Unsplash, memakai [Unsplash License](https://unsplash.com/license): gratis untuk keperluan bisnis, tanpa wajib kredit, dan tidak boleh dijual tanpa perubahan berarti.
 
 | Foto | Fotografer | File yang memakainya |
 | --- | --- | --- |

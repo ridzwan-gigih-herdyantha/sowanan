@@ -1,26 +1,24 @@
-// Dunia cover: koordinat dalam piksel peta (1672 x 941), jadi tetap pas di ukuran layar apa pun. Gambarnya town.png,
-// digambar scripts/isometrik-assets.ts dengan geometri yang sama. l sejajar jalan menuju pintu, s melintang jalan.
+// Dunia cover: koordinat dalam piksel gambar peta (1672 x 941), jadi tetap pas di ukuran layar apa pun.
 export const MAP_W = 1672;
 export const MAP_H = 941;
 
 export type Point = { x: number; y: number };
-export type Area = [number, number][];
 
-const TOWN = { x0: 480, y0: 740, gateL: 270, doorL: 520 };
-export const townAt = (l: number, s: number, z = 0): Point => ({ x: TOWN.x0 + l + s, y: TOWN.y0 + (s - l) / 2 - z });
-const rect = (l0: number, l1: number, s0: number, s1: number): Area => [townAt(l0, s0), townAt(l1, s0), townAt(l1, s1), townAt(l0, s1)].map((p) => [p.x, p.y]);
-
-// Titik muncul di halaman dan titik tujuan tepat di depan tangga pintu gedung. Tombol masuk muncul bila karakter
-// berada dalam NEAR_RADIUS dari titik tujuan.
-export const SPAWN: Point = townAt(40, 0);
-export const DOOR_TARGET: Point = townAt(474, 0);
+// Titik muncul di parkiran dan titik tujuan di ujung karpet merah, tepat di depan pintu gedung. Tombol masuk
+// muncul bila karakter berada dalam NEAR_RADIUS dari titik tujuan.
+export const SPAWN: Point = { x: 680, y: 680 };
+export const DOOR_TARGET: Point = { x: 985, y: 492 };
 export const NEAR_RADIUS = 80;
-// Titik tengah daun pintu dan papan nama di balok gapura, dalam piksel peta.
-export const DOOR_AT: Point = townAt(TOWN.doorL, 0, 66);
-export const SIGN_AT: Point = townAt(TOWN.gateL, 0, 148);
 
-// Area yang boleh dilalui: halaman paving, jalan di antara dua tiang gapura sampai depan pintu, dan pelataran tangga.
-const AREAS: Area[] = [rect(-100, 250, -195, 195), rect(240, 490, -62, 62), rect(440, 490, -112, 112)];
+// Area yang boleh dilalui, digambar mengikuti peta: aspal parkiran (di luar pohon dan tiang lampu), lantai di
+// antara dua tiang gapura sampai karpet, dan lorong paving di antara bedeng bunga dan semak di sebelah kanan.
+// Tiang kanan gapura, tiang lampu, dan spanduknya (blok x 898-1002, y 548-655) serta semua yang di luar area ini dianggap rintangan.
+const AREAS: [number, number][][] = [
+  [[230, 705], [300, 642], [487, 545], [500, 535], [610, 578], [700, 622], [790, 672], [867, 714], [960, 765], [1067, 832], [1170, 900], [570, 900], [548, 830], [485, 790], [410, 778], [330, 790], [255, 765]],
+  [[790, 712], [790, 615], [790, 560], [795, 527], [840, 507], [900, 495], [960, 482], [1020, 484], [1042, 505], [1100, 562], [1210, 615], [1290, 656], [1303, 672], [1250, 684], [1200, 693], [1150, 674], [1100, 656], [1050, 638], [1002, 622], [1002, 548], [898, 548], [898, 655], [888, 690], [886, 722], [850, 738]],
+  [[756, 644], [792, 626], [815, 640], [815, 700], [780, 690], [756, 664]],
+];
+
 export function inside(p: Point, poly: [number, number][]) {
   let hit = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
@@ -31,9 +29,11 @@ export function inside(p: Point, poly: [number, number][]) {
   return hit;
 }
 
+export type Area = [number, number][];
+
 // Arah yang dicoba berurutan saat terhalang: lurus, lalu membelok makin tajam ke dua sisi supaya karakter
 // meluncur di sepanjang dinding (gapura, semak) dan tidak macet di sudut.
-const SLIDES = [0.4, -0.4, 0.8, -0.8, 1.2, -1.2];
+const SLIDES = [0, 0.4, -0.4, 0.8, -0.8, 1.2, -1.2, Math.PI / 2, -Math.PI / 2];
 
 // Dunia berisi himpunan area yang boleh dilalui. bodyR adalah setengah lebar badan karakter: titik di kiri dan
 // kanan kakinya juga harus berada di area. holes adalah rintangan di dalam area, misalnya kios.
@@ -52,33 +52,6 @@ export function makeWorld(areas: Area[], bodyR = 11, holes: Area[] = []) {
     let moved = false;
     for (let i = 0; i < n; i++) {
       let ok = false;
-      // Dinding peta sejajar sumbu isometrik: lurus dulu, lalu meluncur sepanjang sumbu yang paling searah.
-      const sx = (dx / len) * step;
-      const sy = (dy / len) * step;
-      // Sumbu l dan s tidak tegak lurus di layar, jadi gerak diuraikan di koordinat dunia, bukan dengan proyeksi layar.
-      const glide = [
-        { x: 1, y: -0.5, d: (sx - 2 * sy) / 2 },
-        { x: 1, y: 0.5, d: (sx + 2 * sy) / 2 },
-      ]
-        .sort((a, b) => Math.abs(b.d) - Math.abs(a.d))
-        .map((a) => {
-          const k = (Math.sign(a.d) * step) / Math.hypot(a.x, a.y);
-          return { x: a.x * k, y: a.y * k, d: Math.abs(a.d) };
-        });
-      if (canStand({ x: p.x + sx, y: p.y + sy })) {
-        p.x += sx;
-        p.y += sy;
-        moved = true;
-        continue;
-      }
-      for (const g of glide) {
-        if (g.d < step * 0.05 || !canStand({ x: p.x + g.x, y: p.y + g.y })) continue;
-        p.x += g.x;
-        p.y += g.y;
-        ok = moved = true;
-        break;
-      }
-      if (ok) continue;
       for (const turn of SLIDES) {
         const a = base + turn;
         const next = { x: p.x + Math.cos(a) * step * Math.cos(turn), y: p.y + Math.sin(a) * step * Math.cos(turn) };
@@ -113,5 +86,11 @@ export const SPEED = 300;
 const cover = makeWorld(AREAS);
 export const { walkable, canStand, move, reachable } = cover;
 
-// Karakter yang sudah melewati garis gapura berada di belakangnya, jadi tiang dan baloknya harus menutupi dia.
-export const behindArch = (p: Point) => (p.x - TOWN.x0 - 2 * (p.y - TOWN.y0)) / 2 > TOWN.gateL;
+// Garis dasar gapura: menghubungkan tengah alas dua tiangnya. Karakter yang kakinya di atas garis ini berada di
+// belakang bidang gapura, jadi balok dan papannya harus menutupi dia. Di bawah garis dia berada di depan gapura.
+const ARCH_BASE = { x: 768, y: 625, slope: 0.48 };
+export const behindArch = (p: Point) => p.y < ARCH_BASE.y + ARCH_BASE.slope * (p.x - ARCH_BASE.x);
+
+// Siluet balok gapura (termasuk daun merambat di atasnya) dalam piksel gambar. Salinan peta yang dipotong
+// sepanjang garis ini dipasang di atas karakter ketika dia berada di belakang gapura.
+export const ARCH_BEAM: [number, number][] = [[738, 405], [775, 418], [815, 430], [865, 455], [915, 480], [950, 494], [961, 510], [961, 543], [940, 543], [925, 540], [905, 530], [865, 510], [830, 493], [795, 475], [765, 458], [738, 444]];

@@ -15,7 +15,7 @@
     "migrate-demo-media": "node --no-warnings --env-file=.env scripts/migrate-demo-media.ts",
     "pakeliran-assets": "node --no-warnings scripts/pakeliran-assets.ts",
     "sakinah-assets": "node --no-warnings scripts/sakinah-assets.ts",
-    "isometrik-assets": "node --no-warnings scripts/isometrik-assets.ts",
+    "piksel-assets": "node --no-warnings scripts/piksel-assets.ts",
     "google-fonts": "node --no-warnings scripts/google-fonts.ts"
   },
   "dependencies": {

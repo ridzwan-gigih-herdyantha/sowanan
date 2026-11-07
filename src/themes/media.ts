@@ -19,6 +19,7 @@ export const THEME_MEDIA: Record<string, Purpose[]> = {
   "damar-elara": [...BASE, "groom", "bride", "closing"],
   "faris-najwa": [...BASE, "groom", "bride", "closing"],
   "rafi-kayla": [...BASE, "groom", "bride", "closing"],
+  "dimas-salsa": [...BASE, "groom", "bride", "closing"],
 };
 
 export const THEME_NAMES: Record<string, string> = {
@@ -38,6 +39,7 @@ export const THEME_NAMES: Record<string, string> = {
   "damar-elara": "Nocturne",
   "faris-najwa": "Mawaddah",
   "rafi-kayla": "Isometrik",
+  "dimas-salsa": "Piksel",
 };
 
 // Lagu bawaan tema, dipakai kalau undangan tidak mengunggah musik sendiri.
@@ -57,6 +59,7 @@ export const THEME_MUSIC: Record<string, string> = {
   "faris-najwa": "fadhil-nayla/music_1.mp3?v=mupcmw7s",
   // Bossa Town karya KarateStudios (CC0, opengameart.org/content/bossa-town): bossa santai untuk resepsi di gedung.
   "rafi-kayla": "/audio/isometrik/bossa-town.mp3",
+  "dimas-salsa": "/audio/isometrik/bossa-town.mp3",
 };
 
 export function invitationLabel(slug: string, theme: string): string {

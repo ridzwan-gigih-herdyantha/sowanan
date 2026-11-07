@@ -12,6 +12,7 @@ import { story as galihArdila } from "./galih-ardila/story";
 import { story as hendrawanLarasati } from "./hendrawan-larasati/story";
 import { story as ivanMawar } from "./ivan-mawar/story";
 import { story as isometrik } from "./rafi-kayla/story";
+import { story as piksel } from "./dimas-salsa/story";
 import { story as elaris } from "./raka-anindya/story";
 import type { ThemeStory } from "./story-kit";
 import { story as toniLayla } from "./toni-layla/story";
@@ -34,6 +35,7 @@ export const STORIES: Record<string, ThemeStory> = {
   "damar-elara": nocturne,
   "faris-najwa": mawaddah,
   "rafi-kayla": isometrik,
+  "dimas-salsa": piksel,
 };
 
 // Halaman story hanya membuka undangan dengan tema terdaftar, jadi cadangan ini hanya berjaga-jaga.

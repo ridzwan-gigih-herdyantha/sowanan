@@ -15,28 +15,28 @@ const chip = (k: Kit, s: string, y: number, size = 28, x = CX) => {
   k.text(s, x, y + size * 1.5, { font: "display", size, spacing: 4, weight: 600, color: k.c.ink });
 };
 
-// Latar isometrik piksel dibesarkan dengan tepi tajam, dan diberi gelap tipis supaya kartu menonjol.
-const scene = (k: Kit, src: string, cx: number, scale: number, y = H / 2) => {
+// Peta lukisan isometrik (1672 x 941) dibesarkan setinggi kanvas. cx menggeser peta supaya gedung tampak.
+const MAP_W = (1672 * H) / 941;
+const scene = (k: Kit, src: string, cx: number) => {
   k.bg(k.v("--inv-grass", k.c.accent));
-  k.art(src, cx, y, 558 * scale, { crisp: true });
+  k.art(src, cx, H / 2, MAP_W);
 };
 
-const coupleSprite = (k: Kit, x: number, y: number, w: number) => k.art(`${A}/couple-sprite.png`, x, y, w, { crisp: true, shadow: { color: "#00000055", y: 8 } });
+const coupleSprite = (k: Kit, x: number, y: number, w: number) => k.art(`${A}/newlyweds.png`, x, y, w, { shadow: { color: "#00000055", y: 8, blur: 12 } });
 
 const button = (k: Kit, y: number) => {
   k.link({ fill: k.c.accent, ink: "#FFFFFF", stroke: k.c.night, label: "", y, shadow: { color: k.c.night, x: 5, y: 7 }, font: "display" });
 };
 
-// Isometrik: kota piksel, aula resepsi, sprite pengantin, dan kartu dialog dengan huruf Fredoka.
+// Isometrik: peta kota lukisan, aula resepsi, ilustrasi pengantin, dan kartu dialog dengan huruf Fredoka.
 export const story: ThemeStory = {
-  assets: () => ["town.png", "hall.png", "couple-sprite.png"].map((n) => `${A}/${n}`),
+  assets: () => ["cover-map.webp", "inside-map.webp", "newlyweds.png"].map((n) => `${A}/${n}`),
   templates: [
     {
       id: "kota",
       name: "Kota Pesta",
       draw: (k) => {
-        const scale = 1920 / 314;
-        scene(k, `${A}/town.png`, 500, scale);
+        scene(k, `${A}/cover-map.webp`, 60);
         chip(k, "UNDANGAN PERNIKAHAN", 270);
         const b = { x: 80, y: 370, w: 920, h: 640 };
         card(k, b);
@@ -44,7 +44,7 @@ export const story: ThemeStory = {
         const c = k.couple({ top: 480, maxH: 400, font: "name", weight: 600, size: 108, color: k.c.accent, maxW: 840, lineHeight: 1.04, ampGap: 0.52, amp: { font: "display", weight: 700, color: k.c.ink, scale: 0.44 } });
         k.text(k.d.date, CX, c.bottom + 54, { font: "display", size: 34, weight: 500, color: k.c.ink, maxW: 840 });
         k.text([k.d.venue, k.d.city].filter(Boolean).join(", "), CX, c.bottom + 102, { size: 28, weight: 600, color: k.c.ink, alpha: 0.75, maxW: 840 });
-        coupleSprite(k, CX, 1320, 500);
+        coupleSprite(k, CX, 1300, 400);
         button(k, 1560);
       },
     },
@@ -52,15 +52,14 @@ export const story: ThemeStory = {
       id: "aula",
       name: "Aula Resepsi",
       draw: (k) => {
-        const scale = 1920 / 642;
         k.bg(k.c.night);
-        k.art(`${A}/hall.png`, 540, 1050, 1008 * scale * 0.82, { crisp: true });
+        k.art(`${A}/inside-map.webp`, 200, H / 2, MAP_W);
         k.bg(k.linear(0, 0, 0, 700, [[0, k.alpha(k.c.night, 0.9)], [1, k.alpha(k.c.night, 0)]]));
         k.bg(k.linear(0, 1420, 0, H, [[0, k.alpha(k.c.night, 0)], [1, k.alpha(k.c.night, 0.9)]]));
         chip(k, "SELAMAT DATANG DI AULA", 268, 26);
         const name = k.text(k.d.groom, CX, 470, { font: "name", weight: 600, size: 106, color: "#FFFFFF", maxW: 900, stroke: { color: k.c.night, width: 14 } });
         k.text(`& ${k.d.bride}`, CX, 584, { font: "name", weight: 600, size: name, color: k.v("--inv-gold-light", "#F2D28A"), maxW: 900, stroke: { color: k.c.night, width: 14 } });
-        // Foto dipajang di panggung aula seperti layar besar, sprite pengantin berdiri di sudutnya.
+        // Foto dipajang di panggung aula seperti layar besar, ilustrasi pengantin berdiri di sudutnya.
         card(k, { x: 140, y: 630, w: 800, h: 600 });
         const p = { x: 170, y: 660, w: 740, h: 540 };
         k.photo(k.d.photos.closing ?? k.d.photos.hero, p, { path: roundPath(p, 22), empty: k.c.wash });
@@ -77,8 +76,7 @@ export const story: ThemeStory = {
       id: "foto",
       name: "Kartu Foto",
       draw: (k) => {
-        const scale = 1920 / 314;
-        scene(k, `${A}/town.png`, 720, scale);
+        scene(k, `${A}/cover-map.webp`, 420);
         k.bg(k.alpha(k.c.night, 0.18));
         const b = { x: 110, y: 250, w: 860, h: 1260 };
         card(k, b, 44);
@@ -86,7 +84,7 @@ export const story: ThemeStory = {
         const p = { x: 164, y: 372, w: 752, h: 680 };
         k.photo(k.d.photos.hero, p, { path: roundPath(p, 24), empty: k.c.wash });
         k.strokePath(roundPath(p, 24), k.c.night, 5);
-        k.art(`${A}/couple-sprite.png`, 836, 1040, 210, { crisp: true });
+        k.art(`${A}/newlyweds.png`, 836, 1020, 220);
         k.text("★ ★ ★", CX, 1110, { font: "display", size: 30, color: k.c.accent, spacing: 4 });
         k.text(`${k.d.groom} & ${k.d.bride}`, CX, 1190, { font: "name", weight: 600, size: 78, color: k.c.ink, maxW: 780 });
         k.text(k.d.date, CX, 1252, { font: "display", size: 32, weight: 500, color: k.c.ink, maxW: 780 });

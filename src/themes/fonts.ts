@@ -35,6 +35,7 @@ import { defaultFonts as elaris } from "./raka-anindya/fonts";
 import { defaultFonts as nocturne } from "./damar-elara/fonts";
 import { defaultFonts as mawaddah, extraFonts as mawaddahExtra } from "./faris-najwa/fonts";
 import { defaultFonts as isometrik } from "./rafi-kayla/fonts";
+import { defaultFonts as piksel } from "./dimas-salsa/fonts";
 
 // Font pilihan add-on ganti font. Di-host lewat next/font tanpa preload, jadi hanya diunduh bila dipakai.
 // Argumen font loader harus literal, jadi setiap pemanggilan ditulis lengkap.
@@ -156,6 +157,11 @@ export const FONT_PRESETS: Record<string, FontPreset[]> = {
   ],
   "rafi-kayla": [
     { id: "", name: "Fredoka & Nunito", ...isometrik },
+    { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
+    { id: "tegas", name: "DM Serif & Inter", display: dmSerif, body: inter },
+  ],
+  "dimas-salsa": [
+    { id: "", name: "Fredoka & Nunito", ...piksel },
     { id: "klasik", name: "Cormorant & Jost", display: cormorant, body: jost },
     { id: "tegas", name: "DM Serif & Inter", display: dmSerif, body: inter },
   ],

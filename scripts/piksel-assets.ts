@@ -1,12 +1,12 @@
-// pnpm isometrik-assets
-// Menggambar semua aset pixel art tema Isometrik ke public/img/rafi-kayla langsung per piksel: halaman gedung di tengah
+// pnpm piksel-assets
+// Menggambar semua aset pixel art tema Piksel ke public/img/dimas-salsa langsung per piksel: halaman gedung di tengah
 // kota, gapura, aula, kios, tamu, dan pengantin. Gayanya piksel besar dengan garis cokelat tua dan warna hangat, berisi
 // jalan aspal, trotoar, dan gedung bertingkat. Bebas lambang, dan layout aula simetris.
-// Geometri di sini harus sama dengan src/components/invitation/gedung/world.ts dan interior-world.ts.
+// Geometri di sini harus sama dengan src/components/invitation/piksel/world.ts dan interior-world.ts.
 import sharp from "sharp";
 
 const ROOT = new URL("../", import.meta.url).pathname.replace(/^\/([A-Z]:)/i, "$1");
-const OUT = `${ROOT}public/img/rafi-kayla/`;
+const OUT = `${ROOT}public/img/dimas-salsa/`;
 
 type Rgb = [number, number, number];
 const hex = (c: string): Rgb => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
