@@ -58,7 +58,7 @@ export function TrackThemeView({ theme, name, pkg, device }: { theme: string; na
   useEffect(() => {
     if (!PIXEL_ID || window.self !== window.top) return;
     return whenReady(() =>
-      window.fbq?.("track", "ViewContent", { content_ids: [theme], content_name: name, content_type: "product", content_category: pkg, device }),
+      window.fbq?.("track", "ViewContent", { content_ids: [theme], content_name: name, content_type: "product", content_category: pkg, device, source: new URLSearchParams(window.location.search).has("ads") ? "ads" : "demo" }),
     );
   }, [theme, name, pkg, device]);
   return null;
