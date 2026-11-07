@@ -4,6 +4,8 @@ import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 
 const noop = () => () => {};
 const inFrame = () => window.self !== window.top;
+// Link iklan memakai ?ads (nilai apa pun): demo tampil di paket teratas tanpa pilihan paket dan perangkat.
+const fromAds = () => new URLSearchParams(window.location.search).has("ads");
 
 const svg = (children: ReactNode) => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
@@ -53,6 +55,7 @@ const tone = (on: boolean) => (on ? "bg-paper text-night" : "text-white/75 hover
 export function DemoViewSwitch({ packages = [], devices, attached }: { packages?: PackageLink[]; devices: DeviceLink[]; attached?: boolean }) {
   // null sampai hidrasi selesai, supaya tidak sempat muncul di dalam layar perangkat.
   const framed = useSyncExternalStore(noop, inFrame, () => null);
+  const ads = useSyncExternalStore(noop, fromAds, () => true);
   // Di dalam layar perangkat, scrollbar disembunyikan seperti di HP dan tablet sungguhan.
   useEffect(() => {
     if (framed !== true) return;
@@ -61,7 +64,7 @@ export function DemoViewSwitch({ packages = [], devices, attached }: { packages?
       delete document.documentElement.dataset.deviceFrame;
     };
   }, [framed]);
-  if (framed !== false) return null;
+  if (framed !== false || ads) return null;
   const withPackages = packages.length > 1;
   return (
     <nav
