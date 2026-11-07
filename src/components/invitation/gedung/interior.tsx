@@ -413,7 +413,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
       </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-[max(12px,2.2dvh)] z-10 flex flex-col items-center gap-2 px-3">
+      <div className="pointer-events-none absolute inset-x-0 top-[max(12px,2.2dvh)] z-[999] flex flex-col items-center gap-2 px-3">
         {/* Satu papan di tengah atas: nama aula dan sambutan di kiri, daftar isi di kanan, supaya tidak menumpuk
             jadi tiga kotak yang menutupi peta. Daftar isi berisi semua pos dengan centang yang sudah dibuka;
             mengetuk pos memindahkan karakter ke sana. */}
@@ -463,7 +463,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         )}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-10 flex justify-center">
+      <div className="pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-[999] flex justify-center">
         <div ref={joyRef} className="pointer-events-auto opacity-80">
           <Joystick onMove={(x, y) => (joy.current = { x, y })} />
         </div>
@@ -488,7 +488,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
       {/* Semua pos sudah dibuka: penutup "Tamat" berisi kredit dari tema, dan satu jalan keluar kembali ke sampul.
           Isi aula diatur ulang supaya kunjungan berikutnya mulai dari awal. */}
       {phase === "done" && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/65 p-3 sm:p-6">
+        <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-black/65 p-3 sm:p-6">
           <div role="dialog" aria-modal="true" aria-label="Tamat" className="gd-pill flex max-h-full w-[min(520px,100%)] flex-col overflow-hidden rounded-3xl border-[3px] border-inv-line bg-inv-paper shadow-[0_8px_0_rgba(0,0,0,.35)]">
             <div className="gd-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">{finale}</div>
             <button

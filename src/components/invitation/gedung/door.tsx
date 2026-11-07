@@ -309,11 +309,11 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
       </div>
       </div>
 
-      <p className="gd-fade pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] flex justify-center">
+      <p className="gd-fade pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] z-[999] flex justify-center">
         <span className="rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-1.5 font-display text-[clamp(11px,3vw,14px)] tracking-[.14em] uppercase shadow-[0_4px_0_rgba(0,0,0,.2)]">Undangan pernikahan</span>
       </p>
 
-      <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-[max(14px,2.4dvh)]">
+      <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-0 z-[999] flex flex-col items-center px-4 pb-[max(14px,2.4dvh)]">
         {choosing && (
           <section className="gd-board pointer-events-auto w-full max-w-[420px] rounded-[22px] border-[3px] border-inv-line bg-inv-card px-5 pt-4 pb-4 text-center shadow-[0_7px_0_rgba(0,0,0,.28)]">
             {invited && (
@@ -349,7 +349,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
 
       {chosen && !choosing && (
         <>
-          <div className="gd-fade pointer-events-none absolute inset-x-0 top-[max(56px,7.4dvh)] flex flex-col items-center gap-2.5 px-4">
+          <div className="gd-fade pointer-events-none absolute inset-x-0 top-[max(56px,7.4dvh)] z-[999] flex flex-col items-center gap-2.5 px-4">
             <div className="max-w-[360px] rounded-2xl border-[3px] border-inv-line bg-inv-card px-4 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,.25)]">
               {invited && (
                 <p className="text-[12px] text-inv-gold">
@@ -368,7 +368,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
               </button>
             </div>
           </div>
-          <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] flex justify-center">
+          <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-[999] flex justify-center">
             <div ref={joyRef} className="pointer-events-auto opacity-80">
               <Joystick onMove={(x, y) => (joy.current = { x, y })} />
             </div>
