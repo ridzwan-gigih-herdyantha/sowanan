@@ -9,12 +9,19 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
     const d = ref.current;
     if (!d) return;
     if (open && !d.open) {
+      // Tanpa autofocus, showModal memfokuskan tombol atau kolom isian pertama di isi, yang bisa berada jauh di
+      // bawah. Di HP, fokus ke kolom isian juga memunculkan keyboard dan browser menggulir dialog ke kolom itu
+      // belakangan, setelah kode di bawah berjalan. Dengan autofocus pada dialog, dialog sendiri yang difokus.
+      d.setAttribute("autofocus", "");
       d.showModal();
-      // showModal memfokuskan tombol atau tautan pertama di isi, yang bisa berada jauh di bawah sehingga dialog
-      // ikut tergulung. Elemen dialog yang sama juga dipakai ulang dengan posisi gulir terakhirnya. Fokus dipindah
-      // ke dialog, jadi isi selalu mulai dibaca dari atas.
+      // Elemen dialog yang sama dipakai ulang dengan posisi gulir terakhirnya, jadi isi dikembalikan ke atas
+      // sekarang dan sekali lagi di frame berikutnya setelah isi dan transisi pembukaan tersusun.
       d.focus({ preventScroll: true });
       d.scrollTop = 0;
+      const raf = requestAnimationFrame(() => {
+        d.scrollTop = 0;
+      });
+      return () => cancelAnimationFrame(raf);
     }
     if (!open && d.open) d.close();
   }, [open]);
