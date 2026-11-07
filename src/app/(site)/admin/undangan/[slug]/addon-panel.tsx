@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { ADDON_EXCLUDED, PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
-import { formatRupiah, type Purchased } from "@/lib/settings/text";
+import { addonFits, formatRupiah, type Purchased } from "@/lib/settings/text";
 import { setAddons } from "../actions";
 import { Spinner } from "./spinner";
 
@@ -10,6 +10,7 @@ type Addon = Settings["addons"][number];
 type Props = {
   slug: string;
   pkg: string | null;
+  matrix: Settings["matrix"];
   packages: Settings["packages"];
   addons: Settings["addons"];
   bought: Purchased;
@@ -21,11 +22,14 @@ const MAX_UNITS = 20;
 
 // Paket undangan, add-on yang sudah dibayar, dan rincian harganya.
 // Add-on yang disembunyikan di pengaturan tetap tampil kalau undangan ini sudah membelinya.
-export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }: Props) {
+export function AddonPanel({ slug, pkg, matrix, packages, addons, bought, dp, onChange }: Props) {
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
   const id = pkg && pkg in PACKAGE_NAMES ? (pkg as PackageId) : null;
-  const shown = addons.filter((a) => (a.on || (bought[a.id] ?? 0) > 0) && !(id && ADDON_EXCLUDED[a.unlock]?.includes(id)));
+  // Add-on yang tidak berlaku untuk paket ini disembunyikan, kecuali sudah terlanjur dibeli (misalnya paket diganti
+  // setelah bayar). Yang begitu tetap tampil dengan tanda supaya admin bisa melepasnya.
+  const fits = (a: Addon) => !id || addonFits({ matrix }, a, id);
+  const shown = addons.filter((a) => !(id && ADDON_EXCLUDED[a.unlock]?.includes(id)) && ((a.on && fits(a)) || (bought[a.id] ?? 0) > 0));
   const unlocking = shown.filter((a) => a.unlock);
   const others = shown.filter((a) => !a.unlock);
 
@@ -89,6 +93,7 @@ export function AddonPanel({ slug, pkg, packages, addons, bought, dp, onChange }
             </span>
           </label>
         )}
+        {!fits(a) && id && <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-900">Di luar paket {PACKAGE_NAMES[id]}</span>}
       </li>
     );
   };
