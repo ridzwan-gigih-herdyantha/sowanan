@@ -20,7 +20,7 @@ import { calendarEventOf, type InvitationView } from "@/lib/invitation/view";
 import { getWishes } from "@/lib/guestbook";
 import { themeFonts } from "./fonts";
 
-// Warna datang dari palet (palette.ts), di sini hanya font, tekstur, dan alias.
+// Warna datang dari palet (palette.ts), di sini hanya font, tekstur, dan alias
 const vars = {
   "--ar-sun": "var(--inv-gold-light)",
   "--inv-display": "var(--font-ar-display), Georgia, serif",
