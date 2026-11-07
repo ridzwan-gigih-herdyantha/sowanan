@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { ADDON_EXCLUDED, PACKAGE_NAMES, type PackageId, type Settings } from "@/lib/settings/schema";
-import { addonFits, formatRupiah, type Purchased } from "@/lib/settings/text";
+import { addonFits, addonIncluded, formatRupiah, type Purchased } from "@/lib/settings/text";
 import { setAddons } from "../actions";
 import { Spinner } from "./spinner";
 
@@ -28,8 +28,10 @@ export function AddonPanel({ slug, pkg, matrix, packages, addons, bought, dp, on
   const id = pkg && pkg in PACKAGE_NAMES ? (pkg as PackageId) : null;
   // Add-on yang tidak berlaku untuk paket ini disembunyikan, kecuali sudah terlanjur dibeli (misalnya paket diganti
   // setelah bayar). Yang begitu tetap tampil dengan tanda supaya admin bisa melepasnya.
+  // Add-on yang fiturnya sudah jadi benefit paket selalu tampil, tapi nonaktif dan tidak ikut dihitung ke total.
   const fits = (a: Addon) => !id || addonFits({ matrix }, a, id);
-  const shown = addons.filter((a) => !(id && ADDON_EXCLUDED[a.unlock]?.includes(id)) && ((a.on && fits(a)) || (bought[a.id] ?? 0) > 0));
+  const included = (a: Addon) => !!id && addonIncluded({ matrix }, a, id);
+  const shown = addons.filter((a) => !(id && ADDON_EXCLUDED[a.unlock]?.includes(id)) && ((a.on && (fits(a) || included(a))) || (bought[a.id] ?? 0) > 0));
   const unlocking = shown.filter((a) => a.unlock);
   const others = shown.filter((a) => !a.unlock);
 
@@ -53,17 +55,19 @@ export function AddonPanel({ slug, pkg, matrix, packages, addons, bought, dp, on
     save(next);
   };
 
-  const lines = shown.filter((a) => (bought[a.id] ?? 0) > 0).map((a) => ({ a, units: bought[a.id], total: a.price * bought[a.id] }));
+  const lines = shown.filter((a) => (bought[a.id] ?? 0) > 0 && !included(a)).map((a) => ({ a, units: bought[a.id], total: a.price * bought[a.id] }));
   const pkgPrice = id ? packages[id].price : 0;
   const total = pkgPrice + lines.reduce((n, l) => n + l.total, 0);
   const deposit = Math.round((total * dp) / 100);
 
   const row = (a: Addon) => {
     const units = bought[a.id] ?? 0;
+    const inPkg = included(a);
+    const off = pending || inPkg;
     // Add-on yang tidak membuka fitur dihitung per unit kalau jumlah per unitnya diisi, misalnya per 100 nama.
     const multi = a.unlock === "galeri_foto" || a.unlock === "galeri_pasca" || a.unlock === "bagian_tambahan" || (!a.unlock && a.amount > 0);
     return (
-      <li key={a.id} className="flex items-center gap-3 rounded-sm border border-line px-3 py-2 text-[14px]">
+      <li key={a.id} className={`flex flex-wrap items-center gap-3 rounded-sm border border-line px-3 py-2 text-[14px] ${inPkg ? "bg-paper/60 text-ink-mute" : ""}`}>
         {multi ? (
           <>
             <span className="min-w-0 flex-1">
@@ -73,27 +77,29 @@ export function AddonPanel({ slug, pkg, matrix, packages, addons, bought, dp, on
               </span>
             </span>
             <span className="flex items-center gap-1">
-              <button type="button" disabled={pending || units === 0} onClick={() => setUnits(a.id, units - 1)} aria-label={`Kurangi ${a.name}`} className="size-7 rounded-sm border border-line disabled:opacity-40">
+              <button type="button" disabled={off || units === 0} onClick={() => setUnits(a.id, units - 1)} aria-label={`Kurangi ${a.name}`} className="size-7 rounded-sm border border-line disabled:opacity-40">
                 -
               </button>
               <span className="w-6 text-center tabular-nums" aria-live="polite">
                 {units}
               </span>
-              <button type="button" disabled={pending || units >= MAX_UNITS} onClick={() => setUnits(a.id, units + 1)} aria-label={`Tambah ${a.name}`} className="size-7 rounded-sm border border-line disabled:opacity-40">
+              <button type="button" disabled={off || units >= MAX_UNITS} onClick={() => setUnits(a.id, units + 1)} aria-label={`Tambah ${a.name}`} className="size-7 rounded-sm border border-line disabled:opacity-40">
                 +
               </button>
             </span>
           </>
         ) : (
-          <label className="flex flex-1 cursor-pointer items-center gap-3">
-            <input type="checkbox" checked={units > 0} disabled={pending} onChange={(e) => setUnits(a.id, e.target.checked ? 1 : 0)} className="size-4 accent-wine" />
+          <label className={`flex flex-1 items-center gap-3 ${inPkg ? "cursor-not-allowed" : "cursor-pointer"}`}>
+            <input type="checkbox" checked={inPkg || units > 0} disabled={off} onChange={(e) => setUnits(a.id, e.target.checked ? 1 : 0)} className="size-4 accent-wine disabled:opacity-60" />
             <span className="min-w-0 flex-1">
               {a.name}
-              <span className="block text-[12px] text-ink-mute">{formatRupiah(a.price)}</span>
+              <span className={`block text-[12px] text-ink-mute ${inPkg ? "line-through" : ""}`}>{formatRupiah(a.price)}</span>
             </span>
           </label>
         )}
-        {!fits(a) && id && <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-900">Di luar paket {PACKAGE_NAMES[id]}</span>}
+        {inPkg && id ? (
+          <span className="shrink-0 rounded-full bg-blush px-2 py-0.5 text-[11px] text-wine">Sudah termasuk paket {PACKAGE_NAMES[id]}</span>
+        ) : !fits(a) && id && <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-900">Di luar paket {PACKAGE_NAMES[id]}</span>}
       </li>
     );
   };

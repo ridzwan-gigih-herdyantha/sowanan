@@ -24,13 +24,19 @@ export function addonPackages(scope: string): PackageId[] {
   return named.length ? named : [...PACKAGE_IDS];
 }
 
+// Fitur yang dibuka add-on ini sudah jadi benefit paket, jadi tidak perlu dibeli.
+// Hanya add-on yang membuka fitur. Add-on berjumlah, seperti tambah foto, tetap menambah kuota.
+export function addonIncluded(s: Pick<Settings, "matrix">, a: Settings["addons"][number], pkg: PackageId): boolean {
+  if (!(FEATURE_KEYS as readonly string[]).includes(a.unlock)) return false;
+  return !!s.matrix.find((r) => r.key === a.unlock)?.cells[pkg].on;
+}
+
 // Add-on bisa dijual ke paket ini: tidak dikecualikan, paketnya disebut di "Berlaku untuk",
 // dan fitur yang dibukanya belum termasuk paket.
 export function addonFits(s: Pick<Settings, "matrix">, a: Settings["addons"][number], pkg: PackageId): boolean {
   if (ADDON_EXCLUDED[a.unlock]?.includes(pkg)) return false;
   if (!addonPackages(a.scope).includes(pkg)) return false;
-  const feature = (FEATURE_KEYS as readonly string[]).includes(a.unlock);
-  return !(feature && s.matrix.find((r) => r.key === a.unlock)?.cells[pkg].on);
+  return !addonIncluded(s, a, pkg);
 }
 
 export function lowestPrice(s: Settings): number {
