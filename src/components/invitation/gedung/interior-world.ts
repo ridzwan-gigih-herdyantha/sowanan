@@ -26,8 +26,9 @@ export const STAGE: Area = [
 ];
 
 // Pengantin berdiri di panggung pelaminan, di depan sofa. x dan y titik kaki (tengah bawah gambar), w dan h ukuran
-// tampil dalam piksel peta, sedikit lebih tinggi dari karakter tamu.
-export const COUPLE = { src: "/img/rafi-kayla/newlyweds.png", x: 1290, y: 245, w: 112, h: 109 };
+// tampil dalam piksel peta. Badan pengantin pria mengisi hampir seluruh tinggi gambar, jadi tingginya sekitar 94
+// piksel, sedikit lebih tinggi dari badan karakter tamu yang sekitar 89 piksel.
+export const COUPLE = { src: "/img/rafi-kayla/newlyweds.png", x: 1290, y: 245, w: 98, h: 95 };
 
 // Perabot bawaan gambar yang berdiri di lantai: meja di depan sekat kayu dan meja kado di kanan bawah, ditambah
 // tempat pengantin berdiri.
