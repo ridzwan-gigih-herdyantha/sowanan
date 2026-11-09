@@ -33,7 +33,7 @@ function typeOf(f: Field): { type: string; note?: string } {
     case "text":
       if (f.format === "url") return { type: "Tautan" };
       if (f.format === "time") return { type: "Jam, contoh 08.00" };
-      if (f.format === "date") return { type: "Tanggal" };
+      if (f.format === "date" || f.format === "longdate") return { type: "Tanggal" };
       if (f.format === "color") return { type: "Nama atau kode warna" };
       return { type: `Teks, maks ${f.max} karakter` };
     case "textarea":

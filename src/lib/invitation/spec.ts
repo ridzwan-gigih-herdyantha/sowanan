@@ -27,7 +27,7 @@ type Base = { path: string; label: string; themes?: string[]; hint?: string; req
 // Jenis dengan counted false tidak dihitung dalam batas paket.
 export type Variants = { path: string; options: { value: string; label: string; hint: string; counted: boolean; blank: Record<string, unknown> }[] };
 export type Field =
-  | (Base & { kind: "text" | "textarea"; max: number; format?: "url" | "time" | "color" | "date"; placeholder?: string })
+  | (Base & { kind: "text" | "textarea"; max: number; format?: "url" | "time" | "color" | "date" | "longdate"; placeholder?: string })
   | (Base & { kind: "media"; purpose: Purpose; dims?: boolean })
   | (Base & { kind: "datetime" })
   | (Base & { kind: "select"; options: string[]; labels?: Record<string, string> })
@@ -38,7 +38,7 @@ export type Field =
 
 export type Group = { key: string; title: string; section?: SectionKey; themes?: string[]; note?: string; fields: Field[] };
 
-const text = (path: string, label: string, max: number, extra: Partial<Base & { format: "url" | "time" | "color" | "date"; placeholder: string }> = {}): Field => ({
+const text = (path: string, label: string, max: number, extra: Partial<Base & { format: "url" | "time" | "color" | "date" | "longdate"; placeholder: string }> = {}): Field => ({
   kind: "text",
   path,
   label,
@@ -246,7 +246,7 @@ export const GROUPS: Group[] = [
     title: "RSVP",
     section: "rsvp",
     fields: [
-      text("event.rsvpDeadline", "Batas konfirmasi", 40, { placeholder: "24 April 2027" }),
+      text("event.rsvpDeadline", "Batas konfirmasi", 40, { format: "longdate", placeholder: "24 April 2027" }),
       area("copy.rsvpQuote", "Kutipan", 200, { themes: [B], ...optional }),
       media("media.rsvp", "Foto latar", "rsvp", { themes: [B], ...optional }),
     ],
@@ -482,6 +482,21 @@ export type Issue = { path: string; group: string; message: string };
 const TIME = /^\d{2}\.\d{2}$/;
 export const HEX = /^#[0-9a-f]{6}$/i;
 
+const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+// Format longdate: dipilih lewat kalender, tapi disimpan sebagai teks seperti "24 April 2027" karena tema menampilkannya
+// apa adanya. Kosong berarti teksnya tidak dikenali.
+export function longDateToIso(text: string) {
+  const m = /^(\d{1,2})\s+(\p{L}+)\s+(\d{4})$/u.exec(text.trim());
+  const month = m ? MONTHS.findIndex((x) => x.toLowerCase() === m[2].toLowerCase()) : -1;
+  return m && month >= 0 ? `${m[3]}-${String(month + 1).padStart(2, "0")}-${m[1].padStart(2, "0")}` : "";
+}
+
+export function isoToLongDate(iso: string) {
+  const [y, m, d] = iso.split("-");
+  return iso ? `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}` : "";
+}
+
 function checkFields(data: unknown, fields: Field[], theme: string, prefix: string, group: string, label: string, out: Issue[]) {
   for (const f of forTheme(fields, theme)) {
     const path = prefix + f.path;
@@ -508,6 +523,7 @@ function checkFields(data: unknown, fields: Field[], theme: string, prefix: stri
       if (v.length > f.max) push(`${name} maksimal ${f.max} karakter.`);
       if (f.format === "time" && !TIME.test(v)) push(`${name} pakai format 08.00.`);
       if (f.format === "date" && !/^\d{4}-\d{2}-\d{2}$/.test(v)) push(`${name} tidak valid.`);
+      if (f.format === "longdate" && !longDateToIso(v)) push(`${name} perlu dipilih ulang dari kalender.`);
       if (f.format === "url" && !/^https?:\/\/\S+\.\S+/.test(v)) push(`${name} harus diawali https://`);
       if (f.format === "color" && !HEX.test(v)) push(`${name} pakai kode warna seperti #A3B18A.`);
     }
