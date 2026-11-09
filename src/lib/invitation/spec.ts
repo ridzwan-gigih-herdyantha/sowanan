@@ -76,8 +76,8 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
   after: "event",
 });
 
-// Ikut tampil di editor dan di pesan WhatsApp Daftar kebutuhan data untuk klien.
-export const PARENTS_NOTE = "Mohon maaf sebelumnya, bila ada orang tua yang telah berpulang, mohon sertakan sebutannya di depan nama, misalnya Alm. atau Almh. untuk yang beragama Islam, Mendiang untuk agama lain, atau sebutan yang biasa dipakai keluarga.";
+// Petunjuk di editor. Versi pesan WhatsApp untuk klien ada di requirements-text.ts.
+const PARENTS_NOTE = "Mohon maaf sebelumnya, bila ada orang tua yang telah berpulang, mohon sertakan sebutannya di depan nama, misalnya Alm. atau Almh. untuk yang beragama Islam, Mendiang untuk agama lain, atau sebutan yang biasa dipakai keluarga.";
 
 const person = (key: "groom" | "bride", title: string): Field[] => [
   { kind: "heading", path: `couple.${key}`, label: title },
