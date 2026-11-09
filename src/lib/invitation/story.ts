@@ -61,7 +61,7 @@ export function storyData(slug: string, d: InvitationData, theme: string): Story
   const gold = p["--inv-gold"] ?? accent;
   const initials: [string, string] = [groom.charAt(0).toUpperCase(), bride.charAt(0).toUpperCase()];
   // Foto cadangan untuk template kolase, urut dari galeri lalu foto pasangan dan cerita.
-  const extra = [...v.gallery, ...v.couplePhotos, ...v.story.map((s) => ({ src: s.image }))].map((x) => toPhoto(x.src, frames)).filter((x): x is StoryPhoto => Boolean(x)).slice(0, 6);
+  const extra = [...v.gallery, ...v.postGallery, ...v.couplePhotos, ...v.story.map((s) => ({ src: s.image }))].map((x) => toPhoto(x.src, frames)).filter((x): x is StoryPhoto => Boolean(x)).slice(0, 6);
   return {
     theme,
     groom,

@@ -50,7 +50,11 @@ export type ExtraView = {
   youtube: { id: string; title: string }[];
   // Video dari add-on, bukan bagian tambahan isian admin.
   video?: boolean;
+  // Galeri pasca acara dari add-on. Tema aula memberinya kios sendiri, bukan kios bagian tambahan.
+  postGallery?: boolean;
 };
+
+const postPhotos = (d: InvitationData) => d.postGallery.filter((p) => p.src).map((p, i) => ({ ...p, src: u(p.src), w: p.w || 1600, h: p.h || 1200, alt: p.alt || `Foto pasca acara ${i + 1}` }));
 
 // Dikelompokkan per posisi. Posisi yang tidak ada di tema (misal setelah ganti tema) tampil sebelum Penutup.
 function groupExtras(d: InvitationData, theme: string) {
@@ -111,6 +115,27 @@ function groupExtras(d: InvitationData, theme: string) {
       youtube: [],
     });
   }
+  // Galeri pasca acara tepat setelah Galeri, jadi tetap tampil walau bagian Galeri dimatikan.
+  const post = postPhotos(d);
+  if (post.length) {
+    (out.gallery ??= []).unshift({
+      kind: "bebas",
+      title: "Galeri Pasca Acara",
+      postGallery: true,
+      body: "",
+      rundown: [],
+      plan: null,
+      colors: [],
+      rules: [],
+      stream: null,
+      note: "",
+      tone: "paper",
+      photos: post,
+      videos: [],
+      tracks: [],
+      youtube: [],
+    });
+  }
   return out;
 }
 
@@ -119,10 +144,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
   const s = d.sections;
   const palette = resolvePalette(theme, d.style);
   const enabled = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, Boolean(v.enabled)])) as Record<SectionKey, boolean>;
-  // Foto pasca acara sudah dibayar terpisah, jadi tetap tampil walau bagian Galeri dimatikan.
-  if (d.postGallery.length) enabled.gallery = true;
   // Undangan tanpa foto boleh: bagian yang isinya hanya foto disembunyikan.
-  if (!s.gallery.photos.length && !d.postGallery.length) enabled.gallery = false;
+  if (!s.gallery.photos.length) enabled.gallery = false;
   if (!s.collage.polaroids.length) enabled.collage = false;
   if (!s.specimens.items.length) enabled.specimens = false;
   const frames = cleanFrames(d.frames);
@@ -208,7 +231,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     giftNote: s.gifts.note,
     music: u(d.media.music || THEME_MUSIC[theme] || ""),
     story: s.story.items.map((i) => ({ ...i, short: i.short.trim() || excerpt(i.long), image: u(i.image), video: i.video?.src ? { src: u(i.video.src), poster: u(i.video.poster || i.image) } : undefined })),
-    gallery: [...s.gallery.photos, ...d.postGallery].map((p) => ({ ...p, src: u(p.src) })),
+    gallery: s.gallery.photos.map((p) => ({ ...p, src: u(p.src) })),
+    postGallery: postPhotos(d),
     gifts: s.gifts.accounts,
     couplePhotos: s.couple.photos.map((p) => ({ ...p, src: u(p.src) })),
     polaroids: s.collage.polaroids.map((p) => ({ ...p, src: u(p.src) })),

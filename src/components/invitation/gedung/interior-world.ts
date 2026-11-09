@@ -9,7 +9,7 @@ export const IN_W = 1672;
 export const IN_H = 941;
 
 // pembuka bukan pos di peta: papan sambutan yang terbuka sekali saat tamu masuk aula.
-export type PoiId = "pembuka" | "pelaminan" | "mempelai" | "cerita" | "galeri" | "acara" | "slot1" | "slot2" | "rsvp" | "angpao";
+export type PoiId = "pembuka" | "pelaminan" | "mempelai" | "cerita" | "galeri" | "pasca" | "acara" | "slot1" | "slot2" | "rsvp" | "angpao";
 
 // Lantai aula yang boleh dilalui, digambar mengikuti tepi dinding, panggung, dan dinding foto di kanan.
 export const FLOOR_OUTLINE: Area = [
@@ -84,6 +84,7 @@ const POIS: Poi[] = [
   // Sisi kiri karpet, dari pelaminan ke pintu: Mempelai, Galeri, bagian tambahan pertama, Penerima tamu.
   at("mempelai", "Mempelai", { x: 920, y: 340 }, "mempelai", "accent"),
   at("galeri", "Galeri", { x: 750, y: 425 }, "galeri", "gold"),
+  at("pasca", "Galeri Pasca Acara", { x: 665, y: 468 }, "galeri", "gold"),
   at("slot1", "Bagian tambahan", { x: 580, y: 510 }, "slot", "roof"),
   at("rsvp", "Penerima tamu", { x: 410, y: 595 }, "rsvp", "accent"),
   at("cerita", "Cerita", { x: 1230, y: 470 }, "cerita", "gold"),
@@ -94,7 +95,7 @@ const POIS: Poi[] = [
 
 // Urutan kios tiap baris, dari pelaminan ke pintu.
 const ROWS: PoiId[][] = [
-  ["mempelai", "galeri", "slot1", "rsvp"],
+  ["mempelai", "galeri", "pasca", "slot1", "rsvp"],
   ["cerita", "acara", "slot2", "angpao"],
 ];
 

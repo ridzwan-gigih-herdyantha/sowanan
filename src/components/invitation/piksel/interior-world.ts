@@ -15,7 +15,7 @@ const area = (...pts: Point[]): Area => pts.map((p) => [p.x, p.y]);
 const rect = (l0: number, l1: number, s0: number, s1: number, z = 0): Area => area(hallAt(l0, s0, z), hallAt(l1, s0, z), hallAt(l1, s1, z), hallAt(l0, s1, z));
 
 // pembuka bukan pos di peta: papan sambutan yang terbuka sekali saat tamu masuk aula.
-export type PoiId = "pembuka" | "pelaminan" | "mempelai" | "cerita" | "galeri" | "acara" | "slot1" | "slot2" | "rsvp" | "angpao";
+export type PoiId = "pembuka" | "pelaminan" | "mempelai" | "cerita" | "galeri" | "pasca" | "acara" | "slot1" | "slot2" | "rsvp" | "angpao";
 
 // Lantai aula yang boleh dilalui: seluruh lantai di dalam tembok, kecuali panggung di ujung sumbu. Kaki karakter
 // tidak boleh menempel dinding belakang supaya tidak terlihat menembusnya.
@@ -63,6 +63,7 @@ const POIS: Poi[] = [
   { id: "pelaminan", label: "Pelaminan", at: hallAt(HALL.L - 130, 0, HALL.stageZ) },
   at("mempelai", "Mempelai", hallAt(ROW_TO, -ROW_S), "mempelai"),
   at("galeri", "Galeri", hallAt(867, -ROW_S), "galeri"),
+  at("pasca", "Galeri Pasca Acara", hallAt(740, -ROW_S), "galeri"),
   at("slot1", "Bagian tambahan", hallAt(613, -ROW_S), "slot"),
   at("rsvp", "Penerima tamu", hallAt(ROW_FROM, -ROW_S), "rsvp"),
   at("cerita", "Cerita", hallAt(ROW_TO, ROW_S), "cerita"),
@@ -73,7 +74,7 @@ const POIS: Poi[] = [
 
 // Urutan kios tiap baris, dari pelaminan ke pintu.
 const ROWS: PoiId[][] = [
-  ["mempelai", "galeri", "slot1", "rsvp"],
+  ["mempelai", "galeri", "pasca", "slot1", "rsvp"],
   ["cerita", "acara", "slot2", "angpao"],
 ];
 

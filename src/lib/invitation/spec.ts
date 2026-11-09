@@ -285,7 +285,7 @@ export const GROUPS: Group[] = [
   {
     key: "pasca",
     title: "Galeri pasca acara",
-    note: "Foto tambahan setelah undangan disebar, tampil di akhir Galeri.",
+    note: "Foto tambahan setelah undangan disebar, tampil sebagai bagian sendiri setelah Galeri.",
     fields: [{ kind: "list", path: "postGallery", label: "Foto pasca acara", item: "Foto", blank: GALLERY_BLANK, fields: GALLERY_FIELDS }],
   },
   {
