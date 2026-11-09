@@ -6,9 +6,10 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { isDemo } from "./archive";
 import { invitationDataSchema, type InvitationData } from "./schema";
 
-// Add-on undangan kedua: tema, palet, font, foto, cerita, dan musik sama dengan undangan pertama. Yang diisi ulang
-// tanggal, jam, lokasi, susunan acara, dan daftar tamu. RSVP, ucapan, tamu, dan QR absensi menempel ke baris
-  // undangan, jadi otomatis terpisah, dan arsip dihitung dari tanggal acaranya sendiri.
+// Add-on undangan kedua, misalnya untuk pihak laki-laki dan pihak perempuan. Yang biasanya sama ikut tersalin: tema,
+// palet, font, data mempelai, foto, cerita, musik, dan rekening. Yang mengikuti acara diisi ulang: tanggal, jam, lokasi,
+// foto tempat, susunan acara, denah, siaran, deskripsi link, dan daftar tamu. RSVP, ucapan, tamu, dan QR absensi
+// menempel ke baris undangan, jadi otomatis terpisah, dan arsip dihitung dari tanggal acaranya sendiri.
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
 
@@ -42,6 +43,10 @@ export function duplicateData(source: InvitationData, from: string, to: string) 
     // Zona waktu biasanya sama. Sisanya data acara yang harus diisi ulang.
     event: { ...blank.event, timezone: source.event.timezone },
     copy: { ...source.copy, headline: "" },
+    // Foto tempat dan deskripsi link bisa menunjuk lokasi atau tanggal undangan asal. Foto tempat yang kosong memakai foto hero.
+    media: { ...source.media, venue: "" },
+    frames: Object.fromEntries(Object.entries(source.frames).filter(([slot]) => slot !== "venue")),
+    share: blank.share,
     postGallery: [],
     extras,
   };
