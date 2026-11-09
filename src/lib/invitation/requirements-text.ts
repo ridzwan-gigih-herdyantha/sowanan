@@ -2,6 +2,7 @@ import { PACKAGE_NAMES } from "@/lib/settings/schema";
 import type { PackageRules } from "@/lib/settings/text";
 import { requirements, type ReqRow } from "./requirements";
 import { EXTRA_KINDS, invitationDataSchema, type ExtraKind, type InvitationData } from "./schema";
+import { PARENTS_NOTE } from "./spec";
 
 // Template pesan daftar data untuk klien dari Daftar kebutuhan data di admin, siap ditempel ke WhatsApp. Isiannya mengikuti requirements(), jadi
 // isian baru di spec otomatis ikut. Dua daftar di bawah ini yang disesuaikan dengan balasan Checklist data di SOP.
@@ -22,6 +23,12 @@ const LABELS: Record<string, string> = {
   "event.rsvpDeadline": "Batas konfirmasi kehadiran",
 };
 
+// Pesan untuk klien di baris bawah isiannya.
+const NOTES: Record<string, string> = {
+  "couple.groom.parents": PARENTS_NOTE,
+  "couple.bride.parents": PARENTS_NOTE,
+};
+
 function lineOf(r: ReqRow, rules: PackageRules) {
   const label = LABELS[r.key] ?? r.label;
   // Judul kelompok tanpa isian, misalnya Mempelai pria.
@@ -29,7 +36,9 @@ function lineOf(r: ReqRow, rules: PackageRules) {
   // Galeri paket tanpa batas tidak menyebut jumlah, sama seperti balasan Harga di SOP.
   const count = r.key === "sections.gallery.photos" && !rules.photos ? "" : r.count;
   const mark = [r.required ? "wajib" : "opsional", count].filter(Boolean).join(", ");
-  return `${"  ".repeat(r.depth)}- ${label} (${mark})`;
+  const indent = "  ".repeat(r.depth);
+  const note = NOTES[r.key] ? `\n${indent}  ${NOTES[r.key]}` : "";
+  return `${indent}- ${label} (${mark})${note}`;
 }
 
 // Warna dan font tidak ada di isian editor karena dipilih admin. Kalimatnya mengikuti butir 8 Checklist data di SOP.

@@ -76,11 +76,14 @@ const extraBlank = (kind: ExtraKind, title = "") => ({
   after: "event",
 });
 
+// Ikut tampil di editor dan di pesan WhatsApp Daftar kebutuhan data untuk klien.
+export const PARENTS_NOTE = "Mohon maaf sebelumnya, bila ada orang tua yang telah berpulang, mohon sertakan sebutannya di depan nama, misalnya Alm. atau Almh. untuk yang beragama Islam, Mendiang untuk agama lain, atau sebutan yang biasa dipakai keluarga.";
+
 const person = (key: "groom" | "bride", title: string): Field[] => [
   { kind: "heading", path: `couple.${key}`, label: title },
   text(`couple.${key}.full`, "Nama lengkap", 80, { themes: [B, H, J, S, F, E, EL, N, R, L, P, M, G, T, RK, DS] }),
   text(`couple.${key}.role`, "Keterangan", 40, { placeholder: key === "groom" ? "Putra dari" : "Putri dari" }),
-  area(`couple.${key}.parents`, "Nama orang tua", 160, { placeholder: "Bapak ... & Ibu ..." }),
+  area(`couple.${key}.parents`, "Nama orang tua", 160, { placeholder: "Bapak ... & Ibu ...", hint: PARENTS_NOTE }),
   media(`couple.${key}.photo`, "Foto", key, { themes: [H, J, S, F, E, EL, N, R, L, P, M, G, T, RK, DS], ...optional, hint: "Kosong berarti memakai foto hero." }),
   text(`couple.${key}.flower`, "Bunga", 60, { themes: [H], ...optional }),
   text(`couple.${key}.latin`, "Nama latin bunga", 80, { themes: [H], ...optional }),
