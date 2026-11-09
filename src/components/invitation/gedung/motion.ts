@@ -52,3 +52,22 @@ export function shift(el: HTMLElement, from: Point, to: Point, k: number) {
   const dpr = window.devicePixelRatio || 1;
   el.style.transform = `translate3d(${Math.round((to.x - from.x) * k * dpr) / dpr}px, ${Math.round((to.y - from.y) * k * dpr) / dpr}px, 0)`;
 }
+
+// Tanda tujuan di lantai saat tamu mengetuk peta. fresh memulai ulang animasinya; seretan hanya memindahkan tanda.
+export function markTap(el: HTMLElement | null, at: Point, mapW: number, mapH: number, fresh: boolean) {
+  if (!el) return;
+  el.style.left = `${(at.x / mapW) * 100}%`;
+  el.style.top = `${(at.y / mapH) * 100}%`;
+  if (!fresh) return;
+  el.dataset.on = "false";
+  void el.offsetWidth;
+  el.dataset.on = "true";
+  shownAt.set(el, performance.now());
+}
+
+// Tanda hilang setelah karakter tiba, tapi tampil cukup lama walau tujuannya tepat di kaki karakter.
+const TAP_MIN_MS = 450;
+const shownAt = new WeakMap<HTMLElement, number>();
+export function clearTap(el: HTMLElement | null, arrived: boolean, now: number) {
+  if (el && arrived && el.dataset.on === "true" && now - (shownAt.get(el) ?? 0) > TAP_MIN_MS) el.dataset.on = "false";
+}
