@@ -10,6 +10,7 @@ import { COUPLE, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, ob
 import { NPC_SHEETS, NPCS, npcStart, stepNpc, type NpcState } from "./interior-npcs";
 import { Joystick } from "./joystick";
 import { aimCamera, clearTap, markTap, shift, turn, type Camera, type Facing } from "./motion";
+import { newDodge } from "../pathing";
 import { useButtonSfx } from "./sfx";
 import { SPEED, type Point } from "./world";
 
@@ -73,7 +74,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
   const bodyRef = useRef<HTMLDivElement>(null);
   const joyRef = useRef<HTMLDivElement>(null);
   const pos = useRef<Point>({ ...IN_SPAWN });
-  const target = useRef<Point | null>(null);
+  const target = useRef<Point[] | null>(null);
   const keys = useRef(new Set<string>());
   const joy = useRef({ x: 0, y: 0 });
   const dragging = useRef(false);
@@ -149,6 +150,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
     let last = performance.now();
     let raf = 0;
     let current: PoiId | null = null;
+    const dodge = newDodge();
     const crowd: NpcState[] = NPCS.map(npcStart);
 
     const loop = (now: number) => {
@@ -172,23 +174,13 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         vy = joy.current.y;
         power = Math.min(1, jm);
         target.current = null;
-      } else if (target.current) {
-        const dx = target.current.x - p.x;
-        const dy = target.current.y - p.y;
-        const d = Math.hypot(dx, dy);
-        if (d < 5) target.current = null;
-        else {
-          vx = dx / d;
-          vy = dy / d;
-        }
       }
-      let moving = false;
-      if (vx || vy) {
-        const len = Math.hypot(vx, vy);
-        moving = worldRef.current.move(p, (vx / len) * SPEED * power * dt, (vy / len) * SPEED * power * dt);
-        if (!moving) target.current = null;
-        else turn(face, vx, vy);
-      }
+      // Ketukan membawa rutenya sendiri; tombol dan joystick memutari rintangan di depannya lewat steer.
+      const step = SPEED * power * dt;
+      const dir = worldRef.current.walk(target.current ?? worldRef.current.steer(dodge, p, vx, vy, step), p, step);
+      const moving = dir !== null;
+      if (dir) turn(face, dir.x, dir.y);
+      else target.current = null;
       clearTap(tapRef.current, !target.current, now);
       if (moving) {
         walked += dt;
@@ -257,8 +249,9 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
   }, [open]);
 
   const go = (to: Point, fresh: boolean) => {
-    target.current = worldRef.current.reachable(pos.current, to);
-    markTap(tapRef.current, target.current, IN_W, IN_H, fresh);
+    const path = worldRef.current.route(pos.current, to);
+    target.current = path;
+    markTap(tapRef.current, path[path.length - 1], IN_W, IN_H, fresh);
   };
   const aim = (e: PointerEvent, fresh: boolean) => {
     const stage = stageRef.current;

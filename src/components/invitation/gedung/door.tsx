@@ -4,8 +4,9 @@ import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { Joystick } from "./joystick";
 import { aimCamera, shift, turn, type Camera, type Facing } from "./motion";
+import { newDodge } from "../pathing";
 import { useButtonSfx } from "./sfx";
-import { ARCH_BEAM, archSide, behindArch, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, reachable, SPAWN, SPEED, type Point } from "./world";
+import { ARCH_BEAM, archSide, behindArch, DOOR_TARGET, MAP_H, MAP_W, NEAR_RADIUS, route, SPAWN, SPEED, steer, walk, type Point } from "./world";
 
 export type GedungProps = {
   groom: string;
@@ -83,7 +84,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const rootRef = useRef<HTMLDivElement>(null);
   useButtonSfx(rootRef);
   const pos = useRef<Point>({ ...SPAWN });
-  const target = useRef<Point | null>(null);
+  const target = useRef<Point[] | null>(null);
   const keys = useRef(new Set<string>());
   const dragging = useRef(false);
   const joy = useRef({ x: 0, y: 0 });
@@ -124,6 +125,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
     let last = performance.now();
     let raf = 0;
     let near = false;
+    const dodge = newDodge();
 
     const loop = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
@@ -145,23 +147,13 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
         vy = joy.current.y;
         power = Math.min(1, jm);
         target.current = null;
-      } else if (target.current) {
-        const dx = target.current.x - p.x;
-        const dy = target.current.y - p.y;
-        const d = Math.hypot(dx, dy);
-        if (d < 5) target.current = null;
-        else {
-          vx = dx / d;
-          vy = dy / d;
-        }
       }
-      let moving = false;
-      if ((vx || vy) && !enteringRef.current) {
-        const len = Math.hypot(vx, vy);
-        moving = move(p, (vx / len) * SPEED * power * dt, (vy / len) * SPEED * power * dt);
-        if (!moving) target.current = null;
-        else turn(face, vx, vy);
-      }
+      // Ketukan membawa rutenya sendiri; tombol dan joystick memutari rintangan di depannya lewat steer.
+      const step = SPEED * power * dt;
+      const dir = enteringRef.current ? null : walk(target.current ?? steer(dodge, p, vx, vy, step), p, step);
+      const moving = dir !== null;
+      if (dir) turn(face, dir.x, dir.y);
+      else target.current = null;
       if (moving) {
         walked += dt;
         still = 0;
@@ -212,7 +204,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
     if (!stage) return;
     const r = stage.getBoundingClientRect();
     const to = { x: ((e.clientX - r.left) / r.width) * MAP_W, y: ((e.clientY - r.top) / r.height) * MAP_H };
-    target.current = reachable(pos.current, to);
+    target.current = route(pos.current, to);
   };
   const onDown = (e: PointerEvent) => {
     if (!chosen || enteringRef.current) return;

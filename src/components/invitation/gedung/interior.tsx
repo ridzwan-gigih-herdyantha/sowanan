@@ -10,6 +10,7 @@ import { type BoothArt, COUPLE, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, in
 import { NPC_CELL, NPC_SHEETS, NPCS, npcStart, stepNpc, type NpcState } from "./interior-npcs";
 import { Joystick } from "./joystick";
 import { aimCamera, shift, turn, type Camera, type Facing } from "./motion";
+import { newDodge } from "../pathing";
 import { useButtonSfx } from "./sfx";
 import { SPEED, type Point } from "./world";
 
@@ -77,7 +78,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
   const bodyRef = useRef<HTMLDivElement>(null);
   const joyRef = useRef<HTMLDivElement>(null);
   const pos = useRef<Point>({ ...IN_SPAWN });
-  const target = useRef<Point | null>(null);
+  const target = useRef<Point[] | null>(null);
   const keys = useRef(new Set<string>());
   const joy = useRef({ x: 0, y: 0 });
   const dragging = useRef(false);
@@ -153,6 +154,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
     let last = performance.now();
     let raf = 0;
     let current: PoiId | null = null;
+    const dodge = newDodge();
     const crowd: NpcState[] = NPCS.map(npcStart);
     const crowdFace: Facing[] = NPCS.map((n) => ({ row: (n.face ?? 0) as Facing["row"], flip: !!n.flip }));
 
@@ -177,23 +179,13 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         vy = joy.current.y;
         power = Math.min(1, jm);
         target.current = null;
-      } else if (target.current) {
-        const dx = target.current.x - p.x;
-        const dy = target.current.y - p.y;
-        const d = Math.hypot(dx, dy);
-        if (d < 5) target.current = null;
-        else {
-          vx = dx / d;
-          vy = dy / d;
-        }
       }
-      let moving = false;
-      if (vx || vy) {
-        const len = Math.hypot(vx, vy);
-        moving = worldRef.current.move(p, (vx / len) * SPEED * power * dt, (vy / len) * SPEED * power * dt);
-        if (!moving) target.current = null;
-        else turn(face, vx, vy);
-      }
+      // Ketukan membawa rutenya sendiri; tombol dan joystick memutari rintangan di depannya lewat steer.
+      const step = SPEED * power * dt;
+      const dir = worldRef.current.walk(target.current ?? worldRef.current.steer(dodge, p, vx, vy, step), p, step);
+      const moving = dir !== null;
+      if (dir) turn(face, dir.x, dir.y);
+      else target.current = null;
       if (moving) {
         walked += dt;
         still = 0;
@@ -265,7 +257,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
     const stage = stageRef.current;
     if (!stage) return;
     const r = stage.getBoundingClientRect();
-    target.current = worldRef.current.reachable(pos.current, { x: ((e.clientX - r.left) / r.width) * IN_W, y: ((e.clientY - r.top) / r.height) * IN_H });
+    target.current = worldRef.current.route(pos.current, { x: ((e.clientX - r.left) / r.width) * IN_W, y: ((e.clientY - r.top) / r.height) * IN_H });
   };
   const onDown = (e: PointerEvent) => {
     if (panel) return;
@@ -402,7 +394,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
               type="button"
               onPointerDown={(e) => e.stopPropagation()}
               data-sfx={here ? "open" : "tap"}
-              onClick={() => (here ? openPanel(p.id) : (target.current = worldRef.current.reachable(pos.current, p.at)))}
+              onClick={() => (here ? openPanel(p.id) : (target.current = worldRef.current.route(pos.current, p.at)))}
               className={`${here ? "gd-pill bg-inv-accent text-inv-paper" : "bg-inv-card/90 text-inv-ink"} absolute z-[2000] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3.5 py-1.5 font-display text-[clamp(11px,3vw,15px)] leading-none font-semibold shadow-[0_4px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
               style={{ left: `${(tag.x / IN_W) * 100}%`, top: `${(tag.y / IN_H) * 100}%` }}
             >
