@@ -11,6 +11,7 @@ import { SITE_URL } from "@/lib/site";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { listWishes } from "@/lib/wishes";
 import { CoupleFrame } from "../frame";
+import { ArchiveCard } from "./archive-card";
 import { CoupleBoard, type BoardGuest, type BoardRsvp } from "./board";
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
       .order("id", { ascending: true })
       .limit(MAX_GUESTS),
     invitationRules(invitation.slug),
-    sb.from("invitations").select("guest_message, private, couple_code, session_item").eq("id", invitation.id).maybeSingle(),
+    sb.from("invitations").select("guest_message, private, couple_code, session_item, archive_notified_at").eq("id", invitation.id).maybeSingle(),
     sb.from("invitation_sessions").select(SESSION_COLS).eq("invitation_id", invitation.id).order("time").order("id"),
   ]);
   const locked = info?.rules.locked ?? {};
@@ -48,7 +49,8 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
   const coupleCode = extra.data?.couple_code ?? "";
   const demo = isDemo(invitation.slug, invitation.theme);
   const available = !locked.tamu_terundang && !demo;
-  const archived = archiveInfo(d, undefined, demo).archived;
+  const archive = archiveInfo(d, undefined, demo);
+  const archived = archive.archived;
 
   return (
     <CoupleFrame>
@@ -60,6 +62,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         </a>
         {!invitation.published && <span className="text-ink-mute">Undangan belum tayang, tamu belum bisa membukanya.</span>}
       </p>
+      {!demo && <ArchiveCard archiveAt={archive.archiveAt} due={archive.noticeDue} archived={archived} notified={Boolean(extra.data?.archive_notified_at)} />}
       <CoupleBoard
         slug={invitation.slug}
         origin={SITE_URL}
