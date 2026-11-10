@@ -5,6 +5,7 @@ import { CustomFontLinks } from "@/components/invitation/custom-font-links";
 import { SkipDoor } from "@/components/invitation/shell";
 import { currentAdmin } from "@/lib/admin-auth";
 import { getInvitation } from "@/lib/invitation/load";
+import { textPath } from "@/lib/invitation/texts";
 import { editableMap, fillPreview } from "@/lib/invitation/preview";
 import { invitationDataSchema } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
@@ -31,6 +32,8 @@ async function Preview({ params, searchParams }: { params: Promise<{ slug: strin
   const { texts, media } = editableMap(data, mediaUrl);
   const { Component } = theme;
   const view = toView(slug, data, row.theme);
+  // Teks section, termasuk bawaan tema, juga bisa diklik di preview. Hasilnya tersimpan sebagai teks pilihan mempelai.
+  for (const [group, slots] of Object.entries(view.texts)) for (const [slot, value] of Object.entries(slots)) texts[textPath(group, slot)] ||= value;
 
   return (
     <>
