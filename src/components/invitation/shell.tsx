@@ -117,13 +117,15 @@ function readGuestParam() {
 const readStoredGuest = (slug: string) => recall(guestNameKey(slug));
 const storeGuest = (slug: string, name: string) => remember(guestNameKey(slug), name);
 
+// Teks sampul Herbarium, semuanya bisa diganti mempelai lewat teks section Pembuka. Kosong berarti disembunyikan.
+type VellumLabels = { kicker: string; brand: string; invited: string; guest: string; date: string; place: string; button: string };
 type Door =
   | ({ kind: "mawaddah" } & Omit<MawaddahDoorProps, "invited" | "open" | "onOpen">)
   | ({ kind: "nocturne" } & Omit<NocturneDoorProps, "invited" | "guestField" | "open" | "onOpen">)
   | ({ kind: "elaris" } & Omit<ElarisDoorProps, "invited" | "open" | "onOpen">)
   | { kind: "seal"; couple: string; monogram: string; seal: string }
   | { kind: "walls"; groom: string; bride: string; date: string }
-  | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string; monogram: string }
+  | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string; monogram: string; labels: VellumLabels }
   | ({ kind: "kelir" } & Omit<KelirProps, "invited" | "onOpen">)
   | ({ kind: "pintu" } & Omit<PintuProps, "invited" | "onOpen">)
   | ({ kind: "medali" } & Omit<MedaliProps, "invited" | "onOpen">)
@@ -395,7 +397,7 @@ export function InvitationShell({ door, music, synth, className, style, children
               className="inv-door-vellum fixed inset-0 z-50 flex flex-col justify-center-safe px-6 pt-6 pb-[14vh] backdrop-blur-md lg:justify-end lg:pb-[8vh] [background:color-mix(in_srgb,var(--inv-wash)_82%,transparent)] sm:px-10"
               aria-hidden={open}
             >
-              <p className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">LEMBAR KOLEKSI {door.number}</p>
+              {door.labels.kicker && <p className="text-[11px] font-medium tracking-[0.2em] text-inv-gold uppercase">{door.labels.kicker}</p>}
               <p className="mt-4 font-script text-[clamp(52px,15vw,112px)] leading-[0.95] text-inv-accent">
                 {door.groom}
                 <br />
@@ -404,8 +406,8 @@ export function InvitationShell({ door, music, synth, className, style, children
               <div className="relative mt-8 w-full max-w-md -rotate-1 sm:max-w-none lg:max-w-md border border-inv-line bg-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.08)]">
                 <span className="inv-tape -top-2.5 left-10 -rotate-3" aria-hidden="true" />
                 <div className="flex items-center justify-between border-b border-inv-line px-5 py-2.5 text-[10px] font-medium tracking-[0.2em] text-inv-gold">
-                  <span>HERBARIUM SOWANAN</span>
-                  <span>{door.number}</span>
+                  <span className="uppercase">{door.labels.brand}</span>
+                  {door.number && <span className="uppercase">{door.number}</span>}
                 </div>
                 <div className="flex items-end gap-4 px-5 pt-4 pb-5">
                   <div className="relative h-20 w-16 shrink-0 rotate-3 border border-inv-line bg-inv-paper p-1">
@@ -416,19 +418,19 @@ export function InvitationShell({ door, music, synth, className, style, children
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">DIKUMPULKAN UNTUK</span>
+                    {door.labels.invited && <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold uppercase">{door.labels.invited}</span>}
                     <span className="mt-1 block truncate border-b border-dashed border-inv-line pb-1 font-display text-[28px] leading-tight text-inv-accent italic">
-                      {invited || "Tamu kami"}
+                      {invited || door.labels.guest}
                     </span>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 border-t border-inv-line text-[13px]">
                   <div className="border-r border-inv-line px-5 py-2.5">
-                    <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">TANGGAL</span>
+                    {door.labels.date && <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold uppercase">{door.labels.date}</span>}
                     {door.date}
                   </div>
                   <div className="px-5 py-2.5">
-                    <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">LOKASI</span>
+                    {door.labels.place && <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold uppercase">{door.labels.place}</span>}
                     {door.place}
                   </div>
                 </div>
@@ -438,7 +440,7 @@ export function InvitationShell({ door, music, synth, className, style, children
                 onClick={openInvitation}
                 className="inv-cta mt-8 flex w-full max-w-md items-center sm:max-w-none lg:max-w-md justify-between rounded-sm bg-inv-accent px-7 py-5 text-[13px] font-medium tracking-[0.2em] text-inv-wash shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
               >
-                BUKA LEMBARNYA
+                <span className="uppercase">{door.labels.button}</span>
                 {arrow}
               </button>
             </div>

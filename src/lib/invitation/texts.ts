@@ -6,6 +6,8 @@ export const TOKENS = {
   wanita: "nama panggilan mempelai wanita",
   tanggal: "tanggal singkat, misalnya 05 . 03 . 2026",
   tanggal_bulan: "tanggal dengan nama bulan, misalnya 05 Maret 2026",
+  tanggal_titik: "tanggal rapat, misalnya 05.03.2026",
+  bulan_tahun: "bulan dan tahun, misalnya Maret 2026",
   hari: "hari dan tanggal lengkap",
   koleksi: "nomor koleksi",
   tempat: "kota",
