@@ -77,20 +77,28 @@ function Hero({ inv }: { inv: InvitationView }) {
     <section className="inv-paper relative overflow-hidden pb-16 lg:pb-24">
       <Wrap className="flex items-center justify-between py-5">
         <span className="font-display text-xl text-inv-accent">{inv.monogram}</span>
-        <span className="text-[11px] font-medium tracking-[0.2em] text-inv-gold">{inv.collection.toUpperCase()}</span>
+        <span className="text-[11px] font-medium tracking-[0.2em] text-inv-gold uppercase">{inv.texts.hero.number}</span>
       </Wrap>
 
       <div className="px-5 pt-14 pb-14 text-center sm:px-8 lg:pt-20 lg:pb-20">
         <p {...enter(0.5)} className="inv-enter text-[11px] font-medium tracking-[0.3em] text-inv-gold">
-          UNDANGAN PERNIKAHAN
+          {inv.texts.hero.kicker}
         </p>
         <h1 className="mx-auto mt-6 font-script text-[clamp(60px,17vw,96px)] leading-[0.92] text-inv-accent md:text-[clamp(72px,9vw,136px)]">
-          <span {...enter(0.56)} className="inv-enter inline-block">
-            {inv.groom.name}
-          </span>{" "}
-          <span {...enter(0.64)} className="inv-enter inline-block">
-            <span className="font-display italic">&amp;</span> {inv.bride.name}
-          </span>
+          {inv.custom.hero.names ? (
+            <span {...enter(0.56)} className="inv-enter inline-block">
+              {inv.texts.hero.names}
+            </span>
+          ) : (
+            <>
+              <span {...enter(0.56)} className="inv-enter inline-block">
+                {inv.groom.name}
+              </span>{" "}
+              <span {...enter(0.64)} className="inv-enter inline-block">
+                <span className="font-display italic">&amp;</span> {inv.bride.name}
+              </span>
+            </>
+          )}
         </h1>
         <div {...enter(0.72)} className="inv-enter">
           <p className="mt-5 font-display text-xl text-inv-gold italic">{inv.latinPair}</p>
@@ -108,7 +116,11 @@ function Hero({ inv }: { inv: InvitationView }) {
         {spec && (
           <div className="absolute -top-8 right-6 z-20 w-24 rotate-6 border border-inv-line bg-inv-wash p-1.5 shadow-[0_4px_12px_rgba(0,0,0,.1)] sm:right-14 sm:w-32">
             <Tape className="-top-2.5 left-4 rotate-6" />
-            <Image src={spec.src} alt="" width={spec.w} height={spec.h} sizes="128px" className="h-auto w-full" />
+            {spec.src ? (
+              <Image src={spec.src} alt="" width={spec.w} height={spec.h} sizes="128px" className="h-auto w-full" />
+            ) : (
+              <span className="flex aspect-[4/5] items-center justify-center bg-inv-paper font-display text-xl text-inv-accent">{inv.monogram}</span>
+            )}
           </div>
         )}
         <div className="relative border border-inv-line bg-inv-wash p-2 shadow-[0_14px_40px_rgba(0,0,0,.1)] sm:p-3">
@@ -136,23 +148,23 @@ function Couple({ inv }: { inv: InvitationView }) {
           </span>
           <span className="flex items-end justify-between gap-3 px-1 pt-4 pb-1">
             <span className="font-display text-[44px] leading-none text-inv-accent">{p.name}</span>
-            <span className="pb-1 text-[10px] font-medium tracking-[0.2em] text-inv-gold">BALIK KARTU ↻</span>
+            <span className="pb-1 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{inv.texts.couple.flip}</span>
           </span>
         </span>
       }
       back={
         <span className="flex h-full flex-col border border-inv-line bg-inv-wash p-6 shadow-[0_10px_24px_rgba(0,0,0,.08)]">
           <span className="flex justify-between border-b border-inv-line pb-3 text-[10px] font-medium tracking-[0.2em] text-inv-gold">
-            <span>LABEL SPESIMEN</span>
+            <span>{inv.texts.couple.tag}</span>
             <span>No. {no}</span>
           </span>
           <span className="mt-6 font-display text-[40px] leading-none text-inv-accent">{p.full}</span>
           <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{p.role.toUpperCase()}</span>
           <span className="mt-1 text-[15px]">{p.parents}</span>
-          <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">SPESIMEN FAVORIT</span>
+          <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{inv.texts.couple.favorite}</span>
           <span className="mt-1 text-[15px] capitalize">{p.flower}</span>
           <span className="font-display text-lg text-inv-gold italic">{p.latin}</span>
-          <span className="mt-auto pt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">KETUK UNTUK KEMBALI ↻</span>
+          <span className="mt-auto pt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{inv.texts.couple.back}</span>
         </span>
       }
     />
@@ -160,9 +172,9 @@ function Couple({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
-        <Label>{inv.headings.couple.label}</Label>
-        <Title className="max-w-[20ch]">{inv.headings.couple.title}</Title>
-        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">{inv.headings.couple.subtitle}</p>
+        <Label>{inv.texts.couple.label}</Label>
+        <Title className="max-w-[20ch]">{inv.texts.couple.title}</Title>
+        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">{inv.texts.couple.subtitle}</p>
         <div className="grid gap-12 md:grid-cols-2 md:gap-8 lg:gap-14">
           {card(inv.groom, "-rotate-1", `${inv.code}-A`)}
           {card(inv.bride, "rotate-1 md:mt-12", `${inv.code}-B`)}
@@ -179,8 +191,8 @@ function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
-        <Label>{inv.headings.story.label}</Label>
-        <Title className="mb-12">{inv.headings.story.title}</Title>
+        <Label>{inv.texts.story.label}</Label>
+        <Title className="mb-12">{inv.texts.story.title}</Title>
         <Story items={inv.story} variant="sheets" />
       </Wrap>
     </section>
@@ -192,10 +204,11 @@ function Agenda({ inv }: { inv: InvitationView }) {
   return (
     <div className="mt-10 grid gap-8">
       {inv.events.map((e, i) => {
-        const rows: [string, ReactNode][] = [["TANGGAL", e.dateLabel]];
-        if (e.clock) rows.push(["JAM", e.clock]);
-        if (e.place.name) rows.push(["TEMPAT", e.place.name]);
-        if (e.place.address) rows.push(["ALAMAT", e.place.address]);
+        const t = inv.texts.event;
+        const rows: [string, ReactNode][] = [[t.date, e.dateLabel]];
+        if (e.clock) rows.push([t.time, e.clock]);
+        if (e.place.name) rows.push([t.place, e.place.name]);
+        if (e.place.address) rows.push([t.address, e.place.address]);
         return (
           <article key={`${e.name}-${i}`}>
             <p className="font-display text-[24px] leading-tight text-inv-accent italic">{e.name}</p>
@@ -206,7 +219,7 @@ function Agenda({ inv }: { inv: InvitationView }) {
                   <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
                   <circle cx="12" cy="10" r="2.5" />
                 </svg>
-                BUKA PETA
+                {inv.texts.event.map}
               </a>
             )}
           </article>
@@ -221,8 +234,8 @@ function EventDetails({ inv }: { inv: InvitationView }) {
     <section className="inv-wash py-20 lg:py-28">
       <Wrap className="lg:grid lg:grid-cols-12 lg:gap-x-12">
         <div className="lg:col-span-6">
-          <Label>{inv.headings.event.label}</Label>
-          <Title>{inv.dateLong}</Title>
+          <Label>{inv.texts.event.label}</Label>
+          <Title>{inv.texts.event.title}</Title>
           {inv.agenda ? (
             <Agenda inv={inv} />
           ) : (
@@ -239,8 +252,8 @@ function EventDetails({ inv }: { inv: InvitationView }) {
                       </span>,
                     ] as [string, ReactNode],
                 ),
-                ["TEMPAT", <span key="v">{inv.venue.name}</span>],
-                ["ALAMAT", <span key="a">{inv.venue.address}</span>],
+                [inv.texts.event.place, <span key="v">{inv.venue.name}</span>],
+                [inv.texts.event.address, <span key="a">{inv.venue.address}</span>],
               ]}
             />
           )}
@@ -255,7 +268,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
                 <path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" />
                 <circle cx="12" cy="10" r="2.5" />
               </svg>
-              BUKA PETA
+              {inv.texts.event.map}
             </a>
           )}
           <p className="mt-10 max-w-[40ch] font-display text-lg leading-snug italic">{inv.honor}</p>
@@ -281,16 +294,16 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
     <section className="relative overflow-hidden bg-inv-night py-24 text-inv-paper lg:py-32">
       <Wrap>
         <div className="text-center">
-          <Label className="text-inv-gold-light">{inv.headings.countdown.label}</Label>
-          <p className="mx-auto mt-3 max-w-[18ch] font-display text-[clamp(32px,8vw,52px)] leading-[1.05]">{inv.headings.countdown.title}</p>
-          <p className="mt-3 text-[13px] text-inv-paper/60">{inv.headings.countdown.subtitle}</p>
+          <Label className="text-inv-gold-light">{inv.texts.countdown.label}</Label>
+          <p className="mx-auto mt-3 max-w-[18ch] font-display text-[clamp(32px,8vw,52px)] leading-[1.05]">{inv.texts.countdown.title}</p>
+          <p className="mt-3 text-[13px] text-inv-paper/60">{inv.texts.countdown.subtitle}</p>
         </div>
         <div className="mx-auto mt-14 max-w-[760px]">
-          <TagCountdown target={inv.date} doneText="HARINYA TIBA." />
+          <TagCountdown target={inv.date} doneText={inv.texts.countdown.done} />
         </div>
         <div className="mt-14 flex flex-wrap justify-center gap-3">
           <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
-            SIMPAN KE KALENDER
+            {inv.texts.countdown.calendar}
           </CalendarButton>
         </div>
       </Wrap>
@@ -302,8 +315,8 @@ function GallerySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
-        <Label>{inv.headings.gallery.label}</Label>
-        <Title className="mb-12">{inv.headings.gallery.title}</Title>
+        <Label>{inv.texts.gallery.label}</Label>
+        <Title className="mb-12">{inv.texts.gallery.title}</Title>
         <Gallery photos={inv.gallery} variant="specimen" />
       </Wrap>
     </section>
@@ -316,7 +329,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
       <Wrap className="max-w-[680px]">
         <div className="relative border border-inv-line bg-inv-paper px-6 py-10 shadow-[0_10px_30px_rgba(0,0,0,.06)] sm:px-10">
           <Tape className="-top-2.5 left-1/2 -translate-x-1/2 -rotate-2" />
-          <Label className="mb-6 text-inv-gold">{inv.headings.rsvp.label}</Label>
+          <Label className="mb-6 text-inv-gold">{inv.texts.rsvp.label}</Label>
           <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
         </div>
       </Wrap>
@@ -328,18 +341,18 @@ function Gifts({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
-        <Label>{inv.headings.gifts.label}</Label>
-        <Title className="max-w-[20ch]">{inv.headings.gifts.title}</Title>
-        <p className="mt-4 max-w-[40ch] text-[15px] leading-relaxed text-inv-ink/75">{inv.headings.gifts.subtitle}</p>
+        <Label>{inv.texts.gifts.label}</Label>
+        <Title className="max-w-[20ch]">{inv.texts.gifts.title}</Title>
+        <p className="mt-4 max-w-[40ch] text-[15px] leading-relaxed text-inv-ink/75">{inv.texts.gifts.subtitle}</p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {inv.gifts.map((g) => (
             <div key={g.number} className="border border-inv-line bg-inv-wash">
               <SpecLabel
                 className="border-0"
                 rows={[
-                  ["BANK", g.bank],
-                  ["NOMOR", <span key="n" className="font-display text-[20px] tabular-nums">{g.number}</span>],
-                  ["ATAS NAMA", g.holder],
+                  [inv.texts.gifts.bank, g.bank],
+                  [inv.texts.gifts.number, <span key="n" className="font-display text-[20px] tabular-nums">{g.number}</span>],
+                  [inv.texts.gifts.holder, g.holder],
                 ]}
               />
               <div className="border-t border-inv-line px-4 py-3">
@@ -352,7 +365,7 @@ function Gifts({ inv }: { inv: InvitationView }) {
             <Image src={inv.images.qris} alt="Kode QRIS" width={112} height={112} className="size-28" />
             <div>
               <p className="text-[10px] font-medium tracking-[0.2em] text-inv-gold">QRIS</p>
-              <p className="mt-2 text-[13px] leading-relaxed">Pindai dari aplikasi bank atau e-wallet.</p>
+              <p className="mt-2 text-[13px] leading-relaxed">{inv.texts.gifts.qris}</p>
               <QrisDownload src={inv.images.qris} slug={inv.slug} />
             </div>
           </div>
@@ -369,9 +382,9 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
-        <Label>{inv.headings.wishes.label}</Label>
-        <Title className="max-w-[18ch]">{inv.headings.wishes.title}</Title>
-        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">{inv.headings.wishes.subtitle}</p>
+        <Label>{inv.texts.wishes.label}</Label>
+        <Title className="max-w-[18ch]">{inv.texts.wishes.title}</Title>
+        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">{inv.texts.wishes.subtitle}</p>
         <Wishes slug={inv.slug} initial={wishes} variant="tags" />
       </Wrap>
     </section>
@@ -382,12 +395,18 @@ function Closing({ inv }: { inv: InvitationView }) {
   return (
     <section className="bg-inv-night py-24 text-center text-inv-paper lg:py-32">
       <Wrap className="flex flex-col items-center">
-        <Label className="text-inv-gold-light">{inv.collection.toUpperCase()}</Label>
-        <p className="mt-6 max-w-[18ch] font-display text-[clamp(34px,9vw,60px)] leading-[1.08]">{inv.headings.closing.title}</p>
+        <Label className="text-inv-gold-light uppercase">{inv.texts.closing.label}</Label>
+        <p className="mt-6 max-w-[18ch] font-display text-[clamp(34px,9vw,60px)] leading-[1.08]">{inv.texts.closing.title}</p>
         <p className="mt-12 font-script text-2xl">
-          {inv.groom.name} <span className="font-display italic">&amp;</span> {inv.bride.name}
+          {inv.custom.closing.names ? (
+            inv.texts.closing.names
+          ) : (
+            <>
+              {inv.groom.name} <span className="font-display italic">&amp;</span> {inv.bride.name}
+            </>
+          )}
         </p>
-        <p className="mt-2 text-[12px] tracking-[0.2em] text-inv-paper/70">{inv.dateShort}</p>
+        <p className="mt-2 text-[12px] tracking-[0.2em] text-inv-paper/70">{inv.texts.closing.date}</p>
       </Wrap>
     </section>
   );
@@ -425,7 +444,8 @@ export function HendrawanLarasati({ inv }: { inv: InvitationView }) {
         number: inv.collection.replace("No. ", "NO. "),
         date: inv.dateShort.replace(/ /g, ""),
         place: inv.place,
-        specimen: (inv.specimens[1] ?? inv.specimens[0])?.src ?? inv.images.hero,
+        specimen: inv.specimens.find((s, i) => i > 0 && s.src)?.src || inv.specimens.find((s) => s.src)?.src || inv.images.hero,
+        monogram: inv.monogram,
       }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}

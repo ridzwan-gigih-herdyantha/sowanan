@@ -3,8 +3,8 @@ import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
 import { customFontLinks, resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
-import { THEME_HEADINGS } from "@/themes/headings";
-import { mergeHeadings } from "./headings";
+import { THEME_TEXTS } from "@/themes/texts";
+import { resolveTexts } from "./texts";
 import { RULE_ICONS, type ExtraAnchor, type ExtraKind, type ExtraTone, type InvitationData, type RuleIcon, type SectionKey } from "./schema";
 import { extraAnchors, HEX } from "./spec";
 import { cleanFrames, frameProps } from "./frame";
@@ -152,6 +152,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
   if (!s.specimens.items.length) enabled.specimens = false;
   const frames = cleanFrames(d.frames);
   const dateLong = `${p.weekday}, ${p.day} ${p.month} ${p.year}`;
+  const dateShort = `${p.dd} . ${p.mm} . ${p.yyyy}`;
   const events = d.event.schedule.map((e) => {
     // Tempat sendiri tidak mewarisi peta utama, supaya link tidak menunjuk lokasi lain.
     const own = Boolean(e.venue.trim() || e.address.trim() || e.mapUrl.trim());
@@ -179,7 +180,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     end: d.event.end,
     tz: d.event.timezone,
     dayLabel: p.weekday,
-    dateShort: `${p.dd} . ${p.mm} . ${p.yyyy}`,
+    dateShort,
     dateLong,
     filmStamp: `'${p.yyyy.slice(2)} ${p.mm} ${p.dd}`,
     city: d.event.city,
@@ -208,7 +209,14 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     ayat: d.copy.ayat,
     ayatArti: d.copy.ayatArti,
     ayatSumber: d.copy.ayatSumber,
-    headings: mergeHeadings(THEME_HEADINGS[theme], d.copy.headings),
+    ...resolveTexts(THEME_TEXTS[theme], d.copy.texts, {
+      pria: d.couple.groom.name,
+      wanita: d.couple.bride.name,
+      tanggal: dateShort,
+      hari: dateLong,
+      koleksi: d.copy.collection,
+      tempat: d.event.city,
+    }),
     share: d.share,
     images: {
       hero: u(d.media.hero || d.media.heroWide),

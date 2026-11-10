@@ -110,8 +110,8 @@ export const invitationDataSchema = z.object({
       ayat: str(),
       ayatArti: str(),
       ayatSumber: str(),
-      // Judul section pilihan mempelai per section, kosong berarti bawaan tema. Lihat headings.ts.
-      headings: z.record(z.string(), z.object({ label: str(), title: str(), subtitle: str() }).prefault({})).default({}),
+      // Teks section pilihan mempelai per grup editor, kosong berarti bawaan tema. Lihat texts.ts.
+      texts: z.record(z.string(), z.record(z.string(), z.string())).default({}),
     })
     .prefault({}),
   share: z.object({ description: str(), ogDescription: str() }).prefault({}),

@@ -4,9 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type
 import type { InvitationData } from "@/lib/invitation/schema";
 import type { PostGalleryWindow } from "@/lib/invitation/archive";
 import { packageIssues, postGalleryCap } from "@/lib/invitation/package-check";
-import { HEADING_PARTS, headingPath, type HeadingPart } from "@/lib/invitation/headings";
+import { textPath, TOKENS } from "@/lib/invitation/texts";
 import { checkInvitation, fieldPatterns, forTheme, GROUPS, patternOf, setIn, type Field, type Group, type Issue } from "@/lib/invitation/spec";
-import { THEME_HEADINGS } from "@/themes/headings";
+import { THEME_TEXTS } from "@/themes/texts";
 import type { Settings } from "@/lib/settings/schema";
 import { packageRules, type Purchased } from "@/lib/settings/text";
 import type { BridgeMessage } from "@/app/admin/pratinjau/[slug]/bridge";
@@ -48,6 +48,8 @@ const SETUP = [
 const MORE = new Set(["pasca", "video", "extras", "share"]);
 const TITLES: Record<string, string> = { extras: "Custom sections", share: "Footer & share" };
 const panelOfIssue = (group: string) => (group === "gaya" ? "style" : group);
+
+const TOKEN_NOTE = Object.keys(TOKENS).map((k) => `{${k}}`).join(", ") + " terisi otomatis";
 
 const groupOf = (() => {
   let map: Map<string, string> | null = null;
@@ -213,8 +215,8 @@ export function Editor({ slug, theme, label, published: initialPublished, viewCo
   const jump = useCallback((path: string) => {
     setMobilePreview(false);
     if (path.startsWith("style")) return open("style");
-    // Judul section tidak terdaftar di GROUPS, grupnya dicari dari nama section di path.
-    const g = path.startsWith("copy.headings.") ? GROUPS.find((x) => x.section === path.split(".")[2])?.key : groupOf(path);
+    // Teks section tidak terdaftar di GROUPS, nama grupnya ada di path.
+    const g = path.startsWith("copy.texts.") ? path.split(".")[2] : groupOf(path);
     if (g) setActive(g);
     setFocus(path);
     window.setTimeout(() => {
@@ -413,14 +415,10 @@ export function Editor({ slug, theme, label, published: initialPublished, viewCo
     const lock = lockOf(g);
     const on = isOn(g);
     const fields = forTheme(g.fields, theme);
-    // Judul bawaan tema boleh diganti. Isian kosong memakai bawaan, yang tampil sebagai contoh di kolomnya.
-    const heads = g.section ? THEME_HEADINGS[theme]?.[g.section] : undefined;
-    const headFields: Field[] = heads
-      ? (Object.keys(HEADING_PARTS) as HeadingPart[])
-          .filter((p) => heads[p])
-          .map((p) => ({ kind: "text", path: headingPath(g.section!, p), label: HEADING_PARTS[p], max: p === "label" ? 40 : 160, required: false, placeholder: heads[p] }))
-      : [];
-    const all: Field[] = headFields.length ? [{ kind: "heading", path: `copy.headings.${g.section}`, label: "Judul section, kosong berarti bawaan tema" }, ...headFields, ...fields] : fields;
+    // Teks bawaan tema boleh diganti. Isian kosong memakai bawaan, yang tampil sebagai contoh di kolomnya.
+    const slots = Object.entries(THEME_TEXTS[theme]?.[g.key] ?? {});
+    const textFields: Field[] = slots.map(([slot, [label, value]]) => ({ kind: "text", path: textPath(g.key, slot), label, max: 200, required: false, placeholder: value }));
+    const all: Field[] = textFields.length ? [...fields, { kind: "heading", path: `copy.texts.${g.key}`, label: `Teks section, kosong berarti bawaan tema. ${TOKEN_NOTE}` }, ...textFields] : fields;
     const note = lock ?? (g.key === "pasca" ? limits.postGallery?.note ?? g.note : g.key === "extras" ? "Bagian di luar isi tema, misalnya susunan acara, denah, atau dress code." : g.section ? undefined : g.note);
     return (
       <>
