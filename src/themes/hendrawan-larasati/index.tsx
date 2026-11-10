@@ -104,8 +104,8 @@ function Hero({ inv }: { inv: InvitationView }) {
           <p className="mt-5 font-display text-xl text-inv-gold italic">{inv.latinPair}</p>
           <div className="mx-auto mt-8 flex max-w-md items-center justify-center gap-4 text-[12px] font-medium tracking-[0.22em]">
             <span className="h-px flex-1 bg-inv-line" aria-hidden="true" />
-            <span>{inv.dateShort}</span>
-            <span className="text-inv-gold">{inv.place.toUpperCase()}</span>
+            {inv.texts.hero.date && <span>{inv.texts.hero.date}</span>}
+            {inv.texts.hero.place && <span className="text-inv-gold uppercase">{inv.texts.hero.place}</span>}
             <span className="h-px flex-1 bg-inv-line" aria-hidden="true" />
           </div>
           <Greeting className="mt-5 text-[14px] text-inv-accent" />
@@ -160,7 +160,7 @@ function Couple({ inv }: { inv: InvitationView }) {
             {side.no && <span>{side.no}</span>}
           </span>
           <span className="mt-6 font-display text-[40px] leading-none text-inv-accent">{p.full}</span>
-          <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{p.role.toUpperCase()}</span>
+          <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold uppercase">{p.role}</span>
           <span className="mt-1 text-[15px]">{p.parents}</span>
           {side.favorite && <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{side.favorite}</span>}
           {p.flower && <span className="mt-1 text-[15px] capitalize">{p.flower}</span>}

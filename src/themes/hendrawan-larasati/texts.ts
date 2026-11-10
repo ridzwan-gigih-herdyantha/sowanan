@@ -6,6 +6,8 @@ export const texts: ThemeTexts = {
     number: ["Nomor di pojok kanan atas", "{koleksi}"],
     kicker: ["Label di atas nama", "UNDANGAN PERNIKAHAN"],
     names: ["Nama mempelai", "{pria} & {wanita}"],
+    date: ["Tanggal", "{tanggal}"],
+    place: ["Kota", "{tempat}"],
   },
   couple: {
     label: ["Label kecil", "KEDUA MEMPELAI"],

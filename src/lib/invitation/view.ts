@@ -213,6 +213,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
       pria: d.couple.groom.name,
       wanita: d.couple.bride.name,
       tanggal: dateShort,
+      tanggal_bulan: `${p.dd} ${p.month} ${p.yyyy}`,
       hari: dateLong,
       koleksi: d.copy.collection,
       tempat: d.event.city,

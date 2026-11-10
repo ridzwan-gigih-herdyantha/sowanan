@@ -211,13 +211,14 @@ export function PreviewBridge({ texts, media, sample }: Props) {
   }, [router]);
 
   // Garis memakai warna teksnya sendiri supaya terlihat di latar terang maupun gelap. Jaraknya kecil supaya tidak terpotong
-  // pembungkus yang overflow-nya disembunyikan.
+  // pembungkus yang overflow-nya disembunyikan. Tebalnya 2px karena preview HP dan tablet diperkecil, garis 1px jadi pecahan
+  // piksel yang tergambar tidak rata.
   return (
     <style>{`
       [data-edit]{cursor:text;border-radius:2px;transition:outline-color .15s}
-      [data-edit]:hover{outline:1px dashed currentColor;outline-offset:1px}
+      [data-edit]:hover{outline:2px dashed currentColor;outline-offset:1px}
       [data-edit][contenteditable]{outline:2px solid currentColor;outline-offset:1px;background:rgba(127,127,127,.12)}
-      [data-sample]{outline:1px dashed rgba(200,140,20,.9);outline-offset:1px}
+      [data-sample]{outline:2px dashed rgba(200,140,20,.9);outline-offset:1px}
       img{cursor:pointer}
     `}</style>
   );
