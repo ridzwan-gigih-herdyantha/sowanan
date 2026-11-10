@@ -3,6 +3,8 @@ import { mediaUrl as u } from "@/lib/storage/media";
 import { THEME_MUSIC } from "@/themes/media";
 import { customFontLinks, resolveFonts } from "@/themes/fonts";
 import { resolvePalette } from "@/themes/palettes";
+import { THEME_HEADINGS } from "@/themes/headings";
+import { mergeHeadings } from "./headings";
 import { RULE_ICONS, type ExtraAnchor, type ExtraKind, type ExtraTone, type InvitationData, type RuleIcon, type SectionKey } from "./schema";
 import { extraAnchors, HEX } from "./spec";
 import { cleanFrames, frameProps } from "./frame";
@@ -206,6 +208,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     ayat: d.copy.ayat,
     ayatArti: d.copy.ayatArti,
     ayatSumber: d.copy.ayatSumber,
+    headings: mergeHeadings(THEME_HEADINGS[theme], d.copy.headings),
     share: d.share,
     images: {
       hero: u(d.media.hero || d.media.heroWide),

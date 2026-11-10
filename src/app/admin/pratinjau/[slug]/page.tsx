@@ -5,12 +5,14 @@ import { CustomFontLinks } from "@/components/invitation/custom-font-links";
 import { SkipDoor } from "@/components/invitation/shell";
 import { currentAdmin } from "@/lib/admin-auth";
 import { getInvitation } from "@/lib/invitation/load";
+import { headingPath, type HeadingPart } from "@/lib/invitation/headings";
 import { editableMap, fillPreview } from "@/lib/invitation/preview";
 import { invitationDataSchema } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
 import { mediaUrl } from "@/lib/storage/media";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { THEMES } from "@/themes";
+import { THEME_HEADINGS } from "@/themes/headings";
 import { PreviewBridge } from "./bridge";
 
 export const metadata: Metadata = { title: "Pratinjau", robots: { index: false, follow: false } };
@@ -29,6 +31,10 @@ async function Preview({ params, searchParams }: { params: Promise<{ slug: strin
   const sample = row.theme === slug ? null : ((await getInvitation(row.theme))?.data ?? null);
   const { data, filled } = fillPreview(draft, sample);
   const { texts, media } = editableMap(data, mediaUrl);
+  // Judul bawaan tema juga bisa diklik di preview, hasilnya tersimpan sebagai judul pilihan mempelai.
+  for (const [section, heads] of Object.entries(THEME_HEADINGS[row.theme] ?? {})) {
+    for (const [part, value] of Object.entries(heads)) if (value) texts[headingPath(section, part as HeadingPart)] ||= value;
+  }
   const { Component } = theme;
   const view = toView(slug, data, row.theme);
 

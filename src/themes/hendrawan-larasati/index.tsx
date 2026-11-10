@@ -160,9 +160,9 @@ function Couple({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
-        <Label>KEDUA MEMPELAI</Label>
-        <Title className="max-w-[20ch]">Dua spesimen yang akhirnya satu lembar.</Title>
-        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">Ketuk kartu untuk membaca label di baliknya.</p>
+        <Label>{inv.headings.couple.label}</Label>
+        <Title className="max-w-[20ch]">{inv.headings.couple.title}</Title>
+        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">{inv.headings.couple.subtitle}</p>
         <div className="grid gap-12 md:grid-cols-2 md:gap-8 lg:gap-14">
           {card(inv.groom, "-rotate-1", `${inv.code}-A`)}
           {card(inv.bride, "rotate-1 md:mt-12", `${inv.code}-B`)}
@@ -179,8 +179,8 @@ function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
-        <Label>CERITA</Label>
-        <Title className="mb-12">Arsip perjalanan kami.</Title>
+        <Label>{inv.headings.story.label}</Label>
+        <Title className="mb-12">{inv.headings.story.title}</Title>
         <Story items={inv.story} variant="sheets" />
       </Wrap>
     </section>
@@ -221,7 +221,7 @@ function EventDetails({ inv }: { inv: InvitationView }) {
     <section className="inv-wash py-20 lg:py-28">
       <Wrap className="lg:grid lg:grid-cols-12 lg:gap-x-12">
         <div className="lg:col-span-6">
-          <Label>HARI H</Label>
+          <Label>{inv.headings.event.label}</Label>
           <Title>{inv.dateLong}</Title>
           {inv.agenda ? (
             <Agenda inv={inv} />
@@ -281,9 +281,9 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
     <section className="relative overflow-hidden bg-inv-night py-24 text-inv-paper lg:py-32">
       <Wrap>
         <div className="text-center">
-          <Label className="text-inv-gold-light">MENUJU HARI H</Label>
-          <p className="mx-auto mt-3 max-w-[18ch] font-display text-[clamp(32px,8vw,52px)] leading-[1.05]">Tiga label ini menghitung mundur untuk kami.</p>
-          <p className="mt-3 text-[13px] text-inv-paper/60">Sentuh labelnya.</p>
+          <Label className="text-inv-gold-light">{inv.headings.countdown.label}</Label>
+          <p className="mx-auto mt-3 max-w-[18ch] font-display text-[clamp(32px,8vw,52px)] leading-[1.05]">{inv.headings.countdown.title}</p>
+          <p className="mt-3 text-[13px] text-inv-paper/60">{inv.headings.countdown.subtitle}</p>
         </div>
         <div className="mx-auto mt-14 max-w-[760px]">
           <TagCountdown target={inv.date} doneText="HARINYA TIBA." />
@@ -302,8 +302,8 @@ function GallerySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
-        <Label>GALERI</Label>
-        <Title className="mb-12">Lembar-lembar yang kami simpan.</Title>
+        <Label>{inv.headings.gallery.label}</Label>
+        <Title className="mb-12">{inv.headings.gallery.title}</Title>
         <Gallery photos={inv.gallery} variant="specimen" />
       </Wrap>
     </section>
@@ -316,7 +316,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
       <Wrap className="max-w-[680px]">
         <div className="relative border border-inv-line bg-inv-paper px-6 py-10 shadow-[0_10px_30px_rgba(0,0,0,.06)] sm:px-10">
           <Tape className="-top-2.5 left-1/2 -translate-x-1/2 -rotate-2" />
-          <Label className="mb-6 text-inv-gold">KARTU BALASAN</Label>
+          <Label className="mb-6 text-inv-gold">{inv.headings.rsvp.label}</Label>
           <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
         </div>
       </Wrap>
@@ -328,11 +328,9 @@ function Gifts({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-20 lg:py-28">
       <Wrap>
-        <Label>TANDA KASIH</Label>
-        <Title className="max-w-[20ch]">Doa restu kalian sudah lebih dari cukup.</Title>
-        <p className="mt-4 max-w-[40ch] text-[15px] leading-relaxed text-inv-ink/75">
-          Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut.
-        </p>
+        <Label>{inv.headings.gifts.label}</Label>
+        <Title className="max-w-[20ch]">{inv.headings.gifts.title}</Title>
+        <p className="mt-4 max-w-[40ch] text-[15px] leading-relaxed text-inv-ink/75">{inv.headings.gifts.subtitle}</p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {inv.gifts.map((g) => (
             <div key={g.number} className="border border-inv-line bg-inv-wash">
@@ -371,9 +369,9 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
-        <Label>BUKU TAMU</Label>
-        <Title className="max-w-[18ch]">Gantungkan ucapanmu di sini.</Title>
-        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">Setiap ucapan jadi satu label dalam koleksi kami.</p>
+        <Label>{inv.headings.wishes.label}</Label>
+        <Title className="max-w-[18ch]">{inv.headings.wishes.title}</Title>
+        <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">{inv.headings.wishes.subtitle}</p>
         <Wishes slug={inv.slug} initial={wishes} variant="tags" />
       </Wrap>
     </section>
@@ -385,9 +383,7 @@ function Closing({ inv }: { inv: InvitationView }) {
     <section className="bg-inv-night py-24 text-center text-inv-paper lg:py-32">
       <Wrap className="flex flex-col items-center">
         <Label className="text-inv-gold-light">{inv.collection.toUpperCase()}</Label>
-        <p className="mt-6 max-w-[18ch] font-display text-[clamp(34px,9vw,60px)] leading-[1.08]">
-          Terima kasih telah menjadi bagian dari koleksi ini.
-        </p>
+        <p className="mt-6 max-w-[18ch] font-display text-[clamp(34px,9vw,60px)] leading-[1.08]">{inv.headings.closing.title}</p>
         <p className="mt-12 font-script text-2xl">
           {inv.groom.name} <span className="font-display italic">&amp;</span> {inv.bride.name}
         </p>
