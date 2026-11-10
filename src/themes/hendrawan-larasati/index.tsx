@@ -136,7 +136,8 @@ function Hero({ inv }: { inv: InvitationView }) {
 }
 
 function Couple({ inv }: { inv: InvitationView }) {
-  const card = (p: typeof inv.groom | typeof inv.bride, tilt: string, no: string) => (
+  const t = inv.texts.couple;
+  const card = (p: typeof inv.groom | typeof inv.bride, tilt: string, side: { tag: string; no: string; favorite: string }) => (
     <FlipCard
       label={p.name}
       className={tilt}
@@ -155,15 +156,15 @@ function Couple({ inv }: { inv: InvitationView }) {
       back={
         <span className="flex h-full flex-col border border-inv-line bg-inv-wash p-6 shadow-[0_10px_24px_rgba(0,0,0,.08)]">
           <span className="flex justify-between border-b border-inv-line pb-3 text-[10px] font-medium tracking-[0.2em] text-inv-gold">
-            <span>{inv.texts.couple.tag}</span>
-            <span>No. {no}</span>
+            <span>{side.tag}</span>
+            {side.no && <span>{side.no}</span>}
           </span>
           <span className="mt-6 font-display text-[40px] leading-none text-inv-accent">{p.full}</span>
           <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{p.role.toUpperCase()}</span>
           <span className="mt-1 text-[15px]">{p.parents}</span>
-          <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{inv.texts.couple.favorite}</span>
-          <span className="mt-1 text-[15px] capitalize">{p.flower}</span>
-          <span className="font-display text-lg text-inv-gold italic">{p.latin}</span>
+          {side.favorite && <span className="mt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{side.favorite}</span>}
+          {p.flower && <span className="mt-1 text-[15px] capitalize">{p.flower}</span>}
+          {p.latin && <span className="font-display text-lg text-inv-gold italic">{p.latin}</span>}
           <span className="mt-auto pt-6 text-[10px] font-medium tracking-[0.2em] text-inv-gold">{inv.texts.couple.back}</span>
         </span>
       }
@@ -176,8 +177,8 @@ function Couple({ inv }: { inv: InvitationView }) {
         <Title className="max-w-[20ch]">{inv.texts.couple.title}</Title>
         <p className="mt-3 mb-12 text-[14px] text-inv-ink/70">{inv.texts.couple.subtitle}</p>
         <div className="grid gap-12 md:grid-cols-2 md:gap-8 lg:gap-14">
-          {card(inv.groom, "-rotate-1", `${inv.code}-A`)}
-          {card(inv.bride, "rotate-1 md:mt-12", `${inv.code}-B`)}
+          {card(inv.groom, "-rotate-1", { tag: t.tagGroom, no: t.numberGroom, favorite: t.favoriteGroom })}
+          {card(inv.bride, "rotate-1 md:mt-12", { tag: t.tagBride, no: t.numberBride, favorite: t.favoriteBride })}
         </div>
         <p className="mx-auto mt-16 max-w-[32ch] text-center font-display text-[clamp(22px,5.5vw,30px)] leading-snug text-inv-accent italic">
           {inv.quote}

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type
 import type { InvitationData } from "@/lib/invitation/schema";
 import type { PostGalleryWindow } from "@/lib/invitation/archive";
 import { packageIssues, postGalleryCap } from "@/lib/invitation/package-check";
-import { textPath, TOKENS } from "@/lib/invitation/texts";
+import { HIDE, textPath, TOKENS } from "@/lib/invitation/texts";
 import { checkInvitation, fieldPatterns, forTheme, GROUPS, patternOf, setIn, type Field, type Group, type Issue } from "@/lib/invitation/spec";
 import { THEME_TEXTS } from "@/themes/texts";
 import type { Settings } from "@/lib/settings/schema";
@@ -49,7 +49,7 @@ const MORE = new Set(["pasca", "video", "extras", "share"]);
 const TITLES: Record<string, string> = { extras: "Custom sections", share: "Footer & share" };
 const panelOfIssue = (group: string) => (group === "gaya" ? "style" : group);
 
-const TOKEN_NOTE = Object.keys(TOKENS).map((k) => `{${k}}`).join(", ") + " terisi otomatis";
+const TOKEN_NOTE = Object.keys(TOKENS).map((k) => `{${k}}`).join(", ") + ` terisi otomatis, isi ${HIDE} untuk menyembunyikan`;
 
 const groupOf = (() => {
   let map: Map<string, string> | null = null;

@@ -216,6 +216,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
       hari: dateLong,
       koleksi: d.copy.collection,
       tempat: d.event.city,
+      kode: `${p.dd}${p.mm}`,
     }),
     share: d.share,
     images: {

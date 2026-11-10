@@ -8,7 +8,10 @@ export const TOKENS = {
   hari: "hari dan tanggal lengkap",
   koleksi: "nomor koleksi",
   tempat: "kota",
+  kode: "kode tanggal (hari dan bulan)",
 } as const;
+// Isian berisi tanda ini menyembunyikan teksnya.
+export const HIDE = "-";
 export type TokenValues = Record<keyof typeof TOKENS, string>;
 
 // [nama isian di editor, teks bawaan]
@@ -29,7 +32,7 @@ export function resolveTexts(defs: ThemeTexts = {}, own: Record<string, Record<s
     custom[group] = {};
     for (const [slot, [, value]] of Object.entries(slots)) {
       const mine = own[group]?.[slot]?.trim() ?? "";
-      texts[group][slot] = fill(mine || value, vars);
+      texts[group][slot] = mine === HIDE ? "" : fill(mine || value, vars);
       custom[group][slot] = Boolean(mine);
     }
   }
