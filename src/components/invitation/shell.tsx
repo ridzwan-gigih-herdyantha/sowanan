@@ -123,7 +123,7 @@ type Door =
   | ({ kind: "elaris" } & Omit<ElarisDoorProps, "invited" | "open" | "onOpen">)
   | { kind: "seal"; couple: string; monogram: string; seal: string }
   | { kind: "walls"; groom: string; bride: string; date: string }
-  | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string }
+  | { kind: "vellum"; groom: string; bride: string; number: string; date: string; place: string; specimen: string; monogram: string }
   | ({ kind: "kelir" } & Omit<KelirProps, "invited" | "onOpen">)
   | ({ kind: "pintu" } & Omit<PintuProps, "invited" | "onOpen">)
   | ({ kind: "medali" } & Omit<MedaliProps, "invited" | "onOpen">)
@@ -409,7 +409,11 @@ export function InvitationShell({ door, music, synth, className, style, children
                 </div>
                 <div className="flex items-end gap-4 px-5 pt-4 pb-5">
                   <div className="relative h-20 w-16 shrink-0 rotate-3 border border-inv-line bg-inv-paper p-1">
-                    <Image src={door.specimen} alt="" width={64} height={80} className="size-full object-cover" />
+                    {door.specimen ? (
+                      <Image src={door.specimen} alt="" width={64} height={80} className="size-full object-cover" />
+                    ) : (
+                      <span className="flex size-full items-center justify-center font-display text-[13px] text-inv-accent">{door.monogram}</span>
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <span className="block text-[10px] font-medium tracking-[0.2em] text-inv-gold">DIKUMPULKAN UNTUK</span>
