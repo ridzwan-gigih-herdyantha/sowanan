@@ -125,7 +125,7 @@ export const invitationDataSchema = z.object({
       custom: z.object({ paper: str(), accent: str(), ink: str(), surface: str(), muted: str() }).prefault({}),
     })
     .prefault({}),
-  // Foto dari add-on galeri pasca acara, tampil di akhir Galeri. Terpisah dari batas foto paket.
+  // Foto dari add-on galeri pasca acara, tampil sebagai bagian sendiri setelah Galeri. Terpisah dari batas foto paket.
   postGallery: list(photo),
   // Tautan YouTube dari add-on video. Satu video per undangan, tanpa unggah berkas.
   video: str(),

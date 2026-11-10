@@ -17,6 +17,28 @@ export function prettyWa(n: string) {
 
 export const visiblePackages = (s: Settings): PackageId[] => PACKAGE_IDS.filter((p) => s.packages[p].on);
 
+// Paket yang disebut di kolom "Berlaku untuk" add-on, misalnya "Dasar dan Lengkap".
+// Teks tanpa nama paket, seperti "Semua paket" atau keterangan domain, berarti berlaku untuk semua paket.
+export function addonPackages(scope: string): PackageId[] {
+  const named = PACKAGE_IDS.filter((p) => new RegExp(`\\b${PACKAGE_NAMES[p]}\\b`).test(scope));
+  return named.length ? named : [...PACKAGE_IDS];
+}
+
+// Fitur yang dibuka add-on ini sudah jadi benefit paket, jadi tidak perlu dibeli.
+// Hanya add-on yang membuka fitur. Add-on berjumlah, seperti tambah foto, tetap menambah kuota.
+export function addonIncluded(s: Pick<Settings, "matrix">, a: Settings["addons"][number], pkg: PackageId): boolean {
+  if (!(FEATURE_KEYS as readonly string[]).includes(a.unlock)) return false;
+  return !!s.matrix.find((r) => r.key === a.unlock)?.cells[pkg].on;
+}
+
+// Add-on bisa dijual ke paket ini: tidak dikecualikan, paketnya disebut di "Berlaku untuk",
+// dan fitur yang dibukanya belum termasuk paket.
+export function addonFits(s: Pick<Settings, "matrix">, a: Settings["addons"][number], pkg: PackageId): boolean {
+  if (ADDON_EXCLUDED[a.unlock]?.includes(pkg)) return false;
+  if (!addonPackages(a.scope).includes(pkg)) return false;
+  return !addonIncluded(s, a, pkg);
+}
+
 export function lowestPrice(s: Settings): number {
   return Math.min(...visiblePackages(s).map((p) => s.packages[p].price));
 }

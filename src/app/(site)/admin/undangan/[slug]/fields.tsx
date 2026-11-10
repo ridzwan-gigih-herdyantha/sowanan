@@ -4,7 +4,7 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import { slotOfPath, type Frame, type FrameDevice } from "@/lib/invitation/frame";
 import type { InvitationData } from "@/lib/invitation/schema";
 import { TIMEZONES } from "@/lib/invitation/schema";
-import { extraAnchors, forTheme, getIn, HEX, itemFields, setIn, variantFor, type Field } from "@/lib/invitation/spec";
+import { extraAnchors, forTheme, getIn, HEX, isoToLongDate, itemFields, longDateToIso, setIn, variantFor, type Field } from "@/lib/invitation/spec";
 import { mediaUrl, PURPOSES } from "@/lib/storage/media";
 import { ACCEPT, useUploader, type UploadResult } from "../../media/use-uploader";
 import { FrameDialog } from "./frame-dialog";
@@ -368,6 +368,13 @@ export function FieldInput({ f, path }: { f: Field; path: string }) {
                 aria-label={`Pilih ${f.label.toLowerCase()}`}
               />
             </span>
+          </Label>
+        );
+      }
+      if (f.format === "longdate") {
+        return (
+          <Label f={f} path={path} err={err}>
+            <input type="date" value={longDateToIso(String(value ?? ""))} onChange={(e) => set(isoToLongDate(e.target.value))} className={input(err)} />
           </Label>
         );
       }

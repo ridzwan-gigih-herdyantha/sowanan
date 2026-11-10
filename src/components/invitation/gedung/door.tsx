@@ -3,9 +3,10 @@
 import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { Joystick } from "./joystick";
-import { aimCamera, shift, turn, type Camera, type Facing } from "./motion";
+import { aimCamera, clearTap, markTap, shift, turn, type Camera, type Facing } from "./motion";
+import { newDodge } from "../pathing";
 import { useButtonSfx } from "./sfx";
-import { ARCH_BEAM, archSide, behindArch, DOOR_TARGET, MAP_H, MAP_W, move, NEAR_RADIUS, reachable, SPAWN, SPEED, type Point } from "./world";
+import { ARCH_BEAM, archSide, behindArch, DOOR_TARGET, MAP_H, MAP_W, NEAR_RADIUS, route, SPAWN, SPEED, steer, walk, type Point } from "./world";
 
 export type GedungProps = {
   groom: string;
@@ -79,11 +80,12 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   const bodyRef = useRef<HTMLDivElement>(null);
   const archRef = useRef<HTMLDivElement>(null);
   const camRef = useRef<HTMLDivElement>(null);
+  const tapRef = useRef<HTMLDivElement>(null);
   const joyRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   useButtonSfx(rootRef);
   const pos = useRef<Point>({ ...SPAWN });
-  const target = useRef<Point | null>(null);
+  const target = useRef<Point[] | null>(null);
   const keys = useRef(new Set<string>());
   const dragging = useRef(false);
   const joy = useRef({ x: 0, y: 0 });
@@ -124,6 +126,7 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
     let last = performance.now();
     let raf = 0;
     let near = false;
+    const dodge = newDodge();
 
     const loop = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
@@ -145,23 +148,14 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
         vy = joy.current.y;
         power = Math.min(1, jm);
         target.current = null;
-      } else if (target.current) {
-        const dx = target.current.x - p.x;
-        const dy = target.current.y - p.y;
-        const d = Math.hypot(dx, dy);
-        if (d < 5) target.current = null;
-        else {
-          vx = dx / d;
-          vy = dy / d;
-        }
       }
-      let moving = false;
-      if ((vx || vy) && !enteringRef.current) {
-        const len = Math.hypot(vx, vy);
-        moving = move(p, (vx / len) * SPEED * power * dt, (vy / len) * SPEED * power * dt);
-        if (!moving) target.current = null;
-        else turn(face, vx, vy);
-      }
+      // Ketukan membawa rutenya sendiri; tombol dan joystick memutari rintangan di depannya lewat steer.
+      const step = SPEED * power * dt;
+      const dir = enteringRef.current ? null : walk(target.current ?? steer(dodge, p, vx, vy, step), p, step);
+      const moving = dir !== null;
+      if (dir) turn(face, dir.x, dir.y);
+      else target.current = null;
+      clearTap(tapRef.current, !target.current, now);
       if (moving) {
         walked += dt;
         still = 0;
@@ -207,20 +201,22 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
   }, [chosen, choosing]);
 
   // Ketukan atau seretan di peta menjadi titik tujuan, diubah ke koordinat gambar peta.
-  const aim = (e: PointerEvent) => {
+  const aim = (e: PointerEvent, fresh: boolean) => {
     const stage = stageRef.current;
     if (!stage) return;
     const r = stage.getBoundingClientRect();
     const to = { x: ((e.clientX - r.left) / r.width) * MAP_W, y: ((e.clientY - r.top) / r.height) * MAP_H };
-    target.current = reachable(pos.current, to);
+    const path = route(pos.current, to);
+    target.current = path;
+    markTap(tapRef.current, path[path.length - 1], MAP_W, MAP_H, fresh);
   };
   const onDown = (e: PointerEvent) => {
     if (!chosen || enteringRef.current) return;
     dragging.current = true;
     e.currentTarget.setPointerCapture(e.pointerId);
-    aim(e);
+    aim(e, true);
   };
-  const onMove = (e: PointerEvent) => dragging.current && aim(e);
+  const onMove = (e: PointerEvent) => dragging.current && aim(e, false);
   const onUp = () => (dragging.current = false);
 
   const pickHero = (who: Pick) => {
@@ -276,6 +272,8 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
             </p>
           </div>
         </div>
+
+        <div ref={tapRef} aria-hidden="true" className="gd-tap z-[1]" />
 
         {chosen && (
           <div

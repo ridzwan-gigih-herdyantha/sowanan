@@ -1,3 +1,5 @@
+import { makePathing } from "../pathing";
+
 // Dunia cover: koordinat dalam piksel peta (1672 x 941), jadi tetap pas di ukuran layar apa pun. Gambarnya town.png,
 // digambar scripts/piksel-assets.ts dengan geometri yang sama. l sejajar jalan menuju pintu, s melintang jalan.
 export const MAP_W = 1672;
@@ -93,25 +95,14 @@ export function makeWorld(areas: Area[], bodyR = 11, holes: Area[] = []) {
     return moved;
   }
 
-  // Titik tujuan yang bisa dicapai: kalau yang diketuk rintangan, ambil titik berjalan terdekat di garis dari
-  // karakter ke titik itu.
-  function reachable(from: Point, to: Point): Point {
-    if (canStand(to)) return to;
-    for (let t = 0.02; t <= 1; t += 0.02) {
-      const p = { x: to.x + (from.x - to.x) * t, y: to.y + (from.y - to.y) * t };
-      if (canStand(p)) return p;
-    }
-    return from;
-  }
-
-  return { walkable, canStand, move, reachable };
+  return { walkable, canStand, move, ...makePathing(canStand, move, areas) };
 }
 
 // Kecepatan jalan dalam piksel gambar per detik.
 export const SPEED = 300;
 
 const cover = makeWorld(AREAS);
-export const { walkable, canStand, move, reachable } = cover;
+export const { walkable, canStand, move, route, steer, walk } = cover;
 
 // Karakter yang sudah melewati garis gapura berada di belakangnya, jadi tiang dan baloknya harus menutupi dia.
 export const behindArch = (p: Point) => (p.x - TOWN.x0 - 2 * (p.y - TOWN.y0)) / 2 > TOWN.gateL;

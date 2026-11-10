@@ -61,10 +61,10 @@ export function DuplicateButton({ slug, children }: { slug: string; children: (o
           ) : info ? (
             <>
               <p>
-                <b className="font-medium text-ink">Ikut tersalin:</b> tema, paket, palet, font, foto, cerita, musik, dan rekening amplop.
+                <b className="font-medium text-ink">Ikut tersalin:</b> tema, paket, palet, font, data mempelai, foto, cerita, musik, dress code, imbauan, dan rekening amplop.
               </p>
               <p className="mt-1.5">
-                <b className="font-medium text-ink">Diisi ulang:</b> tanggal, jam, lokasi, susunan acara, dan daftar tamu.
+                <b className="font-medium text-ink">Diisi ulang:</b> tanggal, jam, lokasi, foto tempat, susunan acara, denah, siaran, deskripsi link, dan daftar tamu.
               </p>
               <p className="mt-1.5">RSVP, ucapan, dan QR absensi terpisah. Undangan baru belum tayang sampai datanya lengkap.</p>
             </>

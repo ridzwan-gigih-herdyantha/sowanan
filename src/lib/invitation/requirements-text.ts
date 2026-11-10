@@ -22,6 +22,17 @@ const LABELS: Record<string, string> = {
   "event.rsvpDeadline": "Batas konfirmasi kehadiran",
 };
 
+// Catatan di akhir bagian, dipisah baris kosong karena WhatsApp tidak mempertahankan indentasi kalimat panjang.
+const SECTION_NOTES: Record<string, string> = {
+  couple: [
+    "_Catatan untuk nama orang tua_",
+    "Mohon maaf sebelumnya, bila ada orang tua yang telah berpulang, mohon sertakan sebutannya di depan nama:",
+    "- Alm. (bapak) atau Almh. (ibu) untuk yang beragama Islam",
+    "- Mendiang untuk agama lain",
+    "- Atau sebutan yang biasa dipakai keluarga",
+  ].join("\n"),
+};
+
 function lineOf(r: ReqRow, rules: PackageRules) {
   const label = LABELS[r.key] ?? r.label;
   // Judul kelompok tanpa isian, misalnya Mempelai pria.
@@ -56,7 +67,8 @@ export function requirementsText(theme: string, themeName: string, rules: Packag
   const { sections } = requirements(theme, rules, chosen?.data ?? invitationDataSchema.parse({}), chosen?.skip);
   const blocks = sections.flatMap((s) => {
     const rows = s.rows.filter((r) => !HIDDEN.has(r.key));
-    return rows.length ? [`*${s.title}*\n${rows.map((r) => lineOf(r, rules)).join("\n")}`] : [];
+    const note = SECTION_NOTES[s.key] ? `\n\n${SECTION_NOTES[s.key]}` : "";
+    return rows.length ? [`*${s.title}*\n${rows.map((r) => lineOf(r, rules)).join("\n")}${note}`] : [];
   });
   blocks.push(`*Warna dan font*\n- ${styleLine(rules)} (opsional)`);
   // Add-on dan bagian tambahan sudah dipilih admin kalau ada chosen, jadi tawarannya tidak perlu disebut lagi.

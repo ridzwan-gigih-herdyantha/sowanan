@@ -11,7 +11,7 @@ import { invitationRules } from "@/lib/invitation/rules";
 import { emptyInvitationData, invitationDataSchema, type InvitationData } from "@/lib/invitation/schema";
 import { checkInvitation, type Issue } from "@/lib/invitation/spec";
 import { ADDON_EXCLUDED } from "@/lib/settings/schema";
-import { getSettingsFresh, PACKAGE_IDS, PACKAGE_NAMES, packageRules, themeAvailable, type PackageId, type Purchased, type Settings } from "@/lib/settings";
+import { addonFits, getSettingsFresh, PACKAGE_IDS, PACKAGE_NAMES, packageRules, themeAvailable, type PackageId, type Purchased, type Settings } from "@/lib/settings";
 import { validateSlug } from "@/lib/reserved-slugs";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { BUCKET } from "@/lib/storage/media";
@@ -162,9 +162,17 @@ export async function setPackage(slug: string, pkg: string): Promise<Result> {
 // Add-on yang sudah dibayar. Hanya id add-on di pengaturan yang disimpan, jumlahnya 0 sampai 20 unit.
 export async function setAddons(slug: string, addons: Purchased): Promise<Result> {
   if (!(await currentAdmin())) return { ok: false, error: SESSION_ENDED };
-  const { data: row } = await supabaseAdmin().from("invitations").select("package").eq("slug", slug).maybeSingle();
+  const { data: row } = await supabaseAdmin().from("invitations").select("package, addons").eq("slug", slug).maybeSingle();
   // Add-on yang tidak tersedia untuk paket undangan ini tidak disimpan, supaya tidak ikut terhitung di tagihan.
-  const known = new Set((await getSettingsFresh()).addons.filter((a) => !ADDON_EXCLUDED[a.unlock]?.includes(row?.package ?? "")).map((a) => a.id));
+  // Yang sudah tersimpan sebelum paket diganti tetap dipertahankan sampai admin melepasnya.
+  const settings = await getSettingsFresh();
+  const pkg = (PACKAGE_IDS as readonly string[]).includes(row?.package ?? "") ? (row!.package as PackageId) : null;
+  const saved = (row?.addons as Purchased | null) ?? {};
+  const known = new Set(
+    settings.addons
+      .filter((a) => !ADDON_EXCLUDED[a.unlock]?.includes(row?.package ?? "") && (!pkg || addonFits(settings, a, pkg) || (saved[a.id] ?? 0) > 0))
+      .map((a) => a.id),
+  );
   const clean: Purchased = {};
   for (const [id, n] of Object.entries(addons ?? {})) {
     const units = Math.floor(Number(n));
