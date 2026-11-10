@@ -8,6 +8,7 @@ import { isDemo } from "@/lib/invitation/archive";
 import { invitationRules } from "@/lib/invitation/rules";
 import { invitationDataSchema } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
+import { SITE_URL } from "@/lib/site";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { invitationLabel, THEME_NAMES } from "@/themes/media";
 import { LoginForm } from "../../../login-form";
@@ -69,7 +70,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
         )}
         <GuestManager
           slug={slug}
-          origin={process.env.NEXT_PUBLIC_SITE_URL || "https://sowanan.com"}
+          origin={SITE_URL}
           initial={guests}
           template={row.guest_message ?? DEFAULT_GUEST_MESSAGE}
           couple={couple}
