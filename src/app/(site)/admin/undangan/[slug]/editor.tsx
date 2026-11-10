@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type
 import type { InvitationData } from "@/lib/invitation/schema";
 import type { PostGalleryWindow } from "@/lib/invitation/archive";
 import { packageIssues, postGalleryCap } from "@/lib/invitation/package-check";
-import { HIDE, textPath, TOKENS } from "@/lib/invitation/texts";
+import { DATE_TOKENS, dateTokenOf, HIDE, isDateSlot, textPath, TOKENS } from "@/lib/invitation/texts";
 import { checkInvitation, fieldPatterns, forTheme, GROUPS, patternOf, setIn, type Field, type Group, type Issue } from "@/lib/invitation/spec";
 import { THEME_TEXTS } from "@/themes/texts";
 import type { Settings } from "@/lib/settings/schema";
@@ -417,7 +417,11 @@ export function Editor({ slug, theme, label, published: initialPublished, viewCo
     const fields = forTheme(g.fields, theme);
     // Teks bawaan tema boleh diganti. Isian kosong memakai bawaan, yang tampil sebagai contoh di kolomnya.
     const slots = Object.entries(THEME_TEXTS[theme]?.[g.key] ?? {});
-    const textFields: Field[] = slots.map(([slot, [label, value]]) => ({ kind: "text", path: textPath(g.key, slot), label, max: 200, required: false, placeholder: value }));
+    const textFields: Field[] = slots.map(([slot, [label, value]]) =>
+      isDateSlot(value)
+        ? { kind: "datetext", path: textPath(g.key, slot), label, required: false, fallback: DATE_TOKENS[dateTokenOf(value)] }
+        : { kind: "text", path: textPath(g.key, slot), label, max: 200, required: false, placeholder: value },
+    );
     const all: Field[] = textFields.length ? [...fields, { kind: "heading", path: `copy.texts.${g.key}`, label: `Teks section, kosong berarti bawaan tema. ${TOKEN_NOTE}` }, ...textFields] : fields;
     const note = lock ?? (g.key === "pasca" ? limits.postGallery?.note ?? g.note : g.key === "extras" ? "Bagian di luar isi tema, misalnya susunan acara, denah, atau dress code." : g.section ? undefined : g.note);
     return (

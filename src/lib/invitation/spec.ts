@@ -34,6 +34,8 @@ export type Field =
   | (Base & { kind: "number"; min: number; max: number })
   | (Base & { kind: "anchor" })
   | (Base & { kind: "heading" })
+  // Teks tanggal: pemilih tanggal dan format. fallback adalah format bawaan tema.
+  | (Base & { kind: "datetext"; fallback: string })
   | (Base & { kind: "list"; item: string; fields: Field[]; blank: Record<string, unknown>; min?: number; max?: number; variants?: Variants });
 
 export type Group = { key: string; title: string; section?: SectionKey; themes?: string[]; note?: string; fields: Field[] };

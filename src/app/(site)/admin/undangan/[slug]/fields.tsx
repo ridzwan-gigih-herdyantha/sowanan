@@ -5,6 +5,7 @@ import { slotOfPath, type Frame, type FrameDevice } from "@/lib/invitation/frame
 import type { InvitationData } from "@/lib/invitation/schema";
 import { TIMEZONES } from "@/lib/invitation/schema";
 import { extraAnchors, forTheme, getIn, HEX, isoToLongDate, itemFields, longDateToIso, setIn, variantFor, type Field } from "@/lib/invitation/spec";
+import { DATE_FORMATS, dateCode, formatDate, HIDE, isoParts, parseDateCode } from "@/lib/invitation/texts";
 import { mediaUrl, PURPOSES } from "@/lib/storage/media";
 import { ACCEPT, useUploader, type UploadResult } from "../../media/use-uploader";
 import { FrameDialog } from "./frame-dialog";
@@ -307,6 +308,51 @@ function ListInput({ f, path }: { f: Extract<Field, { kind: "list" }>; path: str
   );
 }
 
+// Teks tanggal: pemilih tanggal dan format. Selama keduanya bawaan isiannya kosong, jadi ikut tema dan tanggal acara.
+function DateText({ f, path }: { f: Extract<Field, { kind: "datetext" }>; path: string }) {
+  const { data, update, errors } = useForm();
+  const err = errors[path];
+  const value = String(getIn(data, path) ?? "");
+  const set = (v: string) => update((d) => setIn(d, path, v));
+  const code = parseDateCode(value);
+  const eventDay = data.event.start.slice(0, 10);
+  const day = code?.date || eventDay;
+  const parts = isoParts(day);
+  const sample = (fmt: string) => (parts ? formatDate(parts, fmt) : fmt);
+  const fmt = value === HIDE ? HIDE : (code?.fmt ?? "");
+  const save = (nextFmt: string, nextDay: string) => {
+    if (nextFmt === HIDE) return set(HIDE);
+    const own = nextDay && nextDay !== eventDay ? nextDay : "";
+    set(!nextFmt && !own ? "" : dateCode(nextFmt || f.fallback, own));
+  };
+  // Teks yang diketik langsung di preview tetap dipakai sampai tanggal atau formatnya diatur lagi di sini.
+  const typed = value && value !== HIDE && !code;
+  return (
+    <Label f={f} path={path} err={err}>
+      <span className="mt-2 grid gap-2">
+        <input type="date" value={day} onChange={(e) => save(fmt === HIDE ? "" : fmt, e.target.value)} className={input(err).replace("mt-2", "")} />
+        <select value={typed ? "" : fmt} onChange={(e) => save(e.target.value, code?.date ?? "")} aria-label={`Format ${f.label.toLowerCase()}`} className={input(err).replace("mt-2", "")}>
+          <option value="">{sample(f.fallback)} (bawaan tema)</option>
+          {DATE_FORMATS.filter((x) => x !== f.fallback).map((x) => (
+            <option key={x} value={x}>
+              {sample(x)}
+            </option>
+          ))}
+          <option value={HIDE}>Sembunyikan</option>
+        </select>
+      </span>
+      {typed && (
+        <span className="mt-1.5 block text-[13px] font-normal text-ink-mute">
+          Diketik langsung: {value}.{" "}
+          <button type="button" onClick={() => set("")} className="text-wine underline underline-offset-4">
+            Kembalikan ke bawaan
+          </button>
+        </span>
+      )}
+    </Label>
+  );
+}
+
 export function FieldInput({ f, path }: { f: Field; path: string }) {
   const { theme, data, update, errors, locks } = useForm();
   const err = errors[path];
@@ -391,6 +437,8 @@ export function FieldInput({ f, path }: { f: Field; path: string }) {
           />
         </Label>
       );
+    case "datetext":
+      return <DateText f={f} path={path} />;
     case "number":
       return (
         <Label f={f} path={path} err={err}>

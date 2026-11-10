@@ -220,7 +220,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
       koleksi: d.copy.collection,
       tempat: d.event.city,
       kode: `${p.dd}${p.mm}`,
-    }),
+    }, { y: +p.yyyy, m: +p.mm, d: +p.dd }),
     share: d.share,
     images: {
       hero: u(d.media.hero || d.media.heroWide),
