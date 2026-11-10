@@ -210,12 +210,14 @@ export function PreviewBridge({ texts, media, sample }: Props) {
     };
   }, [router]);
 
+  // Garis memakai warna teksnya sendiri supaya terlihat di latar terang maupun gelap. Jaraknya kecil supaya tidak terpotong
+  // pembungkus yang overflow-nya disembunyikan.
   return (
     <style>{`
       [data-edit]{cursor:text;border-radius:2px;transition:outline-color .15s}
-      [data-edit]:hover{outline:1px dashed rgba(122,31,52,.7);outline-offset:3px}
-      [data-edit][contenteditable]{outline:2px solid #7a1f34;outline-offset:3px;background:rgba(255,255,255,.12)}
-      [data-sample]{outline:1px dashed rgba(200,140,20,.9);outline-offset:3px}
+      [data-edit]:hover{outline:1px dashed currentColor;outline-offset:1px}
+      [data-edit][contenteditable]{outline:2px solid currentColor;outline-offset:1px;background:rgba(127,127,127,.12)}
+      [data-sample]{outline:1px dashed rgba(200,140,20,.9);outline-offset:1px}
       img{cursor:pointer}
     `}</style>
   );
