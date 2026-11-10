@@ -7,6 +7,7 @@ import { useCloseInvitation } from "../shell";
 import { CELL, footAnchor, HERO_H, KEYS, sprite, STEPS, STEP_FPS, STEP_GRACE, type Pick } from "./door";
 import { BOOTH, boothArt, type BoothKind } from "./booth";
 import { COUPLE, FLOOR_OUTLINE, IN_H, IN_NEAR, IN_SPAWN, IN_W, interiorWorld, obstacles, placePois, poiDistance, type PoiId, STAGE } from "./interior-world";
+import { HALL_PROPS, PROPS_ATLAS, PROPS_H, PROPS_W } from "./hall-props-data";
 import { NPC_SHEETS, NPCS, npcStart, stepNpc, type NpcState } from "./interior-npcs";
 import { Joystick } from "./joystick";
 import { aimCamera, clearTap, markTap, shift, turn, type Camera, type Facing } from "./motion";
@@ -39,6 +40,30 @@ function talk(tick: number) {
   });
 }
 const MAP = "/img/dimas-salsa/hall.png";
+
+// Isi aula tidak pernah berubah, jadi cukup dibuat sekali. Tanaman bergoyang dan lampu berkelip lewat animasi CSS.
+const HALL_PIECES = HALL_PROPS.map(([sx, sy, w, h, x, y, foot, sway, per, ph], i) => (
+  <div
+    key={i}
+    aria-hidden="true"
+    className={`pointer-events-none absolute bg-no-repeat ${sway > 0 ? "gd-sway" : sway < 0 ? "gd-twinkle" : ""}`}
+    style={
+      {
+        left: `${(x / PROPS_W) * 100}%`,
+        top: `${(y / PROPS_H) * 100}%`,
+        width: `${(w / PROPS_W) * 100}%`,
+        height: `${(h / PROPS_H) * 100}%`,
+        zIndex: foot >= 9000 ? 1700 : foot,
+        backgroundImage: `url(${PROPS_ATLAS.src})`,
+        backgroundSize: `${(PROPS_ATLAS.w / w) * 100}% ${(PROPS_ATLAS.h / h) * 100}%`,
+        backgroundPosition: `${(sx / Math.max(1, PROPS_ATLAS.w - w)) * 100}% ${(sy / Math.max(1, PROPS_ATLAS.h - h)) * 100}%`,
+        "--gd-sway": `calc(var(--gd-w) * ${((Math.abs(sway) * 2.4) / IN_W).toFixed(5)})`,
+        animationDuration: per ? `${per}s` : undefined,
+        animationDelay: per ? `-${(ph % 6.28) * per * 0.16}s` : undefined,
+      } as CSSProperties
+    }
+  />
+));
 
 // Karakter yang dipilih di cover disimpan di sessionStorage oleh PikselDoor.
 function savedHero(): Pick {
@@ -301,7 +326,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
     <div ref={rootRef} className="gd-interior fixed inset-0 z-40 overflow-hidden bg-[#2a1c1e] text-inv-ink">
       <div ref={camRef} className="gd-pixel absolute top-0 left-0 will-change-transform" style={camera}>
       <div ref={stageRef} className="absolute inset-0 isolate touch-none" onPointerDown={onDown} onPointerMove={(e) => dragging.current && aim(e, false)} onPointerUp={() => (dragging.current = false)} onPointerCancel={() => (dragging.current = false)}>
-        <Image src={MAP} alt="" fill sizes="100vw" draggable={false} className="pointer-events-none object-cover select-none" />
+        <Image src={MAP} alt="" fill unoptimized sizes="100vw" draggable={false} className="pointer-events-none object-cover select-none" />
         <div ref={tapRef} aria-hidden="true" className="gd-tap z-[1]" />
 
         {debug && (
@@ -318,11 +343,12 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
           </svg>
         )}
 
+        {HALL_PIECES}
         {pois.map((p) =>
           p.booth ? (
             // Urutan tumpuk mengikuti titik tapak: yang lebih bawah di layar tergambar di depan.
             <div key={p.id} className="pointer-events-none absolute" style={{ ...boxOf(p.booth.c), zIndex: Math.round(p.booth.c.y) }}>
-              <Image src={boothArt(p.booth.kind)} alt="" fill sizes="25vw" draggable={false} className="object-contain select-none" />
+              <Image src={boothArt(p.booth.kind)} alt="" fill unoptimized sizes="25vw" draggable={false} className="object-contain select-none" />
             </div>
           ) : null,
         )}
@@ -331,7 +357,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
           className="pointer-events-none absolute"
           style={{ left: `${((COUPLE.x - COUPLE.w / 2) / IN_W) * 100}%`, top: `${((COUPLE.y - COUPLE.h) / IN_H) * 100}%`, width: `${(COUPLE.w / IN_W) * 100}%`, height: `${(COUPLE.h / IN_H) * 100}%`, zIndex: Math.round(COUPLE.y) }}
         >
-          <Image src={COUPLE.src} alt="Pengantin di pelaminan" fill sizes="15vw" draggable={false} className="object-contain select-none" />
+          <Image src={COUPLE.src} alt="Pengantin di pelaminan" fill unoptimized sizes="15vw" draggable={false} className="object-contain select-none" />
         </div>
 
         <div
@@ -361,6 +387,9 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
             </div>
           );
         })}
+
+        {/* Cahaya jendela dan lampu di atas semua isi aula, jadi tamu ikut kena cahaya. */}
+        <Image src="/img/dimas-salsa/hall-light.png" alt="" fill unoptimized sizes="100vw" draggable={false} className="gd-light pointer-events-none z-[1800] object-cover select-none" />
 
         {talk(chatTick).map(({ n, line }) => (
           <span

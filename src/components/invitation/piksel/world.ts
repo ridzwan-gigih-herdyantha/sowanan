@@ -17,12 +17,13 @@ const rect = (l0: number, l1: number, s0: number, s1: number): Area => [townAt(l
 export const SPAWN: Point = townAt(40, 0);
 export const DOOR_TARGET: Point = townAt(474, 0);
 export const NEAR_RADIUS = 80;
-// Titik tengah daun pintu dan papan nama di balok gapura, dalam piksel peta.
+// Titik tengah daun pintu dan muka balok gapura, dalam piksel peta.
 export const DOOR_AT: Point = townAt(TOWN.doorL, 0, 66);
-export const SIGN_AT: Point = townAt(TOWN.gateL, 0, 148);
+export const SIGN_AT: Point = townAt(TOWN.gateL - 14, 0, 153);
 
-// Area yang boleh dilalui: halaman paving, jalan di antara dua tiang gapura sampai depan pintu, dan pelataran tangga.
-const AREAS: Area[] = [rect(-100, 250, -195, 195), rect(240, 490, -62, 62), rect(440, 490, -112, 112)];
+// Area yang boleh dilalui: halaman paving, jalan di antara dua tiang gapura sampai depan pintu, dan pelataran di depan
+// pilar kanopi. Di antara pilar hanya bagian tengah, jadi pilar tidak bisa ditembus.
+const AREAS: Area[] = [rect(-100, 250, -245, 245), rect(240, 490, -62, 62), rect(440, 452, -100, 100)];
 export function inside(p: Point, poly: [number, number][]) {
   let hit = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
@@ -40,7 +41,17 @@ const SLIDES = [0.4, -0.4, 0.8, -0.8, 1.2, -1.2];
 // Dunia berisi himpunan area yang boleh dilalui. bodyR adalah setengah lebar badan karakter: titik di kiri dan
 // kanan kakinya juga harus berada di area. holes adalah rintangan di dalam area, misalnya kios.
 export function makeWorld(areas: Area[], bodyR = 11, holes: Area[] = []) {
-  const walkable = (p: Point) => areas.some((a) => inside(p, a)) && !holes.some((h) => inside(p, h));
+  const bounded = (list: Area[]) =>
+    list.map((poly) => {
+      const xs = poly.map(([x]) => x);
+      const ys = poly.map(([, y]) => y);
+      return { poly, x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
+    });
+  const areaBoxes = bounded(areas);
+  const holeBoxes = bounded(holes);
+  // Kotak pembatas diperiksa dulu, karena pencarian jalan memanggil ini ribuan kali.
+  const hit = (p: Point, b: (typeof areaBoxes)[number]) => p.x >= b.x0 && p.x <= b.x1 && p.y >= b.y0 && p.y <= b.y1 && inside(p, b.poly);
+  const walkable = (p: Point) => areaBoxes.some((b) => hit(p, b)) && !holeBoxes.some((b) => hit(p, b));
   const canStand = (p: Point) => walkable(p) && walkable({ x: p.x - bodyR, y: p.y }) && walkable({ x: p.x + bodyR, y: p.y });
 
   // Menggeser p sejauh (dx, dy) dalam langkah kecil supaya tidak melompati rintangan tipis. Mengembalikan true
@@ -101,7 +112,9 @@ export function makeWorld(areas: Area[], bodyR = 11, holes: Area[] = []) {
 // Kecepatan jalan dalam piksel gambar per detik.
 export const SPEED = 300;
 
-const cover = makeWorld(AREAS);
+// Tiang janur di kanan kiri gerbang.
+const HOLES: Area[] = [rect(236, 256, 140, 160), rect(236, 256, -160, -140)];
+const cover = makeWorld(AREAS, 11, HOLES);
 export const { walkable, canStand, move, route, steer, walk } = cover;
 
 // Karakter yang sudah melewati garis gapura berada di belakangnya, jadi tiang dan baloknya harus menutupi dia.

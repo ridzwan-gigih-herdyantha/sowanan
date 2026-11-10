@@ -1,4 +1,5 @@
 import { BOOTH, type BoothKind } from "./booth";
+import { HALL_BLOCKS } from "./hall-props-data";
 import { makeWorld, type Area, type Point } from "./world";
 
 // Peta dalam gedung (hall.png, digambar scripts/piksel-assets.ts): koordinat dalam piksel peta 2420 x 1540, jadi
@@ -28,15 +29,15 @@ const SIDES: Area[] = [rect(HALL.stepL - 6, HALL.L - M, -HALL.S + M, -HALL.stage
 export const STAGE: Area = rect(HALL.stageL - 6, HALL.L - 34, -HALL.stageS + 8, HALL.stageS - 8, HALL.stageZ);
 const STEPS: Area = area(hallAt(HALL.stepL - 8, -HALL.stepS + 8), hallAt(HALL.stageL + 4, -HALL.stepS + 8, HALL.stageZ), hallAt(HALL.stageL + 4, HALL.stepS - 8, HALL.stageZ), hallAt(HALL.stepL - 8, HALL.stepS - 8));
 
-// Pengantin berdiri di tengah panggung, tepat di sumbu karpet dan di depan sofa. x dan y titik kaki (tengah bawah
+// Pengantin berdiri di podium, tepat di sumbu karpet dan di depan sofa. x dan y titik kaki (tengah bawah
 // gambar), w dan h ukuran tampil dalam piksel peta. Bukan rintangan: tamu boleh menembus semua karakter.
-const COUPLE_AT = hallAt(HALL.L - 56, 0, HALL.stageZ);
+const COUPLE_AT = hallAt(HALL.L - 72, 0, HALL.stageZ + 10);
 export const COUPLE = { src: "/img/dimas-salsa/couple-sprite.png", x: COUPLE_AT.x, y: COUPLE_AT.y, w: 154, h: 106 };
 
-// Perabot bawaan gambar yang berdiri di lantai: sofa di panggung dan pot di kaki tangga.
+// Rintangan bawaan aula: sofa di panggung, dan isi aula dari data gambar (pot, meja, rangkaian bunga, panggung musik).
 const FURNITURE: Area[] = [
-  rect(HALL.L - 34, HALL.L, -70, 70, HALL.stageZ),
-  ...[-1, 1].map((k) => rect(HALL.stepL - 26, HALL.stepL - 2, k * 150 - 12, k * 150 + 12)),
+  rect(HALL.L - 96, HALL.L, -140, 140, HALL.stageZ),
+  ...HALL_BLOCKS.map(([l0, l1, s0, s1, z]) => rect(l0, l1, s0, s1, z)),
 ];
 
 type Poi = {
