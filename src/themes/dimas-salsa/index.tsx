@@ -7,7 +7,7 @@ import { Extras } from "@/components/invitation/extras";
 import { Gallery } from "@/components/invitation/gallery";
 import { Greeting } from "@/components/invitation/greeting";
 import { GuestName } from "@/components/invitation/guest-name";
-import { InteriorMap, type Panel } from "@/components/invitation/piksel/interior";
+import { PantaiMap, type Panel } from "@/components/invitation/piksel/pantai";
 import { QrisDownload } from "@/components/invitation/qris-download";
 import { Rsvp } from "@/components/invitation/rsvp";
 import { InvitationShell } from "@/components/invitation/shell";
@@ -314,7 +314,7 @@ export async function DimasSalsa({ inv }: { inv: InvitationView }) {
       className={`${themeFonts} min-h-dvh bg-inv-paper font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
-      <InteriorMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome />} finale={<Finale inv={inv} />} />
+      <PantaiMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome />} finale={<Finale inv={inv} />} />
     </InvitationShell>
   );
 }

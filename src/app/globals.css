@@ -3274,6 +3274,27 @@ html.door-wait [data-fit] {
     scale: 0.6;
   }
 }
+/* Piksel pantai: titik pos berupa cincin elips di rumput yang berdenyut pelan. */
+.gd-spot {
+  width: 7%;
+  aspect-ratio: 2.2;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 3px solid rgb(255 236 170 / 0.9);
+  box-shadow: 0 0 10px 2px rgb(255 214 120 / 0.55), inset 0 0 8px rgb(255 236 170 / 0.5);
+  animation: gd-spot 1.6s ease-in-out infinite;
+}
+@keyframes gd-spot {
+  50% {
+    scale: 1.18;
+    opacity: 0.55;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gd-spot {
+    animation: none;
+  }
+}
 @keyframes gd-rise {
   from {
     opacity: 0;
