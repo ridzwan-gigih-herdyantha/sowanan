@@ -7,6 +7,12 @@ const cells = (dasar: boolean, lengkap: boolean, istimewa: boolean) => ({
   istimewa: { on: istimewa, n: null },
 });
 const all = cells(true, true, true);
+// Teks per paket untuk baris yang isinya berbeda di tiap paket.
+const labeled = (c: ReturnType<typeof cells>, dasar: string, lengkap: string, istimewa: string) => ({
+  dasar: { ...c.dasar, label: dasar },
+  lengkap: { ...c.lengkap, label: lengkap },
+  istimewa: { ...c.istimewa, label: istimewa },
+});
 
 const article = (id: string, title: string, body: string) => ({ id, on: true, title, body: body.trim() });
 
@@ -18,13 +24,13 @@ const ARTICLES = [
 Seluruh pemesanan dilakukan lewat WhatsApp. Urutannya:
 
 - Anda menghubungi kami dan memilih paket serta tema
-- Kami kirim formulir isian data acara
+- Kami kirim daftar isian data acara lewat chat WhatsApp
 - Anda membayar sesuai ketentuan paketnya, lalu mengirim data serta foto secara lengkap
 - Kami mengabari bahwa data sudah lengkap dan pengerjaan dimulai
 - Draf undangan dikirim dalam bentuk tautan
 - Setelah revisi selesai dan pembayaran lunas, undangan siap disebar
 
-Data yang dianggap lengkap meliputi nama kedua mempelai, nama orang tua, susunan dan waktu acara, alamat beserta titik lokasi, foto, serta nomor rekening untuk amplop digital bila dipakai.
+Data yang dianggap lengkap meliputi nama kedua mempelai, nama orang tua, susunan dan waktu acara, alamat beserta titik lokasi, serta foto dan nomor rekening untuk amplop digital bila dipakai. Undangan tanpa foto boleh, harga sama.
 `,
   ),
   article(
@@ -35,15 +41,17 @@ Kami menyediakan tiga paket.
 
 ### Dasar (Rp49.000)
 
-Satu tema pilihan Anda dari katalog, ditampilkan apa adanya. Galeri hingga 3 foto. Musik latar bawaan tema. Peta lokasi, hitung mundur, RSVP, buku ucapan, amplop digital, dan penyebaran tanpa batas jumlah tamu.
+Satu tema pilihan Anda dari katalog, dengan palet warna dan font bawaan tema. Galeri hingga 3 foto. Musik latar bawaan tema. Peta lokasi, hitung mundur, RSVP, buku ucapan, amplop digital, dan penyebaran tanpa batas jumlah tamu.
 
 ### Lengkap (Rp199.000)
 
-Seluruh isi paket Dasar, dengan warna tema disesuaikan palet acara Anda. Galeri hingga 15 foto. Musik latar pilihan sendiri, cerita perjalanan, dan nama tamu yang muncul di undangan. Palet warna custom dan font custom dari Google Fonts tersedia sebagai add-on.
+Seluruh isi paket Dasar, ditambah pilihan 1 dari 4 varian palet warna tema dan pilihan varian font. Galeri hingga 15 foto. Musik latar pilihan sendiri, cerita perjalanan, dan nama tamu yang muncul di undangan. Palet warna custom dan font custom dari Google Fonts tersedia sebagai add-on.
 
 ### Istimewa (Rp499.000)
 
-Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah palet warna custom, font custom dari Google Fonts, daftar tamu yang bisa diunduh ke Excel dan QR absensi tamu di lokasi. Paket ini ditujukan untuk acara dengan jumlah tamu banyak. Pada paket ini Anda juga dapat meminta hingga 2 bagian tambahan yang belum ada di tema.
+Seluruh isi paket Lengkap, tanpa batas jumlah foto galeri, ditambah palet warna dan font yang disesuaikan dengan acara Anda, daftar tamu yang bisa diunduh ke Excel, dan QR absensi tamu di lokasi. Paket ini ditujukan untuk acara dengan jumlah tamu banyak. Pada paket ini Anda juga dapat meminta hingga 2 bagian tambahan yang belum ada di tema.
+
+Font yang disesuaikan dipilih dari Google Fonts. Font berbayar, font dari aplikasi desain, atau file font yang Anda kirimkan tidak dapat kami pasang, dan kami carikan font Google Fonts yang paling mirip sebagai gantinya. QR absensi berupa satu kode QR untuk satu undangan, yang dipasang di meja penerima tamu. Bila ada kendala saat memindai, nama tamu dapat dicari secara manual.
 
 Bagian tambahan dipilih dari enam berikut, maksimal dua:
 
@@ -58,6 +66,33 @@ Permintaan di luar keenam bagian ini tidak termasuk dalam paket Istimewa.
 
 Permintaan yang memerlukan sistem baru, misalnya pemilihan kursi, undian, atau metode pembayaran di luar yang kami sediakan, tidak termasuk dalam paket ini dan akan kami tawarkan sebagai pekerjaan tersendiri.
 
+### Tambahan di luar paket
+
+Tambahan berikut dapat dipilih saat memesan, dan biayanya ikut dihitung dalam total pembayaran.
+
+- Tambah 10 foto galeri, untuk paket Dasar dan Lengkap: Rp25.000
+- Musik latar pilihan sendiri, untuk paket Dasar: Rp25.000
+- Pilih 1 dari 4 varian palet, untuk paket Dasar: Rp25.000
+- Pilih varian font, untuk paket Dasar: Rp25.000
+- Palet warna custom, untuk paket Lengkap: Rp25.000
+- Font custom dari Google Fonts, untuk paket Lengkap: Rp25.000
+- Revisi tambahan, per putaran, untuk paket Dasar: Rp25.000
+- Kami inputkan daftar tamu, per 100 nama, untuk paket Lengkap dan Istimewa: Rp25.000
+- Video dari YouTube, untuk semua paket: Rp25.000
+- Gambar undangan untuk story, untuk semua paket: Rp25.000
+- Galeri pasca acara, per 10 foto, untuk semua paket: Rp25.000
+- Undangan kedua untuk acara terpisah, untuk paket Lengkap dan Istimewa: Rp50.000
+- Alamat domain sendiri (.my.id), atas nama kalian, termasuk pendaftaran 1 tahun, untuk semua paket: Rp99.000
+- Alamat domain sendiri (.com), atas nama kalian, termasuk pendaftaran 1 tahun, untuk semua paket: Rp299.000
+
+Ketentuan tambahan:
+
+- Video ditampilkan dari tautan YouTube milik Anda yang berstatus Unlisted atau Publik, dengan izin penyematan aktif. Satu video per undangan, dan kami tidak menerima file video.
+- Foto galeri pasca acara dikirim paling lambat 21 hari setelah tanggal acara. Setelah undangan menjadi arsip, galeri tidak dapat ditambah.
+- Daftar tamu yang kami inputkan mengikuti ejaan yang Anda kirim. Tambahan nama setelah diinput dihitung sebagai kiriman baru.
+- Mengganti palet atau font setelah pengerjaan dimulai dihitung sebagai revisi. Tautan video boleh diganti tanpa dihitung revisi sampai undangan kami kirim, dan setelah itu dihitung sebagai revisi.
+- Undangan kedua memakai tema, palet, font, foto, cerita, dan musik yang sama dengan undangan pertama. Yang berbeda hanya tanggal, jam, lokasi, peta, susunan acara, dan daftar tamu. RSVP, buku ucapan, dan amplop digital terpisah per undangan, dan masing-masing menjadi arsip 30 hari setelah tanggal acaranya sendiri.
+
 Harga di atas berlaku sekali bayar. Tidak ada biaya bulanan dan tidak ada biaya perpanjangan.
 
 Permintaan yang tidak tercakup ketiga paket di atas, misalnya tema yang dirancang baru dari nol, fitur yang memerlukan sistem baru, atau rangkaian acara yang panjang, kami tangani sebagai pekerjaan tersendiri. Harga, lingkup, dan waktu pengerjaannya disepakati bersama Anda lewat percakapan, lalu kami sampaikan sebagai penawaran sebelum pekerjaan dimulai.
@@ -71,7 +106,7 @@ Paket Dasar dibayar lunas di muka.
 
 Paket Lengkap dan Istimewa dibayar dengan uang muka {dp} persen, dan sisanya dilunasi sebelum undangan dilepas tanpa watermark.
 
-Pembayaran melalui transfer bank atau QRIS ke rekening yang kami sebutkan saat pemesanan. Pengerjaan dimulai setelah pembayaran yang disyaratkan kami terima.
+Pembayaran melalui transfer bank ke rekening yang kami sebutkan saat pemesanan. Pengerjaan dimulai setelah pembayaran yang disyaratkan kami terima.
 `,
   ),
   article(
@@ -97,7 +132,7 @@ Permintaan revisi setelah undangan kami kirim dikerjakan berurutan juga, dan tid
     "revisi",
     "Revisi",
     `
-**Dasar** mendapat 1 putaran revisi. Satu putaran berarti Anda mengumpulkan seluruh perubahan yang diinginkan dan mengirimkannya sekaligus. Revisi tambahan di luar itu dikenakan biaya yang kami sampaikan lebih dulu.
+**Dasar** mendapat 1 putaran revisi. Satu putaran berarti Anda mengumpulkan seluruh perubahan yang diinginkan dan mengirimkannya sekaligus. Revisi tambahan di luar itu dikenakan Rp25.000 per putaran, yang kami sampaikan sebelum dikerjakan.
 
 **Lengkap** mendapat revisi bebas sampai undangan Anda sebar.
 
@@ -116,7 +151,7 @@ Undangan Anda tidak memiliki masa aktif dan tidak akan kami hapus.
 
 Tiga puluh hari setelah tanggal acara, undangan berhenti menerima perubahan dan berubah menjadi arsip. Isinya tetap dapat dibuka siapa pun di alamat yang sama, selamanya, tanpa biaya tambahan.
 
-Yang tetap ada pada arsip: nama mempelai, tanggal dan lokasi acara, peta, cerita, galeri foto, musik latar, dan ucapan yang sudah masuk.
+Yang tetap ada pada arsip: nama mempelai, tanggal dan lokasi acara, peta, cerita, galeri foto termasuk galeri pasca acara, musik latar, dan ucapan yang sudah masuk.
 
 Yang berhenti berfungsi pada arsip: panel ubah data, formulir RSVP, pengiriman ucapan baru, amplop digital, hitung mundur, dan tautan berisi nama tamu.
 
@@ -191,6 +226,8 @@ Kami berusaha menjaga undangan Anda tetap dapat diakses. Namun gangguan yang ber
 Bila terjadi gangguan, kami memperbaikinya secepat mungkin. Apabila gangguan terjadi sebelum undangan Anda sebar, tenggat pengerjaan kami mundur selama durasi gangguan tersebut dan kami beri tahu Anda tanggal barunya.
 
 Tanggung jawab kami atas kerugian apa pun terbatas pada nilai yang telah Anda bayarkan untuk pesanan tersebut.
+
+Video yang ditampilkan di undangan berasal dari tautan YouTube milik Anda. Video tersebut tetap dapat diputar selama masih tersedia di YouTube. Bila video dihapus atau statusnya diubah menjadi pribadi, bagian video di undangan dan arsip tidak dapat diputar, dan hal itu berada di luar kendali kami.
 `,
   ),
   article(
@@ -219,25 +256,25 @@ export const DEFAULT_SETTINGS: Settings = {
     cta1Href: "",
     cta2: "Lihat pilihan tema",
     cta2Href: "#tema",
-    note: "Dibalas dalam 1 jam, jam {jam} Ã‚Â· Bisa disebar ke berapa pun tamu",
+    note: "Dibalas dalam 1 jam, jam {jam} · Bisa disebar ke berapa pun tamu",
   },
   sections: {
     tema: {
-      title: "Pilihan tema",
-      sub: "Pilih satu, lalu warnanya kami sesuaikan dengan tema acara kalian. Klik untuk membuka contoh aslinya.",
-      foot: "",
+      title: "Tema",
+      sub: "Pilih satu tema dari katalog. Setiap tema punya 4 varian warna. Klik untuk membuka contoh aslinya.",
+      foot: "Mau gaya yang belum ada di sini? [Kirim contohnya lewat WhatsApp]({wa_link}). Tema baru dikerjakan di luar paket, harganya disepakati lewat chat.",
       custom: {
         title: "Mau gaya yang belum ada di sini?",
-        text: "Kirim contoh undangan atau desain yang kalian suka. Kami buatkan tema dengan warna dan suasana yang sesuai acara kalian.",
+        text: "Kirim contoh undangan atau desain yang kalian suka. Tema yang dirancang baru kami kerjakan di luar ketiga paket, dengan harga dan waktu pengerjaan yang disepakati lewat chat.",
         button: "Kirim contoh lewat WhatsApp",
         points: ["", "", ""],
       },
     },
-    fitur: { title: "Fitur yang tersedia", sub: "Sebagian besar fitur ada di semua paket. Yang berlabel hanya tersedia di paket tertentu." },
+    fitur: { title: "Fitur", sub: "Sebagian besar fitur ada di semua paket. Yang berlabel hanya tersedia di paket tertentu." },
     harga: {
       title: "Harga",
       sub: "Bayar sekali, tidak ada biaya bulanan dan tidak ada biaya perpanjangan. Undangan tidak punya masa aktif: setelah acara selesai ia tersimpan permanen dan tetap bisa dibuka di alamat yang sama.",
-      foot: "",
+      foot: "Butuh yang di luar ketiga paket ini, misalnya fitur khusus atau rangkaian acara yang panjang? [Ceritakan rencananya lewat WhatsApp]({wa_link}), kami buatkan penawaran tersendiri.",
       custom: {
         title: "Butuh yang di luar ketiga paket ini?",
         text: "Misalnya fitur khusus atau rangkaian acara yang panjang. Ceritakan rencananya, kami buatkan penawaran tersendiri.",
@@ -249,7 +286,7 @@ export const DEFAULT_SETTINGS: Settings = {
     cara: { title: "Cara pesan", sub: "" },
     testi: { title: "Kata mereka" },
     faq: {
-      title: "Yang sering ditanyakan",
+      title: "FAQ",
       sub: "Jawaban seputar harga, waktu pengerjaan, dan fitur undangan pernikahan digital Sowanan.",
       cta: "Belum terjawab? Tanya lewat WhatsApp",
     },
@@ -258,7 +295,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "rsvp", on: true, name: "Konfirmasi kehadiran", text: "Tamu klik hadir atau tidak, dan kalian bisa lihat daftarnya kapan saja.", icon: "centang", label: "" },
     { id: "peta", on: true, name: "Peta lokasi", text: "Sekali ketuk langsung membuka rute di Google Maps tamu.", icon: "peta", label: "" },
     { id: "amplop", on: true, name: "Amplop digital", text: "Rekening dan QRIS dengan tombol salin, supaya tamu tidak salah ketik.", icon: "amplop", label: "" },
-    { id: "galeri", on: true, name: "Galeri foto", text: "Foto prewedding ditata rapi dan tetap ringan waktu dibuka.", icon: "foto", label: "Paket Lengkap ke atas" },
+    { id: "galeri", on: true, name: "Galeri foto", text: "3 foto di Dasar, 15 foto di Lengkap, tanpa batas di Istimewa. Ditata rapi dan tetap ringan waktu dibuka.", icon: "foto", label: "" },
     { id: "ucapan", on: true, name: "Buku ucapan", text: "Tamu menulis doa dan ucapan langsung di halaman undangan.", icon: "pesan", label: "" },
     { id: "mundur", on: true, name: "Hitung mundur", text: "Berjalan otomatis sampai hari H, plus tombol simpan ke kalender.", icon: "jam", label: "" },
     { id: "musik", on: true, name: "Musik latar", text: "Pilih lagunya sendiri, dan tamu tetap bisa mematikannya.", icon: "musik", label: "Paket Lengkap ke atas" },
@@ -268,9 +305,9 @@ export const DEFAULT_SETTINGS: Settings = {
   ],
   steps: [
     { id: "chat", title: "Chat WhatsApp", text: "Sebutkan tanggal acara dan tema yang dipilih. Kami bantu kalau masih bingung." },
-    { id: "data", title: "Kirim data", text: "Nama, susunan acara, lokasi, dan foto. Ada formulir isian supaya tidak ada yang terlewat." },
+    { id: "data", title: "Kirim data", text: "Nama, jadwal, lokasi, dan foto kalau ada. Daftar isiannya kami kirim lewat chat, supaya tidak ada yang terlewat." },
     { id: "cek", title: "Cek dan revisi", text: "Dalam {waktu} kalian terima link draf. Kabari bagian mana yang mau diubah." },
-    { id: "sebar", title: "Sebar", text: "Link siap dibagikan ke semua tamu lewat WhatsApp, IG, atau di mana saja." },
+    { id: "sebar", title: "Sebar", text: "Setelah revisi selesai dan pembayaran lunas, link siap dibagikan ke semua tamu lewat WhatsApp, IG, atau di mana saja." },
   ],
   closing: {
     title: "Tanggal acaranya kapan?",
@@ -281,7 +318,7 @@ export const DEFAULT_SETTINGS: Settings = {
     covers: ["andi-rina", "danang-kinanthi", "hendrawan-larasati"],
   },
   footer: {
-    line1: "Undangan pernikahan digital yang elegan, praktis, dan siap dibagikan. Kamu fokus ke hari bahagiamu, biar urusan undangan kami yang bereskan.",
+    line1: "Undangan pernikahan digital yang disebar lewat WhatsApp tanpa batas tamu, dan tetap tersimpan setelah acara selesai.",
     line2: "",
     nav: "Jelajahi",
     demos: "Pilihan tema",
@@ -293,7 +330,7 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "herba", on: true, name: "Herbarium", slug: "hendrawan-larasati", demo: "/hendrawan-larasati", tier: "lengkap", category: "floral", style: "bunga / botani", image: "/img/tema-hendrawan-larasati-buka.webp", screen: "" },
     { id: "kelir", on: true, name: "Pakeliran", slug: "danang-kinanthi", demo: "/danang-kinanthi", tier: "lengkap", category: "adat", style: "jawa / wayang", image: "/img/tema-danang-kinanthi-buka.webp", screen: "" },
     { id: "sakinah", on: true, name: "Sakinah", slug: "fadhil-nayla", demo: "/fadhil-nayla", tier: "lengkap", category: "islami", style: "islami / geometri", image: "/img/tema-fadhil-nayla-buka.webp", screen: "" },
-    { id: "faris-najwa", on: true, name: "Mawaddah", slug: "faris-najwa", demo: "/faris-najwa", tier: "lengkap", category: "islami", style: "teal / tembaga editorial", image: "/img/faris-najwa/cover.webp", screen: "/img/faris-najwa/hero.webp" },
+    { id: "faris-najwa", on: true, name: "Mawaddah", slug: "faris-najwa", demo: "/faris-najwa", tier: "lengkap", category: "islami", style: "zamrud / geometri Andalusia", image: "/img/faris-najwa/cover.webp", screen: "/img/faris-najwa/hero.webp" },
     { id: "sutra", on: true, name: "Sutra", slug: "arya-kirana", demo: "/arya-kirana", tier: "lengkap", category: "elegan", style: "gading / pita emas", image: "/img/tema-arya-kirana-buka.webp", screen: "" },
     { id: "raka-anindya", on: true, name: "Elaris", slug: "raka-anindya", demo: "/raka-anindya", tier: "semua", category: "elegan", style: "editorial / zaitun", image: "/img/raka-anindya/cover.webp", screen: "/img/raka-anindya/hero.webp" },
     { id: "rembulan", on: true, name: "Rembulan", slug: "bima-nadia", demo: "/bima-nadia", tier: "lengkap", category: "gelap", style: "langit malam / bulan", image: "/img/tema-bima-nadia-buka.webp", screen: "" },
@@ -316,10 +353,10 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "revisi", on: true, q: "Bisa revisi berapa kali?", a: "Paket Dasar mendapat 1 putaran revisi, sedangkan paket Lengkap dan Istimewa bebas revisi sampai undangan disebar. Kirim semua perubahan sekaligus dalam satu daftar supaya lebih cepat dikerjakan." },
     { id: "tamu", on: true, q: "Bisa untuk berapa tamu?", a: "Tidak dibatasi. Satu link undangan, misalnya sowanan.com/nama-kalian, bisa disebar ke berapa pun tamu lewat WhatsApp atau Instagram tanpa biaya tambahan. Semua paket sudah termasuk RSVP untuk konfirmasi kehadiran, peta lokasi, buku ucapan, dan amplop digital, dan di paket Lengkap ke atas nama tiap tamu bisa muncul di undangan." },
     { id: "tema", on: true, q: "Kalau mau ganti tema di tengah jalan?", a: "Bisa, selama pengerjaan belum dimulai. Setelah pengerjaan dimulai, penggantian tema dihitung sebagai revisi. Lihat dulu contoh asli setiap tema, dari yang modern dan minimalis sampai bernuansa Jawa dan islami, di [bagian pilihan tema](#tema)." },
-    { id: "bayar", on: true, q: "Cara bayarnya?", a: "Sekali bayar, mulai {harga}, tanpa biaya bulanan. Paket Dasar dibayar lunas di muka, sedangkan paket Lengkap dan Istimewa dengan uang muka {dp} persen dan sisanya dilunasi sebelum undangan dilepas tanpa watermark. Pembayaran lewat transfer bank atau QRIS." },
+    { id: "bayar", on: true, q: "Cara bayarnya?", a: "Sekali bayar, mulai {harga}, tanpa biaya bulanan. Paket Dasar dibayar lunas di muka, sedangkan paket Lengkap dan Istimewa dengan uang muka {dp} persen dan sisanya dilunasi sebelum undangan dilepas tanpa watermark. Pembayaran lewat transfer bank." },
   ],
   terms: {
-    date: "17 Oktober 2026",
+    date: "06 November 2026",
     title: "Syarat dan Ketentuan",
     intro:
       "Dokumen ini menjelaskan bagaimana layanan Sowanan bekerja: apa yang kami kerjakan, apa yang menjadi tanggung jawab Anda, dan apa yang terjadi bila ada perubahan. Dengan memesan undangan di Sowanan, Anda dianggap telah membaca dan menyetujui ketentuan di halaman ini.",
@@ -327,33 +364,18 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   packages: {
     dasar: { on: true, price: 49000, badge: "", blurb: "Yang penting undangan cepat tersebar", sla: 1, revision: "1 putaran", active: 3 },
-    lengkap: { on: true, price: 199000, badge: "Rekomendasi kami", blurb: "Disesuaikan dengan tema acara kalian", sla: 2, slaMax: 3, revision: "Bebas", active: 12 },
-    istimewa: { on: true, price: 499000, badge: "", blurb: "Dirancang mengikuti permintaan kalian", sla: 3, slaMax: 5, revision: "Bebas", active: 12 },
+    lengkap: { on: true, price: 199000, badge: "Rekomendasi kami", blurb: "Warna, font, dan musik pilihan kalian", sla: 2, slaMax: 3, revision: "Bebas", active: 12 },
+    istimewa: { on: true, price: 499000, badge: "", blurb: "Untuk acara besar dengan banyak tamu", sla: 3, slaMax: 5, revision: "Bebas", active: 12 },
   },
   matrix: [
     { id: "katalog", label: "Bebas pilih satu tema dari katalog", kind: "check", unit: "", key: "", cells: all },
-    { id: "warna", label: "Warna tema disesuaikan palet acara", kind: "check", unit: "", key: "palet_varian", cells: cells(false, true, true) },
-    { id: "font", label: "Font, pilih dari varian", kind: "check", unit: "", key: "font_varian", cells: cells(false, true, true), hidden: true },
-    { id: "paletcustom", label: "Palet warna custom sesuai acara", kind: "check", unit: "", key: "palet_custom", cells: cells(false, false, true), hidden: true },
-    { id: "fontcustom", label: "Font custom dari Google Fonts", kind: "check", unit: "", key: "font_custom", cells: cells(false, false, true), hidden: true },
-    { id: "video", label: "Video dari YouTube", kind: "check", unit: "", key: "video_youtube", cells: cells(false, false, false), hidden: true },
-    { id: "story", label: "Gambar undangan untuk story", kind: "check", unit: "", key: "gambar_story", cells: cells(false, false, false), hidden: true },
-    { id: "kedua", label: "Undangan kedua untuk acara terpisah", kind: "check", unit: "", key: "undangan_kedua", cells: cells(false, false, false), hidden: true },
-    { id: "terundang", label: "Undangan khusus tamu terundang", kind: "check", unit: "", key: "tamu_terundang", cells: cells(false, false, true), hidden: true },
-    {
-      id: "pasca",
-      label: "Galeri pasca acara",
-      kind: "count",
-      unit: "{n} foto",
-      key: "galeri_pasca",
-      cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: false, n: null } },
-      hidden: true,
-    },
+    { id: "warna", label: "Palet warna, pilih dari varian", kind: "check", unit: "", key: "palet_varian", cells: labeled(cells(false, true, true), "Palet warna bawaan tema", "Palet warna, pilih 1 dari 4 varian", "Palet warna custom sesuai acara") },
+    { id: "font", label: "Font, pilih dari varian", kind: "check", unit: "", key: "font_varian", cells: labeled(cells(false, true, true), "Font bawaan tema", "Font, pilih dari varian", "Font custom dari Google Fonts") },
     {
       id: "bagian",
       label: "Bagian tambahan di luar tema",
       kind: "count",
-      unit: "pilih {n} dari 6",
+      unit: "pilih {n} dari 6 bagian",
       key: "bagian_tambahan",
       cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: true, n: 2 } },
     },
@@ -376,26 +398,41 @@ export const DEFAULT_SETTINGS: Settings = {
     { id: "excel", label: "Daftar tamu diunduh ke Excel", kind: "check", unit: "", key: "ekspor_excel", cells: cells(false, false, true) },
     { id: "qr", label: "QR absensi tamu di lokasi", kind: "check", unit: "", key: "qr_absensi", cells: cells(false, false, true) },
     { id: "arsip", label: "Arsip permanen setelah acara", kind: "check", unit: "", key: "", cells: all },
+    { id: "paletcustom", label: "Palet warna custom sesuai acara", kind: "check", unit: "", key: "palet_custom", cells: cells(false, false, true), hidden: true },
+    { id: "fontcustom", label: "Font custom dari Google Fonts", kind: "check", unit: "", key: "font_custom", cells: cells(false, false, true), hidden: true },
+    { id: "video", label: "Video dari YouTube", kind: "check", unit: "", key: "video_youtube", cells: cells(false, false, false), hidden: true },
+    {
+      id: "pasca",
+      label: "Galeri pasca acara",
+      kind: "count",
+      unit: "{n} foto",
+      key: "galeri_pasca",
+      cells: { dasar: { on: false, n: null }, lengkap: { on: false, n: null }, istimewa: { on: false, n: null } },
+      hidden: true,
+    },
+    { id: "story", label: "Gambar undangan untuk story", kind: "check", unit: "", key: "gambar_story", cells: cells(false, false, false), hidden: true },
+    { id: "kedua", label: "Undangan kedua untuk acara terpisah", kind: "check", unit: "", key: "undangan_kedua", cells: cells(false, false, false), hidden: true },
+    { id: "terundang", label: "Undangan khusus tamu terundang", kind: "check", unit: "", key: "tamu_terundang", cells: cells(false, false, true), hidden: true },
   ],
   // Add-on yang tidak dijual lagi disembunyikan, bukan dihapus, supaya undangan pembelinya tetap terhitung.
   addons: [
     { id: "foto", on: true, name: "Tambah 10 foto galeri", price: 25000, scope: "Dasar dan Lengkap", unlock: "galeri_foto", amount: 10 },
     { id: "musik", on: true, name: "Musik latar pilihan sendiri", price: 25000, scope: "Dasar", unlock: "musik_sendiri", amount: 0 },
-    { id: "gaya", on: true, name: "Ganti font atau palet warna", price: 35000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
-    // Pengganti add-on gaya, dinyalakan bersamaan dengan teks harga dan ketentuan yang baru.
-    { id: "palet", on: false, name: "Pilih 1 dari 4 varian palet", price: 25000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
-    { id: "font", on: false, name: "Pilih varian font", price: 25000, scope: "Dasar", unlock: "font_varian", amount: 0 },
+    { id: "palet", on: true, name: "Pilih 1 dari 4 varian palet", price: 25000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
+    { id: "font", on: true, name: "Pilih varian font", price: 25000, scope: "Dasar", unlock: "font_varian", amount: 0 },
     { id: "paletcustom", on: true, name: "Palet warna custom", price: 25000, scope: "Lengkap", unlock: "palet_custom", amount: 0 },
     { id: "fontcustom", on: true, name: "Font custom dari Google Fonts", price: 25000, scope: "Lengkap", unlock: "font_custom", amount: 0 },
-    { id: "video", on: false, name: "Video dari YouTube", price: 25000, scope: "Semua paket", unlock: "video_youtube", amount: 0 },
-    { id: "story", on: false, name: "Gambar undangan untuk story", price: 25000, scope: "Semua paket", unlock: "gambar_story", amount: 0 },
-    { id: "kedua", on: false, name: "Undangan kedua untuk acara terpisah", price: 50000, scope: "Lengkap dan Istimewa", unlock: "undangan_kedua", amount: 0 },
+    { id: "revisi", on: true, name: "Revisi tambahan, per putaran", price: 25000, scope: "Dasar", unlock: "", amount: 0 },
+    { id: "inputtamu", on: true, name: "Kami inputkan daftar tamu, per 100 nama", price: 25000, scope: "Lengkap dan Istimewa", unlock: "", amount: 0 },
+    { id: "video", on: true, name: "Video dari YouTube", price: 25000, scope: "Semua paket", unlock: "video_youtube", amount: 0 },
+    { id: "story", on: true, name: "Gambar undangan untuk story", price: 25000, scope: "Semua paket", unlock: "gambar_story", amount: 0 },
+    { id: "pasca", on: true, name: "Galeri pasca acara, per 10 foto", price: 25000, scope: "Semua paket", unlock: "galeri_pasca", amount: 10 },
+    { id: "kedua", on: true, name: "Undangan kedua untuk acara terpisah", price: 50000, scope: "Lengkap dan Istimewa", unlock: "undangan_kedua", amount: 0 },
+    { id: "domainmyid", on: true, name: "Alamat domain sendiri (.my.id), atas nama kalian, termasuk pendaftaran 1 tahun", price: 99000, scope: "Semua paket", unlock: "", amount: 0 },
+    { id: "domain", on: true, name: "Alamat domain sendiri (.com), atas nama kalian, termasuk pendaftaran 1 tahun", price: 299000, scope: "Semua paket", unlock: "", amount: 0 },
     // Dinyalakan setelah fitur selesai dites, bersamaan dengan teks harga dan ketentuan yang baru.
     { id: "terundang", on: false, name: "Undangan khusus tamu terundang", price: 50000, scope: "Lengkap", unlock: "tamu_terundang", amount: 0 },
-    { id: "inputtamu", on: false, name: "Kami inputkan daftar tamu, per 100 nama", price: 25000, scope: "Lengkap dan Istimewa", unlock: "", amount: 100 },
-    { id: "pasca", on: false, name: "Galeri pasca acara, per 10 foto", price: 25000, scope: "Semua paket", unlock: "galeri_pasca", amount: 10 },
-    { id: "domainmyid", on: true, name: "Alamat domain sendiri (.my.id)", price: 99000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
-    { id: "domain", on: true, name: "Alamat domain sendiri (.com)", price: 299000, scope: "Atas nama kalian, termasuk pendaftaran 1 tahun", unlock: "", amount: 0 },
+    { id: "gaya", on: false, name: "Ganti font atau palet warna", price: 35000, scope: "Dasar", unlock: "palet_varian", amount: 0 },
     { id: "excel", on: false, name: "Ekspor daftar tamu ke Excel", price: 50000, scope: "Lengkap", unlock: "ekspor_excel", amount: 0 },
     { id: "kilat", on: false, name: "Pengerjaan kilat 24 jam", price: 99000, scope: "Dasar dan Lengkap", unlock: "", amount: 0 },
     { id: "perpanjang", on: false, name: "Perpanjangan masa aktif 1 tahun", price: 50000, scope: "Semua paket", unlock: "", amount: 0 },
