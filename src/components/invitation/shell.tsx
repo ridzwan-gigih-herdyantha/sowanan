@@ -155,6 +155,8 @@ type Props = {
   // Lagu mulai pada sentuhan atau tombol pertama di sampul, tidak menunggu undangan dibuka. Untuk sampul yang
   // dijelajahi lama, seperti peta game. Browser tidak mengizinkan suara sebelum ada interaksi.
   musicOnDoor?: boolean;
+  // Volume lagu, 0 sampai 1. Efek suara game diatur terpisah.
+  musicVolume?: number;
 };
 
 function GuestField({ invited, greeting, className = "" }: { invited: string; greeting: string; className?: string }) {
@@ -173,7 +175,7 @@ const arrow = (
   </svg>
 );
 
-export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom", musicOnDoor = false }: Props) {
+export function InvitationShell({ door, music, synth, className, style, children, reveal = "all", musicAt = "bottom", musicOnDoor = false, musicVolume = 1 }: Props) {
   const fromLink = useSyncExternalStore(noop, readGuestParam, () => "");
   const namesAllowed = useContext(GuestNamesContext);
   const fixedGuest = useContext(FixedGuestContext);
@@ -266,6 +268,11 @@ export function InvitationShell({ door, music, synth, className, style, children
 
   useEffect(() => () => Object.values(SYNTHS).forEach((s) => s.pause()), []);
 
+  // Volume bisa berubah dari editor saat lagunya sedang berputar di pratinjau.
+  useEffect(() => {
+    if (fader.current && playingRef.current) ramp(fader.current, musicVolume, 0.2);
+  }, [musicVolume]);
+
   const guest = invited || typed || "";
   // Paket tanpa nama tamu tidak membaca maupun menyimpan nama yang diingat.
   // Nama yang diketik tamu di RSVP atau ucapan tetap dipakai selama kunjungan itu.
@@ -292,8 +299,9 @@ export function InvitationShell({ door, music, synth, className, style, children
     if (f) {
       void f.ctx.resume();
       if (el.paused) f.gain.gain.value = 0;
-      ramp(f, 1, fade);
+      ramp(f, musicVolume, fade);
     }
+    if (!f) el.volume = musicVolume;
     el.play()
       .then(() => setPlaying(true))
       .catch(() => setPlaying(false));
@@ -385,7 +393,7 @@ export function InvitationShell({ door, music, synth, className, style, children
     <GuestContext.Provider value={{ guest, setGuest }}>
       <MediaContext.Provider value={media}>
         <CloseContext.Provider value={closeInvitation}>
-        <div data-inv-state={open ? "open" : "closed"} className={className} style={style}>
+        <div data-inv-state={open ? "open" : "closed"} data-inv-music={playing ? "on" : "off"} className={className} style={style}>
           <noscript>
             <style>{NO_DOOR}</style>
           </noscript>

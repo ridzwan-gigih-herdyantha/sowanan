@@ -37,7 +37,7 @@ import {
   STONE,
   STONE_COLORS,
 } from "./art";
-import { chiptune, victory } from "./chiptune";
+import { chiptune, setGameSound, victory, type GameSound, type SfxKind } from "./chiptune";
 import { Img, Land, Pixels, useSize, Zoom } from "./land";
 import { HEART, Sprite } from "./pixel";
 
@@ -101,9 +101,11 @@ const LOVE = [
   { x: 0.6, y: 0.2, d: 1.2, k: 0.8 },
 ];
 
-function blip(freqs: number[]) {
-  if (!chiptune.playing) return;
-  chiptune.sfx(freqs);
+// Efek mengikuti tombol musik tamu. Kalau musik dimatikan, efek ikut diam.
+const soundOn = () => Boolean(document.querySelector('[data-inv-music="on"]'));
+
+function blip(kind: SfxKind, freqs: number[]) {
+  if (soundOn()) chiptune.sfx(kind, freqs);
 }
 
 const typing = () => (document.activeElement as HTMLElement | null)?.closest("input, textarea, select, [contenteditable]");
@@ -115,7 +117,7 @@ function snap(v: number) {
   return Math.round(v * d) / d;
 }
 
-export function World({ start, stations, goal, finale, groom, bride, date }: { start: ReactNode; stations: Station[]; goal: ReactNode; finale: ReactNode; groom: string; bride: string; date: string }) {
+export function World({ start, stations, goal, finale, groom, bride, date, sound }: { start: ReactNode; stations: Station[]; goal: ReactNode; finale: ReactNode; groom: string; bride: string; date: string; sound: GameSound }) {
   const stage = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const hero = useRef<HTMLDivElement>(null);
@@ -349,7 +351,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
           jumpQueued.current = false;
           if (grounded && !cut) {
             vy = JUMP * T;
-            blip([660, 990]);
+            blip("jump", [660, 990]);
           }
         }
         const nx = Math.min(maxX, Math.max(minX, x + vx * dt));
@@ -401,12 +403,12 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
           facing = 1;
           if (since > 1000) {
             setLove(true);
-            blip([784, 988, 1175, 1568]);
+            blip("scene", [784, 988, 1175, 1568]);
             next("kneel", now);
           }
         } else if (cut.phase === "kneel" && since > 2200) {
           setCheer(true);
-          blip([523, 659, 784, 1047]);
+          blip("scene", [523, 659, 784, 1047]);
           next("yes", now);
         } else if (cut.phase === "yes" && since > 1600) {
           lensTo("none");
@@ -430,7 +432,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
           if (gAlpha === 0 && bAlpha === 0) {
             setBehind(true);
             write("door", "closed", () => setDoor(false));
-            blip([196, 147]);
+            blip("scene", [196, 147]);
             next("inside", now);
           }
         } else if (cut.phase === "inside" && since > 800) {
@@ -449,7 +451,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
           if (k === 1) {
             next("party", now);
             setCheer(true);
-            victory();
+            if (soundOn()) victory();
             setFireworks(true);
             timers.current.push(
               window.setTimeout(() => {
@@ -489,7 +491,7 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
         coinEls.current[i]?.setAttribute("data-taken", "");
         got++;
         if (counter.current) counter.current.textContent = String(got).padStart(2, "0");
-        blip([988, 1319]);
+        blip("coin", [988, 1319]);
       }
       // Bendera di lantai dua hanya menyala bila dilewati dari lantai dua.
       for (const f of flags) if (x >= f.x && y >= f.y - 1) write(`flag-${f.x}-${f.y}`, "1", () => f.el.setAttribute("data-done", ""));
@@ -510,6 +512,8 @@ export function World({ start, stations, goal, finale, groom, bride, date }: { s
       timers.current.forEach((id) => window.clearTimeout(id));
     };
   }, [plan, t, vw, vh, W, reduce]);
+
+  useEffect(() => setGameSound(sound), [sound]);
 
   useEffect(() => {
     if (ending) closeRef.current?.focus();

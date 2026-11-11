@@ -247,6 +247,7 @@ export function toView(slug: string, d: InvitationData, theme = "") {
     },
     giftNote: s.gifts.note,
     music: u(d.media.music || THEME_MUSIC[theme] || ""),
+    sound: d.sound,
     story: s.story.items.map((i) => ({ ...i, short: i.short.trim() || excerpt(i.long), image: u(i.image), video: i.video?.src ? { src: u(i.video.src), poster: u(i.video.poster || i.image) } : undefined })),
     gallery: s.gallery.photos.map((p) => ({ ...p, src: u(p.src) })),
     postGallery: postPhotos(d),

@@ -59,6 +59,7 @@ const media = (path: string, label: string, purpose: Purpose, extra: Partial<Bas
   ...extra,
 });
 const optional = { required: false };
+const SWITCH = { on: "Nyala", off: "Mati" };
 
 // Isi awal bagian tambahan baru. Semua kolom ikut supaya bentuk datanya sama di semua jenis.
 const extraBlank = (kind: ExtraKind, title = "") => ({
@@ -446,6 +447,20 @@ export const GROUPS: Group[] = [
           },
         ],
       },
+    ],
+  },
+  {
+    key: "suara",
+    title: "Suara game",
+    themes: [P],
+    note: "Berlaku untuk semua tamu undangan ini. Tombol musik di undangan tetap bisa mematikan musik dan efek.",
+    fields: [
+      { kind: "number", path: "sound.music", label: "Volume musik", min: 0, max: 100, hint: "0 sampai 100. 100 sama dengan volume bawaan, 0 berarti musik tidak terdengar." },
+      { kind: "number", path: "sound.sfx", label: "Volume efek", min: 0, max: 100, hint: "Berlaku untuk semua efek di bawah." },
+      { kind: "select", path: "sound.coin", label: "Efek ambil koin", options: ["on", "off"], labels: SWITCH },
+      { kind: "select", path: "sound.jump", label: "Efek lompat", options: ["on", "off"], labels: SWITCH },
+      { kind: "select", path: "sound.scene", label: "Efek cutscene dan tamat", options: ["on", "off"], labels: SWITCH },
+      { kind: "select", path: "sound.start", label: "Bunyi tombol mulai", options: ["on", "off"], labels: SWITCH },
     ],
   },
   {

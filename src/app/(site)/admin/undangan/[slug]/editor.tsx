@@ -45,7 +45,7 @@ const SETUP = [
   { key: "package", title: "Package & add-ons" },
   { key: "style", title: "Style" },
 ];
-const MORE = new Set(["pasca", "video", "extras", "share"]);
+const MORE = new Set(["pasca", "video", "extras", "suara", "share"]);
 const TITLES: Record<string, string> = { extras: "Custom sections", share: "Footer & share" };
 const panelOfIssue = (group: string) => (group === "gaya" ? "style" : group);
 

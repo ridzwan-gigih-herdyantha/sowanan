@@ -4,6 +4,8 @@ import { z } from "zod";
 const str = () => z.string().default("");
 const num = () => z.number().default(0);
 const list = <T extends z.ZodType>(item: T) => z.array(item).default([]);
+const volume = z.number().min(0).max(100).catch(100);
+const onOff = z.enum(["on", "off"]).catch("on");
 const section = <T extends z.ZodRawShape>(shape: T) => z.object({ enabled: z.boolean().default(true), ...shape }).prefault({} as never);
 
 const person = z
@@ -153,6 +155,8 @@ export const invitationDataSchema = z.object({
   // Posisi dan zoom foto utama yang diatur di editor, terpisah untuk HP dan layar lebar. Kunci berupa slot di
   // lib/invitation/frame.ts. Slot tanpa isian mengikuti bawaan tema.
   frames: z.record(z.string(), z.object({ hp: frame.optional(), desktop: frame.optional() })).default({}),
+  // Setelan suara game Co-op. Volume 100 berarti volume bawaan tema.
+  sound: z.object({ music: volume, sfx: volume, coin: onOff, jump: onOff, scene: onOff, start: onOff }).prefault({} as never),
   extras: list(
     z.object({
       kind: z.enum(Object.keys(EXTRA_KINDS) as [ExtraKind, ...ExtraKind[]]).catch("bebas"),

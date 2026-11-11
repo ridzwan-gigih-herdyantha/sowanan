@@ -386,6 +386,7 @@ async function Adventure({ inv }: { inv: InvitationView }) {
       groom={inv.groom.name}
       bride={inv.bride.name}
       date={inv.dateShort.replace(/ /g, "")}
+      sound={inv.sound}
     />
   );
 }
@@ -405,6 +406,7 @@ export function ArkasaMentari({ inv }: { inv: InvitationView }) {
       music={inv.music}
       synth="chiptune"
       musicAt="top"
+      musicVolume={inv.sound.music / 100}
       reveal={false}
       className={`${themeFonts} pt-skin inv-paper h-svh overflow-hidden font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}

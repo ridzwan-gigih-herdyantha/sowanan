@@ -1,3 +1,4 @@
+import type { InvitationData } from "@/lib/invitation/schema";
 import { audio } from "../pakeliran/gamelan";
 
 // Lagu chiptune Co-op Adventure, karangan sendiri, dibentuk langsung dari Web Audio:
@@ -73,7 +74,15 @@ function hat(ctx: AudioContext, dest: AudioNode, when: number, gain: number) {
   n.start(when);
 }
 
+// Setelan suara dari editor undangan. Sebelum diisi, semua efek menyala di volume bawaan.
+export type GameSound = InvitationData["sound"];
+export type SfxKind = "coin" | "jump" | "scene";
+let sound: GameSound | null = null;
+const fxLevel = () => (sound?.sfx ?? 100) / 100;
+const fxOn = (kind: SfxKind | "start") => (sound?.[kind] ?? "on") === "on" && fxLevel() > 0;
+
 class Chiptune {
+  private level = 1;
   private bus: GainNode | null = null;
   private timer = 0;
   private next = 0;
@@ -90,7 +99,7 @@ class Chiptune {
     soft.frequency.value = 3600;
     this.bus = a.ctx.createGain();
     this.bus.gain.setValueAtTime(0.0001, a.ctx.currentTime);
-    this.bus.gain.exponentialRampToValueAtTime(0.7, a.ctx.currentTime + Math.max(0.05, fade));
+    this.bus.gain.exponentialRampToValueAtTime(this.busGain(), a.ctx.currentTime + Math.max(0.05, fade));
     this.bus.connect(soft).connect(a.out);
     this.next = a.ctx.currentTime + 0.1;
     this.playing = true;
@@ -108,12 +117,23 @@ class Chiptune {
     this.bus = null;
   }
 
-  // Bunyi pendek untuk lompat, koin, dan garis akhir. Nada dimainkan berurutan dengan jarak sangat dekat.
-  sfx(freqs: number[]) {
+  setLevel(level: number) {
+    this.level = level;
+    if (this.bus) this.bus.gain.setTargetAtTime(this.busGain(), audio().ctx.currentTime, 0.05);
+  }
+
+  // Nilai gain tidak boleh nol karena dipakai untuk ramp eksponensial.
+  private busGain() {
+    return Math.max(0.0001, 0.7 * this.level);
+  }
+
+  // Bunyi pendek untuk lompat, koin, dan cutscene. Nada dimainkan berurutan dengan jarak sangat dekat.
+  sfx(kind: SfxKind, freqs: number[]) {
+    if (!fxOn(kind)) return;
     try {
       const a = audio();
       const t = a.ctx.currentTime + 0.01;
-      freqs.forEach((f, i) => tone(a.ctx, a.out, { freq: f, when: t + i * 0.06, length: i === freqs.length - 1 ? 0.14 : 0.07, gain: 0.05, wave: "pulse" }));
+      freqs.forEach((f, i) => tone(a.ctx, a.out, { freq: f, when: t + i * 0.06, length: i === freqs.length - 1 ? 0.14 : 0.07, gain: 0.05 * fxLevel(), wave: "pulse" }));
     } catch {}
   }
 
@@ -144,13 +164,19 @@ class Chiptune {
 
 export const chiptune = new Chiptune();
 
+export function setGameSound(next: GameSound) {
+  sound = next;
+  chiptune.setLevel(next.music / 100);
+}
+
 // Lagu kemenangan saat kedua mempelai muncul di atas istana: fanfare naik lalu nada panjang, dengan bas.
 // Musik latar chiptune diredam sebentar lalu menyala lagi.
 export function victory() {
+  if (!fxOn("scene")) return;
   try {
     const a = audio();
     const bus = a.ctx.createGain();
-    bus.gain.value = 0.9;
+    bus.gain.value = 0.9 * fxLevel();
     bus.connect(a.out);
     const t = a.ctx.currentTime + 0.05;
     const resume = chiptune.playing;
@@ -176,11 +202,12 @@ export function victory() {
 
 // Bunyi pendek saat tombol mulai ditekan, dua nada naik.
 export function startChime() {
+  if (!fxOn("start")) return;
   try {
     const a = audio();
     const t = a.ctx.currentTime + 0.02;
     const g = a.ctx.createGain();
-    g.gain.value = 0.9;
+    g.gain.value = 0.9 * fxLevel();
     g.connect(a.out);
     tone(a.ctx, g, { freq: hz(84), when: t, length: 0.09, gain: 0.08, wave: "pulse" });
     tone(a.ctx, g, { freq: hz(91), when: t + 0.09, length: 0.22, gain: 0.08, wave: "pulse" });
