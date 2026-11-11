@@ -26,7 +26,8 @@ export function fillPreview(draft: InvitationData, sample: InvitationData | null
       return out;
     }
     const empty = d === "" || d == null || (d === 0 && /\.(w|h)\.$/.test(path));
-    if (empty && fields.get(patternOf(path.slice(0, -1)))?.required === false) return d;
+    const field = fields.get(patternOf(path.slice(0, -1)));
+    if (empty && (field?.required === false || field?.unless)) return d;
     if (empty && s !== undefined && s !== "" && s !== 0) {
       if (typeof s === "string") filled.push(path.slice(0, -1));
       return s;

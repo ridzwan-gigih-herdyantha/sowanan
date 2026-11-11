@@ -22,7 +22,8 @@ const RK = "rafi-kayla";
 const DS = "dimas-salsa";
 
 // when: isian item daftar yang hanya tampil dan diperiksa untuk jenis item tertentu (lihat Variants).
-type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean; when?: string[] };
+// unless: isian wajib ini boleh kosong kalau salah satu daftar di item yang sama sudah ada isinya.
+type Base = { path: string; label: string; themes?: string[]; hint?: string; required?: boolean; when?: string[]; unless?: string[] };
 // Daftar yang itemnya punya jenis. Jenis dipilih saat menambah item dan tidak berubah sesudahnya.
 // Jenis dengan counted false tidak dihitung dalam batas paket.
 export type Variants = { path: string; options: { value: string; label: string; hint: string; counted: boolean; blank: Record<string, unknown> }[] };
@@ -336,7 +337,12 @@ export const GROUPS: Group[] = [
           text("title", "Judul", 60, { placeholder: "Informasi Akomodasi" }),
           { kind: "anchor", path: "after", label: "Tampil setelah" },
           { kind: "select", path: "tone", label: "Warna latar", options: Object.keys(EXTRA_TONES), labels: EXTRA_TONES, hint: "Mengikuti palet tema yang aktif." },
-          area("body", "Isi", 1200, { placeholder: "Tulis isinya di sini. Baris baru tetap terbawa.", when: ["bebas"] }),
+          area("body", "Isi", 1200, {
+            placeholder: "Tulis isinya di sini. Baris baru tetap terbawa.",
+            when: ["bebas"],
+            unless: ["photos", "videos", "youtube", "tracks"],
+            hint: "Boleh kosong kalau sudah ada foto, video, video YouTube, atau lagu.",
+          }),
           {
             kind: "list",
             path: "rundown",
@@ -523,7 +529,11 @@ function checkFields(data: unknown, fields: Field[], theme: string, prefix: stri
 
     const v = typeof value === "string" ? value.trim() : "";
     if (!v) {
-      if (f.required) push(`${name} wajib diisi.`);
+      const covered = f.unless?.some((p) => {
+        const list = getIn(data, prefix + p);
+        return Array.isArray(list) && list.length > 0;
+      });
+      if (f.required && !covered) push(`${name} wajib diisi${f.unless ? " kalau belum ada media" : ""}.`);
       continue;
     }
     if (f.kind === "datetime" && Number.isNaN(Date.parse(v))) push(`${name} tidak valid.`);
