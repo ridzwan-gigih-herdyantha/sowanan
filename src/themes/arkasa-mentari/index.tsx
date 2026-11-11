@@ -142,16 +142,17 @@ function Agenda({ inv }: { inv: InvitationView }) {
 function EventBoard({ inv }: { inv: InvitationView }) {
   return (
     <article className={board}>
-      {!inv.agenda && (
+      {inv.images.venueOwn && (
         <PixelPhoto className="relative h-[20svh] min-h-[56px] shrink overflow-hidden bg-inv-wash sm:h-[min(42svh,var(--room))] sm:w-[42%] sm:shrink-0">
-          <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover" />
+          <Image {...inv.frame.venue} src={inv.images.venueOwn} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover" />
         </PixelPhoto>
       )}
       <div className={boardText}>
         <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">Misi utama / Hari H</p>
         <p className="mt-1 font-display text-[clamp(18px,4.6vw,24px)] leading-tight font-bold">{inv.dateLong}</p>
         {inv.agenda ? (
-          <div className="pt-scroll mt-2 max-h-[min(46svh,var(--room))] overflow-y-auto overscroll-contain">
+          // Di HP foto dan daftar acara bertumpuk, jadi daftarnya dibuat lebih pendek supaya papan tetap muat.
+          <div className={`pt-scroll mt-2 overflow-y-auto overscroll-contain ${inv.images.venueOwn ? "max-h-[max(96px,min(34svh,calc(var(--room)_-_170px)))] sm:max-h-[min(46svh,var(--room))]" : "max-h-[min(46svh,var(--room))]"}`}>
             <Agenda inv={inv} />
           </div>
         ) : (

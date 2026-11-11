@@ -227,6 +227,8 @@ export function toView(slug: string, d: InvitationData, theme = "") {
       heroWide: u(d.media.heroWide || d.media.hero),
       og: u(d.media.og),
       venue: u(d.media.venue || d.media.hero),
+      // Tanpa cadangan foto hero, untuk tema yang tidak menampilkan foto kalau isian ini kosong.
+      venueOwn: u(d.media.venue),
       couple: u(d.media.couple || s.couple.photos[0]?.src || d.media.heroWide),
       closing: u(d.media.closing || d.media.hero),
       detail: u(d.media.detail || d.media.hero),

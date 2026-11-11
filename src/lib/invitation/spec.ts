@@ -209,7 +209,8 @@ export const GROUPS: Group[] = [
       text("event.venue.name", "Nama tempat", 80),
       area("event.venue.address", "Alamat", 200),
       text("event.venue.mapUrl", "Link Google Maps", 500, { ...optional, format: "url", placeholder: "https://maps.app.goo.gl/..." }),
-      media("media.venue", "Foto tempat", "venue", { ...optional, hint: "Kosong berarti memakai foto hero." }),
+      media("media.venue", "Foto tempat", "venue", { themes: [A, B, H, J, S, F, E, EL, N, R, L, M, G, T, RK, DS], ...optional, hint: "Kosong berarti memakai foto hero." }),
+      media("media.venue", "Foto tempat", "venue", { themes: [P], ...optional, hint: "Kosong berarti tidak ada foto." }),
       {
         kind: "list",
         path: "event.schedule",
