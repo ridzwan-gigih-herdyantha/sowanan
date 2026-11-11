@@ -9,7 +9,7 @@ import { CELL, KEYS, sprite, STEPS, STEP_FPS, STEP_GRACE, type Pick } from "./do
 import { Joystick } from "./joystick";
 import { clearTap, markTap, shift, turn, type Facing } from "./motion";
 import { BLOCKS, COUPLE, MAP, WALK } from "./pantai-data";
-import { HERO_H, LEAVE, NEAR, pantaiWorld, PH, poiDistance, POIS, PW, SPAWN, SPEED, type Poi, type PoiId } from "./pantai-world";
+import { HERO_H, NEAR, pantaiWorld, PH, poiDistance, POIS, PW, SPAWN, SPEED, type Poi, type PoiId } from "./pantai-world";
 import { useButtonSfx } from "./sfx";
 import type { Point } from "./world";
 
@@ -60,6 +60,8 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
   const [open, setOpen] = useState(false);
   const [hero, setHero] = useState<Pick>("groom");
   const [panel, setPanel] = useState<PoiId | null>(null);
+  // Pos yang sedang didekati: tombol Buka muncul, isinya baru terbuka setelah diklik.
+  const [near, setNear] = useState<PoiId | null>(null);
   const [seen, setSeen] = useState<ReadonlySet<PoiId>>(() => new Set());
   const [toc, setToc] = useState(false);
   const [phase, setPhase] = useState<"play" | "done">("play");
@@ -83,11 +85,8 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
   const paused = useRef(true);
   const modeRef = useRef<Mode>("overview");
   const intro = useRef(false);
-  // Pos yang baru dibuka tidak terbuka lagi sebelum tamu menjauh darinya.
-  const spent = useRef(new Set<PoiId>());
+  const nearRef = useRef<PoiId | null>(null);
   const enterRef = useRef<(id: PoiId) => void>(() => {});
-  // Tujuan saat tamu mengetuk nama pos: hanya pos itu yang terbuka sendiri, pos yang dilewati di jalan tidak.
-  const dest = useRef<PoiId | null>(null);
 
   const byId = useMemo(() => new Map(panels.map((p) => [p.id, p])), [panels]);
   // Pos yang punya panel. Pembuka tidak punya titik di peta: terbuka sendiri setelah kamera turun ke gerbang.
@@ -203,11 +202,7 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
         vy = joy.current.y;
         power = Math.min(1, jm);
         target.current = null;
-        dest.current = null;
-      } else if (vx || vy) {
-        target.current = null;
-        dest.current = null;
-      }
+      } else if (vx || vy) target.current = null;
       const step = SPEED * power * dt;
       const dir = paused.current ? null : world.walk(target.current ?? world.steer(dodge, p, vx, vy, step), p, step);
       if (dir) turn(face, dir.x, dir.y);
@@ -253,27 +248,36 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
       // Label pos tetap terbaca saat peta diperkecil.
       camEl.style.setProperty("--pz", String(1 / Math.max(cam.z, 0.5)));
 
-      // Pos terbuka sendiri begitu tamu sampai di depannya. Pos yang baru ditutup menunggu tamu menjauh dulu.
-      if (!paused.current) {
+      // Pos terdekat dalam jangkauan: tombol Buka muncul untuknya.
+      let best: PoiId | null = null;
+      let bestD = NEAR;
+      if (m === "follow") {
         for (const poi of poisRef.current) {
           const d = poiDistance(poi, p);
-          if (spent.current.has(poi.id)) {
-            if (d > LEAVE) spent.current.delete(poi.id);
-          } else if (d < NEAR && (!dest.current || dest.current === poi.id)) {
-            dest.current = null;
-            spent.current.add(poi.id);
-            enterRef.current(poi.id);
-            break;
+          if (d < bestD) {
+            best = poi.id;
+            bestD = d;
           }
         }
+      }
+      if (best !== nearRef.current) {
+        nearRef.current = best;
+        setNear(best);
       }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
 
     const down = (e: KeyboardEvent) => {
-      if (paused.current || !(e.key in KEYS) || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.target instanceof HTMLElement && /^(input|textarea|select)$/i.test(e.target.tagName)) return;
+      if (paused.current || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target instanceof HTMLElement && /^(input|textarea|select|button|a)$/i.test(e.target.tagName)) return;
+      // Enter membuka pos yang sedang didekati.
+      if (e.key === "Enter" && nearRef.current) {
+        e.preventDefault();
+        enterRef.current(nearRef.current);
+        return;
+      }
+      if (!(e.key in KEYS)) return;
       e.preventDefault();
       held.add(e.key);
     };
@@ -304,13 +308,12 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
   };
   const onDown = (e: PointerEvent) => {
     if (paused.current) return;
-    dest.current = null;
     dragging.current = true;
     e.currentTarget.setPointerCapture(e.pointerId);
     aim(e, true);
   };
 
-  // Tamu sampai di depan pos: isinya langsung terbuka.
+  // Isi pos terbuka setelah tamu mengklik tombol Buka.
   const enter = (id: PoiId) => {
     target.current = null;
     setToc(false);
@@ -329,14 +332,11 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
       later(() => setPhase("done"), 450);
     }
   };
-  // Dari peta penuh atau daftar misi: kamera kembali ke karakter dan karakter berjalan ke pos itu.
+  // Dari peta penuh atau daftar misi: kamera kembali ke karakter dan karakter berjalan ke depan pos itu.
   const walkTo = (poi: Poi) => {
     setMode("follow");
     setToc(false);
-    later(() => {
-      dest.current = poi.id;
-      go(poi.stand, true);
-    }, 80);
+    later(() => go(poi.stand, true), 80);
   };
 
   const active = panels.find((p) => p.id === panel);
@@ -384,17 +384,18 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
           {pois.map((p, i) => {
             const label = byId.get(p.id)?.label ?? LABELS[p.id];
             const ok = seen.has(p.id);
+            const here = near === p.id;
             return (
               <button
-                key={p.id}
+                key={`${p.id}-${here}`}
                 type="button"
                 onPointerDown={(e) => e.stopPropagation()}
-                data-sfx="tap"
-                onClick={() => walkTo(p)}
-                className={`${ok ? "bg-inv-accent text-inv-paper" : "bg-inv-card/90 text-inv-ink"} gd-pill absolute z-[2000] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3 py-1 font-display text-[12px] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.28)] [scale:var(--pz,1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
+                data-sfx={here ? "open" : "tap"}
+                onClick={() => (here ? enter(p.id) : walkTo(p))}
+                className={`${here ? "bg-inv-accent text-inv-paper ring-4 ring-inv-paper/70" : ok ? "bg-inv-accent/85 text-inv-paper" : "bg-inv-card/90 text-inv-ink"} gd-pill absolute z-[2000] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3 py-1 font-display text-[12px] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.28)] [scale:var(--pz,1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
                 style={{ left: pct(p.obj.x, PW), top: pct(TAG_Y[p.id], PH), animationDelay: overview ? `${0.25 + i * 0.12}s` : undefined }}
               >
-                {ok ? `✓ ${label}` : label}
+                {here ? `Buka ${label.toLowerCase()}` : ok ? `✓ ${label}` : label}
               </button>
             );
           })}
@@ -460,7 +461,19 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
         )}
       </div>
 
-      <div className={`pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-[999] flex justify-center transition-opacity duration-300 [@media(max-height:520px)]:justify-start [@media(max-height:520px)]:pl-5 ${mode === "follow" ? "opacity-100" : "opacity-0"}`}>
+      <div className={`pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-[999] flex flex-col items-center gap-3 transition-opacity duration-300 [@media(max-height:520px)]:items-start [@media(max-height:520px)]:pl-5 ${mode === "follow" ? "opacity-100" : "opacity-0"}`}>
+        {/* Tombol Buka untuk pos yang sedang didekati, di atas joystick supaya mudah dijangkau jempol. */}
+        {near && !panel && mode === "follow" && (
+          <button
+            key={near}
+            type="button"
+            data-sfx="open"
+            onClick={() => enter(near)}
+            className="gd-pill pointer-events-auto rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[15px] leading-none font-semibold text-inv-paper shadow-[0_4px_0_rgba(0,0,0,.28)] active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            Buka {(byId.get(near)?.label ?? LABELS[near]).toLowerCase()}
+          </button>
+        )}
         <div className={`${mode === "follow" ? "pointer-events-auto" : ""} opacity-80`}>
           <Joystick onMove={(x, y) => (joy.current = { x, y })} />
         </div>
@@ -492,7 +505,6 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
               onClick={() => {
                 setPhase("play");
                 setSeen(new Set());
-                spent.current.clear();
                 finished.current = false;
                 closeInvitation();
               }}

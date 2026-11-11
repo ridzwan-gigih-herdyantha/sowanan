@@ -10,10 +10,8 @@ export const SPAWN: Point = { ...SPAWN_AT };
 export const SPEED = 230;
 // Tinggi tampil karakter dalam piksel peta.
 export const HERO_H = 72;
-// Pos terbuka sendiri saat tamu masuk sejauh ini dari titik berdirinya, dan baru bisa terbuka lagi setelah tamu
-// keluar sejauh LEAVE.
+// Tombol Buka sebuah pos muncul saat tamu berada sejauh ini dari titik berdirinya.
 export const NEAR = 64;
-export const LEAVE = 96;
 
 export type PoiId = SpotId;
 export type Poi = { id: PoiId; obj: Point; stand: Point };
