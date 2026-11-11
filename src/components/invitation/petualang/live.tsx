@@ -4,6 +4,7 @@ import { useReducedMotion } from "motion/react";
 import Image from "@/components/invitation/photo";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { pad, useTimeLeft } from "@/components/countdown";
+import type { FrameProps } from "@/lib/invitation/frame";
 
 // Menjalankan cb setelah undangan dibuka. Sebelum itu isi undangan tertutup pembuka, jadi gerak yang dimulai
 // lebih awal akan selesai tanpa terlihat.
@@ -210,6 +211,48 @@ export function PixelPhoto({ children, className = "" }: { children: ReactNode; 
       {children}
       <canvas ref={canvas} aria-hidden="true" className="pt-mosaic pointer-events-none absolute inset-0 size-full" />
     </div>
+  );
+}
+
+// Foto papan yang terpotong, bisa diketuk untuk melihat gambarnya utuh di kotak dialog game.
+export function ZoomPhoto({ src, alt, frame, sizes, className }: { src: string; alt: string; frame?: FrameProps; sizes: string; className: string }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const [open, setOpen] = useState(false);
+  const show = () => {
+    setOpen(true);
+    ref.current?.showModal();
+  };
+  const close = () => ref.current?.close();
+
+  return (
+    <>
+      <PixelPhoto className={className}>
+        <Image {...frame} src={src} alt={alt} fill sizes={sizes} className="object-cover" />
+        <button type="button" onClick={show} aria-label={`Lihat utuh: ${alt}`} className="absolute inset-0 z-10 flex cursor-zoom-in items-end justify-end p-2">
+          <span className="pt-btn pt-label px-2.5 py-1.5 text-[10px]">Lihat full gambar</span>
+        </button>
+      </PixelPhoto>
+      <dialog
+        ref={ref}
+        aria-label={alt}
+        onClose={() => setOpen(false)}
+        onClick={(e) => e.target === ref.current && close()}
+        className="m-auto max-h-[calc(100dvh-32px)] w-[min(560px,calc(100%-32px))] overflow-visible bg-transparent p-2 text-inv-ink backdrop:bg-[#1E1830]/60"
+      >
+        {open && (
+          <div className="pt-box pt-modal flex max-h-[calc(100dvh-48px)] flex-col">
+            <div className="min-h-0 flex-1 p-2">
+              {/* Berkas aslinya supaya tetap tajam, misalnya foto berisi kode QR. Baru dimuat saat dibuka. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt={alt} className="max-h-[calc(100dvh-140px)] w-full object-contain" />
+            </div>
+            <button type="button" onClick={close} className="pt-btn pt-label m-3 shrink-0 px-5 py-3 text-[12px]">
+              Kembali ke dunia
+            </button>
+          </div>
+        )}
+      </dialog>
+    </>
   );
 }
 

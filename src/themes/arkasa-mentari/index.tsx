@@ -6,7 +6,7 @@ import { CopyButton } from "@/components/invitation/copy-button";
 import { Extras } from "@/components/invitation/extras";
 import { Gallery } from "@/components/invitation/gallery";
 import { GuestName } from "@/components/invitation/guest-name";
-import { PixelPhoto, ScoreCountdown, StoryDetail, Typewriter } from "@/components/invitation/petualang/live";
+import { PixelPhoto, ScoreCountdown, StoryDetail, Typewriter, ZoomPhoto } from "@/components/invitation/petualang/live";
 import { CHEST, COIN, HEART, LETTER, Sprite, type SpriteData } from "@/components/invitation/petualang/pixel";
 import { World, type Station } from "@/components/invitation/petualang/world";
 import { QrisDownload } from "@/components/invitation/qris-download";
@@ -143,9 +143,13 @@ function EventBoard({ inv }: { inv: InvitationView }) {
   return (
     <article className={board}>
       {inv.images.venueOwn && (
-        <PixelPhoto className="relative h-[20svh] min-h-[56px] shrink overflow-hidden bg-inv-wash sm:h-[min(42svh,var(--room))] sm:w-[42%] sm:shrink-0">
-          <Image {...inv.frame.venue} src={inv.images.venueOwn} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover" />
-        </PixelPhoto>
+        <ZoomPhoto
+          src={inv.images.venueOwn}
+          alt={`Suasana ${inv.venue.name}`}
+          frame={inv.frame.venue}
+          sizes="(min-width: 640px) 300px, 86vw"
+          className="relative h-[20svh] min-h-[56px] shrink overflow-hidden bg-inv-wash sm:h-[min(42svh,var(--room))] sm:w-[42%] sm:shrink-0"
+        />
       )}
       <div className={boardText}>
         <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">Misi utama / Hari H</p>
