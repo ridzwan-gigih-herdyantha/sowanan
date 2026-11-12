@@ -72,10 +72,17 @@ export function invitationMetadata(found: InvitationPageData | null, path: strin
   }
   const { view: v } = found;
   const title = `${v.groom.name} & ${v.bride.name} | ${v.dateLong}`;
+  // Halaman demo tema boleh diindeks dan masuk sitemap. Undangan klien dan demo per paket tetap tidak.
+  const listed = found.demo && path === `/${v.slug}`;
+  const page: Metadata = listed
+    ? {
+        title: `Contoh undangan nikah digital tema ${found.theme.name} | Sowanan`,
+        description: `Demo asli tema ${found.theme.name} dari Sowanan. Buka langsung dan lihat tampilannya di HP, lengkap dengan musik, RSVP, buku ucapan, dan amplop digital.`,
+        alternates: { canonical: path },
+      }
+    : { title: { absolute: title }, description: v.share.description, robots: { index: false, follow: false } };
   return {
-    title: { absolute: title },
-    description: v.share.description,
-    robots: { index: false, follow: false },
+    ...page,
     openGraph: {
       title,
       description: v.share.ogDescription,
