@@ -14,6 +14,7 @@ import { getInvitation } from "@/lib/invitation/load";
 import { checkPass, guestView } from "@/lib/invitation/private";
 import { limitExtras } from "@/lib/invitation/schema";
 import { toView } from "@/lib/invitation/view";
+import { demoSeo } from "@/lib/seo";
 import { getSettings, packageRules, type PackageId } from "@/lib/settings";
 import { THEMES } from "@/themes";
 import { THEME_NAMES } from "@/themes/media";
@@ -48,6 +49,7 @@ export async function loadInvitationPage(slug: string, demoPkg?: PackageId) {
     pkg: demo ? (pkg as PackageId) : null,
     packages,
     orderHref: demo ? demoOrderLink(settings, THEME_NAMES[inv.theme] ?? inv.theme, pkg as PackageId) : "",
+    seo: demo ? demoSeo(settings, inv.slug, THEME_NAMES[inv.theme] ?? inv.theme, packages.filter((p) => p.available).map((p) => p.id)) : null,
     guestNames: !rules.locked.nama_tamu && !archived,
     view,
   };
@@ -73,13 +75,9 @@ export function invitationMetadata(found: InvitationPageData | null, path: strin
   const { view: v } = found;
   const title = `${v.groom.name} & ${v.bride.name} | ${v.dateLong}`;
   // Halaman demo tema boleh diindeks dan masuk sitemap. Undangan klien dan demo per paket tetap tidak.
-  const listed = found.demo && path === `/${v.slug}`;
-  const page: Metadata = listed
-    ? {
-        title: `Contoh undangan nikah digital tema ${found.theme.name} | Sowanan`,
-        description: `Demo asli tema ${found.theme.name} dari Sowanan. Buka langsung dan lihat tampilannya di HP, lengkap dengan musik, RSVP, buku ucapan, dan amplop digital.`,
-        alternates: { canonical: path },
-      }
+  const seo = path === `/${v.slug}` ? found.seo : null;
+  const page: Metadata = seo
+    ? { title: { absolute: seo.title }, description: seo.description, alternates: { canonical: path } }
     : { title: { absolute: title }, description: v.share.description, robots: { index: false, follow: false } };
   return {
     ...page,

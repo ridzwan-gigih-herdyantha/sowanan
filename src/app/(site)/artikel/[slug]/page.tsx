@@ -9,6 +9,8 @@ import { SiteHeader } from "@/components/home/site-header";
 import { Container } from "@/components/ui";
 import { formatArticleDate, updatedLater } from "@/lib/article/format";
 import { getArticle, getArticles } from "@/lib/article/load";
+import { excerptOf } from "@/lib/article/sanitize";
+import { articleSeo } from "@/lib/seo";
 import { generalWaLink, getSettings, textVars } from "@/lib/settings";
 import { OG_BASE } from "@/lib/site";
 import { mediaUrl } from "@/lib/storage/media";
@@ -25,15 +27,16 @@ export async function generateMetadata({ params }: PageProps<"/artikel/[slug]">)
   const article = await getArticle((await params).slug);
   if (!article) return {};
   const url = `/artikel/${article.slug}`;
+  const seo = articleSeo({ title: article.title, category: article.category, text: excerptOf(article.content, 400) });
   return {
-    title: article.title,
-    description: article.excerpt,
+    title: { absolute: seo.title },
+    description: seo.description,
     alternates: { canonical: url },
     openGraph: {
       ...OG_BASE,
       type: "article",
-      title: `${article.title} | Sowanan`,
-      description: article.excerpt,
+      title: seo.title,
+      description: seo.description,
       url,
       publishedTime: article.createdAt,
       modifiedTime: article.updatedAt,

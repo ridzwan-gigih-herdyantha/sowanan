@@ -10,10 +10,10 @@ import { OG_BASE } from "@/lib/site";
 const description = "Catatan seputar persiapan pernikahan, daftar tamu, dan undangan digital dari Sowanan.";
 
 export const metadata: Metadata = {
-  title: "Artikel",
+  title: "Artikel Persiapan Pernikahan dan Undangan Digital",
   description,
   alternates: { canonical: "/artikel" },
-  openGraph: { ...OG_BASE, title: "Artikel | Sowanan", description, url: "/artikel", images: [{ url: "/img/og.jpg", width: 1200, height: 630 }] },
+  openGraph: { ...OG_BASE, title: "Artikel Persiapan Pernikahan dan Undangan Digital | Sowanan", description, url: "/artikel", images: [{ url: "/img/og.jpg", width: 1200, height: 630 }] },
 };
 
 export default async function ArticlesPage() {
