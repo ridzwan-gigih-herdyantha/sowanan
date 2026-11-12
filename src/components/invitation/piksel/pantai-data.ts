@@ -56,6 +56,8 @@ export const SPOTS = {
 } as const;
 export type SpotId = keyof typeof SPOTS;
 
+const PAPAN = "/img/dimas-salsa/pantai-papan.png";
+
 // Benda yang hanya tampil bila sectionnya dipakai, digambar dari berkas terpisah berlatar transparan dan diurutkan
 // bersama karakter menurut kakinya. w dan h ukuran tampil dalam piksel peta, kakinya di obj pos tersebut. block
 // rintangan relatif terhadap kaki: [kiri, atas, kanan, bawah]. src kosong berarti gambarnya belum ada: posnya
@@ -64,12 +66,12 @@ export type Piece = { w: number; h: number; block: number[]; src?: string };
 export const PIECES: Partial<Record<SpotId, Piece>> = {
   galeri: { w: 196, h: 133, block: [-90, -40, 90, 0], src: "/img/dimas-salsa/pantai-galeri.png" },
   pasca: { w: 210, h: 73, block: [-100, -12, 100, 0], src: "/img/dimas-salsa/pantai-pasca.png" },
-  rsvp: { w: 135, h: 100, block: [-66, -50, 66, 0] },
-  angpao: { w: 70, h: 90, block: [-34, -40, 34, 0] },
-  slot1: { w: 95, h: 125, block: [-44, -40, 44, 0] },
-  slot2: { w: 95, h: 125, block: [-44, -40, 44, 0] },
-  slot3: { w: 95, h: 125, block: [-44, -40, 44, 0] },
-  slot4: { w: 95, h: 125, block: [-44, -40, 44, 0] },
+  rsvp: { w: 150, h: 104, block: [-72, -45, 72, 0], src: "/img/dimas-salsa/pantai-rsvp.png" },
+  angpao: { w: 72, h: 96, block: [-34, -40, 34, 0], src: "/img/dimas-salsa/pantai-angpao.png" },
+  slot1: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN },
+  slot2: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN },
+  slot3: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN },
+  slot4: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN },
 };
 
 // Tamu muncul di jalan batu di luar gerbang.
