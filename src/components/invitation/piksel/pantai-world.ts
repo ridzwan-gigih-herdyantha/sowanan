@@ -1,5 +1,5 @@
 import { makePathing } from "../pathing";
-import { BLOCKS, MAP, SPAWN as SPAWN_AT, SPOTS, WALK, type SpotId } from "./pantai-data";
+import { BLOCKS, MAP, PIECES, SPAWN as SPAWN_AT, SPOTS, WALK, type SpotId } from "./pantai-data";
 import { inside, type Area, type Point } from "./world";
 
 // Dunia gerak memakai piksel gambar taman (1024 x 1536) langsung.
@@ -20,7 +20,18 @@ export const POIS: Poi[] = (Object.keys(SPOTS) as PoiId[]).map((id) => ({ id, ob
 export const poiDistance = (poi: Poi, p: Point) => Math.hypot(p.x - poi.stand.x, p.y - poi.stand.y);
 
 const AREAS: Area[] = WALK.map((poly) => poly.map(([x, y]) => [x, y] as [number, number]));
-const HOLES: Area[] = BLOCKS.map(([x0, y0, x1, y1]) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]] as Area);
+const rect = ([x0, y0, x1, y1]: number[]): Area => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+
+// Rintangan benda terpisah yang sedang tampil, dalam koordinat peta.
+export function pieceBlocks(ids: SpotId[]): number[][] {
+  return ids.flatMap((id) => {
+    const piece = PIECES[id];
+    if (!piece) return [];
+    const { x, y } = SPOTS[id].obj;
+    const [l, t, r, b] = piece.block;
+    return [[x + l, y + t, x + r, y + b]];
+  });
+}
 
 // Saat terhalang, coba belok makin tajam ke dua sisi supaya karakter meluncur di sepanjang rintangan.
 const SLIDES = [0.4, -0.4, 0.8, -0.8, 1.2, -1.2];
@@ -87,4 +98,5 @@ function makeTopWorld(areas: Area[], bodyR: number, holes: Area[]) {
   return { walkable, canStand, move, ...makePathing(canStand, move, areas) };
 }
 
-export const pantaiWorld = () => makeTopWorld(AREAS, 12, HOLES);
+// Dunia gerak dengan rintangan tetap ditambah rintangan benda terpisah yang sedang tampil.
+export const pantaiWorld = (shown: SpotId[]) => makeTopWorld(AREAS, 12, [...BLOCKS, ...pieceBlocks(shown)].map(rect));

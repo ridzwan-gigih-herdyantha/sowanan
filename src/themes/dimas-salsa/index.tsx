@@ -268,15 +268,18 @@ function Finale({ inv }: { inv: InvitationView }) {
   );
 }
 
-// Bagian tambahan paket Istimewa (paling banyak dua) masing-masing mendapat satu kios: yang pertama di kiri,
-// sisanya di kanan. Nama dan ikon kios mengikuti judul dan jenis bagiannya, misalnya Dress Code. Video add-on selalu di kios pertama.
+// Bagian tambahan masing-masing mendapat satu papan di taman, berurutan kiri atas, kanan atas, kiri bawah, kanan
+// bawah. Bila lebih dari empat, papan terakhir memuat sisanya. Nama papan mengikuti judul atau jenis bagiannya,
+// misalnya Dress Code. Video add-on selalu di papan pertama.
 function extraItems(inv: InvitationView) {
   return (Object.entries(inv.extras) as [ExtraAnchor, ExtraView[]][]).flatMap(([at, items]) => items.map((e, i) => ({ at, i, e }))).filter((x) => !x.e.postGallery).sort((a, b) => Number(Boolean(b.e.video)) - Number(Boolean(a.e.video)));
 }
 
 const EXTRA_ICON: Record<ExtraKind, BoothKind> = { dresscode: "dresscode", rundown: "rundown", denah: "denah", imbauan: "imbauan", siaran: "siaran", bebas: "slot" };
 
-function extraPanel(inv: InvitationView, id: "slot1" | "slot2", items: ReturnType<typeof extraItems>): Panel | false {
+const SLOTS = ["slot1", "slot2", "slot3", "slot4"] as const;
+
+function extraPanel(inv: InvitationView, id: (typeof SLOTS)[number], items: ReturnType<typeof extraItems>): Panel | false {
   if (!items.length) return false;
   const first = items[0].e;
   const label = first.title.trim() || EXTRA_KINDS[first.kind];
@@ -287,8 +290,8 @@ function ExtraSlot({ inv, items }: { inv: InvitationView; items: ReturnType<type
   return items.map((x) => <Extras key={`${x.at}-${x.i}`} inv={inv} at={x.at} only={x.i} compact />);
 }
 
-// Isi undangan berupa peta di dalam gedung. Alur pos mengikuti bagan: pelaminan di ujung aula, dua baris pos
-// di kiri dan kanan, penerima tamu dan kotak angpao paling dekat pintu masuk.
+// Isi undangan berupa taman pernikahan di tebing pantai: tamu masuk dari gerbang, buku tamu dan kotak amplop di dekat
+// gerbang, papan bagian tambahan di kiri kanan meja resepsi, lalu acara, mempelai, dan pelaminan di ujung taman.
 export async function DimasSalsa({ inv }: { inv: InvitationView }) {
   const wishes = inv.on.wishes ? await getWishes(inv.slug) : null;
   const extras = extraItems(inv);
@@ -298,11 +301,10 @@ export async function DimasSalsa({ inv }: { inv: InvitationView }) {
     inv.on.couple && { id: "mempelai", title: "Mempelai", body: <Couple inv={inv} /> },
     inv.on.gallery && inv.gallery.length > 0 && { id: "galeri", title: "Galeri", body: <Gallery photos={inv.gallery} variant="game" /> },
     inv.postGallery.length > 0 && { id: "pasca", title: "Galeri Pasca Acara", body: <Gallery photos={inv.postGallery} variant="game" /> },
-    extraPanel(inv, "slot1", extras.slice(0, 1)),
     inv.on.rsvp && { id: "rsvp", title: "Konfirmasi kehadiran", body: <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /> },
     inv.on.story && inv.story.length > 0 && { id: "cerita", title: "Cerita kami", body: <Story inv={inv} /> },
     inv.on.event && { id: "acara", title: "Acara", body: <Event inv={inv} /> },
-    extraPanel(inv, "slot2", extras.slice(1)),
+    ...SLOTS.map((id, i) => extraPanel(inv, id, i === SLOTS.length - 1 ? extras.slice(i) : extras.slice(i, i + 1))),
     inv.on.gifts && (inv.gifts.length > 0 || Boolean(inv.images.qris)) && { id: "angpao", title: "Kotak angpao", body: <Gifts inv={inv} /> },
   ];
 

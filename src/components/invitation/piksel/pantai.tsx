@@ -8,8 +8,8 @@ import type { BoothKind } from "./booth";
 import { CELL, KEYS, sprite, STEPS, STEP_FPS, STEP_GRACE, type Pick } from "./door";
 import { Joystick } from "./joystick";
 import { clearTap, markTap, shift, turn, type Facing } from "./motion";
-import { BLOCKS, COUPLE, MAP, WALK } from "./pantai-data";
-import { HERO_H, NEAR, pantaiWorld, PH, poiDistance, POIS, PW, SPAWN, SPEED, type Poi, type PoiId } from "./pantai-world";
+import { BLOCKS, COUPLE, MAP, PIECES, SPOTS, WALK } from "./pantai-data";
+import { HERO_H, NEAR, pantaiWorld, PH, pieceBlocks, poiDistance, POIS, PW, SPAWN, SPEED, type Poi, type PoiId } from "./pantai-world";
 import { useButtonSfx } from "./sfx";
 import type { Point } from "./world";
 
@@ -25,11 +25,11 @@ const LABELS: Record<PoiId, string> = {
   acara: "Acara",
   slot1: "Info",
   slot2: "Info",
+  slot3: "Info",
+  slot4: "Info",
   rsvp: "Buku tamu",
   angpao: "Kotak amplop",
 };
-// Tinggi label nama pos di atas bendanya, dalam piksel peta.
-const TAG_Y: Record<PoiId, number> = { pembuka: 1250, pelaminan: 112, mempelai: 440, cerita: 120, galeri: 640, pasca: 805, acara: 545, slot1: 1160, slot2: 752, rsvp: 1165, angpao: 1305 };
 
 const COUPLE_SRC = "/img/dimas-salsa/couple-sprite.png";
 
@@ -92,7 +92,9 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
   // Pos yang punya panel. Pembuka tidak punya titik di peta: terbuka sendiri setelah kamera turun ke gerbang.
   const pois = useMemo(() => POIS.filter((p) => p.id !== "pembuka" && byId.has(p.id)), [byId]);
   const poisRef = useRef(pois);
-  const world = useMemo(() => pantaiWorld(), []);
+  // Benda terpisah yang tampil: pos dipakai dan gambarnya sudah ada. Hanya benda ini yang menjadi rintangan.
+  const pieces = useMemo(() => pois.filter((p) => PIECES[p.id]?.src).map((p) => p.id), [pois]);
+  const world = useMemo(() => pantaiWorld(pieces), [pieces]);
   const timers = useRef<number[]>([]);
   const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms));
 
@@ -357,6 +359,13 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
             style={{ left: pct(COUPLE.x - COUPLE.w / 2, PW), top: pct(COUPLE.y - COUPLE.h, PH), width: pct(COUPLE.w, PW), height: pct(COUPLE.h, PH), zIndex: COUPLE.y, backgroundImage: `url(${COUPLE_SRC})` }}
           />
 
+          {/* Benda pos yang digambar terpisah, diurutkan bersama karakter menurut kakinya. */}
+          {pieces.map((id) => {
+            const piece = PIECES[id]!;
+            const { x, y } = SPOTS[id].obj;
+            return <div key={id} aria-hidden="true" className="pointer-events-none absolute bg-contain bg-bottom bg-no-repeat" style={{ left: pct(x - piece.w / 2, PW), top: pct(y - piece.h, PH), width: pct(piece.w, PW), height: pct(piece.h, PH), zIndex: y, backgroundImage: `url(${piece.src})` }} />;
+          })}
+
           {/* Titik pos: cincin berdenyut di tempat tamu berdiri, redup setelah dikunjungi. */}
           {pois.map((p) => (
             <span key={p.id} aria-hidden="true" className={`gd-spot pointer-events-none absolute z-[2] ${seen.has(p.id) ? "opacity-40" : ""}`} style={{ left: pct(p.stand.x, PW), top: pct(p.stand.y, PH) }} />
@@ -374,6 +383,13 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
               ))}
               {BLOCKS.map(([x0, y0, x1, y1], i) => (
                 <rect key={i} x={x0} y={y0} width={x1 - x0} height={y1 - y0} fill="rgba(255,0,0,.35)" />
+              ))}
+              {pois.map((p) => {
+                const piece = PIECES[p.id];
+                return piece ? <rect key={`box-${p.id}`} x={p.obj.x - piece.w / 2} y={p.obj.y - piece.h} width={piece.w} height={piece.h} fill="rgba(170,80,255,.18)" stroke="#a5f" strokeWidth="3" strokeDasharray="10 6" /> : null;
+              })}
+              {pieceBlocks(pieces).map(([x0, y0, x1, y1], i) => (
+                <rect key={`pb-${i}`} x={x0} y={y0} width={x1 - x0} height={y1 - y0} fill="rgba(255,0,0,.35)" />
               ))}
               {pois.map((p) => (
                 <circle key={p.id} cx={p.stand.x} cy={p.stand.y} r={NEAR} fill="rgba(255,200,0,.2)" stroke="#fc0" strokeWidth="3" />
@@ -393,7 +409,7 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
                 data-sfx={here ? "open" : "tap"}
                 onClick={() => (here ? enter(p.id) : walkTo(p))}
                 className={`${here ? "bg-inv-accent text-inv-paper ring-4 ring-inv-paper/70" : ok ? "bg-inv-accent/85 text-inv-paper" : "bg-inv-card/90 text-inv-ink"} gd-pill absolute z-[2000] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3 py-1 font-display text-[12px] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.28)] [scale:var(--pz,1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
-                style={{ left: pct(p.obj.x, PW), top: pct(TAG_Y[p.id], PH), animationDelay: overview ? `${0.25 + i * 0.12}s` : undefined }}
+                style={{ left: pct(p.obj.x, PW), top: pct(SPOTS[p.id].tag, PH), animationDelay: overview ? `${0.25 + i * 0.12}s` : undefined }}
               >
                 {here ? `Buka ${label.toLowerCase()}` : ok ? `✓ ${label}` : label}
               </button>
