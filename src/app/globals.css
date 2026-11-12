@@ -3295,6 +3295,103 @@ html.door-wait [data-fit] {
     animation: none;
   }
 }
+/* Orang di taman: lembar 4 frame berjajar (diam, tersenyum, hadap kanan, bergaya), diganti tanpa peralihan. */
+.gd-npc {
+  background-size: 400% 100%;
+  background-position: 0 0;
+  animation-timing-function: step-end;
+  animation-iteration-count: infinite;
+}
+.gd-npc-idle {
+  animation-name: gd-npc-idle;
+  animation-duration: 5s;
+}
+.gd-npc-wave {
+  animation-name: gd-npc-wave;
+  animation-duration: 6s;
+}
+.gd-npc-talk {
+  background-position: 66.667% 0;
+  animation-name: gd-npc-talk;
+  animation-duration: 2.6s;
+}
+.gd-npc-cycle {
+  animation-name: gd-npc-cycle;
+  animation-duration: 9s;
+}
+@keyframes gd-npc-idle {
+  0% {
+    background-position: 0 0;
+  }
+  82% {
+    background-position: 33.333% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+@keyframes gd-npc-wave {
+  0% {
+    background-position: 0 0;
+  }
+  55% {
+    background-position: 33.333% 0;
+  }
+  65% {
+    background-position: 0 0;
+  }
+  80% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+@keyframes gd-npc-talk {
+  0% {
+    background-position: 66.667% 0;
+  }
+  45% {
+    background-position: 100% 0;
+  }
+  70% {
+    background-position: 66.667% 0;
+  }
+  85% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 66.667% 0;
+  }
+}
+@keyframes gd-npc-cycle {
+  0% {
+    background-position: 0 0;
+  }
+  40% {
+    background-position: 33.333% 0;
+  }
+  52% {
+    background-position: 0 0;
+  }
+  70% {
+    background-position: 66.667% 0;
+  }
+  80% {
+    background-position: 0 0;
+  }
+  88% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gd-npc {
+    animation: none;
+  }
+}
 @keyframes gd-rise {
   from {
     opacity: 0;

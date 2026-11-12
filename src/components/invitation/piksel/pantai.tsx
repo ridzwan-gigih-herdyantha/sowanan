@@ -8,8 +8,8 @@ import type { BoothKind } from "./booth";
 import { CELL, KEYS, sprite, STEPS, STEP_FPS, STEP_GRACE, type Pick } from "./door";
 import { Joystick } from "./joystick";
 import { clearTap, markTap, shift, turn, type Facing } from "./motion";
-import { BLOCKS, COUPLE, MAP, PIECES, SPOTS, WALK } from "./pantai-data";
-import { HERO_H, NEAR, pantaiWorld, PH, pieceBlocks, poiDistance, POIS, PW, SPAWN, SPEED, type Poi, type PoiId } from "./pantai-world";
+import { BLOCKS, MAP, NPC_SHEETS, PIECES, SPOTS, WALK } from "./pantai-data";
+import { HERO_H, NEAR, npcBlocks, npcsFor, pantaiWorld, PH, pieceBlocks, poiDistance, POIS, PW, SPAWN, SPEED, type Poi, type PoiId } from "./pantai-world";
 import { useButtonSfx } from "./sfx";
 import type { Point } from "./world";
 
@@ -30,8 +30,6 @@ const LABELS: Record<PoiId, string> = {
   rsvp: "Buku tamu",
   angpao: "Kotak amplop",
 };
-
-const COUPLE_SRC = "/img/dimas-salsa/couple-sprite.png";
 
 // Skala kamera (piksel layar per piksel peta) saat mengikuti karakter. Peta selalu menutupi seluruh layar; di HP
 // taman ditampilkan sekitar 470 piksel ke samping supaya karakter cukup besar.
@@ -94,7 +92,8 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
   const poisRef = useRef(pois);
   // Benda terpisah yang tampil: pos dipakai dan gambarnya sudah ada. Hanya benda ini yang menjadi rintangan.
   const pieces = useMemo(() => pois.filter((p) => PIECES[p.id]?.src).map((p) => p.id), [pois]);
-  const world = useMemo(() => pantaiWorld(pieces), [pieces]);
+  const npcs = useMemo(() => npcsFor(pois.map((p) => p.id)), [pois]);
+  const world = useMemo(() => pantaiWorld(pieces, npcs), [pieces, npcs]);
   const timers = useRef<number[]>([]);
   const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms));
 
@@ -353,11 +352,19 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
           <img src={MAP.src} alt="" draggable={false} className="pointer-events-none absolute inset-0 size-full select-none" />
           <div ref={tapRef} aria-hidden="true" className="gd-tap z-[1]" />
 
-          <div
-            aria-hidden="true"
-            className="gd-pixel pointer-events-none absolute bg-contain bg-bottom bg-no-repeat"
-            style={{ left: pct(COUPLE.x - COUPLE.w / 2, PW), top: pct(COUPLE.y - COUPLE.h, PH), width: pct(COUPLE.w, PW), height: pct(COUPLE.h, PH), zIndex: COUPLE.y, backgroundImage: `url(${COUPLE_SRC})` }}
-          />
+          {/* Orang di taman, diurutkan bersama karakter menurut kakinya. Gerak diamnya dari CSS, mulai di saat acak. */}
+          {npcs.map((n, i) => {
+            const w = n.h * NPC_SHEETS[n.sheet];
+            return (
+              <div
+                key={i}
+                role="img"
+                aria-label={n.label}
+                className={`gd-npc gd-npc-${n.move} pointer-events-none absolute bg-no-repeat ${n.left ? "-scale-x-100" : ""}`}
+                style={{ left: pct(n.x - w / 2, PW), top: pct(n.y - n.h, PH), width: pct(w, PW), height: pct(n.h, PH), zIndex: n.y, backgroundImage: `url(/img/dimas-salsa/npc/${n.sheet}.png)`, animationDelay: `${-((i * 1.7) % 6)}s` }}
+              />
+            );
+          })}
 
           {/* Benda pos yang digambar terpisah, diurutkan bersama karakter menurut kakinya. */}
           {pieces.map((id) => {
@@ -388,7 +395,7 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
                 const piece = PIECES[p.id];
                 return piece ? <rect key={`box-${p.id}`} x={p.obj.x - piece.w / 2} y={p.obj.y - piece.h} width={piece.w} height={piece.h} fill="rgba(170,80,255,.18)" stroke="#a5f" strokeWidth="3" strokeDasharray="10 6" /> : null;
               })}
-              {pieceBlocks(pieces).map(([x0, y0, x1, y1], i) => (
+              {[...pieceBlocks(pieces), ...npcBlocks(npcs)].map(([x0, y0, x1, y1], i) => (
                 <rect key={`pb-${i}`} x={x0} y={y0} width={x1 - x0} height={y1 - y0} fill="rgba(255,0,0,.35)" />
               ))}
               {pois.map((p) => (

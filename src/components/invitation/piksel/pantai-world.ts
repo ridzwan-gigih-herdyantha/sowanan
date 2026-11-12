@@ -1,5 +1,5 @@
 import { makePathing } from "../pathing";
-import { BLOCKS, MAP, PIECES, SPAWN as SPAWN_AT, SPOTS, WALK, type SpotId } from "./pantai-data";
+import { BLOCKS, MAP, NPCS, PIECES, SPAWN as SPAWN_AT, SPOTS, WALK, type Npc, type SpotId } from "./pantai-data";
 import { inside, type Area, type Point } from "./world";
 
 // Dunia gerak memakai piksel gambar taman (1024 x 1536) langsung.
@@ -32,6 +32,12 @@ export function pieceBlocks(ids: SpotId[]): number[][] {
     return [[x + l, y + t, x + r, y + b]];
   });
 }
+
+// Orang yang tampil: tanpa spot selalu ada, dengan spot hanya bila pos itu dipakai undangan.
+export const npcsFor = (spots: SpotId[]) => NPCS.filter((n) => !n.spot || spots.includes(n.spot));
+
+// Rintangan orang yang padat: kotak kecil di sekitar kakinya.
+export const npcBlocks = (npcs: Npc[]) => npcs.filter((n) => n.solid).map((n) => [n.x - 13, n.y - 12, n.x + 13, n.y + 2]);
 
 // Saat terhalang, coba belok makin tajam ke dua sisi supaya karakter meluncur di sepanjang rintangan.
 const SLIDES = [0.4, -0.4, 0.8, -0.8, 1.2, -1.2];
@@ -98,5 +104,5 @@ function makeTopWorld(areas: Area[], bodyR: number, holes: Area[]) {
   return { walkable, canStand, move, ...makePathing(canStand, move, areas) };
 }
 
-// Dunia gerak dengan rintangan tetap ditambah rintangan benda terpisah yang sedang tampil.
-export const pantaiWorld = (shown: SpotId[]) => makeTopWorld(AREAS, 12, [...BLOCKS, ...pieceBlocks(shown)].map(rect));
+// Dunia gerak dengan rintangan tetap ditambah rintangan benda terpisah dan orang yang sedang tampil.
+export const pantaiWorld = (shown: SpotId[], npcs: Npc[]) => makeTopWorld(AREAS, 12, [...BLOCKS, ...pieceBlocks(shown), ...npcBlocks(npcs)].map(rect));

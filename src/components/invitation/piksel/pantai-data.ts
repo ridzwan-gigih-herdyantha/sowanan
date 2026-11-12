@@ -46,7 +46,7 @@ export const SPOTS = {
   acara: { obj: { x: 543, y: 690 }, stand: { x: 553, y: 795 }, tag: 556 },
   galeri: { obj: { x: 835, y: 860 }, stand: { x: 835, y: 892 }, tag: 712 },
   pasca: { obj: { x: 300, y: 1240 }, stand: { x: 300, y: 1274 }, tag: 1150 },
-  rsvp: { obj: { x: 755, y: 1245 }, stand: { x: 650, y: 1240 }, tag: 1150 },
+  rsvp: { obj: { x: 755, y: 1245 }, stand: { x: 650, y: 1240 }, tag: 1092 },
   angpao: { obj: { x: 880, y: 1250 }, stand: { x: 880, y: 1160 }, tag: 1188 },
   // Papan bagian tambahan, di bekas tempat meja panjang: kiri atas, kanan atas, kiri bawah, kanan bawah.
   slot1: { obj: { x: 150, y: 975 }, stand: { x: 235, y: 950 }, tag: 852 },
@@ -77,5 +77,50 @@ export const PIECES: Partial<Record<SpotId, Piece>> = {
 // Tamu muncul di jalan batu di luar gerbang.
 export const SPAWN = { x: 535, y: 1495 };
 
-// Pengantin berdiri di panggung batu di bawah lengkung bunga: titik kaki dan ukuran tampil.
-export const COUPLE = { x: 540, y: 300, w: 108, h: 74 };
+// Orang di taman: pengantin, penyambut, pembawa acara, dan tamu lain. Gambarnya lembar 4 frame berjajar dengan kaki
+// di dasar sel: 0 diam, 1 tersenyum, 2 hadap kanan, 3 bergaya (melambai atau menunjuk). aspect lebar sel dibagi tinggi.
+export const NPC_SHEETS = {
+  groom: 78 / 160,
+  bride: 82.8 / 160,
+  "usher-f": 76.5 / 160,
+  "usher-m": 84.5 / 160,
+  mc: 86.8 / 160,
+  "guest-man": 106 / 160,
+  "guest-woman": 109.3 / 160,
+  "guest-hijab": 96.8 / 160,
+  grandpa: 102.3 / 160,
+  grandma: 95.8 / 160,
+  boy: 103.5 / 160,
+  girl: 132 / 160,
+  photographer: 100 / 160,
+} as const;
+export type NpcSheet = keyof typeof NPC_SHEETS;
+
+// Gerak diam: idle sesekali tersenyum, wave sesekali melambai, talk hadap samping bergantian bicara, cycle memutar
+// keempat frame.
+export type NpcMove = "idle" | "wave" | "talk" | "cycle";
+// x, y titik kaki. h tinggi tampil. left dicerminkan menghadap kiri. spot: hanya tampil bila pos itu dipakai.
+// solid: jadi rintangan kecil (orang di balik meja atau di atas panggung sudah terhalang benda lain).
+export type Npc = { sheet: NpcSheet; x: number; y: number; h: number; move: NpcMove; left?: boolean; spot?: SpotId; solid?: boolean; label: string };
+export const NPCS: Npc[] = [
+  // Pengantin di panggung batu di bawah lengkung bunga.
+  { sheet: "groom", x: 515, y: 298, h: 74, move: "idle", label: "Pengantin pria" },
+  { sheet: "bride", x: 566, y: 298, h: 74, move: "wave", label: "Pengantin wanita" },
+  // Penyambut di balik meja buku tamu.
+  { sheet: "usher-f", x: 746, y: 1176, h: 70, move: "cycle", spot: "rsvp", label: "Penyambut tamu" },
+  { sheet: "usher-m", x: 802, y: 1176, h: 70, move: "cycle", spot: "rsvp", label: "Penyambut tamu" },
+  // Pembawa acara di panggung pergola, di samping stand mikrofon.
+  { sheet: "mc", x: 600, y: 712, h: 70, move: "cycle", spot: "acara", label: "Pembawa acara" },
+  // Tamu yang mengobrol di tepi lantai dansa.
+  { sheet: "guest-man", x: 440, y: 850, h: 70, move: "talk", solid: true, label: "Tamu" },
+  { sheet: "guest-woman", x: 492, y: 850, h: 68, move: "talk", left: true, solid: true, label: "Tamu" },
+  // Di depan tenda dessert, anak-anak bermain di dekatnya.
+  { sheet: "guest-hijab", x: 230, y: 868, h: 68, move: "idle", solid: true, label: "Tamu" },
+  { sheet: "girl", x: 318, y: 872, h: 54, move: "wave", solid: true, label: "Anak tamu" },
+  { sheet: "boy", x: 360, y: 872, h: 54, move: "talk", left: true, solid: true, label: "Anak tamu" },
+  // Kakek dan nenek mengapit jalan batu dari gazebo.
+  { sheet: "grandpa", x: 160, y: 480, h: 66, move: "idle", solid: true, label: "Tamu" },
+  { sheet: "grandma", x: 288, y: 480, h: 64, move: "wave", solid: true, label: "Tamu" },
+  // Fotografer di samping photo booth.
+  { sheet: "photographer", x: 724, y: 880, h: 70, move: "idle", spot: "galeri", solid: true, label: "Fotografer" },
+];
