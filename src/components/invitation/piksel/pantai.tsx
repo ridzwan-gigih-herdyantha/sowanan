@@ -1,19 +1,47 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 import { Modal } from "../modal";
 import { useCloseInvitation } from "../shell";
 import { newDodge } from "../pathing";
 import type { BoothKind } from "./booth";
-import { CELL, KEYS, sprite, STEPS, STEP_FPS, STEP_GRACE, type Pick } from "./door";
+import { KEYS, STEP_GRACE, type Pick } from "./door";
 import { Joystick } from "./joystick";
-import { clearTap, markTap, shift, turn, type Facing } from "./motion";
+import { clearTap, markTap, shift } from "./motion";
 import { BLOCKS, MAP, NPC_SHEETS, PIECES, SPOTS, WALK } from "./pantai-data";
-import { HERO_H, NEAR, npcBlocks, npcsFor, pantaiWorld, PH, pieceBlocks, poiDistance, POIS, PW, SPAWN, SPEED, type Poi, type PoiId } from "./pantai-world";
+import {
+  HERO_H,
+  NEAR,
+  npcBlocks,
+  npcsFor,
+  pantaiWorld,
+  PH,
+  pieceBlocks,
+  poiDistance,
+  POIS,
+  PW,
+  SPAWN,
+  SPEED,
+  type Poi,
+  type PoiId,
+} from "./pantai-world";
 import { useButtonSfx } from "./sfx";
 import type { Point } from "./world";
 
-export type Panel = { id: PoiId; title: string; body: ReactNode; label?: string; icon?: BoothKind };
+export type Panel = {
+  id: PoiId;
+  title: string;
+  body: ReactNode;
+  label?: string;
+  icon?: BoothKind;
+};
 
 const LABELS: Record<PoiId, string> = {
   pembuka: "Selamat datang",
@@ -44,7 +72,9 @@ const DIVE_MS = 1300;
 
 function savedHero(): Pick {
   try {
-    return window.sessionStorage.getItem("gd-hero") === "bride" ? "bride" : "groom";
+    return window.sessionStorage.getItem("gd-hero") === "bride"
+      ? "bride"
+      : "groom";
   } catch {
     return "groom";
   }
@@ -52,9 +82,52 @@ function savedHero(): Pick {
 
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
+// Sprite jalan tamu: 5 baris arah (bawah, atas, kanan, kanan-bawah, kanan-atas) x 6 frame langkah. Arah ke kiri
+// memakai baris kanan yang dicerminkan. idle frame tiap baris yang langkahnya paling rapat, dipakai saat diam.
+// Tamu wanita belum punya gambar, jadi sementara memakai yang pria.
+const HERO_SHEET = { cols: 6, rows: 5, aspect: 0.5949, idle: [5, 1, 3, 2, 4] };
+const HERO_SRC: Record<Pick, string> = {
+  groom: "/img/dimas-salsa/hero-man.png",
+  bride: "/img/dimas-salsa/hero-man.png",
+};
+// Jarak di peta untuk satu frame langkah: sekitar 10 frame per detik pada kecepatan penuh, dan kaki ikut melambat
+// saat joystick ditekan sedikit.
+const STRIDE = 22;
+
+// Arah hadap dari 8 sektor arah gerak. Arah lama dipertahankan sampai gerak bergeser cukup jauh dari sektornya,
+// supaya sprite tidak berkedip di antara dua arah saat gerak tepat di perbatasan.
+type Face = { sector: number; row: number; flip: boolean };
+const SECTORS: [number, boolean][] = [
+  [2, false],
+  [3, false],
+  [0, false],
+  [3, true],
+  [2, true],
+  [4, true],
+  [1, false],
+  [4, false],
+];
+function face8(f: Face, vx: number, vy: number) {
+  const deg = (Math.atan2(vy, vx) * 180) / Math.PI;
+  const off = Math.abs(((deg - f.sector * 45 + 540) % 360) - 180);
+  if (off < 32) return;
+  f.sector = (Math.round(deg / 45) + 8) % 8;
+  [f.row, f.flip] = SECTORS[f.sector];
+}
+const heroFrame = (col: number, row: number) =>
+  `${(col / (HERO_SHEET.cols - 1)) * 100}% ${(row / (HERO_SHEET.rows - 1)) * 100}%`;
+
 // Isi undangan berupa taman pernikahan di tebing pantai. Saat masuk, kamera menyapu taman dari pelaminan sampai
 // gerbang, lalu mengikuti karakter. Saat tamu sampai di depan sebuah pos, isinya langsung terbuka.
-export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcome?: ReactNode; finale?: ReactNode }) {
+export function PantaiMap({
+  panels,
+  welcome,
+  finale,
+}: {
+  panels: Panel[];
+  welcome?: ReactNode;
+  finale?: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const [hero, setHero] = useState<Pick>("groom");
   const [panel, setPanel] = useState<PoiId | null>(null);
@@ -88,14 +161,21 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
 
   const byId = useMemo(() => new Map(panels.map((p) => [p.id, p])), [panels]);
   // Pos yang punya panel. Pembuka tidak punya titik di peta: terbuka sendiri setelah kamera turun ke gerbang.
-  const pois = useMemo(() => POIS.filter((p) => p.id !== "pembuka" && byId.has(p.id)), [byId]);
+  const pois = useMemo(
+    () => POIS.filter((p) => p.id !== "pembuka" && byId.has(p.id)),
+    [byId],
+  );
   const poisRef = useRef(pois);
   // Benda terpisah yang tampil: pos dipakai dan gambarnya sudah ada. Hanya benda ini yang menjadi rintangan.
-  const pieces = useMemo(() => pois.filter((p) => PIECES[p.id]?.src).map((p) => p.id), [pois]);
+  const pieces = useMemo(
+    () => pois.filter((p) => PIECES[p.id]?.src).map((p) => p.id),
+    [pois],
+  );
   const npcs = useMemo(() => npcsFor(pois.map((p) => p.id)), [pois]);
   const world = useMemo(() => pantaiWorld(pieces, npcs), [pieces, npcs]);
   const timers = useRef<number[]>([]);
-  const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms));
+  const later = (fn: () => void, ms: number) =>
+    timers.current.push(window.setTimeout(fn, ms));
 
   useEffect(() => {
     poisRef.current = pois;
@@ -142,12 +222,18 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
           intro.current = false;
           setMode("follow");
         }, INTRO_MS),
-        window.setTimeout(() => byId.has("pembuka") && setPanel((p) => p ?? "pembuka"), INTRO_MS + DIVE_MS),
+        window.setTimeout(
+          () => byId.has("pembuka") && setPanel((p) => p ?? "pembuka"),
+          INTRO_MS + DIVE_MS,
+        ),
       );
     };
     sync();
     const mo = new MutationObserver(sync);
-    mo.observe(shell, { attributes: true, attributeFilter: ["data-inv-state"] });
+    mo.observe(shell, {
+      attributes: true,
+      attributeFilter: ["data-inv-state"],
+    });
     setDebug(new URLSearchParams(window.location.search).has("gdebug"));
     const list = timers.current;
     return () => {
@@ -164,8 +250,14 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
     const body = bodyRef.current;
     if (!root || !camEl || !heroEl || !body) return;
     const held = keys.current;
-    const face: Facing = { row: 2, flip: false };
-    const cam = { z: 0, fx: pos.current.x, fy: pos.current.y, ay: 0.56, ready: false };
+    const face: Face = { sector: 6, row: 1, flip: false };
+    const cam = {
+      z: 0,
+      fx: pos.current.x,
+      fy: pos.current.y,
+      ay: 0.56,
+      ready: false,
+    };
     let walked = 0;
     let still = 0;
     let last = performance.now();
@@ -205,17 +297,26 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
         target.current = null;
       } else if (vx || vy) target.current = null;
       const step = SPEED * power * dt;
-      const dir = paused.current ? null : world.walk(target.current ?? world.steer(dodge, p, vx, vy, step), p, step);
-      if (dir) turn(face, dir.x, dir.y);
+      const dir = paused.current
+        ? null
+        : world.walk(
+            target.current ?? world.steer(dodge, p, vx, vy, step),
+            p,
+            step,
+          );
+      if (dir) face8(face, dir.x, dir.y);
       else target.current = null;
       clearTap(tapRef.current, !target.current, now);
       if (dir) {
-        walked += dt;
+        walked += step;
         still = 0;
       } else if ((still += dt) > STEP_GRACE) walked = 0;
-      const col = walked > 0 ? STEPS[Math.floor(walked * STEP_FPS) % STEPS.length] : 0;
-      body.style.backgroundPosition = `${col * 50}% ${face.row * 50}%`;
-      body.style.transform = face.row === 1 && face.flip ? "scaleX(-1)" : "";
+      const col =
+        walked > 0
+          ? Math.floor(walked / STRIDE) % HERO_SHEET.cols
+          : HERO_SHEET.idle[face.row];
+      body.style.backgroundPosition = heroFrame(col, face.row);
+      body.style.transform = face.flip ? "scaleX(-1)" : "";
       shift(heroEl, SPAWN, p, k);
       heroEl.style.zIndex = String(Math.round(p.y));
 
@@ -231,19 +332,30 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
       } else introFrom = 0;
       const zWant = m === "overview" ? cover / k : 1;
       const settled = m === "follow" && Math.abs(cam.z - 1) < 0.02;
-      const ease = cam.ready ? Math.min(1, dt * (settled ? 5 : m === "overview" && intro.current ? 6 : 2.6)) : 1;
+      const ease = cam.ready
+        ? Math.min(
+            1,
+            dt * (settled ? 5 : m === "overview" && intro.current ? 6 : 2.6),
+          )
+        : 1;
       cam.fx += (f.x - cam.fx) * ease;
       cam.fy += (f.y - cam.fy) * ease;
       cam.ay += ((m === "follow" ? 0.56 : 0.5) - cam.ay) * ease;
       const z0 = cam.z || zWant;
-      cam.z = Math.max(cover / k, Math.exp(Math.log(z0) + (Math.log(zWant) - Math.log(z0)) * ease));
+      cam.z = Math.max(
+        cover / k,
+        Math.exp(Math.log(z0) + (Math.log(zWant) - Math.log(z0)) * ease),
+      );
       cam.ready = true;
       const w = PW * k * cam.z;
       const h = PH * k * cam.z;
       // Di HP, kamera boleh turun sedikit melewati tepi bawah taman supaya karakter di jalan masuk tidak tertutup joystick.
       const below = m === "follow" && vw < 768 ? Math.min(vh * 0.16, 130) : 0;
       const tx = Math.min(0, Math.max(vw - w, vw / 2 - (cam.fx / PW) * w));
-      const ty = Math.min(0, Math.max(vh - h - below, vh * cam.ay - (cam.fy / PH) * h));
+      const ty = Math.min(
+        0,
+        Math.max(vh - h - below, vh * cam.ay - (cam.fy / PH) * h),
+      );
       const dpr = window.devicePixelRatio || 1;
       camEl.style.transform = `translate3d(${Math.round(tx * dpr) / dpr}px, ${Math.round(ty * dpr) / dpr}px, 0) scale(${cam.z.toFixed(4)})`;
       // Label pos tetap terbaca saat peta diperkecil.
@@ -271,7 +383,11 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
 
     const down = (e: KeyboardEvent) => {
       if (paused.current || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.target instanceof HTMLElement && /^(input|textarea|select|button|a)$/i.test(e.target.tagName)) return;
+      if (
+        e.target instanceof HTMLElement &&
+        /^(input|textarea|select|button|a)$/i.test(e.target.tagName)
+      )
+        return;
       // Enter membuka pos yang sedang didekati.
       if (e.key === "Enter" && nearRef.current) {
         e.preventDefault();
@@ -305,7 +421,13 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
     const stage = stageRef.current;
     if (!stage) return;
     const r = stage.getBoundingClientRect();
-    go({ x: ((e.clientX - r.left) / r.width) * PW, y: ((e.clientY - r.top) / r.height) * PH }, fresh);
+    go(
+      {
+        x: ((e.clientX - r.left) / r.width) * PW,
+        y: ((e.clientY - r.top) / r.height) * PH,
+      },
+      fresh,
+    );
   };
   const onDown = (e: PointerEvent) => {
     if (paused.current) return;
@@ -328,7 +450,11 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
   const closePanel = () => {
     setPanel(null);
     setMode("follow");
-    if (!finished.current && pois.length > 0 && pois.every((p) => seen.has(p.id))) {
+    if (
+      !finished.current &&
+      pois.length > 0 &&
+      pois.every((p) => seen.has(p.id))
+    ) {
       finished.current = true;
       later(() => setPhase("done"), 450);
     }
@@ -345,11 +471,30 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
   const overview = mode === "overview";
 
   return (
-    <div ref={rootRef} className="gd-interior fixed inset-0 z-40 overflow-hidden bg-[#2f5a2c] text-inv-ink">
-      <div ref={camRef} className="absolute top-0 left-0 origin-top-left will-change-transform" style={{ width: PW / 2, height: PH / 2 }}>
-        <div ref={stageRef} className="absolute inset-0 isolate touch-none" onPointerDown={onDown} onPointerMove={(e) => dragging.current && aim(e, false)} onPointerUp={() => (dragging.current = false)} onPointerCancel={() => (dragging.current = false)}>
+    <div
+      ref={rootRef}
+      className="gd-interior fixed inset-0 z-40 overflow-hidden bg-[#2f5a2c] text-inv-ink"
+    >
+      <div
+        ref={camRef}
+        className="absolute top-0 left-0 origin-top-left will-change-transform"
+        style={{ width: PW / 2, height: PH / 2 }}
+      >
+        <div
+          ref={stageRef}
+          className="absolute inset-0 isolate touch-none"
+          onPointerDown={onDown}
+          onPointerMove={(e) => dragging.current && aim(e, false)}
+          onPointerUp={() => (dragging.current = false)}
+          onPointerCancel={() => (dragging.current = false)}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element -- lukisan peta dipakai apa adanya */}
-          <img src={MAP.src} alt="" draggable={false} className="pointer-events-none absolute inset-0 size-full select-none" />
+          <img
+            src={MAP.src}
+            alt=""
+            draggable={false}
+            className="pointer-events-none absolute inset-0 size-full select-none"
+          />
           <div ref={tapRef} aria-hidden="true" className="gd-tap z-[1]" />
 
           {/* Orang di taman, diurutkan bersama karakter menurut kakinya. Gerak diamnya dari CSS, mulai di saat acak. */}
@@ -361,7 +506,15 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
                 role="img"
                 aria-label={n.label}
                 className={`gd-npc gd-npc-${n.move} pointer-events-none absolute bg-no-repeat ${n.left ? "-scale-x-100" : ""}`}
-                style={{ left: pct(n.x - w / 2, PW), top: pct(n.y - n.h, PH), width: pct(w, PW), height: pct(n.h, PH), zIndex: n.y, backgroundImage: `url(/img/dimas-salsa/npc/${n.sheet}.png)`, animationDelay: `${-((i * 1.7) % 6)}s` }}
+                style={{
+                  left: pct(n.x - w / 2, PW),
+                  top: pct(n.y - n.h, PH),
+                  width: pct(w, PW),
+                  height: pct(n.h, PH),
+                  zIndex: n.y,
+                  backgroundImage: `url(/img/dimas-salsa/npc/${n.sheet}.png)`,
+                  animationDelay: `${-((i * 1.7) % 6)}s`,
+                }}
               />
             );
           })}
@@ -370,36 +523,124 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
           {pieces.map((id) => {
             const piece = PIECES[id]!;
             const { x, y } = SPOTS[id].obj;
-            return <div key={id} aria-hidden="true" className="pointer-events-none absolute bg-contain bg-bottom bg-no-repeat" style={{ left: pct(x - piece.w / 2, PW), top: pct(y - piece.h, PH), width: pct(piece.w, PW), height: pct(piece.h, PH), zIndex: y, backgroundImage: `url(${piece.src})` }} />;
+            return (
+              <div
+                key={id}
+                aria-hidden="true"
+                className="pointer-events-none absolute bg-contain bg-bottom bg-no-repeat"
+                style={{
+                  left: pct(x - piece.w / 2, PW),
+                  top: pct(y - piece.h, PH),
+                  width: pct(piece.w, PW),
+                  height: pct(piece.h, PH),
+                  zIndex: y,
+                  backgroundImage: `url(${piece.src})`,
+                }}
+              />
+            );
           })}
 
           {/* Titik pos: cincin berdenyut di tempat tamu berdiri, redup setelah dikunjungi. */}
           {pois.map((p) => (
-            <span key={p.id} aria-hidden="true" className={`gd-spot pointer-events-none absolute z-[2] ${seen.has(p.id) ? "opacity-40" : ""}`} style={{ left: pct(p.stand.x, PW), top: pct(p.stand.y, PH) }} />
+            <span
+              key={p.id}
+              aria-hidden="true"
+              className={`gd-spot pointer-events-none absolute z-[2] ${seen.has(p.id) ? "opacity-40" : ""}`}
+              style={{ left: pct(p.stand.x, PW), top: pct(p.stand.y, PH) }}
+            />
           ))}
 
-          <div ref={heroRef} className="pointer-events-none absolute -translate-x-1/2 -translate-y-full" style={{ left: pct(SPAWN.x, PW), top: pct(SPAWN.y, PH), width: pct((HERO_H * CELL.w) / CELL.h, PW), height: pct(HERO_H, PH), zIndex: Math.round(SPAWN.y) }}>
-            <span aria-hidden="true" className="absolute inset-x-[22%] -bottom-[3%] h-[7%] rounded-full bg-black/25" />
-            <div ref={bodyRef} className="gd-pixel relative size-full bg-no-repeat" style={sprite(hero, 0, 2)} role="img" aria-label="Karakter kamu" />
+          <div
+            ref={heroRef}
+            className="pointer-events-none absolute -translate-x-1/2 -translate-y-full"
+            style={{
+              left: pct(SPAWN.x, PW),
+              top: pct(SPAWN.y, PH),
+              width: pct(HERO_H * HERO_SHEET.aspect, PW),
+              height: pct(HERO_H, PH),
+              zIndex: Math.round(SPAWN.y),
+            }}
+          >
+            <span
+              aria-hidden="true"
+              className="absolute inset-x-[22%] -bottom-[3%] h-[7%] rounded-full bg-black/25"
+            />
+            <div
+              ref={bodyRef}
+              className="relative size-full bg-no-repeat"
+              style={{
+                backgroundImage: `url(${HERO_SRC[hero]})`,
+                backgroundSize: `${HERO_SHEET.cols * 100}% ${HERO_SHEET.rows * 100}%`,
+                backgroundPosition: heroFrame(HERO_SHEET.idle[1], 1),
+              }}
+              role="img"
+              aria-label="Karakter kamu"
+            />
           </div>
 
           {debug && (
-            <svg aria-hidden="true" viewBox={`0 0 ${PW} ${PH}`} className="pointer-events-none absolute inset-0 z-[2001] size-full">
+            <svg
+              aria-hidden="true"
+              viewBox={`0 0 ${PW} ${PH}`}
+              className="pointer-events-none absolute inset-0 z-[2001] size-full"
+            >
               {WALK.map((a, i) => (
-                <polygon key={i} points={a.map((q) => q.join(",")).join(" ")} fill="rgba(0,160,255,.15)" stroke="#0af" strokeWidth="3" />
+                <polygon
+                  key={i}
+                  points={a.map((q) => q.join(",")).join(" ")}
+                  fill="rgba(0,160,255,.15)"
+                  stroke="#0af"
+                  strokeWidth="3"
+                />
               ))}
               {BLOCKS.map(([x0, y0, x1, y1], i) => (
-                <rect key={i} x={x0} y={y0} width={x1 - x0} height={y1 - y0} fill="rgba(255,0,0,.35)" />
+                <rect
+                  key={i}
+                  x={x0}
+                  y={y0}
+                  width={x1 - x0}
+                  height={y1 - y0}
+                  fill="rgba(255,0,0,.35)"
+                />
               ))}
               {pois.map((p) => {
                 const piece = PIECES[p.id];
-                return piece ? <rect key={`box-${p.id}`} x={p.obj.x - piece.w / 2} y={p.obj.y - piece.h} width={piece.w} height={piece.h} fill="rgba(170,80,255,.18)" stroke="#a5f" strokeWidth="3" strokeDasharray="10 6" /> : null;
+                return piece ? (
+                  <rect
+                    key={`box-${p.id}`}
+                    x={p.obj.x - piece.w / 2}
+                    y={p.obj.y - piece.h}
+                    width={piece.w}
+                    height={piece.h}
+                    fill="rgba(170,80,255,.18)"
+                    stroke="#a5f"
+                    strokeWidth="3"
+                    strokeDasharray="10 6"
+                  />
+                ) : null;
               })}
-              {[...pieceBlocks(pieces), ...npcBlocks(npcs)].map(([x0, y0, x1, y1], i) => (
-                <rect key={`pb-${i}`} x={x0} y={y0} width={x1 - x0} height={y1 - y0} fill="rgba(255,0,0,.35)" />
-              ))}
+              {[...pieceBlocks(pieces), ...npcBlocks(npcs)].map(
+                ([x0, y0, x1, y1], i) => (
+                  <rect
+                    key={`pb-${i}`}
+                    x={x0}
+                    y={y0}
+                    width={x1 - x0}
+                    height={y1 - y0}
+                    fill="rgba(255,0,0,.35)"
+                  />
+                ),
+              )}
               {pois.map((p) => (
-                <circle key={p.id} cx={p.stand.x} cy={p.stand.y} r={NEAR} fill="rgba(255,200,0,.2)" stroke="#fc0" strokeWidth="3" />
+                <circle
+                  key={p.id}
+                  cx={p.stand.x}
+                  cy={p.stand.y}
+                  r={NEAR}
+                  fill="rgba(255,200,0,.2)"
+                  stroke="#fc0"
+                  strokeWidth="3"
+                />
               ))}
             </svg>
           )}
@@ -416,9 +657,17 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
                 data-sfx={here ? "open" : "tap"}
                 onClick={() => (here ? enter(p.id) : walkTo(p))}
                 className={`${here ? "bg-inv-accent text-inv-paper ring-4 ring-inv-paper/70" : ok ? "bg-inv-accent/85 text-inv-paper" : "bg-inv-card/90 text-inv-ink"} gd-pill absolute z-[2000] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line px-3 py-1 font-display text-[12px] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.28)] [scale:var(--pz,1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
-                style={{ left: pct(p.obj.x, PW), top: pct(SPOTS[p.id].tag, PH), animationDelay: overview ? `${0.25 + i * 0.12}s` : undefined }}
+                style={{
+                  left: pct(p.obj.x, PW),
+                  top: pct(SPOTS[p.id].tag, PH),
+                  animationDelay: overview ? `${0.25 + i * 0.12}s` : undefined,
+                }}
               >
-                {here ? `Buka ${label.toLowerCase()}` : ok ? `✓ ${label}` : label}
+                {here
+                  ? `Buka ${label.toLowerCase()}`
+                  : ok
+                    ? `✓ ${label}`
+                    : label}
               </button>
             );
           })}
@@ -429,21 +678,38 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
       <div className="pointer-events-none absolute inset-x-0 top-[max(12px,2.2dvh)] z-[999] flex flex-col items-center gap-2 px-3">
         <div className="pointer-events-auto relative flex w-full max-w-[420px] items-center gap-2 rounded-2xl border-[3px] border-inv-line bg-inv-card py-1.5 pr-1.5 pl-3.5 shadow-[0_4px_0_rgba(0,0,0,.22)]">
           <div className="min-w-0 flex-1 [&_p]:truncate">
-            <span className="block text-[10px] leading-none font-semibold tracking-[.16em] text-inv-gold uppercase">Taman tepi pantai</span>
-            <div className="mt-1 [&_p]:text-[clamp(13px,3.6vw,16px)] [&_p]:leading-tight">{welcome}</div>
+            <span className="block text-[10px] leading-none font-semibold tracking-[.16em] text-inv-gold uppercase">
+              Taman tepi pantai
+            </span>
+            <div className="mt-1 [&_p]:text-[clamp(13px,3.6vw,16px)] [&_p]:leading-tight">
+              {welcome}
+            </div>
           </div>
           {zoomable && (
             <button
               type="button"
-              onClick={() => setMode((m) => (m === "overview" ? "follow" : "overview"))}
+              onClick={() =>
+                setMode((m) => (m === "overview" ? "follow" : "overview"))
+              }
               aria-pressed={overview}
               disabled={panel !== null}
               className="flex shrink-0 items-center gap-1.5 rounded-xl border-[2.5px] border-inv-line bg-inv-paper px-2.5 py-2 font-display text-[13px] leading-none font-semibold shadow-[0_3px_0_rgba(0,0,0,.22)] active:translate-y-0.5 active:shadow-none"
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
                 <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Zm0 0v14m6-12v14" />
               </svg>
-              <span className="max-[359px]:sr-only">{overview ? "Kembali" : "Peta"}</span>
+              <span className="max-[359px]:sr-only">
+                {overview ? "Kembali" : "Peta"}
+              </span>
             </button>
           )}
           <button
@@ -458,18 +724,32 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
             </span>
           </button>
           {toc && (
-            <nav aria-label="Daftar misi" className="gd-pill absolute top-full right-0 z-20 mt-2 w-[min(260px,calc(100vw-24px))] rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]">
+            <nav
+              aria-label="Daftar misi"
+              className="gd-pill absolute top-full right-0 z-20 mt-2 w-[min(260px,calc(100vw-24px))] rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]"
+            >
               <ul className="max-h-[min(60dvh,420px)] overflow-y-auto">
                 {pois.map((p) => {
                   const ok = seen.has(p.id);
                   return (
                     <li key={p.id}>
-                      <button type="button" onClick={() => walkTo(p)} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-[14px] font-semibold hover:bg-inv-wash focus-visible:bg-inv-wash">
-                        <span aria-hidden="true" className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-inv-line text-[11px] ${ok ? "bg-inv-accent text-inv-paper" : "bg-inv-paper"}`}>
+                      <button
+                        type="button"
+                        onClick={() => walkTo(p)}
+                        className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-[14px] font-semibold hover:bg-inv-wash focus-visible:bg-inv-wash"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-inv-line text-[11px] ${ok ? "bg-inv-accent text-inv-paper" : "bg-inv-paper"}`}
+                        >
                           {ok ? "✓" : ""}
                         </span>
-                        <span className="min-w-0 flex-1 truncate">{byId.get(p.id)?.label ?? LABELS[p.id]}</span>
-                        <span className="sr-only">{ok ? "sudah dibuka" : "belum dibuka"}</span>
+                        <span className="min-w-0 flex-1 truncate">
+                          {byId.get(p.id)?.label ?? LABELS[p.id]}
+                        </span>
+                        <span className="sr-only">
+                          {ok ? "sudah dibuka" : "belum dibuka"}
+                        </span>
                       </button>
                     </li>
                   );
@@ -478,13 +758,21 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
             </nav>
           )}
         </div>
-        {overview && seen.size === 0 && !toc && <p className="gd-pill rounded-full bg-inv-line/80 px-3 py-1 text-[11px] font-semibold text-inv-paper">Selamat datang! Ini taman pernikahannya</p>}
+        {overview && seen.size === 0 && !toc && (
+          <p className="gd-pill rounded-full bg-inv-line/80 px-3 py-1 text-[11px] font-semibold text-inv-paper">
+            Selamat datang! Ini taman pernikahannya
+          </p>
+        )}
         {mode === "follow" && seen.size === 0 && !toc && !panel && (
-          <p className="rounded-full bg-inv-line/75 px-3 py-1 text-[11px] font-semibold text-inv-paper">Jalan ke tiap pos, atau ketuk namanya</p>
+          <p className="rounded-full bg-inv-line/75 px-3 py-1 text-[11px] font-semibold text-inv-paper">
+            Jalan ke tiap pos, atau ketuk namanya
+          </p>
         )}
       </div>
 
-      <div className={`pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-[999] flex flex-col items-center gap-3 transition-opacity duration-300 [@media(max-height:520px)]:items-start [@media(max-height:520px)]:pl-5 ${mode === "follow" ? "opacity-100" : "opacity-0"}`}>
+      <div
+        className={`pointer-events-none absolute inset-x-0 bottom-[max(18px,3dvh)] z-[999] flex flex-col items-center gap-3 transition-opacity duration-300 [@media(max-height:520px)]:items-start [@media(max-height:520px)]:pl-5 ${mode === "follow" ? "opacity-100" : "opacity-0"}`}
+      >
         {/* Tombol Buka untuk pos yang sedang didekati, di atas joystick supaya mudah dijangkau jempol. */}
         {near && !panel && mode === "follow" && (
           <button
@@ -497,19 +785,31 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
             Buka {(byId.get(near)?.label ?? LABELS[near]).toLowerCase()}
           </button>
         )}
-        <div className={`${mode === "follow" ? "pointer-events-auto" : ""} opacity-80`}>
+        <div
+          className={`${mode === "follow" ? "pointer-events-auto" : ""} opacity-80`}
+        >
           <Joystick onMove={(x, y) => (joy.current = { x, y })} />
         </div>
       </div>
 
-      <Modal open={Boolean(active)} onClose={closePanel} label={active?.title ?? "Isi undangan"}>
+      <Modal
+        open={Boolean(active)}
+        onClose={closePanel}
+        label={active?.title ?? "Isi undangan"}
+      >
         {active && (
           <div className="px-5 pt-12 pb-7">
-            <h2 className="mb-4 text-center font-display text-[clamp(22px,6vw,28px)] leading-tight font-semibold text-inv-accent">{active.title}</h2>
+            <h2 className="mb-4 text-center font-display text-[clamp(22px,6vw,28px)] leading-tight font-semibold text-inv-accent">
+              {active.title}
+            </h2>
             {active.body}
             {active.id === "pembuka" && (
               <div className="mt-5 flex justify-center">
-                <button type="button" onClick={closePanel} className="rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[15px] leading-none font-semibold text-inv-paper shadow-[0_4px_0_rgba(0,0,0,.28)] transition-transform active:translate-y-0.5">
+                <button
+                  type="button"
+                  onClick={closePanel}
+                  className="rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[15px] leading-none font-semibold text-inv-paper shadow-[0_4px_0_rgba(0,0,0,.28)] transition-transform active:translate-y-0.5"
+                >
                   Mulai jelajah
                 </button>
               </div>
@@ -520,8 +820,15 @@ export function PantaiMap({ panels, welcome, finale }: { panels: Panel[]; welcom
 
       {phase === "done" && (
         <div className="absolute inset-0 z-[1002] flex items-center justify-center bg-black/65 p-3 sm:p-6">
-          <div role="dialog" aria-modal="true" aria-label="Tamat" className="gd-pill flex max-h-full w-[min(520px,100%)] flex-col overflow-hidden rounded-3xl border-[3px] border-inv-line bg-inv-paper shadow-[0_8px_0_rgba(0,0,0,.35)]">
-            <div className="gd-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">{finale}</div>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Tamat"
+            className="gd-pill flex max-h-full w-[min(520px,100%)] flex-col overflow-hidden rounded-3xl border-[3px] border-inv-line bg-inv-paper shadow-[0_8px_0_rgba(0,0,0,.35)]"
+          >
+            <div className="gd-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              {finale}
+            </div>
             <button
               type="button"
               data-sfx="open"
