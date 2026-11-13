@@ -149,7 +149,7 @@ export function ThemeCard({ theme, index, waHref, animate = true }: { theme: The
         {theme.image ? (
           <>
             <Phone src={theme.slug === "faris-najwa" ? theme.image : themeScreen(theme)} alt={theme.slug === "faris-najwa" ? `Tampilan undangan setelah dibuka: foto dan nama pasangan ${theme.name}` : ""} elaris={theme.slug === "raka-anindya"} nocturneScreen={theme.slug === "damar-elara"} className="absolute top-1/2 right-[5%] w-[45%] -translate-y-[44%] rotate-[4deg] group-hover:translate-x-1 group-hover:rotate-[6deg]" />
-            <Phone src={theme.slug === "damar-elara" ? themeScreen(theme) : theme.image} alt={`Cover pembuka tema ${theme.name}`} elarisCover={theme.slug === "raka-anindya"} mawaddahDoor={theme.slug === "faris-najwa"} nocturneCover={theme.slug === "damar-elara"} className="absolute top-1/2 left-[5%] z-10 w-[50%] -translate-y-[54%] -rotate-[3deg] group-hover:-translate-y-[56%]" />
+            <Phone src={theme.slug === "damar-elara" ? themeScreen(theme) : theme.image} alt={`Cover undangan pernikahan digital tema ${theme.name}${theme.style ? `, gaya ${theme.style.replace(/\s*\/\s*/g, " dan ")}` : ""}`} elarisCover={theme.slug === "raka-anindya"} mawaddahDoor={theme.slug === "faris-najwa"} nocturneCover={theme.slug === "damar-elara"} className="absolute top-1/2 left-[5%] z-10 w-[50%] -translate-y-[54%] -rotate-[3deg] group-hover:-translate-y-[56%]" />
           </>
         ) : (
           <span>{theme.name}</span>
