@@ -20,6 +20,34 @@ export function demoSeo(s: Settings, slug: string, fallbackName: string, package
   };
 }
 
+// Halaman kategori tema, misalnya "Undangan Pernikahan Digital Tema Game". Nama tema yang aktif ikut di deskripsi.
+export function categorySeo(heading: string, term: string, price: string, themes: string[]) {
+  return {
+    title: `${heading}, Mulai ${price} | ${BRAND}`,
+    description: `Pilihan undangan pernikahan digital tema ${term.toLowerCase()} dari ${BRAND}, mulai ${price}: ${themes.join(", ")}. Lengkap dengan RSVP, peta, ucapan, dan amplop digital.`,
+  };
+}
+
+export function cheapSeo(price: string, waktu: string) {
+  return {
+    title: `Undangan Pernikahan Digital Murah, Mulai ${price} | ${BRAND}`,
+    description: `Undangan pernikahan digital mulai ${price}, semua tema bisa dipakai. Sekali bayar, jadi dalam ${waktu}, lengkap dengan RSVP, peta, ucapan, dan amplop digital.`,
+  };
+}
+
+// Data terstruktur untuk jejak halaman dan tanya jawab. Teks jawaban harus sudah polos tanpa tanda format.
+export const breadcrumbLd = (items: [string, string][]) => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: items.map(([name, url], i) => ({ "@type": "ListItem", position: i + 1, name, item: url })),
+});
+
+export const faqLd = (items: { q: string; a: string }[]) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+});
+
 // Kalimat utuh dari awal teks yang muat, supaya deskripsi tidak terpotong di tengah kalimat.
 function opening(text: string, room: number) {
   if (text.length <= room) return text;

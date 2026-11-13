@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { SiteFooter, WhatsAppFloat } from "@/components/home/closing";
 import { Faq } from "@/components/home/faq";
@@ -42,6 +43,25 @@ export default async function ThemesPage() {
           <Suspense fallback={<ThemeFilter {...props} />}>
             <ThemeCatalog {...props} />
           </Suspense>
+          {/* Tautan biasa ke halaman kategori, supaya mesin pencari menemukannya. Chip di atas hanya menyaring. */}
+          <nav aria-label="Halaman kategori tema" className="mt-12 text-[15px] text-ink-soft">
+            Lihat per kategori:{" "}
+            {Object.entries(THEME_CATEGORIES)
+              .filter(([k]) => s.themes.some((t) => t.on && t.category === k))
+              .map(([k, name], i) => (
+                <span key={k}>
+                  {i > 0 && ", "}
+                  <Link prefetch={false} href={`/tema/${k}`} className="text-wine underline underline-offset-4">
+                    {name}
+                  </Link>
+                </span>
+              ))}
+            . Atau lihat{" "}
+            <Link prefetch={false} href="/undangan-digital-murah" className="text-wine underline underline-offset-4">
+              undangan digital mulai {vars.harga}
+            </Link>
+            .
+          </nav>
           <OfferCard card={sec.custom} vars={vars} className="mt-14" />
         </Container>
         <div className="border-t border-line bg-ivory">
