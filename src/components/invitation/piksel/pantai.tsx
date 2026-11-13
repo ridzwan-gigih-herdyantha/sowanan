@@ -15,7 +15,16 @@ import type { BoothKind } from "./booth";
 import { KEYS, STEP_GRACE, type Pick } from "./door";
 import { Joystick } from "./joystick";
 import { clearTap, markTap, shift } from "./motion";
-import { BLOCKS, MAP, NPC_SHEETS, PIECES, SPOTS, WALK } from "./pantai-data";
+import {
+  BLOCKS,
+  EASEL_PAPER,
+  EASELS,
+  MAP,
+  NPC_SHEETS,
+  PIECES,
+  SPOTS,
+  WALK,
+} from "./pantai-data";
 import {
   HERO_H,
   NEAR,
@@ -42,6 +51,9 @@ export type Panel = {
   label?: string;
   icon?: BoothKind;
 };
+
+// Foto mempelai untuk kuda-kuda: photo kosong berarti ditulis inisialnya.
+export type Portrait = { name: string; initial: string; photo?: string };
 
 const LABELS: Record<PoiId, string> = {
   pembuka: "Selamat datang",
@@ -123,10 +135,13 @@ export function PantaiMap({
   panels,
   welcome,
   finale,
+  portraits,
 }: {
   panels: Panel[];
   welcome?: ReactNode;
   finale?: ReactNode;
+  // Foto untuk kuda-kuda kiri (pria) dan kanan (wanita); tanpa photo ditulis inisialnya.
+  portraits?: Portrait[];
 }) {
   const [open, setOpen] = useState(false);
   const [hero, setHero] = useState<Pick>("groom");
@@ -496,6 +511,74 @@ export function PantaiMap({
             className="pointer-events-none absolute inset-0 size-full select-none"
           />
           <div ref={tapRef} aria-hidden="true" className="gd-tap z-[1]" />
+
+          {/* Foto mempelai di kanvas kuda-kuda, atau inisialnya dengan huruf piksel bila tidak ada foto. Isinya
+              dimiringkan mengikuti dua sisi kanvas lalu dipotong tepat ke empat sudutnya. */}
+          {portraits && (
+            <svg
+              aria-hidden="true"
+              viewBox={`0 0 ${PW} ${PH}`}
+              className="pointer-events-none absolute inset-0 z-[1] size-full"
+            >
+              {portraits.map((p, i) => {
+                const q = EASELS[i];
+                if (!q) return null;
+                const [tl, tr, , bl] = q;
+                const w = Math.hypot(tr[0] - tl[0], tr[1] - tl[1]);
+                const h = Math.hypot(bl[0] - tl[0], bl[1] - tl[1]);
+                const m = [
+                  (tr[0] - tl[0]) / w,
+                  (tr[1] - tl[1]) / w,
+                  (bl[0] - tl[0]) / h,
+                  (bl[1] - tl[1]) / h,
+                  tl[0],
+                  tl[1],
+                ];
+                return (
+                  <g key={i}>
+                    <clipPath id={`gd-easel-${i}`}>
+                      <polygon points={q.map((c) => c.join(",")).join(" ")} />
+                    </clipPath>
+                    <g clipPath={`url(#gd-easel-${i})`}>
+                      <g transform={`matrix(${m.join(" ")})`}>
+                        <rect
+                          x={-4}
+                          y={-4}
+                          width={w + 8}
+                          height={h + 8}
+                          fill={EASEL_PAPER}
+                        />
+                        {p.photo ? (
+                          <image
+                            href={p.photo}
+                            x={-2}
+                            y={-2}
+                            width={w + 4}
+                            height={h + 4}
+                            preserveAspectRatio="xMidYMin slice"
+                          />
+                        ) : (
+                          <text
+                            x={w / 2}
+                            y={h / 2}
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            className="fill-inv-accent"
+                            style={{
+                              fontFamily: "var(--font-gd-pixel), monospace",
+                              fontSize: w * 0.5,
+                            }}
+                          >
+                            {p.initial}
+                          </text>
+                        )}
+                      </g>
+                    </g>
+                  </g>
+                );
+              })}
+            </svg>
+          )}
 
           {/* Orang di taman, diurutkan bersama karakter menurut kakinya. Gerak diamnya dari CSS, mulai di saat acak. */}
           {npcs.map((n, i) => {

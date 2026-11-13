@@ -299,3 +299,12 @@ export const NPCS: Npc[] = [
     label: "Fotografer",
   },
 ];
+
+// Bidang kanvas dua kuda-kuda di depan lorong akad, tempat foto mempelai (kiri pria, kanan wanita). Sudut bidang
+// putih di lukisan peta, sedikit dilebarkan sampai menyentuh bingkai: kiri atas, kanan atas, kanan bawah, kiri bawah.
+export const EASELS: [number, number][][] = [
+  [[481.5, 485.5], [513, 480.5], [519, 520], [488, 525]],
+  [[584.5, 480.5], [614, 485.5], [606, 526], [577, 520]],
+];
+// Warna krem kanvas di lukisan peta, supaya tepi tempelan tidak terlihat.
+export const EASEL_PAPER = "#fae5bf";

@@ -7,7 +7,7 @@ import { Extras } from "@/components/invitation/extras";
 import { Gallery } from "@/components/invitation/gallery";
 import { Greeting } from "@/components/invitation/greeting";
 import { GuestName } from "@/components/invitation/guest-name";
-import { PantaiMap, type Panel } from "@/components/invitation/piksel/pantai";
+import { PantaiMap, type Panel, type Portrait } from "@/components/invitation/piksel/pantai";
 import { QrisDownload } from "@/components/invitation/qris-download";
 import { Rsvp } from "@/components/invitation/rsvp";
 import { InvitationShell } from "@/components/invitation/shell";
@@ -307,6 +307,13 @@ export async function DimasSalsa({ inv }: { inv: InvitationView }) {
     ...SLOTS.map((id, i) => extraPanel(inv, id, i === SLOTS.length - 1 ? extras.slice(i) : extras.slice(i, i + 1))),
     inv.on.gifts && (inv.gifts.length > 0 || Boolean(inv.images.qris)) && { id: "angpao", title: "Kotak angpao", body: <Gifts inv={inv} /> },
   ];
+  // Kuda-kuda di depan lorong akad: foto sendiri tiap mempelai. Foto mempelai yang kosong diisi foto utama oleh
+  // data undangan, dan itu tidak dipakai di sini supaya kedua kuda-kuda tidak memajang foto yang sama; gantinya inisial.
+  const portraits: Portrait[] = [inv.groom, inv.bride].map((p) => ({
+    name: p.full || p.name,
+    initial: p.name.trim().charAt(0).toUpperCase(),
+    photo: p.photo && p.photo !== inv.images.hero ? p.photo : undefined,
+  }));
 
   return (
     <InvitationShell
@@ -316,7 +323,7 @@ export async function DimasSalsa({ inv }: { inv: InvitationView }) {
       className={`${themeFonts} min-h-dvh bg-inv-paper font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
-      <PantaiMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome />} finale={<Finale inv={inv} />} />
+      <PantaiMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome />} finale={<Finale inv={inv} />} portraits={portraits} />
     </InvitationShell>
   );
 }
