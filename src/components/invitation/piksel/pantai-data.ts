@@ -97,12 +97,23 @@ export const SPOTS = {
 export type SpotId = keyof typeof SPOTS;
 
 const PAPAN = "/img/dimas-salsa/pantai-papan.png";
+// Bagian papan yang terlihat di bawah rangkaian bunga.
+// Sisi papan di gambar miring sekitar 4,7 derajat searah jarum jam.
+const BOARD = [0.19, 0.36, 0.45, 0.38, 4.7];
 
 // Benda yang hanya tampil bila sectionnya dipakai, digambar dari berkas terpisah berlatar transparan dan diurutkan
 // bersama karakter menurut kakinya. w dan h ukuran tampil dalam piksel peta, kakinya di obj pos tersebut. block
 // rintangan relatif terhadap kaki: [kiri, atas, kanan, bawah]. src kosong berarti gambarnya belum ada: posnya
 // tetap jalan, hanya bendanya belum tampil.
-export type Piece = { w: number; h: number; block: number[]; src?: string };
+// board: bidang papan tulis di gambar benda [kiri, atas, lebar, tinggi] dalam pecahan ukuran tampil, tempat judul
+// bagian ditulis dengan kapur, ditambah kemiringan papan dalam derajat.
+export type Piece = {
+  w: number;
+  h: number;
+  block: number[];
+  src?: string;
+  board?: number[];
+};
 export const PIECES: Partial<Record<SpotId, Piece>> = {
   galeri: {
     w: 196,
@@ -128,10 +139,10 @@ export const PIECES: Partial<Record<SpotId, Piece>> = {
     block: [-34, -40, 34, 0],
     src: "/img/dimas-salsa/pantai-angpao.png",
   },
-  slot1: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN },
-  slot2: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN },
-  slot3: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN },
-  slot4: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN },
+  slot1: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN, board: BOARD },
+  slot2: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN, board: BOARD },
+  slot3: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN, board: BOARD },
+  slot4: { w: 80, h: 114, block: [-34, -20, 34, 0], src: PAPAN, board: BOARD },
 };
 
 // Tamu muncul di jalan batu di luar gerbang.
@@ -303,8 +314,18 @@ export const NPCS: Npc[] = [
 // Bidang kanvas dua kuda-kuda di depan lorong akad, tempat foto mempelai (kiri pria, kanan wanita). Sudut bidang
 // putih di lukisan peta, sedikit dilebarkan sampai menyentuh bingkai: kiri atas, kanan atas, kanan bawah, kiri bawah.
 export const EASELS: [number, number][][] = [
-  [[481.5, 485.5], [513, 480.5], [519, 520], [488, 525]],
-  [[584.5, 480.5], [614, 485.5], [606, 526], [577, 520]],
+  [
+    [481.5, 485.5],
+    [513, 480.5],
+    [519, 520],
+    [488, 525],
+  ],
+  [
+    [584.5, 480.5],
+    [614, 485.5],
+    [606, 526],
+    [577, 520],
+  ],
 ];
 // Warna krem kanvas di lukisan peta, supaya tepi tempelan tidak terlihat.
 export const EASEL_PAPER = "#fae5bf";

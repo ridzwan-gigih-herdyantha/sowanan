@@ -129,6 +129,69 @@ function face8(f: Face, vx: number, vy: number) {
 const heroFrame = (col: number, row: number) =>
   `${(col / (HERO_SHEET.cols - 1)) * 100}% ${(row / (HERO_SHEET.rows - 1)) * 100}%`;
 
+// Judul bagian tambahan di papan tulis: huruf piksel putih seperti kapur, sebesar mungkin selama kata terpanjang
+// muat selebar papan dan semua baris muat setinggi papan. Ukuran dihitung dalam lebar papan (cqw).
+const CHALK_LINE = 1.5;
+function chalkSize(text: string, aspect: number) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const longest = Math.max(1, ...words.map((w) => w.length));
+  let size = Math.min(92 / longest, 22);
+  for (let i = 0; i < 6; i++) {
+    const perLine = Math.max(1, Math.floor(92 / size));
+    let lines = 1;
+    let used = 0;
+    for (const w of words) {
+      if (used && used + 1 + w.length > perLine) {
+        lines++;
+        used = w.length;
+      } else used += (used ? 1 : 0) + w.length;
+    }
+    const fit = (100 * aspect) / (lines * CHALK_LINE);
+    if (size <= fit) break;
+    size = fit;
+  }
+  return size;
+}
+
+// tall: tinggi papan dibagi lebarnya dalam piksel peta.
+function Chalk({
+  box,
+  tall,
+  text,
+}: {
+  box: number[];
+  tall: number;
+  text: string;
+}) {
+  const [l, t, w, h, rot = 0] = box;
+  if (!text) return null;
+  return (
+    <div
+      className="absolute flex items-center justify-center overflow-hidden text-center"
+      style={{
+        left: `${l * 100}%`,
+        top: `${t * 100}%`,
+        width: `${w * 100}%`,
+        height: `${h * 100}%`,
+        containerType: "size",
+        rotate: `${rot}deg`,
+      }}
+    >
+      <span
+        className="text-white/90 [text-shadow:0_0_1px_rgb(255_255_255/0.6)]"
+        style={{
+          fontFamily: "var(--font-gd-pixel), monospace",
+          fontSize: `${chalkSize(text, tall).toFixed(2)}cqw`,
+          lineHeight: CHALK_LINE,
+          wordBreak: "break-word",
+        }}
+      >
+        {text}
+      </span>
+    </div>
+  );
+}
+
 // Isi undangan berupa taman pernikahan di tebing pantai. Saat masuk, kamera menyapu taman dari pelaminan sampai
 // gerbang, lalu mengikuti karakter. Saat tamu sampai di depan sebuah pos, isinya langsung terbuka.
 export function PantaiMap({
@@ -619,7 +682,17 @@ export function PantaiMap({
                   zIndex: y,
                   backgroundImage: `url(${piece.src})`,
                 }}
-              />
+              >
+                {piece.board && (
+                  <Chalk
+                    box={piece.board}
+                    tall={
+                      (piece.board[3] * piece.h) / (piece.board[2] * piece.w)
+                    }
+                    text={byId.get(id)?.label ?? byId.get(id)?.title ?? ""}
+                  />
+                )}
+              </div>
             );
           })}
 
