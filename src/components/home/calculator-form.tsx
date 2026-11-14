@@ -53,8 +53,12 @@ function Amount({ value, className }: { value: number; className?: string }) {
 export function CalculatorForm({ packages, themes, addons, dp, wa }: { packages: CalcPackage[]; themes: CalcTheme[]; addons: CalcAddon[]; dp: number; wa: string }) {
   const [pkgId, setPkgId] = useState(packages.find((p) => p.badge)?.id ?? packages[0].id);
   const [themeId, setThemeId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
   const [units, setUnits] = useState<Record<string, number>>({});
   const still = useReducedMotion();
+
+  const filteredThemes = themes.filter((t) => t.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const pkg = packages.find((p) => p.id === pkgId) ?? packages[0];
   const theme = themes.find((t) => t.id === themeId) ?? null;
@@ -93,33 +97,54 @@ export function CalculatorForm({ packages, themes, addons, dp, wa }: { packages:
       <div className="flex min-w-0 flex-col gap-8">
         {themes.length > 0 && (
           <Step no={1} title="Tema" hint="Opsional. Harga tidak berubah, tapi beberapa tema hanya ada di paket tertentu.">
-            <div className="-mx-5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 sm:-mx-7 sm:px-7 lg:mx-0 lg:px-0 [scrollbar-width:thin]">
-              {themes.map((t) => {
-                const on = t.id === themeId;
-                const needs = !t.packages.includes(pkg.id) ? packages.find((p) => p.id === t.packages[0])?.name : null;
-                return (
-                  <button
-                    key={t.id}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => pickTheme(t)}
-                    className={cx("group w-[118px] shrink-0 snap-start text-left sm:w-[132px]", focusRing, "rounded-[6px]")}
-                  >
-                    <span className={cx("relative block aspect-[3/4] overflow-hidden rounded-[6px] bg-line outline-offset-2 transition-[outline-color] duration-150", on ? "outline-2 outline-wine" : "outline-2 outline-transparent")}>
-                      {t.image && <Image src={t.image} alt="" fill sizes="132px" className={cx("object-cover object-top transition-opacity duration-150", needs && !on && "opacity-60")} />}
-                      {on && (
-                        <span className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-wine text-white">
-                          <svg viewBox="0 0 16 16" aria-hidden="true" className="size-3.5 fill-none stroke-current stroke-2">
-                            <path d="M3 8.5l3.5 3.5L13 4.5" />
-                          </svg>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Cari tema..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setIsOpen(true);
+                }}
+                onFocus={() => setIsOpen(true)}
+                className={cx(
+                  "w-full rounded-[6px] border border-line bg-ivory px-4 py-3 text-[15px] text-ink",
+                  focusRing
+                )}
+              />
+              {isOpen && (
+                <div className="absolute z-10 mt-1 max-h-80 w-full overflow-auto rounded-[6px] border border-line bg-ivory shadow-lg">
+                  {filteredThemes.length > 0 ? (
+                    filteredThemes.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => {
+                          pickTheme(t);
+                          setSearchTerm(t.name);
+                          setIsOpen(false);
+                        }}
+                        className="group flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-wine hover:text-white"
+                      >
+                        {t.image && (
+                          <Image
+                            src={t.image}
+                            alt=""
+                            width={36}
+                            height={64}
+                            className="h-16 w-9 shrink-0 rounded object-cover object-top "
+                          />
+                        )}
+                        <span className="text-[14px] leading-snug text-">
+                          {t.name} <span>({t.style})</span>
                         </span>
-                      )}
-                    </span>
-                    <span className="mt-2 block text-[14px] leading-snug text-ink">{t.name}</span>
-                    <span className="block text-[12.5px] leading-snug text-ink-mute">{needs ? `Mulai paket ${needs}` : t.style}</span>
-                  </button>
-                );
-              })}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2 text-[14px] text-ink-mute">Tema tidak ditemukan</div>
+                  )}
+                </div>
+              )}
             </div>
           </Step>
         )}
