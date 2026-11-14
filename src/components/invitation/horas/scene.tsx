@@ -375,7 +375,7 @@ function sisa(target: number) {
 }
 
 // Hitung mundur dengan angka yang berganti seperti kartu dibalik, di atas kotak berpita ulos.
-export function UlosCountdown({ target }: { target: string }) {
+export function UlosCountdown({ target, doneText, units }: { target: string; doneText: string; units: { days: string; hours: string; minutes: string } }) {
   const t = new Date(target).getTime();
   const [now, setNow] = useState<ReturnType<typeof sisa> | null>(null);
   const reduce = useReducedMotion();
@@ -389,15 +389,15 @@ export function UlosCountdown({ target }: { target: string }) {
     };
   }, [t]);
   const satuan = [
-    ["hari", "Hari"],
-    ["jam", "Jam"],
-    ["menit", "Menit"],
+    ["hari", units.days],
+    ["jam", units.hours],
+    ["menit", units.minutes],
   ] as const;
   const selesai = now?.habis;
   return (
     <div role="timer" aria-live="off">
       {selesai ? (
-        <p className="text-center font-display text-[clamp(26px,7vw,40px)] text-inv-gold-light">Hari bahagia sudah tiba</p>
+        <p className="text-center font-display text-[clamp(26px,7vw,40px)] text-inv-gold-light">{doneText}</p>
       ) : (
         <div className="mx-auto grid max-w-[440px] grid-cols-3 gap-2.5 sm:gap-4">
           {satuan.map(([k, label]) => {

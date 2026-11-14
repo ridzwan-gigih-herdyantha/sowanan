@@ -77,7 +77,7 @@ function Hero({ inv }: { inv: InvitationView }) {
           <h1 className="sr-only">
             {inv.groom.name} dan {inv.bride.name}
           </h1>
-          <p className="hr-masuk hr-teks-1 text-[13px] tracking-[0.5em] text-inv-gold-light">PERNIKAHAN</p>
+          <p className="hr-masuk hr-teks-1 text-[13px] tracking-[0.5em] text-inv-gold-light">{inv.texts.hero.kicker}</p>
           <p aria-hidden="true" className="hr-masuk hr-teks-2 mt-2 font-script text-[clamp(50px,13.5vw,100px)] leading-[0.95] [text-shadow:0_4px_24px_rgba(0,0,0,.45)]">
             {inv.groom.name}
             <span className="my-1 block font-display text-[0.32em] text-inv-gold-light lg:mx-4 lg:my-0 lg:inline">&amp;</span>
@@ -110,10 +110,10 @@ function Sambutan({ inv }: { inv: InvitationView }) {
         </div>
         <div className="text-center lg:text-left">
           <p {...reveal(1)} className="text-[13px] tracking-[0.34em] text-inv-accent">
-            PASU-PASU
+            {inv.texts.hero.intro}
           </p>
           <p {...reveal(2)} className="mt-4 font-display text-[clamp(26px,6.6vw,38px)] leading-tight font-semibold">
-            Dengan kasih dan berkat Tuhan
+            {inv.texts.hero.introTitle}
           </p>
           <p {...reveal(3)} className="mx-auto mt-5 max-w-[44ch] text-[18px] leading-relaxed text-inv-ink/85 lg:mx-0">
             {inv.honor}
@@ -149,8 +149,8 @@ function Couple({ inv }: { inv: InvitationView }) {
     <Section tone="merah" hias={["sisi"]}>
       <Boras count={10} className="opacity-60" />
       <Wrap>
-        <Heading kicker="DUA KELUARGA" light center>
-          Mempelai
+        <Heading kicker={inv.texts.couple.label} light center>
+          {inv.texts.couple.title}
         </Heading>
         <div className="mx-auto grid max-w-[820px] gap-14 text-center sm:grid-cols-2 sm:gap-12">
           {kartu(inv.groom, "kiri", 1)}
@@ -165,11 +165,11 @@ function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="kartu" hias={["atas", "sisi", "bawah"]}>
       <Wrap className="max-w-[980px]">
-        <Heading kicker="PERJALANAN" center>
-          Kisah kami
+        <Heading kicker={inv.texts.story.label} center>
+          {inv.texts.story.title}
         </Heading>
         <p {...reveal(1)} className="mx-auto -mt-4 mb-10 max-w-[40ch] text-center text-[16px] text-inv-ink/75">
-          Gulir pelan, tiap lembar cerita akan menumpuk seperti ulos yang dilipat.
+          {inv.texts.story.subtitle}
         </p>
         <KisahTumpuk items={inv.story.map((s) => ({ title: s.title, date: s.date, image: s.image, short: s.short, long: s.long }))} />
       </Wrap>
@@ -187,11 +187,11 @@ function Agenda({ inv, btn }: { inv: InvitationView; btn: string }) {
           <p className="text-[14px] tracking-[0.06em] text-inv-gold-light">{e.dateLabel}</p>
           <p className="mt-1 font-display text-[clamp(21px,5.4vw,26px)] leading-tight font-semibold text-inv-wash">{e.name}</p>
           {e.clock && <p className="mt-1 text-[16px] text-inv-gold-light">{e.clock}</p>}
-          {e.place.name && <p className="mt-3 text-[16px] font-medium text-inv-wash">{e.place.name}</p>}
-          {e.place.address && <p className="mt-1 text-[15px] text-inv-wash/80">{e.place.address}</p>}
+          {e.place.name && <><p className="mt-3 text-[11px] tracking-[0.2em] text-inv-gold-light">{inv.texts.event.place}</p><p className="mt-1 text-[16px] font-medium text-inv-wash">{e.place.name}</p></>}
+          {e.place.address && <><p className="mt-2 text-[11px] tracking-[0.2em] text-inv-gold-light">{inv.texts.event.address}</p><p className="mt-1 text-[15px] text-inv-wash/80">{e.place.address}</p></>}
           {e.place.mapUrl && (
             <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${btn} mt-4`}>
-              Buka peta
+              {inv.texts.event.map}
             </a>
           )}
         </div>
@@ -209,8 +209,8 @@ function EventDetails({ inv }: { inv: InvitationView }) {
       </div>
       <Wrap className="lg:grid lg:grid-cols-[1fr_400px] lg:gap-16">
         <div>
-          <Heading kicker="ACARA" light>
-            Rangkaian acara
+          <Heading kicker={inv.texts.event.label} light>
+            {inv.texts.event.title}
           </Heading>
           <p {...reveal(1)} className="font-display text-[clamp(22px,6vw,30px)] text-inv-gold-light">
             {inv.dateLong}
@@ -236,16 +236,18 @@ function EventDetails({ inv }: { inv: InvitationView }) {
           <div className="relative aspect-[4/5] overflow-hidden rounded-sm shadow-[0_0_0_4px_var(--inv-night),0_0_0_5px_var(--inv-gold)]">
             <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 1024px) 400px, 90vw" className="object-cover" />
           </div>
-          {!inv.agenda && <p className="mt-5 font-display text-[24px] font-semibold">{inv.venue.name}</p>}
+          {!inv.agenda && <p className="mt-5 text-[12px] tracking-[0.24em] text-inv-gold-light">{inv.texts.event.place}</p>}
+          {!inv.agenda && <p className="mt-1 font-display text-[24px] font-semibold">{inv.venue.name}</p>}
+          {!inv.agenda && inv.venue.address && <p className="mt-3 text-[12px] tracking-[0.24em] text-inv-gold-light">{inv.texts.event.address}</p>}
           {!inv.agenda && <p className="mt-1 text-[16px] text-inv-wash/80">{inv.venue.address}</p>}
           <div className="mt-5 flex flex-wrap gap-3">
             {!inv.agenda && inv.venue.mapUrl && (
               <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
-                Buka peta
+                {inv.texts.event.map}
               </a>
             )}
             <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
-              Simpan ke kalender
+              {inv.texts.event.calendar}
             </CalendarButton>
           </div>
         </div>
@@ -258,11 +260,11 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="merah" hias={["sisi"]}>
       <Wrap className="max-w-[760px]">
-        <Heading kicker="MENUJU HARI H" light center>
-          Menuju hari bahagia
+        <Heading kicker={inv.texts.countdown.label} light center>
+          {inv.texts.countdown.title}
         </Heading>
         <div {...reveal(1)}>
-          <UlosCountdown target={inv.date} />
+          <UlosCountdown target={inv.date} doneText={inv.texts.countdown.done} units={{ days: inv.texts.countdown.days, hours: inv.texts.countdown.hours, minutes: inv.texts.countdown.minutes }} />
         </div>
       </Wrap>
     </Section>
@@ -273,8 +275,8 @@ function GallerySection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="gading" hias={["atas", "bawah"]}>
       <Wrap>
-        <Heading kicker="KENANGAN" center>
-          Galeri
+        <Heading kicker={inv.texts.gallery.label} center>
+          {inv.texts.gallery.title}
         </Heading>
         <div {...reveal(1)}>
           <Gallery photos={inv.gallery.map((p) => ({ src: p.src, w: p.w, h: p.h, alt: p.alt }))} />
@@ -288,8 +290,8 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="malam" hias={["sisi"]}>
       <Wrap className="max-w-[640px]">
-        <Heading kicker="KEHADIRAN" light center>
-          Konfirmasi kehadiran
+        <Heading kicker={inv.texts.rsvp.label} light center>
+          {inv.texts.rsvp.title}
         </Heading>
         <div {...reveal(1)} className="relative overflow-hidden rounded-sm bg-inv-paper px-6 pt-12 pb-10 text-inv-ink sm:px-10">
           <div aria-hidden="true" className="hr-ulos absolute inset-x-0 top-0 h-4" />
@@ -304,21 +306,23 @@ function Gifts({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="gading" hias={["bawah"]}>
       <Wrap className="max-w-[820px]">
-        <Heading kicker="AMPLOP DIGITAL" center>
-          Tanda kasih
+        <Heading kicker={inv.texts.gifts.label} center>
+          {inv.texts.gifts.title}
         </Heading>
         <p {...reveal(1)} className="mx-auto -mt-4 max-w-[44ch] text-center text-[17px] leading-relaxed text-inv-ink/85">
-          Doa restu Bapak/Ibu/Saudara/i sudah lebih dari cukup. Bagi yang ingin memberi tanda kasih, rekeningnya ada di bawah ini.
+          {inv.texts.gifts.subtitle}
         </p>
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           {inv.gifts.map((g, i) => (
             <div key={g.number} {...reveal(i + 2)} className="relative overflow-hidden rounded-sm bg-inv-night px-6 pt-9 pb-6 text-inv-wash shadow-[0_18px_36px_rgba(42,26,21,.22)]">
               <div aria-hidden="true" className="hr-ulos absolute inset-x-0 top-0 h-3" />
-              <p className="text-[13px] tracking-[0.24em] text-inv-gold-light">{g.bank}</p>
+              <p className="text-[11px] tracking-[0.24em] text-inv-gold-light">{inv.texts.gifts.bank}</p>
+              <p className="mt-1 text-[13px] tracking-[0.16em] text-inv-wash">{g.bank}</p>
+              <p className="mt-3 text-[11px] tracking-[0.24em] text-inv-gold-light">{inv.texts.gifts.number}</p>
               <p className="mt-3 font-display text-[clamp(22px,6vw,28px)] tracking-[0.06em] tabular-nums">{g.number}</p>
-              <p className="mt-1 text-[15px] text-inv-wash/80">a.n. {g.holder}</p>
+              <p className="mt-1 text-[15px] text-inv-wash/80">{inv.texts.gifts.holder} {g.holder}</p>
               <div className="mt-5">
-                <CopyButton value={g.number.replace(/\D/g, "")} label="Salin nomor" />
+                <CopyButton value={g.number.replace(/\D/g, "")} label={inv.texts.gifts.copy} />
               </div>
             </div>
           ))}
@@ -327,7 +331,8 @@ function Gifts({ inv }: { inv: InvitationView }) {
           <div className="mx-auto mt-8 flex max-w-[380px] items-center gap-5 rounded-sm bg-inv-wash p-5 ring-1 ring-inv-line">
             <Image src={inv.images.qris} alt="Kode QRIS" width={112} height={112} className="size-28" />
             <div>
-              <p className="text-[15px] leading-relaxed">Pindai QRIS dari aplikasi bank atau e-wallet.</p>
+              <p className="text-[13px] tracking-[0.18em] text-inv-accent">{inv.texts.gifts.qrisLabel}</p>
+              <p className="mt-1 text-[15px] leading-relaxed">{inv.texts.gifts.qris}</p>
               <QrisDownload src={inv.images.qris} slug={inv.slug} />
             </div>
           </div>
@@ -343,8 +348,8 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="kartu" hias={["atas", "sisi"]}>
       <Wrap className="max-w-[860px]">
-        <Heading kicker="DOA RESTU" center>
-          Doa dan ucapan
+        <Heading kicker={inv.texts.wishes.label} center>
+          {inv.texts.wishes.title}
         </Heading>
         <div {...reveal(1)}>
           <Wishes slug={inv.slug} initial={wishes} variant="lined" />
@@ -365,13 +370,13 @@ function Closing({ inv }: { inv: InvitationView }) {
       <Boras count={26} />
       <Wrap className="relative pb-20 text-center lg:pb-24">
         <p {...reveal()} className="text-[13px] tracking-[0.42em] text-inv-gold-light">
-          DENGAN SUKACITA
+          {inv.texts.closing.label}
         </p>
         <p {...reveal(1)} className="mt-4 font-display text-[clamp(38px,10vw,64px)] leading-tight font-semibold">
-          Terima kasih
+          {inv.texts.closing.title}
         </p>
         <p {...reveal(2)} className="mx-auto mt-4 max-w-[42ch] text-[17px] leading-relaxed text-inv-wash/85">
-          Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
+          {inv.texts.closing.thanks}
         </p>
         {inv.umpasa && (
           <figure {...reveal(3)} className="mx-auto mt-8 max-w-[40ch] border-y border-inv-gold/50 py-5">
