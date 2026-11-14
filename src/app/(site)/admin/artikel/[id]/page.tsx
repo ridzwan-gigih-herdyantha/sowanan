@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { BrandLoader } from "@/components/brand-loader";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { AdminFrame } from "../../frame";
@@ -51,7 +52,7 @@ async function Content({ params }: { params: PageProps<"/admin/artikel/[id]">["p
 export default function EditArticlePage({ params }: PageProps<"/admin/artikel/[id]">) {
   return (
     <div className="min-h-dvh bg-ivory">
-      <Suspense fallback={<p className="px-5 py-16 text-ink-mute">Memuat...</p>}>
+      <Suspense fallback={<BrandLoader />}>
         <Content params={params} />
       </Suspense>
     </div>

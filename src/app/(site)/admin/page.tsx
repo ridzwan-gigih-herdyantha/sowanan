@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { BrandLoader } from "@/components/brand-loader";
 import { LogoMark } from "@/components/logo";
 import { getSettingsFresh } from "@/lib/settings";
 import { currentAdmin } from "@/lib/admin-auth";
@@ -67,7 +68,7 @@ async function AdminGate() {
 export default function AdminPage() {
   return (
     <div className="min-h-dvh bg-ivory text-[14px] text-[#2A2320]">
-      <Suspense fallback={<p className="px-5 py-16 text-ink-mute">Memuat...</p>}>
+      <Suspense fallback={<BrandLoader />}>
         <AdminGate />
       </Suspense>
     </div>

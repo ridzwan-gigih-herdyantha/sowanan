@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Pending } from "@/app/(site)/admin/pending";
+import { BrandLoader } from "@/components/brand-loader";
 import { currentAdmin } from "@/lib/admin-auth";
 import { formatArticleDate } from "@/lib/article/format";
 import { mediaUrl } from "@/lib/storage/media";
@@ -104,7 +105,7 @@ async function List() {
 export default function ArticlesAdminPage() {
   return (
     <div className="min-h-dvh bg-ivory">
-      <Suspense fallback={<p className="px-5 py-16 text-ink-mute">Memuat...</p>}>
+      <Suspense fallback={<BrandLoader />}>
         <List />
       </Suspense>
     </div>

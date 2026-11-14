@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Pending } from "@/app/(site)/admin/pending";
+import { BrandLoader } from "@/components/brand-loader";
 import { Suspense } from "react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
@@ -185,7 +186,7 @@ async function List({ searchParams }: { searchParams: Promise<Record<string, str
 export default function InvitationsPage({ searchParams }: PageProps<"/admin/undangan">) {
   return (
     <div className="min-h-dvh bg-ivory">
-      <Suspense fallback={<p className="px-5 py-16 text-ink-mute">Memuat...</p>}>
+      <Suspense fallback={<BrandLoader />}>
         <List searchParams={searchParams} />
       </Suspense>
     </div>

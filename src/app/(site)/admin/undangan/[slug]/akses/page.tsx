@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { BrandLoader } from "@/components/brand-loader";
 import { currentAdmin } from "@/lib/admin-auth";
 import { getCoupleAccount } from "@/lib/couple-account";
 import { isDemo } from "@/lib/invitation/archive";
@@ -55,7 +56,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 export default function AccessPage({ params }: PageProps<"/admin/undangan/[slug]/akses">) {
   return (
     <main className="mx-auto max-w-[1440px] px-5">
-      <Suspense fallback={<p className="py-12 text-ink-mute">Memuat...</p>}>
+      <Suspense fallback={<BrandLoader />}>
         <Gate params={params} />
       </Suspense>
     </main>

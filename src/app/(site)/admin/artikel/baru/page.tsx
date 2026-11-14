@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { BrandLoader } from "@/components/brand-loader";
 import { currentAdmin } from "@/lib/admin-auth";
 import { hasSupabase, supabaseAdmin } from "@/lib/supabase/admin";
 import { AdminFrame } from "../../frame";
@@ -31,7 +32,7 @@ async function Content() {
 export default function NewArticlePage() {
   return (
     <div className="min-h-dvh bg-ivory">
-      <Suspense fallback={<p className="px-5 py-16 text-ink-mute">Memuat...</p>}>
+      <Suspense fallback={<BrandLoader />}>
         <Content />
       </Suspense>
     </div>

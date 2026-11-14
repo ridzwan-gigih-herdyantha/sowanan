@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { BrandLoader } from "@/components/brand-loader";
 import { CustomFontLinks } from "@/components/invitation/custom-font-links";
 import { currentAdmin } from "@/lib/admin-auth";
 import { invitationRules } from "@/lib/invitation/rules";
@@ -77,7 +78,7 @@ async function Gate({ params }: { params: Promise<{ slug: string }> }) {
 export default function StoryPage({ params }: PageProps<"/admin/undangan/[slug]/story">) {
   return (
     <main className="mx-auto max-w-[1440px] px-5">
-      <Suspense fallback={<p className="py-12 text-ink-mute">Memuat...</p>}>
+      <Suspense fallback={<BrandLoader />}>
         <Gate params={params} />
       </Suspense>
     </main>
