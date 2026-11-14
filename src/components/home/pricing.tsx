@@ -134,7 +134,7 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
           </p>
         )}
 
-        {addons.length > 0 && (
+        {/* {addons.length > 0 && (
           <div className="mt-16 md:mt-[78px]" {...reveal()}>
             <h3 className="font-serif text-[28px] font-medium text-paper">{addon.title}</h3>
             {addon.sub && <p className="mt-2 text-[17px] text-mist">{fill(addon.sub, vars)}</p>}
@@ -153,9 +153,9 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
               Hitung total paket dan tambahan pilihan kalian
             </a>
           </div>
-        )}
+        )} */}
 
-        <OfferCard card={harga.custom} vars={vars} className="mt-[54px]" />
+        {/* <OfferCard card={harga.custom} vars={vars} className="mt-[54px]" /> */}
       </Container>
     </section>
   );

@@ -1,4 +1,5 @@
 import { CalculatorForm, type CalcAddon, type CalcPackage, type CalcTheme } from "./calculator-form";
+import { OfferCard } from "@/components/home/offer-card";
 import { Container, SectionSub, SectionTitle, cx, reveal, sectionPad } from "@/components/ui";
 import { addonFits, fill, PACKAGE_NAMES, slaText, themeAvailable, visiblePackages, type Settings } from "@/lib/settings";
 import { mediaUrl } from "@/lib/storage/media";
@@ -35,6 +36,7 @@ export function Calculator({ settings: s, vars }: { settings: Settings; vars: Re
         <div {...reveal()}>
           <CalculatorForm packages={packages} themes={themes} addons={addons} dp={s.payment.dp} wa={s.contact.wa} />
         </div>
+        <OfferCard card={s.sections.harga.custom} vars={vars} className="mt-[54px]" />
       </Container>
     </section>
   );
