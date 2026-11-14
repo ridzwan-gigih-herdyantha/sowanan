@@ -85,7 +85,7 @@ function Hero({ inv }: { inv: InvitationView }) {
           <div {...enter(0.35)} className="inv-enter hidden lg:block">
             <Monogram inv={inv} className="mx-auto mb-6 w-36" />
           </div>
-          <Label>Undangan Pernikahan</Label>
+          <Label>{inv.texts.hero.kicker}</Label>
           <h1 {...enter(0.5)} className="inv-enter mt-3 font-script text-[clamp(48px,13.5vw,68px)] leading-none text-inv-accent lg:mt-4 lg:text-[clamp(72px,8vw,108px)]">
             {inv.groom.name}
             <span className="my-1 block font-display text-[0.32em] text-inv-gold italic">&amp;</span>
@@ -148,7 +148,7 @@ function Couple({ inv }: { inv: InvitationView }) {
     <section className="inv-wash relative overflow-hidden py-20 lg:py-28">
       <Pattern opacity={0.07} />
       <Wrap>
-        <Heading label="Kedua mempelai">Dengan memohon rahmat Tuhan</Heading>
+        <Heading label={inv.texts.couple.label}>{inv.texts.couple.title}</Heading>
         {inv.honor && <p className="mx-auto mt-8 max-w-[52ch] text-center text-[16px] leading-relaxed italic">{inv.honor}</p>}
         <div className="mt-14 grid items-center gap-10 sm:grid-cols-[1fr_auto_1fr] sm:gap-4">
           <Cameo p={inv.groom} alt={`Foto ${inv.groom.name}`} />
@@ -166,7 +166,7 @@ function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper relative overflow-hidden py-20 lg:py-28">
       <Wrap>
-        <Heading label="Cerita kami">Perjalanan sampai hari ini</Heading>
+        <Heading label={inv.texts.story.label}>{inv.texts.story.title}</Heading>
         <ol className="mt-16 grid gap-16 lg:gap-24">
           {inv.story.map((s, i) => (
             <li key={`${s.title}-${i}`} className="grid items-center gap-8 md:grid-cols-2 md:gap-14">
@@ -206,7 +206,7 @@ function Agenda({ inv }: { inv: InvitationView }) {
             {e.place.address && <p className="mt-2 text-[14px] leading-relaxed text-inv-ink/80">{e.place.address}</p>}
             {e.place.mapUrl && (
               <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${button} mt-5`}>
-                Lihat peta
+                {inv.texts.event.map}
               </a>
             )}
           </div>
@@ -224,7 +224,7 @@ function Details({ inv }: { inv: InvitationView }) {
     <section className="inv-wash relative overflow-hidden py-20 lg:py-28">
       <Pattern opacity={0.07} />
       <Wrap>
-        <Heading label="Waktu dan tempat">Hari yang kami nantikan</Heading>
+        <Heading label={inv.texts.event.label}>{inv.texts.event.title}</Heading>
         <div className="mx-auto mt-12 flex max-w-[560px] items-center gap-4 text-center sm:gap-6">
           <p className="flex-1 border-y border-inv-gold py-2.5 font-display text-[12px] tracking-[0.3em] uppercase">{weekday}</p>
           <p className="font-display text-[clamp(80px,20vw,124px)] leading-none text-inv-accent tabular-nums">{day}</p>
@@ -257,17 +257,18 @@ function Details({ inv }: { inv: InvitationView }) {
               <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 430px, 100vw" className="object-cover" />
             </div>
             <div className="px-6 py-10 text-center md:px-10 md:text-left">
-              {!inv.agenda && <Label>Tempat</Label>}
+              {!inv.agenda && <Label>{inv.texts.event.place}</Label>}
               {!inv.agenda && <p className="mt-4 font-display text-[clamp(26px,5.6vw,34px)] leading-tight">{inv.venue.name}</p>}
+              {!inv.agenda && inv.venue.address && <Label className="mt-3">{inv.texts.event.address}</Label>}
               {!inv.agenda && <p className="mt-3 text-[15px] leading-relaxed text-inv-ink/80">{inv.venue.address}</p>}
               <div className="mt-7 flex flex-wrap justify-center gap-3 md:justify-start">
                 {!inv.agenda && inv.venue.mapUrl && (
                   <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={button}>
-                    Lihat peta
+                    {inv.texts.event.map}
                   </a>
                 )}
                 <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={button}>
-                  Simpan ke kalender
+                  {inv.texts.event.calendar}
                 </CalendarButton>
               </div>
             </div>
@@ -282,10 +283,10 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper relative overflow-hidden py-20 lg:py-28">
       <Wrap width="max-w-[760px]">
-        <Heading label="Menuju hari bahagia">Menghitung hari</Heading>
+        <Heading label={inv.texts.countdown.label}>{inv.texts.countdown.title}</Heading>
         <OrnateFrame className={`mt-12 ${card}`}>
           <div className="px-6 py-12 text-center sm:px-12">
-            <SutraCountdown target={inv.date} />
+            <SutraCountdown target={inv.date} doneText={inv.texts.countdown.done} />
           </div>
         </OrnateFrame>
       </Wrap>
@@ -298,7 +299,7 @@ function GallerySection({ inv }: { inv: InvitationView }) {
     <section className="inv-wash relative overflow-hidden py-20 lg:py-28">
       <Pattern opacity={0.07} />
       <Wrap>
-        <Heading label="Galeri">Lembar-lembar kenangan</Heading>
+        <Heading label={inv.texts.gallery.label}>{inv.texts.gallery.title}</Heading>
         <OrnateFrame corners={false} className={`mt-12 ${card}`} inner="p-3 sm:p-6">
           <Gallery photos={inv.gallery} variant="grid" />
         </OrnateFrame>
@@ -316,8 +317,8 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
           <div className="px-6 pt-12 pb-16 sm:px-12">
             <div className="text-center">
               <Monogram inv={inv} className="mx-auto w-20" />
-              <Label className="mt-5">Mohon balasan</Label>
-              <h2 className="mt-3 font-display text-[clamp(30px,7vw,40px)] leading-tight">Konfirmasi kehadiran</h2>
+              <Label className="mt-5">{inv.texts.rsvp.label}</Label>
+              <h2 className="mt-3 font-display text-[clamp(30px,7vw,40px)] leading-tight">{inv.texts.rsvp.title}</h2>
               <Flourish className="mt-5" />
             </div>
             <div className="mt-8">
@@ -349,8 +350,8 @@ function Gifts({ inv }: { inv: InvitationView }) {
     <section className="inv-wash relative overflow-hidden py-20 lg:py-28">
       <Pattern opacity={0.07} />
       <Wrap width="max-w-[860px]">
-        <Heading label="Tanda kasih">Doa restu Anda sudah lebih dari cukup</Heading>
-        <p className="mx-auto mt-8 max-w-[46ch] text-center text-[16px] leading-relaxed italic">Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut.</p>
+        <Heading label={inv.texts.gifts.label}>{inv.texts.gifts.title}</Heading>
+        <p className="mx-auto mt-8 max-w-[46ch] text-center text-[16px] leading-relaxed italic">{inv.texts.gifts.subtitle}</p>
         <div className="mt-12">
           <Envelope inv={inv} />
         </div>
@@ -358,9 +359,11 @@ function Gifts({ inv }: { inv: InvitationView }) {
           {inv.gifts.map((g) => (
             <OrnateFrame key={g.number} className={`${card} su-lift`}>
               <div className="px-6 py-10 text-center">
-                <Label>{g.bank}</Label>
+                <p className="font-display text-[11px] tracking-[0.3em] text-inv-gold uppercase">{inv.texts.gifts.bank}</p>
+                <Label className="mt-1">{g.bank}</Label>
+                <p className="mt-4 font-display text-[11px] tracking-[0.3em] text-inv-gold uppercase">{inv.texts.gifts.number}</p>
                 <p className="mt-4 font-display text-[26px] leading-none tabular-nums">{g.number}</p>
-                <p className="mt-3 text-[15px] text-inv-ink/80 italic">a.n. {g.holder}</p>
+                <p className="mt-3 text-[15px] text-inv-ink/80 italic">{inv.texts.gifts.holder} {g.holder}</p>
                 <div className="mt-5">
                   <CopyButton value={g.number} label={`nomor rekening ${g.holder}`} />
                 </div>
@@ -370,9 +373,9 @@ function Gifts({ inv }: { inv: InvitationView }) {
           {inv.images.qris && (
             <OrnateFrame className={`${card} sm:col-span-2 sm:mx-auto sm:w-[min(100%,420px)]`}>
               <div className="flex flex-col items-center px-6 py-10 text-center">
-                <Label>QRIS</Label>
+                <Label>{inv.texts.gifts.qrisLabel}</Label>
                 <Image src={inv.images.qris} alt="Kode QRIS" width={150} height={150} className="mt-4 size-36" />
-                <p className="mt-3 text-[15px]">Pindai dari aplikasi bank atau e-wallet.</p>
+                <p className="mt-3 text-[15px]">{inv.texts.gifts.qris}</p>
                 <QrisDownload src={inv.images.qris} slug={inv.slug} />
               </div>
             </OrnateFrame>
@@ -389,7 +392,7 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper relative overflow-hidden py-20 lg:py-28">
       <Wrap width="max-w-[800px]">
-        <Heading label="Doa dan ucapan">Titipkan doa untuk kami</Heading>
+        <Heading label={inv.texts.wishes.label}>{inv.texts.wishes.title}</Heading>
         <OrnateFrame className={`mt-12 ${card}`}>
           <div className="px-5 py-10 sm:px-12">
             <Wishes slug={inv.slug} initial={wishes} variant="lined" />
@@ -411,9 +414,9 @@ function Closing({ inv }: { inv: InvitationView }) {
           <div className="px-6 py-14 text-center sm:px-12">
             <Monogram inv={inv} className="mx-auto w-24" />
             <p className="mx-auto mt-8 max-w-[34ch] text-[17px] leading-relaxed italic">
-              Atas kehadiran dan doa restu yang Anda berikan, kami ucapkan terima kasih yang setulus-tulusnya.
+              {inv.texts.closing.thanks}
             </p>
-            <Label className="mt-10">Kami yang berbahagia</Label>
+            <Label className="mt-10">{inv.texts.closing.label}</Label>
             <p className="mt-4 font-script text-[clamp(48px,13vw,72px)] leading-[1.05] text-inv-accent">
               {inv.groom.name} <span className="font-display text-[0.45em] text-inv-gold italic">&amp;</span> {inv.bride.name}
             </p>
