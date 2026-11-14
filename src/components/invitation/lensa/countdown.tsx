@@ -4,11 +4,11 @@ import { pad, useTimeLeft } from "@/components/countdown";
 
 // Hitung mundur Lensa: tiga kolom sama lebar dengan angka lebar dan tebal. Ukuran angka mengikuti lebar layar,
 // jadi angka tiga digit tetap muat di HP.
-export function LensaCountdown({ target }: { target: string }) {
+export function LensaCountdown({ target, doneText }: { target: string; doneText: string }) {
   const t = useTimeLeft(target);
   const big = "font-display font-extrabold leading-[0.86] tabular-nums [font-stretch:112%]";
 
-  if (t?.done) return <p className={`${big} text-[clamp(56px,16vw,200px)] uppercase`}>Hari ini</p>;
+  if (t?.done) return doneText ? <p className={`${big} text-[clamp(56px,16vw,200px)] uppercase`}>{doneText}</p> : null;
 
   const cells = [
     [t?.days, "Hari"],

@@ -7,7 +7,22 @@ import type { FrameProps } from "@/lib/invitation/frame";
 import { doorFit, useDoorFit } from "../door-fit";
 import { Flora, Wash } from "./flora";
 
-export type MekarProps = { groom: string; bride: string; date: string; place: string; photo: string; frame?: FrameProps; set: string; invited: string; onOpen: () => void };
+// Teks sampul yang bisa diganti mempelai. Isian kosong menyembunyikan teksnya.
+export type MekarLabels = { kicker: string; invited: string; button: string };
+const LABELS: MekarLabels = { kicker: "Undangan pernikahan", invited: "Kepada Yth.", button: "Buka undangan" };
+
+export type MekarProps = {
+  groom: string;
+  bride: string;
+  date: string;
+  place: string;
+  photo: string;
+  frame?: FrameProps;
+  set: string;
+  labels?: MekarLabels;
+  invited: string;
+  onOpen: () => void;
+};
 
 // Lama hembusan angin. Pembuka memudar di tengahnya, saat kelopak paling rapat melintas.
 const GUST = 2400;
@@ -50,7 +65,7 @@ export function Petals({ count = 6 }: { count?: number }) {
 
 // Pembuka Mekar Mawar: kartu di atas sapuan cat air, untaian mawar, foto bulat berbingkai emas. Saat dibuka,
 // angin membawa kelopak dari kiri ke kanan dan pembuka memudar di baliknya.
-export function MekarDoor({ groom, bride, date, place, photo, frame, set, invited, onOpen }: MekarProps) {
+export function MekarDoor({ groom, bride, date, place, photo, frame, set, labels = LABELS, invited, onOpen }: MekarProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();
   const skipped = useRef(false);
@@ -129,8 +144,8 @@ export function MekarDoor({ groom, bride, date, place, photo, frame, set, invite
               <Flora set={set} piece="rangkaian" sizes="180px" className="-right-[30%] -bottom-[12%] w-[78%] -rotate-[18deg]" />
             </div>
 
-            <p className="mt-8 font-body text-[11px] font-semibold tracking-[0.3em] text-inv-ink/60 uppercase">Undangan pernikahan</p>
-            <h1 className="mt-3 font-script text-[clamp(44px,12vw,60px)] leading-[0.95] font-light text-inv-accent italic">
+            {labels.kicker && <p className="mt-8 font-body text-[11px] font-semibold tracking-[0.3em] text-inv-ink/60 uppercase">{labels.kicker}</p>}
+            <h1 className={`${labels.kicker ? "mt-3" : "mt-8"} font-script text-[clamp(44px,12vw,60px)] leading-[0.95] font-light text-inv-accent italic`}>
               {groom}
               <span className="block">
                 <span className="mm-amp text-[0.72em] text-(--mm-rose) not-italic">&amp;</span> {bride}
@@ -142,7 +157,7 @@ export function MekarDoor({ groom, bride, date, place, photo, frame, set, invite
             {invited && (
               <div className="mt-6">
                 <span aria-hidden="true" className="mx-auto mb-4 block h-px w-10 bg-inv-gold" />
-                <p className="text-[12px] tracking-[0.2em] text-inv-ink/60 uppercase">Kepada Yth.</p>
+                {labels.invited && <p className="text-[12px] tracking-[0.2em] text-inv-ink/60 uppercase">{labels.invited}</p>}
                 <p className="mt-1 font-display text-[21px] leading-tight">{invited}</p>
               </div>
             )}
@@ -151,7 +166,8 @@ export function MekarDoor({ groom, bride, date, place, photo, frame, set, invite
               onClick={play}
               className="mt-7 rounded-full bg-inv-accent px-8 py-3.5 font-body text-[11px] font-semibold tracking-[0.24em] text-inv-card uppercase shadow-[0_10px_24px_-12px_var(--inv-accent)] transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inv-accent"
             >
-              Buka undangan
+              {/* Tombol tanpa tulisan tidak bisa ditekan dengan yakin, jadi isian kosong kembali ke teks bawaan. */}
+              {labels.button || LABELS.button}
             </button>
           </div>
         </div>

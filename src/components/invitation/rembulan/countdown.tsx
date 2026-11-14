@@ -8,7 +8,8 @@ import { moonOf } from "./moon";
 const NIGHTS = 7;
 
 // Hitung mundur dengan deretan bulan tujuh malam menjelang hari H, berakhir di bulan malam pernikahan.
-export function RembulanCountdown({ target }: { target: string }) {
+// Label bulan terakhir dan teks saat harinya tiba datang dari teks tema.
+export function RembulanCountdown({ target, lastText, doneText }: { target: string; lastText: string; doneText: string }) {
   const t = useTimeLeft(target);
   const day = Date.parse(target);
   const nights = Array.from({ length: NIGHTS + 1 }, (_, i) => {
@@ -30,7 +31,7 @@ export function RembulanCountdown({ target }: { target: string }) {
             <li key={n.at} className="flex flex-col items-center">
               <MoonDisc id={`rb-cd-${i}`} age={n.age} glow={last} small={!last} className={last ? "size-[clamp(44px,12vw,72px)]" : "size-[clamp(18px,5vw,30px)] opacity-80"} />
               <span className={`rb-label mt-3 text-[10px] tracking-[0.16em] tabular-nums ${last ? "text-inv-accent" : "text-inv-gold-light"}`}>
-                {last ? "Malam itu" : `H-${NIGHTS - i}`}
+                {last ? lastText : `H-${NIGHTS - i}`}
               </span>
             </li>
           );
@@ -38,7 +39,7 @@ export function RembulanCountdown({ target }: { target: string }) {
       </ol>
 
       {t?.done ? (
-        <p className="mt-12 text-center font-display text-[clamp(44px,12vw,72px)] leading-none text-inv-accent">Malam ini</p>
+        doneText && <p className="mt-12 text-center font-display text-[clamp(44px,12vw,72px)] leading-none text-inv-accent">{doneText}</p>
       ) : (
         <div role="timer" aria-label={t ? `${t.days} hari ${t.hours} jam ${t.minutes} menit lagi` : "Menghitung waktu"} className="mt-12 flex items-start justify-center gap-4 sm:gap-10">
           {cells.map(([value, label], i) => (

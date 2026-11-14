@@ -4,10 +4,10 @@ import { Fragment } from "react";
 import { pad, useTimeLeft } from "@/components/countdown";
 
 // Hitung mundur tanpa kotak: angka besar miring, label kecil, dan belah ketupat emas sebagai pemisah.
-export function MekarCountdown({ target }: { target: string }) {
+export function MekarCountdown({ target, doneText = "Hari ini" }: { target: string; doneText?: string }) {
   const t = useTimeLeft(target);
 
-  if (t?.done) return <p className="mm-amp text-center text-[clamp(56px,14vw,88px)] leading-none text-inv-accent">Hari ini</p>;
+  if (t?.done) return doneText ? <p className="mm-amp text-center text-[clamp(56px,14vw,88px)] leading-none text-inv-accent">{doneText}</p> : null;
 
   const cells = [
     [t?.days, "Hari"],

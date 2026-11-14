@@ -1,0 +1,82 @@
+import type { ThemeTexts } from "@/lib/invitation/texts";
+
+// Teks bawaan tiap bagian, boleh diganti mempelai di editor.
+export const texts: ThemeTexts = {
+  hero: {
+    kicker: ["Label di atas nama", "SUGENG RAWUH"],
+    names: ["Nama mempelai", "{pria} & {wanita}"],
+    date: ["Tanggal", "{tanggal}"],
+    place: ["Kota", "{tempat}"],
+    jawa: ["Salam aksara Jawa", "ꦱꦸꦒꦼꦁꦫꦮꦸꦃ"],
+    doorKicker: ["Sampul: label di atas nama", "PAHARGYAN PAWIWAHAN"],
+    doorFor: ["Sampul: sapaan sebelum nama tamu", "Kagem"],
+    doorButton: ["Sampul: tombol buka", "Buka undangan"],
+    doorHint: ["Sampul: petunjuk di samping tombol", "atau geser gunungannya"],
+  },
+  couple: {
+    label: ["Label kecil", "KEDUA MEMPELAI"],
+    jawa: ["Judul aksara Jawa", "ꦱꦼꦥꦱꦁ"],
+    title: ["Judul", "Sepasang"],
+    subtitle: ["Subjudul", "Seperti Kamajaya dan Kamaratih, lambang pasangan yang rukun dalam tradisi Jawa. Ketuk wayangnya untuk mengenal kami."],
+    flip: ["Petunjuk di muka kartu", "KETUK UNTUK MEMBALIK"],
+  },
+  story: {
+    label: ["Label kecil", "CERITA"],
+    jawa: ["Judul aksara Jawa", "ꦭꦏꦺꦴꦤ꧀"],
+    title: ["Judul", "Lakon kami"],
+    open: ["Tombol buka kisah", "Baca kisahnya"],
+    close: ["Tombol tutup kisah", "Tutup kisah"],
+  },
+  event: {
+    label: ["Label kecil", "HARI H"],
+    jawa: ["Judul aksara Jawa", "ꦥꦲꦂꦒꦾꦤ꧀"],
+    title: ["Judul", "Pahargyan"],
+    place: ["Label tempat", "Tempat"],
+    address: ["Label alamat", "Alamat"],
+    map: ["Tombol peta", "Buka peta"],
+    calendar: ["Tombol kalender", "Simpan ke kalender"],
+  },
+  countdown: {
+    label: ["Label kecil", "HITUNG MUNDUR"],
+    jawa: ["Judul aksara Jawa", "ꦮꦤ꧀ꦕꦶ"],
+    title: ["Judul", "Menghitung hari"],
+    hint: ["Petunjuk di bawah saron", "Ketuk bilah saron untuk menabuhnya."],
+    hintMusic: ["Petunjuk bila tanpa lagu sendiri", "Gending latar undangan ini juga dimainkan oleh saron yang sama."],
+    done: ["Teks saat harinya tiba", "Sampun rawuh dinten ingkang dipun-entosi."],
+    calendar: ["Tombol kalender", "Simpan ke kalender"],
+  },
+  gallery: {
+    label: ["Label kecil", "GALERI"],
+    jawa: ["Judul aksara Jawa", "ꦒꦩ꧀ꦧꦂ"],
+    title: ["Judul", "Simpingan"],
+    subtitle: ["Subjudul", "Seperti wayang yang dijajar di tepi kelir, kenangan kami berdiri berjajar."],
+  },
+  rsvp: {
+    label: ["Label kecil", "KONFIRMASI"],
+    jawa: ["Judul aksara Jawa", "ꦫꦮꦸꦃ"],
+    title: ["Judul", "Konfirmasi kehadiran"],
+  },
+  gifts: {
+    label: ["Label kecil", "TANDA KASIH"],
+    jawa: ["Judul aksara Jawa", "ꦠꦤ꧀ꦝꦏꦱꦶꦃ"],
+    title: ["Judul", "Tanda kasih"],
+    subtitle: ["Subjudul", "Doa restu Bapak/Ibu/Saudara/i sudah lebih dari cukup. Bagi yang ingin memberi tanda kasih, amplopnya ada di bawah ini."],
+    bank: ["Label bank", "Bank"],
+    number: ["Nomor rekening", "Nomor"],
+    qris: ["Petunjuk QRIS", "Pindai QRIS dari aplikasi bank atau e-wallet."],
+  },
+  wishes: {
+    label: ["Label kecil", "BUKU TAMU"],
+    jawa: ["Judul aksara Jawa", "ꦥꦔꦺꦱ꧀ꦠꦸ"],
+    title: ["Judul", "Pangestu"],
+    subtitle: ["Subjudul", "Tuliskan doa dan pangestu untuk kami. Setiap ucapan kami simpan sebagai serat kenangan."],
+  },
+  closing: {
+    label: ["Label kecil", "PENUTUP"],
+    jawa: ["Judul aksara Jawa", "ꦩꦠꦸꦂꦤꦸꦮꦸꦤ꧀"],
+    title: ["Judul", "Matur nuwun"],
+    body: ["Kalimat penutup", "Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu."],
+    names: ["Nama mempelai", "{pria} & {wanita}"],
+    date: ["Tanggal", "{tanggal}"],
+  },
+};

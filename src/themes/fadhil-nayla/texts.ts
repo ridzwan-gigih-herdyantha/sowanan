@@ -1,0 +1,87 @@
+import { BISMILLAH } from "@/components/invitation/sakinah/text";
+import type { ThemeTexts } from "@/lib/invitation/texts";
+
+// Teks bawaan tiap bagian, boleh diganti mempelai di editor.
+export const texts: ThemeTexts = {
+  hero: {
+    kicker: ["Label di atas nama", "WALIMATUL 'URSY"],
+    names: ["Nama mempelai", "{pria} & {wanita}"],
+    date: ["Tanggal", "{tanggal}"],
+    place: ["Kota", "{tempat}"],
+    bismillah: ["Basmalah", BISMILLAH],
+    doorBismillah: ["Sampul: basmalah", BISMILLAH],
+    doorKicker: ["Sampul: label di bawah basmalah", "WALIMATUL 'URSY"],
+    doorFor: ["Sampul: sapaan tamu", "Kepada Yth."],
+    doorButton: ["Sampul: tombol buka", "Buka undangan"],
+    doorSkip: ["Sampul: tombol lewati", "Lewati"],
+  },
+  couple: {
+    label: ["Label kecil", "KEDUA MEMPELAI"],
+    salam: ["Salam (teks Arab)", "السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللّٰهِ وَبَرَكَاتُهُ"],
+    salamLatin: ["Salam (latin)", "ASSALAMU'ALAIKUM WARAHMATULLAHI WABARAKATUH"],
+    intro: ["Kalimat pembuka", "Dengan memohon rahmat dan ridha Allah Subhanahu wa Ta'ala, kami bermaksud menyelenggarakan pernikahan putra dan putri kami."],
+  },
+  story: {
+    label: ["Label kecil", "CERITA"],
+    arabic: ["Label Arab", "قِصَّتُنَا"],
+    title: ["Judul", "Kisah kami"],
+  },
+  event: {
+    label: ["Label kecil", "HARI H"],
+    arabic: ["Label Arab", "اَلْمَوْعِدُ"],
+    title: ["Judul", "Akad & walimah"],
+    place: ["Label tempat", "Tempat"],
+    address: ["Label alamat", "Alamat"],
+    map: ["Tombol peta", "Buka peta"],
+    calendar: ["Tombol kalender", "Simpan ke kalender"],
+  },
+  countdown: {
+    label: ["Label kecil", "HITUNG MUNDUR"],
+    arabic: ["Label Arab", "إِنْ شَاءَ اللّٰهُ"],
+    title: ["Judul", "Menuju hari bahagia"],
+    hint: ["Petunjuk", "Ketuk bintang untuk berganti ke angka Arab."],
+    done: ["Teks saat harinya tiba", "Alhamdulillah, hari yang dinanti telah tiba."],
+    calendar: ["Tombol kalender", "Simpan ke kalender"],
+  },
+  gallery: {
+    label: ["Label kecil", "GALERI"],
+    arabic: ["Label Arab", "لَحَظَاتُنَا"],
+    title: ["Judul", "Lembar kenangan"],
+    noteArabic: ["Ubin tulisan: teks Arab", "اَلْحَمْدُ لِلّٰهِ"],
+    note: ["Ubin tulisan: kalimat", "Setiap lembar adalah syukur kami."],
+    hint: ["Petunjuk", "Ketuk foto untuk melihatnya penuh."],
+  },
+  rsvp: {
+    label: ["Label kecil", "KONFIRMASI"],
+    arabic: ["Label Arab", "تَأْكِيْدُ الْحُضُوْرِ"],
+    title: ["Judul", "Konfirmasi kehadiran"],
+    subtitle: ["Subjudul", "Kehadiran dan doa restu Bapak/Ibu/Saudara/i adalah hadiah terbaik bagi kami."],
+  },
+  gifts: {
+    label: ["Label kecil", "TANDA KASIH"],
+    arabic: ["Label Arab", "هَدِيَّةٌ"],
+    title: ["Judul", "Tanda kasih"],
+    subtitle: ["Subjudul", "Doa restu Bapak/Ibu/Saudara/i sudah lebih dari cukup. Bagi yang ingin memberi tanda kasih, rekeningnya ada di balik kartu berikut."],
+    bank: ["Label bank", "Bank"],
+    number: ["Nomor rekening", "Nomor"],
+    flip: ["Petunjuk di muka kartu", "Ketuk untuk melihat"],
+    close: ["Tombol tutup kartu", "Tutup"],
+    qris: ["Petunjuk QRIS", "Pindai QRIS dari aplikasi bank atau e-wallet."],
+  },
+  wishes: {
+    label: ["Label kecil", "BUKU TAMU"],
+    arabic: ["Label Arab", "اَلدُّعَاءُ"],
+    title: ["Judul", "Doa dan ucapan"],
+    subtitle: ["Subjudul", "Kirimkan doa terbaikmu untuk kami. Setiap doa akan kami aminkan bersama."],
+  },
+  closing: {
+    label: ["Label kecil", "PENUTUP"],
+    arabic: ["Ucapan (teks Arab)", "جَزَاكُمُ اللّٰهُ خَيْرًا"],
+    latin: ["Ucapan (latin)", "JAZAKUMULLAHU KHAIRAN"],
+    message: ["Kalimat penutup", "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu."],
+    salam: ["Salam penutup", "Wassalamu'alaikum warahmatullahi wabarakatuh"],
+    hint: ["Petunjuk lentera", "Ketuk lentera untuk menyalakan atau memadamkannya."],
+    names: ["Nama mempelai", "{pria} & {wanita}"],
+    date: ["Tanggal", "{tanggal}"],
+  },
+};

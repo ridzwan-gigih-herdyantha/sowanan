@@ -66,16 +66,19 @@ function Wrap({ children, className = "" }: { children: ReactNode; className?: s
   return <div className={`relative mx-auto w-full max-w-[1080px] px-5 sm:px-8 ${className}`}>{children}</div>;
 }
 
-function Heading({ motif, jawa, children, light = false, center = false }: { motif: MotifName; jawa: string; children: ReactNode; light?: boolean; center?: boolean }) {
+// Aksara dan judul datang dari teks tema, keduanya boleh dikosongkan mempelai.
+function Heading({ motif, jawa, children, light = false, center = false }: { motif: MotifName; jawa: string; children: string; light?: boolean; center?: boolean }) {
   return (
     <div {...reveal()} className={`mb-9 ${center ? "flex flex-col items-center text-center" : ""}`}>
       <div className={`flex items-center gap-3 ${light ? "text-inv-gold-light" : "text-inv-accent"}`}>
         <Motif name={motif} />
-        <p lang="jv" className="font-jawa text-[20px]">
-          {jawa}
-        </p>
+        {jawa && (
+          <p lang="jv" className="font-jawa text-[20px]">
+            {jawa}
+          </p>
+        )}
       </div>
-      <h2 className={`mt-2 font-display text-[clamp(34px,8.6vw,56px)] leading-[1.05] ${light ? "text-inv-wash" : "text-inv-ink"}`}>{children}</h2>
+      {children && <h2 className={`mt-2 font-display text-[clamp(34px,8.6vw,56px)] leading-[1.05] ${light ? "text-inv-wash" : "text-inv-ink"}`}>{children}</h2>}
       <Lung name="tepi" className={`mt-3 w-52 lg:w-64 ${light ? "text-inv-gold-light/70" : "text-pk-ukir"}`} />
     </div>
   );
@@ -102,12 +105,16 @@ function Hero({ inv }: { inv: InvitationView }) {
       <h1 className="sr-only">
         {inv.groom.name} dan {inv.bride.name}
       </h1>
-      <div className="relative mb-3 lg:mb-4">
-        <p lang="jv" className="font-jawa text-[22px] leading-tight text-inv-accent">
-          ꦱꦸꦒꦼꦁꦫꦮꦸꦃ
-        </p>
-        <p className="mt-0.5 text-[11px] tracking-[0.32em] text-inv-ink/75">SUGENG RAWUH</p>
-      </div>
+      {(inv.texts.hero.jawa || inv.texts.hero.greeting) && (
+        <div className="relative mb-3 lg:mb-4">
+          {inv.texts.hero.jawa && (
+            <p lang="jv" className="font-jawa text-[22px] leading-tight text-inv-accent">
+              {inv.texts.hero.jawa}
+            </p>
+          )}
+          {inv.texts.hero.greeting && <p className="mt-0.5 text-[11px] tracking-[0.32em] text-inv-ink/75">{inv.texts.hero.greeting}</p>}
+        </div>
+      )}
       <div className="relative">
         <HeroStage
           photo={<HeroPhoto inv={inv} />}
@@ -151,18 +158,20 @@ function Couple({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="pasir" tex={["truntum", 0.14]} corners="atas">
       <Wrap>
-        <Heading motif="sekar" jawa="ꦱꦼꦥꦱꦁ" center>
-          Sepasang
+        <Heading motif="sekar" jawa={inv.texts.couple.jawa} center>
+          {inv.texts.couple.title}
         </Heading>
-        <p {...reveal(1)} className="mx-auto -mt-3 mb-10 max-w-[40ch] text-center text-[17px] leading-relaxed text-inv-ink/85">
-          Seperti Kamajaya dan Kamaratih, lambang pasangan yang rukun dalam tradisi Jawa. Ketuk wayangnya untuk mengenal kami.
-        </p>
+        {inv.texts.couple.subtitle && (
+          <p {...reveal(1)} className="mx-auto -mt-3 mb-10 max-w-[40ch] text-center text-[17px] leading-relaxed text-inv-ink/85">
+            {inv.texts.couple.subtitle}
+          </p>
+        )}
         <div className="mx-auto grid max-w-[720px] grid-cols-2 gap-4 sm:gap-10">
           <div {...reveal(2)}>
-            <PuppetFlip puppet="kamajaya" label={inv.groom.name} back={back(inv.groom)} />
+            <PuppetFlip puppet="kamajaya" label={inv.groom.name} hint={inv.texts.couple.flip} back={back(inv.groom)} />
           </div>
           <div {...reveal(3)}>
-            <PuppetFlip puppet="kamaratih" label={inv.bride.name} back={back(inv.bride)} />
+            <PuppetFlip puppet="kamaratih" label={inv.bride.name} hint={inv.texts.couple.flip} back={back(inv.bride)} />
           </div>
         </div>
       </Wrap>
@@ -174,10 +183,14 @@ function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="soga" tex={["nitik", 0.1]} corners="atas">
       <Wrap className="max-w-[960px]">
-        <Heading motif="wajik" jawa="ꦭꦏꦺꦴꦤ꧀" light center>
-          Lakon kami
+        <Heading motif="wajik" jawa={inv.texts.story.jawa} light center>
+          {inv.texts.story.title}
         </Heading>
-        <BabakList items={inv.story.map((s) => ({ title: s.title, date: s.date, image: s.image, short: s.short, long: s.long }))} />
+        <BabakList
+          items={inv.story.map((s) => ({ title: s.title, date: s.date, image: s.image, short: s.short, long: s.long }))}
+          openLabel={inv.texts.story.open}
+          closeLabel={inv.texts.story.close}
+        />
       </Wrap>
     </Section>
   );
@@ -197,9 +210,9 @@ function Agenda({ inv, btn }: { inv: InvitationView; btn: string }) {
           {e.clock && <p className="text-[16px] text-inv-accent">{e.clock}</p>}
           {e.place.name && <p className="mt-3 font-display text-[20px] leading-tight text-inv-ink">{e.place.name}</p>}
           {e.place.address && <p className="mt-1 text-[16px] text-inv-ink/80">{e.place.address}</p>}
-          {e.place.mapUrl && (
+          {e.place.mapUrl && inv.texts.event.map && (
             <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${btn} mt-4`}>
-              Buka peta
+              {inv.texts.event.map}
             </a>
           )}
         </li>
@@ -214,8 +227,8 @@ function EventDetails({ inv }: { inv: InvitationView }) {
     <Section tone="gading" tex={["ceplok", 0.1]} corners="bawah">
       <Wrap className="lg:grid lg:grid-cols-[1fr_420px] lg:gap-16">
         <div>
-          <Heading motif="tumpal" jawa="ꦥꦲꦂꦒꦾꦤ꧀">
-            Pahargyan
+          <Heading motif="tumpal" jawa={inv.texts.event.jawa}>
+            {inv.texts.event.title}
           </Heading>
           <p {...reveal(1)} className="max-w-[42ch] text-[18px] leading-relaxed">
             {inv.honor}
@@ -250,14 +263,16 @@ function EventDetails({ inv }: { inv: InvitationView }) {
           {!inv.agenda && <p className="mt-5 font-display text-[26px] text-inv-ink">{inv.venue.name}</p>}
           {!inv.agenda && <p className="mt-1 text-[16px] text-inv-ink/80">{inv.venue.address}</p>}
           <div className="mt-5 flex flex-wrap gap-3">
-            {!inv.agenda && inv.venue.mapUrl && (
+            {!inv.agenda && inv.venue.mapUrl && inv.texts.event.map && (
               <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
-                Buka peta
+                {inv.texts.event.map}
               </a>
             )}
-            <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
-              Simpan ke kalender
-            </CalendarButton>
+            {inv.texts.event.calendar && (
+              <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
+                {inv.texts.event.calendar}
+              </CalendarButton>
+            )}
           </div>
         </div>
       </Wrap>
@@ -266,16 +281,18 @@ function EventDetails({ inv }: { inv: InvitationView }) {
 }
 
 function CountdownSection({ inv }: { inv: InvitationView }) {
+  // Kalimat kedua hanya benar bila latarnya gending saron bawaan, bukan lagu pilihan mempelai.
+  const hint = [inv.texts.countdown.hint, inv.music ? "" : inv.texts.countdown.hintMusic].filter(Boolean).join(" ");
   return (
     <Section tone="lumut" tex={["kawung", 0.08]} corners="semua">
       <Wrap className="max-w-[760px]">
-        <Heading motif="kawung" jawa="ꦮꦤ꧀ꦕꦶ" light center>
-          Menghitung hari
+        <Heading motif="kawung" jawa={inv.texts.countdown.jawa} light center>
+          {inv.texts.countdown.title}
         </Heading>
         <div {...reveal(1)}>
-          <SaronCountdown target={inv.date} />
+          <SaronCountdown target={inv.date} doneText={inv.texts.countdown.done} />
         </div>
-        <p className="mt-6 text-center text-[14px] text-inv-wash/80">Ketuk bilah saron untuk menabuhnya.{!inv.music && " Gending latar undangan ini juga dimainkan oleh saron yang sama."}</p>
+        {hint && <p className="mt-6 text-center text-[14px] text-inv-wash/80">{hint}</p>}
       </Wrap>
     </Section>
   );
@@ -285,12 +302,14 @@ function GallerySection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="pasir">
       <Wrap>
-        <Heading motif="ceplok" jawa="ꦒꦩ꧀ꦧꦂ" center>
-          Simpingan
+        <Heading motif="ceplok" jawa={inv.texts.gallery.jawa} center>
+          {inv.texts.gallery.title}
         </Heading>
-        <p {...reveal(1)} className="mx-auto -mt-4 mb-6 max-w-[40ch] text-center text-[16px] text-inv-ink/80">
-          Seperti wayang yang dijajar di tepi kelir, kenangan kami berdiri berjajar.
-        </p>
+        {inv.texts.gallery.subtitle && (
+          <p {...reveal(1)} className="mx-auto -mt-4 mb-6 max-w-[40ch] text-center text-[16px] text-inv-ink/80">
+            {inv.texts.gallery.subtitle}
+          </p>
+        )}
         <div {...reveal(2)}>
           <Simpingan photos={inv.gallery.map((p) => ({ src: p.src, w: p.w, h: p.h, alt: p.alt }))} />
         </div>
@@ -303,8 +322,8 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="soga" tex={["truntum", 0.1]} corners="bawah">
       <Wrap className="max-w-[640px]">
-        <Heading motif="truntum" jawa="ꦫꦮꦸꦃ" light center>
-          Konfirmasi kehadiran
+        <Heading motif="truntum" jawa={inv.texts.rsvp.jawa} light center>
+          {inv.texts.rsvp.title}
         </Heading>
         <div {...reveal(1)} className="relative mt-24 rounded-sm bg-inv-paper px-6 pt-10 pb-12 text-inv-ink sm:px-10">
           <Lung name="mahkota" className="absolute bottom-[calc(100%-8px)] left-1/2 w-56 -translate-x-1/2 text-inv-gold-light" />
@@ -320,12 +339,14 @@ function Gifts({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="gading" tex={["nitik", 0.12]} corners="atas">
       <Wrap>
-        <Heading motif="wajik" jawa="ꦠꦤ꧀ꦝꦏꦱꦶꦃ" center>
-          Tanda kasih
+        <Heading motif="wajik" jawa={inv.texts.gifts.jawa} center>
+          {inv.texts.gifts.title}
         </Heading>
-        <p {...reveal(1)} className="mx-auto -mt-3 max-w-[42ch] text-center text-[17px] leading-relaxed text-inv-ink/85">
-          Doa restu Bapak/Ibu/Saudara/i sudah lebih dari cukup. Bagi yang ingin memberi tanda kasih, amplopnya ada di bawah ini.
-        </p>
+        {inv.texts.gifts.subtitle && (
+          <p {...reveal(1)} className="mx-auto -mt-3 max-w-[42ch] text-center text-[17px] leading-relaxed text-inv-ink/85">
+            {inv.texts.gifts.subtitle}
+          </p>
+        )}
         <div className="mt-8 grid items-end gap-x-10 gap-y-8 md:grid-cols-2">
           {inv.gifts.map((g, i) => (
             <div key={g.number} {...reveal(i + 2)}>
@@ -337,7 +358,7 @@ function Gifts({ inv }: { inv: InvitationView }) {
           <div className="mx-auto mt-8 flex max-w-[360px] items-center gap-5 rounded-sm bg-inv-wash p-5">
             <Image src={inv.images.qris} alt="Kode QRIS" width={112} height={112} className="size-28" />
             <div>
-              <p className="text-[15px] leading-relaxed">Pindai QRIS dari aplikasi bank atau e-wallet.</p>
+              {inv.texts.gifts.qris && <p className="text-[15px] leading-relaxed">{inv.texts.gifts.qris}</p>}
               <QrisDownload src={inv.images.qris} slug={inv.slug} />
             </div>
           </div>
@@ -353,12 +374,14 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
   return (
     <Section tone="pasir" tex={["truntum", 0.12]} corners="bawah">
       <Wrap>
-        <Heading motif="sekar" jawa="ꦥꦔꦺꦱ꧀ꦠꦸ">
-          Pangestu
+        <Heading motif="sekar" jawa={inv.texts.wishes.jawa}>
+          {inv.texts.wishes.title}
         </Heading>
-        <p {...reveal(1)} className="-mt-4 mb-8 max-w-[44ch] text-[16px] text-inv-ink/80">
-          Tuliskan doa dan pangestu untuk kami. Setiap ucapan kami simpan sebagai serat kenangan.
-        </p>
+        {inv.texts.wishes.subtitle && (
+          <p {...reveal(1)} className="-mt-4 mb-8 max-w-[44ch] text-[16px] text-inv-ink/80">
+            {inv.texts.wishes.subtitle}
+          </p>
+        )}
         <div {...reveal(2)}>
           <Wishes slug={inv.slug} initial={wishes} variant="serat" />
         </div>
@@ -375,15 +398,21 @@ function Closing({ inv }: { inv: InvitationView }) {
           <TancepKayon />
         </div>
         <div className="text-center lg:text-left">
-          <p {...reveal(1)} lang="jv" className="font-jawa text-[24px] text-inv-gold-light">
-            ꦩꦠꦸꦂꦤꦸꦮꦸꦤ꧀
-          </p>
-          <p {...reveal(2)} className="mt-1 font-display text-[clamp(40px,10vw,66px)] leading-tight">
-            Matur nuwun
-          </p>
-          <p {...reveal(3)} className="mx-auto mt-4 max-w-[40ch] text-[17px] leading-relaxed text-inv-wash/85 lg:mx-0">
-            Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
-          </p>
+          {inv.texts.closing.jawa && (
+            <p {...reveal(1)} lang="jv" className="font-jawa text-[24px] text-inv-gold-light">
+              {inv.texts.closing.jawa}
+            </p>
+          )}
+          {inv.texts.closing.title && (
+            <p {...reveal(2)} className="mt-1 font-display text-[clamp(40px,10vw,66px)] leading-tight">
+              {inv.texts.closing.title}
+            </p>
+          )}
+          {inv.texts.closing.body && (
+            <p {...reveal(3)} className="mx-auto mt-4 max-w-[40ch] text-[17px] leading-relaxed text-inv-wash/85 lg:mx-0">
+              {inv.texts.closing.body}
+            </p>
+          )}
           {inv.sesanti && (
             <figure {...reveal(4)} className="mt-8 lg:border-l-2 lg:border-pk-emas lg:pl-5">
               <blockquote className="font-display text-[clamp(22px,6vw,30px)] text-inv-gold-light">{inv.sesanti}</blockquote>
@@ -431,6 +460,7 @@ export function DanangKinanthi({ inv }: { inv: InvitationView }) {
         groomAksara: inv.groom.aksara,
         brideAksara: inv.bride.aksara,
         date: tanggal(inv),
+        labels: { kicker: inv.texts.hero.doorKicker, invited: inv.texts.hero.doorFor, button: inv.texts.hero.doorButton, hint: inv.texts.hero.doorHint },
       }}
       music={inv.music}
       synth="gending"

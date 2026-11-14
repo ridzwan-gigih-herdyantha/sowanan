@@ -3,10 +3,11 @@
 import { Fragment } from "react";
 import { pad, useTimeLeft } from "@/components/countdown";
 
-export function SutraCountdown({ target }: { target: string }) {
+// Teks saat harinya tiba datang dari teks tema, kosong berarti tidak ditampilkan.
+export function SutraCountdown({ target, doneText }: { target: string; doneText: string }) {
   const t = useTimeLeft(target);
 
-  if (t?.done) return <p className="font-script text-[clamp(56px,14vw,88px)] leading-none text-inv-accent">Hari ini</p>;
+  if (t?.done) return doneText ? <p className="font-script text-[clamp(56px,14vw,88px)] leading-none text-inv-accent">{doneText}</p> : null;
 
   const cells = [
     [t?.days, "Hari"],
