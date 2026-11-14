@@ -508,7 +508,7 @@ export function InvitationShell({ door, music, synth, className, style, children
           )}
 
           {door.kind === "bulan" && (
-            <BulanDoor groom={door.groom} bride={door.bride} date={door.date} place={door.place} moon={door.moon} age={door.age} invited={invited} onOpen={openInvitation} />
+            <BulanDoor groom={door.groom} bride={door.bride} date={door.date} place={door.place} moon={door.moon} age={door.age} copy={door.copy} invited={invited} onOpen={openInvitation} />
           )}
 
           {door.kind === "lensa" && (

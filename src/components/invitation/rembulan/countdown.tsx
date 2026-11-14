@@ -9,7 +9,7 @@ const NIGHTS = 7;
 
 // Hitung mundur dengan deretan bulan tujuh malam menjelang hari H, berakhir di bulan malam pernikahan.
 // Label bulan terakhir dan teks saat harinya tiba datang dari teks tema.
-export function RembulanCountdown({ target, lastText, doneText }: { target: string; lastText: string; doneText: string }) {
+export function RembulanCountdown({ target, lastText, doneText, units = { days: "Hari", hours: "Jam", minutes: "Menit" } }: { target: string; lastText: string; doneText: string; units?: { days: string; hours: string; minutes: string } }) {
   const t = useTimeLeft(target);
   const day = Date.parse(target);
   const nights = Array.from({ length: NIGHTS + 1 }, (_, i) => {
@@ -17,9 +17,9 @@ export function RembulanCountdown({ target, lastText, doneText }: { target: stri
     return { at, ...moonOf(at) };
   });
   const cells = [
-    [t?.days, "Hari"],
-    [t?.hours, "Jam"],
-    [t?.minutes, "Menit"],
+    [t?.days, units.days],
+    [t?.hours, units.hours],
+    [t?.minutes, units.minutes],
   ] as const;
 
   return (
@@ -41,7 +41,7 @@ export function RembulanCountdown({ target, lastText, doneText }: { target: stri
       {t?.done ? (
         doneText && <p className="mt-12 text-center font-display text-[clamp(44px,12vw,72px)] leading-none text-inv-accent">{doneText}</p>
       ) : (
-        <div role="timer" aria-label={t ? `${t.days} hari ${t.hours} jam ${t.minutes} menit lagi` : "Menghitung waktu"} className="mt-12 flex items-start justify-center gap-4 sm:gap-10">
+        <div role="timer" aria-label={t ? `${t.days} ${units.days.toLowerCase()} ${t.hours} ${units.hours.toLowerCase()} ${t.minutes} ${units.minutes.toLowerCase()} lagi` : "Menghitung waktu"} className="mt-12 flex items-start justify-center gap-4 sm:gap-10">
           {cells.map(([value, label], i) => (
             <Fragment key={label}>
               {i > 0 && <span aria-hidden="true" className="mt-[0.6em] size-1 shrink-0 rounded-full bg-inv-gold-light text-[clamp(44px,13vw,84px)]" />}

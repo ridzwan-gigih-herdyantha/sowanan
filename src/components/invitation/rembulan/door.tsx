@@ -6,7 +6,7 @@ import { litPath } from "./moon";
 import { MoonFace, MoonHalo } from "./moon-disc";
 import { Starfield } from "./sky";
 
-export type BulanProps = { groom: string; bride: string; date: string; place: string; moon: string; age: number; invited: string; onOpen: () => void };
+export type BulanProps = { groom: string; bride: string; date: string; place: string; moon: string; age: number; copy?: { kicker?: string; invited?: string; open?: string; skip?: string }; invited: string; onOpen: () => void };
 
 const START = 0.08;
 
@@ -26,7 +26,7 @@ const END = 1.85;
 
 // Pembuka Rembulan: bulan sabit baru terbit di atas bukit. Saat dibuka, bulan naik, membesar, dan berganti fase
 // sampai bulan malam pernikahan, lalu berhenti tepat di posisi bulan pada hero.
-export function BulanDoor({ groom, bride, date, place, moon, age, invited, onOpen }: BulanProps) {
+export function BulanDoor({ groom, bride, date, place, moon, age, copy = {}, invited, onOpen }: BulanProps) {
   const [phase, setPhase] = useState<"idle" | "playing" | "done">("idle");
   const reduce = useReducedMotion();
   const root = useRef<HTMLDivElement>(null);
@@ -128,7 +128,7 @@ export function BulanDoor({ groom, bride, date, place, moon, age, invited, onOpe
       </div>
 
       <div className="absolute inset-0 flex flex-col items-center px-6 pt-[max(56px,11vh)] text-center">
-        <p className="rb-text rb-label text-[11px] tracking-[0.34em] text-inv-gold">Undangan Pernikahan</p>
+        <p className="rb-text rb-label text-[11px] tracking-[0.34em] text-inv-gold">{copy.kicker ?? "Undangan Pernikahan"}</p>
         <h1 className="rb-text mt-4 font-display text-[clamp(46px,12vw,92px)] leading-[0.95] text-inv-ink">
           {groom}
           <span className="mx-3 font-body text-[0.42em] text-inv-gold italic">&amp;</span>
@@ -138,7 +138,7 @@ export function BulanDoor({ groom, bride, date, place, moon, age, invited, onOpe
         <p className="rb-text mt-1.5 font-body text-[15px] text-inv-ink/65 italic">{place}</p>
         {invited && (
           <p className="rb-text mt-6 font-body text-[15px] text-inv-ink/70">
-            Kepada <span className="font-display text-[22px] text-inv-accent">{invited}</span>
+            {copy.invited ?? "Kepada"} <span className="font-display text-[22px] text-inv-accent">{invited}</span>
           </p>
         )}
         <button
@@ -146,7 +146,7 @@ export function BulanDoor({ groom, bride, date, place, moon, age, invited, onOpe
           onClick={play}
           className="rb-text rb-label mt-8 rounded-full border border-inv-gold/70 px-8 py-3 text-[12px] tracking-[0.3em] text-inv-ink transition-[background-color,border-color] duration-300 hover:border-inv-accent hover:bg-inv-accent/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inv-accent"
         >
-          Buka undangan
+          {copy.open ?? "Buka undangan"}
         </button>
       </div>
 
@@ -164,7 +164,7 @@ export function BulanDoor({ groom, bride, date, place, moon, age, invited, onOpe
 
       {phase === "playing" && (
         <button type="button" onClick={() => setPhase("done")} className="rb-label absolute right-4 bottom-4 z-10 rounded-full border border-inv-line px-4 py-2 text-[12px] tracking-[0.18em] text-inv-ink/80">
-          Lewati
+          {copy.skip ?? "Lewati"}
         </button>
       )}
     </div>

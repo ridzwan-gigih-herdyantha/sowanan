@@ -78,7 +78,7 @@ function Hero({ inv, moon }: { inv: InvitationView; moon: Moon }) {
         </div>
 
         <div className="lg:order-1">
-          <Label className="inv-enter">Undangan Pernikahan</Label>
+          <Label className="inv-enter">{inv.texts.hero.kicker}</Label>
           <h1 {...enter(0.5)} className="inv-enter mt-4 font-display text-[clamp(60px,15vw,150px)] leading-[0.88] text-inv-ink">
             {inv.groom.name}
             <span className="block pl-[0.6em]">
@@ -92,7 +92,7 @@ function Hero({ inv, moon }: { inv: InvitationView; moon: Moon }) {
               {inv.venue.name}, {inv.cityShort}
             </p>
             <p className="mt-4 text-[15px] text-inv-gold italic">
-              {moon.name} di malam pernikahan, {moon.percent}% terang
+              {moon.name} {inv.texts.hero.moonIntro} {moon.percent}% {inv.texts.hero.moonSuffix}
             </p>
           </div>
           <Greeting className="inv-enter mt-4 text-[15px] text-inv-gold" />
@@ -121,7 +121,7 @@ function Couple({ inv }: { inv: InvitationView }) {
     { p: inv.bride, side: "text-right" },
   ];
   return (
-    <Folio title="Dua cahaya, satu malam" wash seed={8}>
+    <Folio title={inv.texts.couple.title} wash seed={8}>
       {inv.honor && <p className="mt-6 max-w-[52ch] text-[17px] leading-relaxed text-inv-ink/75 italic">{inv.honor}</p>}
       <div className="mt-14 flex justify-center">
         {people.map(({ p }, i) => (
@@ -148,7 +148,7 @@ function Couple({ inv }: { inv: InvitationView }) {
 // Cerita sebagai deretan malam: di layar lebar berjajar mendatar pada satu garis, di HP digeser ke samping.
 function StorySection({ inv }: { inv: InvitationView }) {
   return (
-    <Folio title="Di bawah bulan yang berganti" seed={13}>
+    <Folio title={inv.texts.story.title} seed={13}>
       <ol className="relative mt-14 -mr-5 flex snap-x snap-mandatory gap-6 overflow-x-auto pr-5 pb-2 [scrollbar-width:none] sm:-mr-8 sm:pr-8 lg:mr-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pr-0 [&::-webkit-scrollbar]:hidden">
         <span aria-hidden="true" className="absolute top-4 right-0 left-0 h-px bg-inv-line" />
         {inv.story.map((s, i) => {
@@ -162,7 +162,7 @@ function StorySection({ inv }: { inv: InvitationView }) {
                 <span className="relative mt-3 block size-2.5 rounded-full bg-inv-gold" />
               )}
               <Label className="mt-5">{s.date}</Label>
-              {moon && <p className="mt-1 text-[13px] text-inv-gold-light italic">{moon.name} malam itu</p>}
+              {moon && <p className="mt-1 text-[13px] text-inv-gold-light italic">{moon.name} {inv.texts.story.moonSuffix}</p>}
               <h3 className="mt-3 font-display text-[clamp(26px,3.2vw,32px)] leading-tight text-inv-ink">{s.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-inv-ink/75">{s.short}</p>
               <div className="relative mt-5 aspect-[4/5] overflow-hidden rounded-sm">
@@ -185,11 +185,11 @@ function Agenda({ inv }: { inv: InvitationView }) {
           <p className="rb-label text-[13px] tracking-[0.18em] text-inv-gold">{e.dateLabel}</p>
           <p className="mt-1 font-display text-[clamp(24px,3.4vw,32px)] text-inv-ink">{e.name}</p>
           {e.clock && <p className="rb-label mt-1 text-[14px] tracking-[0.1em] text-inv-ink tabular-nums">{e.clock}</p>}
-          {e.place.name && <p className="mt-2 text-[16px] font-medium text-inv-ink">{e.place.name}</p>}
-          {e.place.address && <p className="mt-1 text-[15px] leading-relaxed text-inv-ink/75">{e.place.address}</p>}
+          {e.place.name && <><Label className="mt-3">{inv.texts.event.place}</Label><p className="mt-1 text-[16px] font-medium text-inv-ink">{e.place.name}</p></>}
+          {e.place.address && <><Label className="mt-2">{inv.texts.event.address}</Label><p className="mt-1 text-[15px] leading-relaxed text-inv-ink/75">{e.place.address}</p></>}
           {e.place.mapUrl && (
             <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${button} mt-3`}>
-              Lihat peta
+              {inv.texts.event.map}
             </a>
           )}
         </li>
@@ -200,7 +200,7 @@ function Agenda({ inv }: { inv: InvitationView }) {
 
 function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
   return (
-    <Folio title="Malam yang kami nantikan" wash seed={21}>
+    <Folio title={inv.texts.event.title} wash seed={21}>
       <div className="mt-12 grid items-center gap-12 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <div className="relative mx-auto w-[min(62vw,280px)]">
           <div aria-hidden="true" className="absolute -inset-[14%] rounded-full border border-inv-line" />
@@ -212,7 +212,7 @@ function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
         <div>
           <p className="rb-label text-[13px] tracking-[0.22em] text-inv-ink/90">{inv.dateLong}</p>
           <p className="mt-1.5 text-[15px] text-inv-gold italic">
-            {moon.name}, {moon.percent}% bulan tampak terang malam itu
+            {moon.name}, {moon.percent}% {inv.texts.event.moonSuffix}
           </p>
           {/* Jadwal seperti tabel almanak: nama acara, titik penuntun, lalu jam. */}
           {inv.agenda ? (
@@ -239,17 +239,18 @@ function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
           <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="220px" className="object-cover" />
         </div>
         <div>
-          {!inv.agenda && <Label>Tempat</Label>}
+          {!inv.agenda && <Label>{inv.texts.event.place}</Label>}
           {!inv.agenda && <p className="mt-3 font-display text-[clamp(30px,4.6vw,44px)] leading-tight text-inv-ink">{inv.venue.name}</p>}
+          {!inv.agenda && inv.venue.address && <Label className="mt-3">{inv.texts.event.address}</Label>}
           {!inv.agenda && <p className="mt-2 text-[16px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>}
           <div className="mt-6 flex flex-wrap gap-3">
             {!inv.agenda && inv.venue.mapUrl && (
               <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={button}>
-                Lihat peta
+                {inv.texts.event.map}
               </a>
             )}
             <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={button}>
-              Simpan ke kalender
+              {inv.texts.event.calendar}
             </CalendarButton>
           </div>
         </div>
@@ -260,9 +261,9 @@ function Details({ inv, moon }: { inv: InvitationView; moon: Moon }) {
 
 function CountdownSection({ inv }: { inv: InvitationView }) {
   return (
-    <Folio title="Menghitung malam" seed={34}>
+    <Folio title={inv.texts.countdown.title} seed={34}>
       <div className="mt-12">
-        <RembulanCountdown target={inv.date} />
+        <RembulanCountdown target={inv.date} lastText={inv.texts.countdown.last} doneText={inv.texts.countdown.done} units={{ days: inv.texts.countdown.days, hours: inv.texts.countdown.hours, minutes: inv.texts.countdown.minutes }} />
       </div>
     </Folio>
   );
@@ -270,7 +271,7 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
 
 function GallerySection({ inv }: { inv: InvitationView }) {
   return (
-    <Folio title="Potongan malam-malam kami" wash seed={55}>
+    <Folio title={inv.texts.gallery.title} wash seed={55}>
       <div className="mt-12">
         <Gallery photos={inv.gallery} variant="strip" />
       </div>
@@ -280,7 +281,7 @@ function GallerySection({ inv }: { inv: InvitationView }) {
 
 function RsvpSection({ inv }: { inv: InvitationView }) {
   return (
-    <Folio title="Konfirmasi kehadiran" seed={89}>
+    <Folio title={inv.texts.rsvp.title} seed={89}>
       <div className="mt-10 max-w-[560px]">
         <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
       </div>
@@ -290,17 +291,19 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
 
 function Gifts({ inv }: { inv: InvitationView }) {
   return (
-    <Folio title="Doa restu Anda sudah lebih dari cukup" wash seed={144}>
-      <p className="mt-6 max-w-[46ch] text-[17px] leading-relaxed text-inv-ink/75 italic">Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut.</p>
+    <Folio title={inv.texts.gifts.title} wash seed={144}>
+      <p className="mt-6 max-w-[46ch] text-[17px] leading-relaxed text-inv-ink/75 italic">{inv.texts.gifts.subtitle}</p>
       <ul className="mt-8">
         {inv.gifts.map((g) => (
           <li key={g.number} className="grid gap-3 border-b border-inv-line py-6 first:border-t sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_auto] sm:items-center">
-            <Label>{g.bank}</Label>
+            <p className="rb-label text-[11px] tracking-[0.3em] text-inv-gold uppercase">{inv.texts.gifts.bank}</p>
+            <Label className="mt-1">{g.bank}</Label>
             <div>
+              <p className="rb-label mb-2 text-[10px] tracking-[0.3em] text-inv-gold uppercase">{inv.texts.gifts.number}</p>
               <p className="font-display text-[30px] leading-none text-inv-ink tabular-nums">{g.number}</p>
-              <p className="mt-2 text-[15px] text-inv-ink/65 italic">a.n. {g.holder}</p>
+              <p className="mt-2 text-[15px] text-inv-ink/65 italic">{inv.texts.gifts.holder} {g.holder}</p>
             </div>
-            <CopyButton value={g.number} label={`nomor rekening ${g.holder}`} />
+            <CopyButton value={g.number} label={inv.texts.gifts.copy} />
           </li>
         ))}
       </ul>
@@ -310,8 +313,8 @@ function Gifts({ inv }: { inv: InvitationView }) {
             <Image src={inv.images.qris} alt="Kode QRIS" width={150} height={150} className="size-36" />
           </div>
           <div>
-            <Label>QRIS</Label>
-            <p className="mt-3 text-[15px] text-inv-ink/80">Pindai dari aplikasi bank atau e-wallet.</p>
+            <Label>{inv.texts.gifts.qrisLabel}</Label>
+            <p className="mt-3 text-[15px] text-inv-ink/80">{inv.texts.gifts.qris}</p>
             <QrisDownload src={inv.images.qris} slug={inv.slug} />
           </div>
         </div>
@@ -324,8 +327,8 @@ function Gifts({ inv }: { inv: InvitationView }) {
 async function WishesSection({ inv }: { inv: InvitationView }) {
   const wishes = await getWishes(inv.slug);
   return (
-    <Folio title="Titipkan satu bintang untuk kami" seed={233}>
-      <p className="mt-6 max-w-[46ch] text-[16px] leading-relaxed text-inv-ink/70 italic">Setiap ucapan menjadi satu bintang di langit ini. Ketuk bintang untuk membacanya.</p>
+    <Folio title={inv.texts.wishes.title} seed={233}>
+      <p className="mt-6 max-w-[46ch] text-[16px] leading-relaxed text-inv-ink/70 italic">{inv.texts.wishes.subtitle}</p>
       <div className="mt-10">
         <Wishes slug={inv.slug} initial={wishes} variant="langit" />
       </div>
@@ -341,11 +344,11 @@ function Closing({ inv, moon }: { inv: InvitationView; moon: Moon }) {
       <Starfield density={0.4} meteors seed={377} />
       <Wrap className="grid items-end gap-10 md:grid-cols-[minmax(0,1fr)_auto]">
         <div>
-          <p className="max-w-[18ch] font-display text-[clamp(34px,6.6vw,68px)] leading-[1.05] text-balance text-inv-ink">Sampai jumpa di bawah bulan yang sama.</p>
+          <p className="max-w-[18ch] font-display text-[clamp(34px,6.6vw,68px)] leading-[1.05] text-balance text-inv-ink">{inv.texts.closing.title}</p>
           <p className="mt-6 max-w-[40ch] text-[16px] leading-relaxed text-inv-ink/75 italic">
-            Atas kehadiran dan doa restu yang Anda berikan, kami ucapkan terima kasih yang setulus-tulusnya.
+            {inv.texts.closing.thanks}
           </p>
-          <Label className="mt-10">Kami yang berbahagia</Label>
+          <Label className="mt-10">{inv.texts.closing.label}</Label>
           <p className="mt-3 font-display text-[clamp(40px,8vw,72px)] leading-none text-inv-ink">
             {inv.groom.name} <span className="font-body text-[0.46em] text-inv-gold italic">&amp;</span> {inv.bride.name}
           </p>
@@ -390,8 +393,14 @@ export function BimaNadia({ inv }: { inv: InvitationView }) {
         bride: inv.bride.name,
         date: inv.dateLong,
         place: `${inv.venue.name}, ${inv.cityShort}`,
-        moon: `${moon.name} di malam pernikahan`,
+        moon: `${moon.name} ${inv.texts.hero.doorMoonSuffix}`,
         age: moon.age,
+        copy: {
+          kicker: inv.texts.hero.kicker,
+          invited: inv.texts.hero.doorGuestLabel,
+          open: inv.texts.hero.doorOpen,
+          skip: inv.texts.hero.doorSkip,
+        },
       }}
       music={inv.music}
       className={`${themeFonts} inv-paper min-h-dvh overflow-x-clip font-body text-inv-ink`}
