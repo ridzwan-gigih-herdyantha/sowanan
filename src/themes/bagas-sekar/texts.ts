@@ -1,60 +1,52 @@
 import type { ThemeTexts } from "@/lib/invitation/texts";
 
-// Teks bawaan tiap bagian, boleh diganti mempelai di editor.
+// Teks khas Bagas Sekar disamakan dengan tampilan tema dan dapat diubah di editor.
 export const texts: ThemeTexts = {
   hero: {
-    kicker: ["Label di atas nama", "UNDANGAN PERNIKAHAN"],
-    names: ["Nama mempelai", "{pria} & {wanita}"],
-    date: ["Tanggal", "{tanggal}"],
-    place: ["Kota", "{tempat}"],
+    kicker: ["Label pembuka", "KAMI MENGUNDANGMU KE PERNIKAHAN"],
   },
   couple: {
-    label: ["Label kecil", "KEDUA MEMPELAI"],
-    title: ["Judul", "Dengan memohon rahmat dan ridha Allah SWT"],
+    label: ["Label bagian mempelai", "KEDUA MEMPELAI"],
   },
   story: {
-    label: ["Label kecil", "CERITA"],
-    title: ["Judul", "Kisah kami"],
+    label: ["Label bagian cerita", "CERITA KAMI"],
+    title: ["Judul cerita", "Ruang yang kami bangun, pelan-pelan."],
+    subtitle: ["Keterangan cerita", "Scroll pelan-pelan. Tiap lembar menumpuk di atas yang sebelumnya."],
   },
   event: {
-    label: ["Label kecil", "HARI H"],
-    title: ["Judul", "Akad & resepsi"],
-    place: ["Label tempat", "Tempat"],
-    address: ["Label alamat", "Alamat"],
-    map: ["Tombol peta", "Buka peta"],
+    label: ["Label detail acara", "DETAIL ACARA"],
+    place: ["Label tempat", "TEMPAT"],
+    address: ["Label alamat", "ALAMAT"],
+    map: ["Tombol peta", "LIHAT PETA"],
   },
   countdown: {
-    label: ["Label kecil", "HITUNG MUNDUR"],
-    title: ["Judul", "Menuju hari bahagia"],
-    done: ["Teks saat harinya tiba", "Hari yang dinanti telah tiba"],
-    calendar: ["Tombol kalender", "Simpan ke kalender"],
+    label: ["Label hitung mundur", "MENUJU HARI H"],
+    title: ["Judul hitung mundur", "Menuju hari bahagia"],
+    done: ["Teks saat harinya tiba", "HARI INI."],
+    calendar: ["Tombol kalender", "SIMPAN KE KALENDER"],
   },
   gallery: {
-    label: ["Label kecil", "GALERI"],
-    title: ["Judul", "Momen kami"],
+    label: ["Label galeri", "GALERI"],
+    title: ["Judul galeri", "Yang kami simpan."],
   },
   rsvp: {
-    label: ["Label kecil", "KONFIRMASI"],
-    title: ["Judul", "Konfirmasi kehadiran"],
+    label: ["Label konfirmasi", "KONFIRMASI KEHADIRAN"],
   },
   gifts: {
-    label: ["Label kecil", "TANDA KASIH"],
-    title: ["Judul", "Doa restu Anda sudah lebih dari cukup"],
-    subtitle: ["Subjudul", "Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut."],
-    bank: ["Label bank", "Bank"],
-    number: ["Nomor rekening", "Nomor"],
-    holder: ["Label pemilik", "Atas nama"],
+    label: ["Label hadiah", "TANDA KASIH"],
+    title: ["Judul hadiah", "Doa restu kalian sudah lebih dari cukup."],
+    subtitle: ["Keterangan hadiah", "Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut."],
+    bank: ["Label bank", "BANK"],
+    number: ["Label nomor rekening", "NOMOR"],
+    holder: ["Label pemilik rekening", "ATAS NAMA"],
+    qrisLabel: ["Label QRIS", "QRIS"],
     qris: ["Petunjuk QRIS", "Pindai dari aplikasi bank atau e-wallet."],
   },
   wishes: {
-    label: ["Label kecil", "BUKU TAMU"],
-    title: ["Judul", "Kirimkan doa untuk kami"],
+    label: ["Label doa dan ucapan", "DOA & UCAPAN"],
+    title: ["Judul doa dan ucapan", "Titipkan doa untuk kami."],
   },
   closing: {
-    label: ["Label kecil", "PENUTUP"],
-    title: ["Judul", "Terima kasih"],
-    thanks: ["Ucapan terima kasih", "Merupakan suatu kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu."],
-    names: ["Nama mempelai", "{pria} & {wanita}"],
-    date: ["Tanggal", "{tanggal}"],
+    title: ["Ucapan penutup", "Terima kasih atas doa dan kehadirannya."],
   },
 };

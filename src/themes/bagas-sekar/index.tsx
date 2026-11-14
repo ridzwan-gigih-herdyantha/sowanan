@@ -71,7 +71,7 @@ function Hero({ inv }: { inv: InvitationView }) {
       </Wrap>
       <Wrap className="pt-6 pb-8 text-center lg:pt-10 lg:pb-12">
         <p {...enter(0.45)} className="inv-enter text-[11px] font-medium tracking-[0.24em] text-inv-gold">
-          KAMI MENGUNDANGMU KE PERNIKAHAN
+          {inv.texts.hero.kicker}
         </p>
         <h1 {...enter(0.52)} className="inv-enter mt-4 font-script text-[clamp(52px,15vw,80px)] leading-[0.95] tracking-[-0.02em] lg:text-[clamp(96px,10.5vw,168px)]">
           {inv.groom.name} <span className="font-display italic">&amp;</span> {inv.bride.name}
@@ -106,7 +106,7 @@ function Couple({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash relative pt-20 pb-20 lg:pt-28 lg:pb-28">
       <Wrap>
-        <Label>KEDUA MEMPELAI</Label>
+        <Label>{inv.texts.couple.label}</Label>
       </Wrap>
       <div className="clip-circle relative mt-8 aspect-[4/5] w-full md:aspect-[16/10]">
         <Image {...inv.frame.couple} src={inv.images.couple} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="100vw" className="object-cover object-[50%_40%]" />
@@ -126,9 +126,9 @@ function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper relative pt-20 lg:pt-28">
       <Wrap className="mb-10 lg:mb-14">
-        <Label>CERITA KAMI</Label>
-        <Title className="max-w-[16ch]">Ruang yang kami bangun, pelan-pelan.</Title>
-        <p className="mt-4 max-w-[40ch] text-[15px] text-inv-gold">Scroll pelan-pelan. Tiap lembar menumpuk di atas yang sebelumnya.</p>
+        <Label>{inv.texts.story.label}</Label>
+        <Title className="max-w-[16ch]">{inv.texts.story.title}</Title>
+        {inv.texts.story.subtitle && <p className="mt-4 max-w-[40ch] text-[15px] text-inv-gold">{inv.texts.story.subtitle}</p>}
       </Wrap>
       <Timeline items={inv.story} variant="stack" />
     </section>
@@ -152,7 +152,7 @@ function Agenda({ inv }: { inv: InvitationView }) {
             {e.place.mapUrl && (
               <dd className="mt-4">
                 <a href={e.place.mapUrl} target="_blank" rel="noopener" className="inline-flex items-center gap-3 rounded-sm border border-inv-ink px-4 py-2.5 text-[11px] font-medium tracking-[0.24em] text-inv-ink no-underline">
-                  LIHAT PETA
+                  {inv.texts.event.map}
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                     <path d="M4 12h16M14 6l6 6-6 6" />
                   </svg>
@@ -170,7 +170,7 @@ function Details({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash relative pt-20 lg:pt-28">
       <Wrap>
-        <Label>DETAIL ACARA</Label>
+        <Label>{inv.texts.event.label}</Label>
         <p className="mt-6 font-display text-[clamp(44px,12vw,96px)] leading-none tracking-[-0.01em]">{inv.dateShort}</p>
         <p className="mt-3 text-[12px] font-medium tracking-[0.24em]">{inv.dayLabel.toUpperCase()}</p>
         {inv.agenda ? (
@@ -187,8 +187,9 @@ function Details({ inv }: { inv: InvitationView }) {
               </div>
             ))}
             <div>
-              <dt className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">TEMPAT</dt>
+              <dt className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">{inv.texts.event.place}</dt>
               {!inv.agenda && <dd className="mt-1 font-display text-[28px] leading-tight">{inv.venue.name}</dd>}
+              {!inv.agenda && <dt className="mt-3 text-[11px] font-medium tracking-[0.24em] text-inv-gold">{inv.texts.event.address}</dt>}
               {!inv.agenda && <dd className="mt-1 text-[14px] text-inv-gold">{inv.venue.address}</dd>}
             </div>
           </dl>
@@ -200,7 +201,7 @@ function Details({ inv }: { inv: InvitationView }) {
             rel="noopener"
             className="mt-8 inline-flex items-center gap-3 rounded-sm border border-inv-ink px-5 py-3 text-[11px] font-medium tracking-[0.24em] text-inv-ink no-underline transition-colors duration-150 hover:bg-inv-ink hover:text-inv-paper"
           >
-            LIHAT PETA
+            {inv.texts.event.map}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <path d="M4 12h16M14 6l6 6-6 6" />
             </svg>
@@ -221,14 +222,15 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="bg-inv-night py-24 text-inv-ink lg:py-32" style={dark}>
       <Wrap>
-        <Label>MENUJU HARI H</Label>
+        <Label>{inv.texts.countdown.label}</Label>
+        <Title>{inv.texts.countdown.title}</Title>
         <div className="mt-10">
-          <BigCountdown target={inv.date} stacked doneText="HARI INI." />
+          <BigCountdown target={inv.date} stacked doneText={inv.texts.countdown.done} />
         </div>
         <div className="mt-14 flex flex-wrap gap-3">
-          <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
-            SIMPAN KE KALENDER
-          </CalendarButton>
+          {inv.texts.countdown.calendar && <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={btn}>
+            {inv.texts.countdown.calendar}
+          </CalendarButton>}
         </div>
       </Wrap>
     </section>
@@ -239,8 +241,8 @@ function GallerySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper relative py-20 lg:py-28">
       <Wrap className="mb-10">
-        <Label>GALERI</Label>
-        <Title>Yang kami simpan.</Title>
+        <Label>{inv.texts.gallery.label}</Label>
+        <Title>{inv.texts.gallery.title}</Title>
       </Wrap>
       <div className="px-3 sm:px-8 lg:px-12">
         <Gallery photos={inv.gallery} variant="bleed" />
@@ -262,7 +264,7 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
         </div>
         <div className="px-5 py-16 sm:px-8 lg:flex lg:items-center lg:px-16">
           <div className="w-full max-w-[520px]">
-            <Label className="mb-8">KONFIRMASI KEHADIRAN</Label>
+            <Label className="mb-8">{inv.texts.rsvp.label}</Label>
             <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
           </div>
         </div>
@@ -276,10 +278,10 @@ function Gifts({ inv }: { inv: InvitationView }) {
     <section className="inv-paper py-20 lg:py-28">
       <Wrap className="lg:grid lg:grid-cols-12 lg:gap-x-8">
         <div className="lg:col-span-4">
-          <Label>TANDA KASIH</Label>
-          <Title className="max-w-[16ch]">Doa restu kalian sudah lebih dari cukup.</Title>
+          <Label>{inv.texts.gifts.label}</Label>
+          <Title className="max-w-[16ch]">{inv.texts.gifts.title}</Title>
           <p className="mt-5 max-w-[36ch] text-[15px] leading-relaxed text-inv-gold">
-            Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut.
+            {inv.texts.gifts.subtitle}
           </p>
         </div>
         <div className="mt-10 lg:col-span-7 lg:col-start-6 lg:mt-0">
@@ -287,9 +289,11 @@ function Gifts({ inv }: { inv: InvitationView }) {
             {inv.gifts.map((g) => (
               <div key={g.number} className="flex flex-wrap items-end justify-between gap-4 border-b border-inv-line py-6">
                 <div>
-                  <p className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">{g.bank.toUpperCase()}</p>
+                  <p className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">{inv.texts.gifts.bank}</p>
+                  <p className="mt-1 font-display text-[18px]">{g.bank.toUpperCase()}</p>
+                  <p className="mt-1 text-[11px] font-medium tracking-[0.24em] text-inv-gold">{inv.texts.gifts.number}</p>
                   <p className="mt-2 font-display text-[30px] leading-none tabular-nums">{g.number}</p>
-                  <p className="mt-2 text-[14px] text-inv-gold">a.n. {g.holder}</p>
+                  <p className="mt-2 text-[14px] text-inv-gold">{inv.texts.gifts.holder} {g.holder}</p>
                 </div>
                 <CopyButton value={g.number} label={`nomor rekening ${g.holder}`} />
               </div>
@@ -298,8 +302,8 @@ function Gifts({ inv }: { inv: InvitationView }) {
             <div className="flex items-center gap-6 border-b border-inv-line py-6">
               <Image src={inv.images.qris} alt="Kode QRIS" width={112} height={112} className="size-28" />
               <div>
-                <p className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">QRIS</p>
-                <p className="mt-2 text-[14px]">Pindai dari aplikasi bank atau e-wallet.</p>
+                <p className="text-[11px] font-medium tracking-[0.24em] text-inv-gold">{inv.texts.gifts.qrisLabel}</p>
+                <p className="mt-2 text-[14px]">{inv.texts.gifts.qris}</p>
                 <QrisDownload src={inv.images.qris} slug={inv.slug} />
               </div>
             </div>
@@ -317,8 +321,8 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-20 lg:py-28">
       <Wrap>
-        <Label>DOA &amp; UCAPAN</Label>
-        <Title className="mb-12">Titipkan doa untuk kami.</Title>
+        <Label>{inv.texts.wishes.label}</Label>
+        <Title className="mb-12">{inv.texts.wishes.title}</Title>
         <Wishes slug={inv.slug} initial={wishes} variant="lined" />
       </Wrap>
     </section>
@@ -330,7 +334,7 @@ function Closing({ inv }: { inv: InvitationView }) {
     <section className="bg-inv-night py-24 text-inv-ink lg:py-32" style={dark}>
       <Wrap>
         <p className="max-w-[14ch] font-display text-[clamp(40px,11vw,88px)] leading-[1.02] tracking-[-0.01em]">
-          Terima kasih atas doa dan kehadirannya.
+          {inv.texts.closing.title}
         </p>
         <div className="mt-16 flex items-end justify-between border-t border-inv-line pt-6">
           <p className="font-display text-2xl">
