@@ -283,6 +283,10 @@ export const DEFAULT_SETTINGS: Settings = {
       },
     },
     addon: { title: "Tambahan di luar paket", sub: "Bisa ditambahkan saat memesan. Sebutkan saja lewat WhatsApp." },
+    kalkulator: {
+      title: "Hitung biayanya",
+      sub: "Pilih tema, paket, dan tambahan yang kalian mau. Totalnya langsung terlihat dan bisa dikirim ke kami lewat WhatsApp.",
+    },
     cara: { title: "Cara pesan", sub: "" },
     testi: { title: "Kata mereka" },
     faq: {

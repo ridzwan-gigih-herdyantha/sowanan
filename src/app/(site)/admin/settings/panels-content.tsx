@@ -44,6 +44,7 @@ const SECTIONS: [keyof Settings["sections"], string][] = [
   ["fitur", "Fitur"],
   ["harga", "Harga"],
   ["addon", "Tambahan di luar paket"],
+  ["kalkulator", "Kalkulator harga"],
   ["cara", "Cara pesan"],
   ["testi", "Testimoni"],
   ["faq", "Tanya jawab"],
@@ -54,7 +55,7 @@ const OFFER_CARDS = [
   ["harga", "Kartu kebutuhan khusus", "setelah daftar tambahan"],
 ] as const;
 
-const ANCHORS = "#tema, #fitur, #harga, #cara, #testimoni, atau #tanya";
+const ANCHORS = "#tema, #fitur, #harga, #hitung, #cara, #testimoni, atau #tanya";
 
 export function BerandaPanel() {
   const { s } = useSettings();

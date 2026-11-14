@@ -149,6 +149,9 @@ export function Pricing({ settings, vars }: { settings: Settings; vars: Record<s
                 </li>
               ))}
             </ul>
+            <a href="#hitung" className="mt-5 inline-block border-b border-wine-soft pb-0.5 text-[15px] text-paper no-underline transition-colors duration-150 hover:border-paper focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-paper">
+              Hitung total paket dan tambahan pilihan kalian
+            </a>
           </div>
         )}
 

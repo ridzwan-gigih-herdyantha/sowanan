@@ -171,6 +171,11 @@ export const settingsSchema = z
         }),
       }),
       addon: section("tambahan"),
+      // Kalkulator pemesanan di bawah section harga. Default dipakai untuk data lama yang belum punya bagian ini.
+      kalkulator: section("kalkulator").default({
+        title: "Hitung biayanya",
+        sub: "Pilih tema, paket, dan tambahan yang kalian mau. Totalnya langsung terlihat dan bisa dikirim ke kami lewat WhatsApp.",
+      }),
       cara: section("cara pesan"),
       // Default dipakai untuk data lama, supaya isi sections yang tersimpan tidak diganti nilai bawaan.
       testi: z.object({ title: req("Judul testimoni", 40) }).default({ title: "Kata mereka" }),

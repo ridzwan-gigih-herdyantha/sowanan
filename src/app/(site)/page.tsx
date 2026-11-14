@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ClosingCta, SiteFooter, WhatsAppFloat } from "@/components/home/closing";
+import { Calculator } from "@/components/home/calculator";
 import { Faq } from "@/components/home/faq";
 import { Features } from "@/components/home/features";
 import { Hero } from "@/components/home/hero";
@@ -78,6 +79,7 @@ export default async function Home() {
         <Themes settings={s} vars={vars} waHref={wa} />
         <Features settings={s} vars={vars} />
         <Pricing settings={s} vars={vars} />
+        <Calculator settings={s} vars={vars} />
         <Steps settings={s} vars={vars} />
         <Testimonials settings={s} />
         <Faq settings={s} vars={vars} />
