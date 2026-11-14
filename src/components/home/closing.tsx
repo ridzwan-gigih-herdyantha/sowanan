@@ -142,7 +142,7 @@ function ContactRow({ icon, title, note, href }: { icon: ReactNode; title: strin
     <>
       <span className="mt-0.5 text-wine-pale">{icon}</span>
       <span>
-        <span className={cx("block text-[16px] text-paper", href && "transition-colors duration-200 group-hover:text-wine-pale")}>{title}</span>
+        <span className={cx("block text-[16px] [overflow-wrap:anywhere] text-paper", href && "transition-colors duration-200 group-hover:text-wine-pale")}>{title}</span>
         {note && <span className="mt-1 block text-[14px] leading-snug text-dusk">{note}</span>}
       </span>
     </>
@@ -192,13 +192,14 @@ export function SiteFooter({ settings, vars, waHref }: { settings: Settings; var
       <Sprig className="-bottom-10 -left-10 -z-10 hidden h-80 rotate-[8deg] text-wine-pale/15 md:block lg:-left-4 lg:h-[420px]" />
       <Sprig className="-top-6 -right-10 -z-10 h-56 -scale-x-100 rotate-[196deg] text-wine-pale/12 md:h-80 lg:-right-4 lg:h-[420px] lg:text-wine-pale/15" />
 
-      <Container className="grid grid-cols-2 gap-x-6 gap-y-11 pt-14 pb-12 md:grid-cols-[minmax(0,1.5fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,1.2fr)] md:gap-10 md:pt-[72px] md:pb-16">
-        <div className="col-span-2 md:col-span-1">
+      {/* Empat kolom baru muat mulai lg. Di tablet merek mengambil baris sendiri, tiga kolom tautan di bawahnya. */}
+      <Container className="grid grid-cols-2 gap-x-6 gap-y-11 pt-14 pb-12 md:grid-cols-3 md:gap-10 md:pt-[72px] md:pb-16 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,1.2fr)]">
+        <div className="col-span-2 md:col-span-3 lg:col-span-1">
           <p className="flex items-center gap-4">
             <LogoMark className="h-14 w-auto text-wine-pale" />
             <span>
               <span className="block font-serif text-[34px] leading-none text-paper">{SITE_NAME}</span>
-              <span className="mt-2 block text-[11px] tracking-[3px] whitespace-nowrap text-dusk uppercase max-[379px]:tracking-[2px]">Undangan pernikahan digital</span>
+              <span className="mt-2 block text-[11px] leading-snug tracking-[3px] text-dusk uppercase max-[379px]:tracking-[2px] lg:tracking-[2px] xl:tracking-[3px]">Undangan pernikahan digital</span>
             </span>
           </p>
           {f.line1 && <p className="mt-6 max-w-[44ch] text-[16px] leading-relaxed text-dusk-light">{fill(f.line1, vars)}</p>}
