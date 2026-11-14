@@ -67,7 +67,7 @@ function Story({ inv }: { inv: InvitationView }) {
           )}
           <div className="px-4 py-3">
             <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">
-              Bab {i + 1}
+              {inv.texts.story.chapter} {i + 1}
               {item.date && ` · ${item.date}`}
             </p>
             <h3 className="font-display text-[19px] leading-tight font-semibold text-inv-accent">{item.title}</h3>
@@ -87,11 +87,11 @@ function Agenda({ inv }: { inv: InvitationView }) {
       <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{e.dateLabel}</p>
       <p className="font-display text-[22px] leading-tight font-semibold text-inv-accent">{e.name}</p>
       {e.clock && <p className="text-[13px] text-inv-ink/70">{e.clock}</p>}
-      {e.place.name && <p className="mt-2 font-display text-[16px] leading-snug font-semibold">{e.place.name}</p>}
-      {e.place.address && <p className="mt-0.5 text-[12px] leading-relaxed text-inv-ink/70">{e.place.address}</p>}
+      {e.place.name && <><p className="mt-2 text-[10px] tracking-[.16em] text-inv-gold uppercase">{inv.texts.event.place}</p><p className="font-display text-[16px] leading-snug font-semibold">{e.place.name}</p></>}
+      {e.place.address && <><p className="mt-1 text-[10px] tracking-[.16em] text-inv-gold uppercase">{inv.texts.event.address}</p><p className="mt-0.5 text-[12px] leading-relaxed text-inv-ink/70">{e.place.address}</p></>}
       {e.place.mapUrl && (
         <a className={`${action} mt-3`} href={e.place.mapUrl} target="_blank" rel="noreferrer">
-          Buka peta
+          {inv.texts.event.map}
         </a>
       )}
     </article>
@@ -101,11 +101,17 @@ function Agenda({ inv }: { inv: InvitationView }) {
 function Event({ inv }: { inv: InvitationView }) {
   return (
     <div className="grid gap-3">
-      {inv.honor && <p className="text-center text-[13px] leading-relaxed text-inv-ink/75">{inv.honor}</p>}
+      <div className="text-center">
+        <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{inv.texts.event.label}</p>
+        <h3 className="font-display text-[20px] leading-tight font-semibold text-inv-accent">{inv.texts.event.title}</h3>
+        {inv.honor && <p className="mt-1 text-[13px] leading-relaxed text-inv-ink/75">{inv.honor}</p>}
+      </div>
       <p className="text-center font-display text-[20px] leading-tight font-semibold text-inv-accent">{inv.dateLong}</p>
       {inv.on.countdown && (
         <Countdown
           target={inv.date}
+          labels={{ days: inv.texts.countdown.days, hours: inv.texts.countdown.hours, minutes: inv.texts.countdown.minutes }}
+          doneText={inv.texts.countdown.done}
           className="grid grid-cols-3 gap-2"
           cellClassName={`${card} px-2 py-3 text-center font-display text-3xl text-inv-accent [&>span:last-child]:font-body [&>span:last-child]:text-[10px] [&>span:last-child]:text-inv-gold`}
         />
@@ -115,7 +121,7 @@ function Event({ inv }: { inv: InvitationView }) {
           <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{event.name}</p>
           <p className="font-display text-[24px] leading-tight font-semibold text-inv-accent">
             {event.time}
-            {event.until && <span className="text-[14px] text-inv-ink/60"> – {event.until}</span>}
+            {event.until && <span className="text-[14px] text-inv-ink/60"> {inv.texts.event.until} {event.until}</span>}
             <span className="text-[13px] text-inv-gold"> {inv.tz}</span>
           </p>
         </article>
@@ -125,16 +131,18 @@ function Event({ inv }: { inv: InvitationView }) {
           <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="480px" className="object-cover" />
         </div>
         <div className="px-4 py-3">
-        {!inv.agenda && <p className="font-display text-[18px] font-semibold">{inv.venue.name}</p>}
+        {!inv.agenda && <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{inv.texts.event.place}</p>}
+        {!inv.agenda && <p className="mt-1 font-display text-[18px] font-semibold">{inv.venue.name}</p>}
+        {!inv.agenda && inv.venue.address && <p className="mt-2 text-[10px] tracking-[.16em] text-inv-gold uppercase">{inv.texts.event.address}</p>}
         {!inv.agenda && <p className="mt-1 text-[12px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p>}
         <div className="mt-3 flex flex-wrap justify-center gap-2.5">
           {!inv.agenda && inv.venue.mapUrl && (
             <a className={action} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">
-              Buka peta
+              {inv.texts.event.map}
             </a>
           )}
           <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={action}>
-            Simpan ke kalender
+            {inv.texts.event.calendar}
           </CalendarButton>
         </div>
         </div>
@@ -146,23 +154,30 @@ function Event({ inv }: { inv: InvitationView }) {
 function Gifts({ inv }: { inv: InvitationView }) {
   return (
     <div className="grid gap-3">
+      <div className="text-center">
+        <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{inv.texts.gifts.label}</p>
+        <h3 className="font-display text-[20px] font-semibold text-inv-accent">{inv.texts.gifts.title}</h3>
+        <p className="mt-1 text-[12px] leading-relaxed text-inv-ink/70">{inv.texts.gifts.subtitle}</p>
+      </div>
       {inv.gifts.map((gift) => (
         <article key={gift.number} className={`${card} px-4 py-3 text-center`}>
-          <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{gift.bank}</p>
+          <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{inv.texts.gifts.bank}: {gift.bank}</p>
           <p className="font-display text-[22px] leading-tight font-semibold tracking-wide">{gift.number}</p>
-          <p className="text-[12px] text-inv-ink/70">a.n. {gift.holder}</p>
+          <p className="text-[12px] text-inv-ink/70">{inv.texts.gifts.holder} {gift.holder}</p>
           <div className="mt-2 flex justify-center">
-            <CopyButton value={gift.number} label={`Salin nomor ${gift.bank}`} />
+            <CopyButton value={gift.number} label={inv.texts.gifts.copy} />
           </div>
         </article>
       ))}
       {inv.images.qris && (
         <article className={`${card} px-4 py-3 text-center`}>
+          <p className="mb-2 font-display text-[18px] font-semibold text-inv-accent">{inv.texts.gifts.qrisLabel}</p>
           <div className="relative mx-auto aspect-square w-full max-w-[220px]">
             <Image src={inv.images.qris} alt="QRIS" fill sizes="220px" className="object-contain" />
           </div>
+          <p className="mt-2 text-[12px] text-inv-ink/70">{inv.texts.gifts.qris}</p>
           <div className="mt-2 flex justify-center">
-            <QrisDownload src={inv.images.qris} slug={inv.slug} />
+            <QrisDownload src={inv.images.qris} slug={inv.slug} labels={{ download: inv.texts.gifts.download, preparing: inv.texts.gifts.preparing, retry: inv.texts.gifts.retry }} />
           </div>
         </article>
       )}
@@ -182,7 +197,7 @@ function Pelaminan({ inv, wishes }: { inv: InvitationView; wishes: Awaited<Retur
           </div>
           <div className="px-4 py-4">
             <p className="text-[13px] leading-relaxed text-inv-ink/75">
-              Terima kasih, <GuestName fallback="para tamu" />, sudah hadir dan mendoakan kami.
+              Terima kasih, <GuestName fallback="para tamu" /> {inv.texts.closing.title}
             </p>
             <p className="mt-2 font-display text-[26px] leading-tight font-semibold text-inv-accent">
               {inv.groom.name} &amp; {inv.bride.name}
@@ -193,7 +208,7 @@ function Pelaminan({ inv, wishes }: { inv: InvitationView; wishes: Awaited<Retur
       )}
       {wishes && (
         <section className={`${card} gd-wishes px-4 pt-4 pb-5`}>
-          <p className="mb-4 text-center font-display text-[18px] font-semibold text-inv-accent">Buku ucapan</p>
+          <p className="mb-4 text-center font-display text-[18px] font-semibold text-inv-accent">{inv.texts.wishes.title}</p>
           <Wishes slug={inv.slug} initial={wishes} variant="dialog" desktop="stack" />
         </section>
       )}
@@ -230,10 +245,10 @@ function Opening({ inv }: { inv: InvitationView }) {
 }
 
 // Sambutan di papan atas peta dalam: nama tamu dari tautan.
-function Welcome() {
+function Welcome({ inv }: { inv: InvitationView }) {
   return (
     <p className="font-display text-[clamp(14px,4vw,17px)] leading-snug font-semibold">
-      Selamat datang, <GuestName fallback="tamu kami" />
+      {inv.texts.welcome.title}, <GuestName fallback="tamu kami" />
     </p>
   );
 }
@@ -241,15 +256,15 @@ function Welcome() {
 // Penutup "Tamat" yang terbuka setelah semua pos di aula dikunjungi: foto penutup dan daftar kredit.
 function Finale({ inv }: { inv: InvitationView }) {
   const credits: [string, ReactNode][] = [
-    ["Pemeran utama", <>{inv.groom.full || inv.groom.name}<br />{inv.bride.full || inv.bride.name}</>],
-    ["Bersama keluarga", <>{inv.groom.parents}<br />{inv.bride.parents}</>],
-    ["Lokasi", `${inv.venue.name}, ${inv.cityShort}`],
-    ["Tamu istimewa", <GuestName key="guest" fallback="Kamu" />],
+    [inv.texts.closing.cast, <>{inv.groom.full || inv.groom.name}<br />{inv.bride.full || inv.bride.name}</>],
+    [inv.texts.closing.family, <>{inv.groom.parents}<br />{inv.bride.parents}</>],
+    [inv.texts.closing.place, `${inv.venue.name}, ${inv.cityShort}`],
+    [inv.texts.closing.guest, <GuestName key="guest" fallback="Kamu" />],
   ];
   return (
     <div className="px-5 pt-7 pb-4 text-center sm:px-8">
-      <p className="font-display text-[clamp(44px,12vw,64px)] leading-none font-semibold text-inv-accent">Tamat</p>
-      <p className="mt-2 text-[11px] font-bold tracking-[.2em] text-inv-gold uppercase">Terima kasih sudah berkunjung</p>
+      <p className="font-display text-[clamp(44px,12vw,64px)] leading-none font-semibold text-inv-accent">{inv.texts.closing.label}</p>
+      <p className="mt-2 text-[11px] font-bold tracking-[.2em] text-inv-gold uppercase">{inv.texts.closing.thanks}</p>
       {inv.images.closing && (
         <div className={`${card} relative mx-auto mt-5 aspect-[4/5] w-[min(72%,280px)] overflow-hidden`}>
           <Image {...inv.frame.closing} src={inv.images.closing} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="280px" className="object-cover object-[50%_30%]" />
@@ -263,7 +278,7 @@ function Finale({ inv }: { inv: InvitationView }) {
           </div>
         ))}
       </dl>
-      <p className="mt-6 font-display text-[15px] font-semibold text-inv-accent">Sampai jumpa {inv.dateLong}</p>
+      <p className="mt-6 font-display text-[15px] font-semibold text-inv-accent">{inv.texts.closing.until} {inv.dateLong}</p>
     </div>
   );
 }
@@ -293,28 +308,28 @@ export async function RafiKayla({ inv }: { inv: InvitationView }) {
   const wishes = inv.on.wishes ? await getWishes(inv.slug) : null;
   const extras = extraItems(inv);
   const panels: (Panel | false)[] = [
-    { id: "pembuka", title: "Selamat datang", body: <Opening inv={inv} /> },
-    (wishes !== null || inv.on.closing) && { id: "pelaminan", title: wishes ? "Pelaminan dan buku ucapan" : "Pelaminan", body: <Pelaminan inv={inv} wishes={wishes} /> },
-    inv.on.couple && { id: "mempelai", title: "Mempelai", body: <Couple inv={inv} /> },
-    inv.on.gallery && inv.gallery.length > 0 && { id: "galeri", title: "Galeri", body: <Gallery photos={inv.gallery} variant="game" /> },
-    inv.postGallery.length > 0 && { id: "pasca", title: "Galeri Pasca Acara", body: <Gallery photos={inv.postGallery} variant="game" /> },
+    { id: "pembuka", title: inv.texts.welcome.title, body: <Opening inv={inv} /> },
+    (wishes !== null || inv.on.closing) && { id: "pelaminan", title: wishes !== null ? inv.texts.closing.wishesPanel : inv.texts.closing.panel, body: <Pelaminan inv={inv} wishes={wishes} /> },
+    inv.on.couple && { id: "mempelai", title: inv.texts.couple.title, body: <Couple inv={inv} /> },
+    inv.on.gallery && inv.gallery.length > 0 && { id: "galeri", title: inv.texts.gallery.title, body: <Gallery photos={inv.gallery} variant="game" /> },
+    inv.postGallery.length > 0 && { id: "pasca", title: inv.texts.gallery.postTitle, body: <Gallery photos={inv.postGallery} variant="game" /> },
     extraPanel(inv, "slot1", extras.slice(0, 1)),
-    inv.on.rsvp && { id: "rsvp", title: "Konfirmasi kehadiran", body: <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /> },
-    inv.on.story && inv.story.length > 0 && { id: "cerita", title: "Cerita kami", body: <Story inv={inv} /> },
-    inv.on.event && { id: "acara", title: "Acara", body: <Event inv={inv} /> },
+    inv.on.rsvp && { id: "rsvp", title: inv.texts.rsvp.title, body: <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /> },
+    inv.on.story && inv.story.length > 0 && { id: "cerita", title: inv.texts.story.title, body: <Story inv={inv} /> },
+    inv.on.event && { id: "acara", title: inv.texts.event.panel, body: <Event inv={inv} /> },
     extraPanel(inv, "slot2", extras.slice(1)),
-    inv.on.gifts && (inv.gifts.length > 0 || Boolean(inv.images.qris)) && { id: "angpao", title: "Kotak angpao", body: <Gifts inv={inv} /> },
+    inv.on.gifts && (inv.gifts.length > 0 || Boolean(inv.images.qris)) && { id: "angpao", title: inv.texts.gifts.title, body: <Gifts inv={inv} /> },
   ];
 
   return (
     <InvitationShell
-      door={{ kind: "gedung", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateLong, place: inv.venue.name }}
+      door={{ kind: "gedung", groom: inv.groom.name, bride: inv.bride.name, date: inv.dateLong, place: inv.venue.name, copy: { kicker: inv.texts.hero.kicker, invited: inv.texts.hero.invited, pickCharacter: inv.texts.hero.pickCharacter, groomCharacter: inv.texts.hero.groomCharacter, brideCharacter: inv.texts.hero.brideCharacter, enter: inv.texts.hero.enter, directOpen: inv.texts.hero.directOpen, journeyTitle: inv.texts.hero.journeyTitle, journeyHelp: inv.texts.hero.journeyHelp, switchCharacter: inv.texts.hero.switchCharacter } }}
       music={inv.music}
       musicOnDoor
       className={`${themeFonts} min-h-dvh bg-inv-paper font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
-      <InteriorMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome />} finale={<Finale inv={inv} />} />
+      <InteriorMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome inv={inv} />} finale={<Finale inv={inv} />} copy={{ indoor: inv.texts.map.indoor, contents: inv.texts.map.contents, instruction: inv.texts.map.instruction, opening: inv.texts.map.opening, modal: inv.texts.map.modal, finish: inv.texts.map.finish, return: inv.texts.map.return, opened: inv.texts.map.opened, unopened: inv.texts.map.unopened }} />
     </InvitationShell>
   );
 }

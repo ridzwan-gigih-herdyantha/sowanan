@@ -535,7 +535,7 @@ export function InvitationShell({ door, music, synth, className, style, children
           {door.kind === "tabloid" && <TabloidDoor groom={door.groom} bride={door.bride} date={door.date} photo={door.photo} frame={door.frame} invited={invited} onOpen={openInvitation} />}
 
           {door.kind === "ulos" && <UlosDoor groom={door.groom} bride={door.bride} date={door.date} invited={invited} onOpen={openInvitation} />}
-          {door.kind === "gedung" && <GedungDoor key={doorRound} groom={door.groom} bride={door.bride} date={door.date} place={door.place} invited={invited} onOpen={openInvitation} />}
+          {door.kind === "gedung" && <GedungDoor key={doorRound} groom={door.groom} bride={door.bride} date={door.date} place={door.place} copy={door.copy} invited={invited} onOpen={openInvitation} />}
           {door.kind === "piksel" && <PikselDoor key={doorRound} groom={door.groom} bride={door.bride} date={door.date} place={door.place} invited={invited} onOpen={openInvitation} />}
           {door.kind === "elaris" && <ElarisDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}
           {door.kind === "mawaddah" && <MawaddahDoor {...door} invited={invited} open={open} onOpen={openInvitation} />}

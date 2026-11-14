@@ -13,6 +13,18 @@ export type GedungProps = {
   bride: string;
   date: string;
   place: string;
+  copy?: {
+    kicker?: string;
+    invited?: string;
+    pickCharacter?: string;
+    groomCharacter?: string;
+    brideCharacter?: string;
+    enter?: string;
+    directOpen?: string;
+    journeyTitle?: string;
+    journeyHelp?: string;
+    switchCharacter?: string;
+  };
   invited: string;
   onOpen: () => void;
 };
@@ -69,7 +81,7 @@ const link = "pointer-events-auto text-[12px] font-bold text-inv-gold underline 
 // Cover berupa peta isometrik: tamu memilih karakter mempelai, lalu berjalan dari parkiran lewat gapura menuju
 // pintu gedung. Setelah dekat pintu muncul tombol "Masuk"; saat diklik kamera mendekat lalu isi undangan
 // terbuka. "Langsung buka" tetap tersedia untuk yang tidak ingin berjalan.
-export function GedungDoor({ groom, bride, date, place, invited, onOpen }: GedungProps) {
+export function GedungDoor({ groom, bride, date, place, copy = {}, invited, onOpen }: GedungProps) {
   const [entering, setEntering] = useState(false);
   const [chosen, setChosen] = useState<Pick | null>(null);
   const [choosing, setChoosing] = useState(true);
@@ -301,14 +313,14 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
             className="gd-pill absolute z-[4] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[clamp(14px,3.8vw,18px)] leading-none text-inv-paper shadow-[0_5px_0_rgba(0,0,0,.28)] transition-[filter,box-shadow] hover:brightness-110 active:shadow-[0_2px_0_rgba(0,0,0,.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             style={{ left: `${DOOR.x}%`, top: `${DOOR.y + 1}%` }}
           >
-            Masuk
+            {copy.enter ?? "Masuk"}
           </button>
         )}
       </div>
       </div>
 
       <p className="gd-fade pointer-events-none absolute inset-x-0 top-[max(14px,2.4dvh)] z-[999] flex justify-center">
-        <span className="rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-1.5 font-display text-[clamp(11px,3vw,14px)] tracking-[.14em] uppercase shadow-[0_4px_0_rgba(0,0,0,.2)]">Undangan pernikahan</span>
+        <span className="rounded-full border-[3px] border-inv-line bg-inv-card px-4 py-1.5 font-display text-[clamp(11px,3vw,14px)] tracking-[.14em] uppercase shadow-[0_4px_0_rgba(0,0,0,.2)]">{copy.kicker ?? "Undangan pernikahan"}</span>
       </p>
 
       <div className="gd-fade pointer-events-none absolute inset-x-0 bottom-0 z-[999] flex flex-col items-center px-4 pb-[max(14px,2.4dvh)]">
@@ -316,12 +328,12 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
           <section className="gd-board pointer-events-auto w-full max-w-[420px] rounded-[22px] border-[3px] border-inv-line bg-inv-card px-5 pt-4 pb-4 text-center shadow-[0_7px_0_rgba(0,0,0,.28)]">
             {invited && (
               <p className="mb-2.5 border-b-2 border-dashed border-inv-line/25 pb-2 text-[12px] text-inv-gold">
-                Kepada Yth. <span className="font-display text-[15px] font-semibold text-inv-ink">{invited}</span>
+                {copy.invited ?? "Kepada Yth."} <span className="font-display text-[15px] font-semibold text-inv-ink">{invited}</span>
               </p>
             )}
             {choosing ? (
               <>
-                <p className="font-display text-[clamp(17px,5vw,21px)] leading-snug font-semibold">Pilih karaktermu</p>
+                <p className="font-display text-[clamp(17px,5vw,21px)] leading-snug font-semibold">{copy.pickCharacter ?? "Pilih karaktermu"}</p>
                 <div className="mt-2.5 grid grid-cols-2 gap-3">
                   {(["groom", "bride"] as const).map((who) => (
                     <button
@@ -332,14 +344,14 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
                       className="group flex flex-col items-center rounded-2xl border-[3px] border-inv-line bg-inv-wash px-2 pt-2 pb-2.5 shadow-[0_4px_0_rgba(0,0,0,.2)] transition-transform hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 aria-pressed:bg-inv-gold-light"
                     >
                       <span aria-hidden="true" className="block h-[clamp(70px,12dvh,96px)] aspect-[130/215] bg-no-repeat" style={sprite(who)} />
-                      <span className="mt-1 font-display text-[15px] leading-none font-semibold">{who === "groom" ? "Laki-laki" : "Perempuan"}</span>
+                      <span className="mt-1 font-display text-[15px] leading-none font-semibold">{who === "groom" ? copy.groomCharacter ?? "Laki-laki" : copy.brideCharacter ?? "Perempuan"}</span>
                     </button>
                   ))}
                 </div>
               </>
             ) : null}
             <button type="button" data-sfx="open" onClick={enter} className={`${link} mt-3 inline-block`}>
-              Langsung buka
+              {copy.directOpen ?? "Langsung buka"}
             </button>
           </section>
         )}
@@ -351,18 +363,18 @@ export function GedungDoor({ groom, bride, date, place, invited, onOpen }: Gedun
             <div className="max-w-[360px] rounded-2xl border-[3px] border-inv-line bg-inv-card px-4 py-2 text-center shadow-[0_5px_0_rgba(0,0,0,.25)]">
               {invited && (
                 <p className="text-[12px] text-inv-gold">
-                  Kepada Yth. <span className="font-display text-[14px] font-semibold text-inv-ink">{invited}</span>
+                  {copy.invited ?? "Kepada Yth."} <span className="font-display text-[14px] font-semibold text-inv-ink">{invited}</span>
                 </p>
               )}
-              <p className="font-display text-[clamp(15px,4.4vw,18px)] leading-snug font-semibold">Jalan menuju pintu gedung</p>
-              <p className="text-[11px] text-inv-gold">Pakai joystick, ketuk peta, atau tombol panah.</p>
+              <p className="font-display text-[clamp(15px,4.4vw,18px)] leading-snug font-semibold">{copy.journeyTitle ?? "Jalan menuju pintu gedung"}</p>
+              <p className="text-[11px] text-inv-gold">{copy.journeyHelp ?? "Pakai joystick, ketuk peta, atau tombol panah."}</p>
             </div>
             <div className="pointer-events-auto flex gap-2.5">
               <button type="button" onClick={() => setChoosing(true)} className={pill}>
-                Ganti karakter
+                {copy.switchCharacter ?? "Ganti karakter"}
               </button>
               <button type="button" data-sfx="open" onClick={() => enter()} className={pill}>
-                Langsung buka
+                {copy.directOpen ?? "Langsung buka"}
               </button>
             </div>
           </div>

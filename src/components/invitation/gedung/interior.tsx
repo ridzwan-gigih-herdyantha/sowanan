@@ -57,7 +57,7 @@ function savedHero(): Pick {
 // Isi undangan berupa peta di dalam gedung: tamu berjalan ke pos-pos di sepanjang aula, dan di dekat pos muncul
 // tombol untuk membuka isinya. Pos hanya ada bila panelnya ada.
 // finale tampil di layar penutup setelah tamu keluar gedung: ucapan terima kasih dan nama mempelai.
-export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welcome?: ReactNode; finale?: ReactNode }) {
+export function InteriorMap({ panels, welcome, finale, copy = {} }: { panels: Panel[]; welcome?: ReactNode; finale?: ReactNode; copy?: { indoor?: string; contents?: string; instruction?: string; opening?: string; modal?: string; finish?: string; return?: string; opened?: string; unopened?: string } }) {
   const [open, setOpen] = useState(false);
   const [hero, setHero] = useState<Pick>("groom");
   const [near, setNear] = useState<PoiId | null>(null);
@@ -419,7 +419,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
             mengetuk pos memindahkan karakter ke sana. */}
         <div className="pointer-events-auto relative flex w-full max-w-[420px] items-center gap-2 rounded-2xl border-[3px] border-inv-line bg-inv-card py-1.5 pr-1.5 pl-3.5 shadow-[0_4px_0_rgba(0,0,0,.22)]">
           <div className="min-w-0 flex-1 [&_p]:truncate">
-            <span className="block text-[10px] leading-none font-semibold tracking-[.16em] text-inv-gold uppercase">Di dalam gedung</span>
+            <span className="block text-[10px] leading-none font-semibold tracking-[.16em] text-inv-gold uppercase">{copy.indoor ?? "Di dalam gedung"}</span>
             <div className="mt-1 [&_p]:text-[clamp(13px,3.6vw,16px)] [&_p]:leading-tight">{welcome}</div>
           </div>
           <button
@@ -431,13 +431,13 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-            <span className="max-[359px]:sr-only">Daftar isi</span>
+            <span className="max-[359px]:sr-only">{copy.contents ?? "Daftar isi"}</span>
             <span className="rounded-full bg-inv-accent px-1.5 py-0.5 text-[11px] text-inv-paper tabular-nums">
               {done}/{pois.length}
             </span>
           </button>
           {toc && (
-            <nav aria-label="Daftar isi" className="gd-pill absolute top-full right-0 z-20 mt-2 w-[min(260px,calc(100vw-24px))] rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]">
+            <nav aria-label={copy.contents ?? "Daftar isi"} className="gd-pill absolute top-full right-0 z-20 mt-2 w-[min(260px,calc(100vw-24px))] rounded-2xl border-[3px] border-inv-line bg-inv-card p-1.5 shadow-[0_6px_0_rgba(0,0,0,.25)]">
               <ul className="max-h-[min(60dvh,420px)] overflow-y-auto">
                 {pois.map((p) => {
                   const ok = seen.has(p.id);
@@ -448,7 +448,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
                           {ok ? "✓" : ""}
                         </span>
                         <span className="min-w-0 flex-1 truncate">{p.label}</span>
-                        <span className="sr-only">{ok ? "sudah dibuka" : "belum dibuka"}</span>
+                        <span className="sr-only">{ok ? copy.opened ?? "sudah dibuka" : copy.unopened ?? "belum dibuka"}</span>
                       </button>
                     </li>
                   );
@@ -459,7 +459,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         </div>
         {/* Petunjuk kecil sampai tamu membuka pos pertamanya. */}
         {seen.size === 0 && !toc && (
-          <p className="rounded-full bg-inv-line/75 px-3 py-1 text-[11px] font-semibold text-inv-paper">Jalan ke tiap pos, atau ketuk namanya</p>
+          <p className="rounded-full bg-inv-line/75 px-3 py-1 text-[11px] font-semibold text-inv-paper">{copy.instruction ?? "Jalan ke tiap pos, atau ketuk namanya"}</p>
         )}
       </div>
 
@@ -469,7 +469,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
         </div>
       </div>
 
-      <Modal open={Boolean(active)} onClose={closePanel} label={active?.title ?? "Isi undangan"}>
+      <Modal open={Boolean(active)} onClose={closePanel} label={active?.title ?? copy.modal ?? "Isi undangan"}>
         {active && (
           <div className="px-5 pt-12 pb-7">
             <h2 className="mb-4 text-center font-display text-[clamp(22px,6vw,28px)] leading-tight font-semibold text-inv-accent">{active.title}</h2>
@@ -477,7 +477,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
             {active.id === "pembuka" && (
               <div className="mt-5 flex justify-center">
                 <button type="button" onClick={closePanel} className="rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-2.5 font-display text-[15px] leading-none font-semibold text-inv-paper shadow-[0_4px_0_rgba(0,0,0,.28)] transition-transform active:translate-y-0.5">
-                  Jelajahi aula
+                  {copy.opening ?? "Jelajahi aula"}
                 </button>
               </div>
             )}
@@ -489,7 +489,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
           Isi aula diatur ulang supaya kunjungan berikutnya mulai dari awal. */}
       {phase === "done" && (
         <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-black/65 p-3 sm:p-6">
-          <div role="dialog" aria-modal="true" aria-label="Tamat" className="gd-pill flex max-h-full w-[min(520px,100%)] flex-col overflow-hidden rounded-3xl border-[3px] border-inv-line bg-inv-paper shadow-[0_8px_0_rgba(0,0,0,.35)]">
+          <div role="dialog" aria-modal="true" aria-label={copy.finish ?? "Tamat"} className="gd-pill flex max-h-full w-[min(520px,100%)] flex-col overflow-hidden rounded-3xl border-[3px] border-inv-line bg-inv-paper shadow-[0_8px_0_rgba(0,0,0,.35)]">
             <div className="gd-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">{finale}</div>
             <button
               type="button"
@@ -503,7 +503,7 @@ export function InteriorMap({ panels, welcome, finale }: { panels: Panel[]; welc
               }}
               className="m-3 shrink-0 rounded-full border-[3px] border-inv-line bg-inv-accent px-5 py-3 font-display text-[16px] leading-none font-semibold text-inv-paper shadow-[0_4px_0_rgba(0,0,0,.28)] active:translate-y-0.5"
             >
-              Kembali ke awal
+              {copy.return ?? "Kembali ke awal"}
             </button>
           </div>
         </div>

@@ -40,7 +40,7 @@ function save(file: File) {
 
 // Di iPhone lewat lembar Bagikan supaya bisa disimpan ke Foto, karena unduhan Safari masuk ke Files.
 // Gambar disiapkan lebih dulu, sebab Safari hanya mengizinkan lembar Bagikan dibuka tepat setelah ketukan.
-export function QrisDownload({ src, slug }: { src: string; slug: string }) {
+export function QrisDownload({ src, slug, labels }: { src: string; slug: string; labels?: { download?: string; preparing?: string; retry?: string } }) {
   const ready = useRef<Promise<File> | null>(null);
   const [state, setState] = useState<"idle" | "busy" | "error">("idle");
 
@@ -74,7 +74,7 @@ export function QrisDownload({ src, slug }: { src: string; slug: string }) {
       disabled={state === "busy"}
       className="mt-3 rounded-sm border border-inv-accent px-4 py-2 text-[12px] tracking-[0.14em] text-inv-accent transition-colors duration-150 hover:bg-inv-accent hover:text-inv-paper disabled:opacity-60"
     >
-      <span aria-live="polite">{state === "busy" ? "MENYIAPKAN..." : state === "error" ? "GAGAL, COBA LAGI" : "UNDUH QRIS"}</span>
+      <span aria-live="polite">{state === "busy" ? (labels?.preparing ?? "MENYIAPKAN...") : state === "error" ? (labels?.retry ?? "GAGAL, COBA LAGI") : (labels?.download ?? "UNDUH QRIS")}</span>
     </button>
   );
 }
