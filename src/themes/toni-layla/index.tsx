@@ -127,11 +127,11 @@ function Couple({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-24 lg:py-36">
       <Wrap>
-        <Heading label="Kedua mempelai">Kami berdua</Heading>
+        <Heading label={inv.texts.couple.label}>{inv.texts.couple.title}</Heading>
         <div className="mt-12 grid gap-16 md:grid-cols-2 md:gap-10">
-          <Person p={inv.groom} alt={`Foto ${inv.groom.name}`} label="Mempelai pria" />
+          <Person p={inv.groom} alt={`Foto ${inv.groom.name}`} label={inv.texts.couple.groom} />
           <div className="md:mt-32">
-            <Person p={inv.bride} alt={`Foto ${inv.bride.name}`} label="Mempelai wanita" />
+            <Person p={inv.bride} alt={`Foto ${inv.bride.name}`} label={inv.texts.couple.bride} />
           </div>
         </div>
       </Wrap>
@@ -146,7 +146,7 @@ function StorySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-24 lg:py-36">
       <Wrap>
-        <Heading label="Cerita kami">Sampai di sini</Heading>
+        <Heading label={inv.texts.story.label}>{inv.texts.story.title}</Heading>
         <ol>
           {inv.story.map((s, i) => (
             <li key={`${s.title}-${i}`} className="grid gap-6 border-b border-inv-line py-12 md:grid-cols-[minmax(0,3fr)_minmax(0,4fr)_minmax(0,5fr)] md:gap-12">
@@ -183,7 +183,7 @@ function Agenda({ inv }: { inv: InvitationView }) {
             {e.place.address && <p className="mt-2 text-[16px] leading-relaxed text-inv-ink/75">{e.place.address}</p>}
             {e.place.mapUrl && (
               <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${button} mt-4`}>
-                Lihat peta
+                {inv.texts.event.map}
               </a>
             )}
           </div>
@@ -199,7 +199,7 @@ function Details({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-24 lg:py-36">
       <Wrap>
-        <Label>Waktu dan tempat</Label>
+        <Label>{inv.texts.event.label}</Label>
         {/* Tanggal sebagai judul, sebesar judul kota di hero. */}
         <p className={`${big} mt-4 text-[clamp(60px,16vw,208px)] tabular-nums`}>
           {day}.{month}
@@ -229,17 +229,18 @@ function Details({ inv }: { inv: InvitationView }) {
             <Image {...inv.frame.venue} src={inv.images.venue} alt={`Suasana ${inv.venue.name}`} fill sizes="(min-width: 768px) 55vw, 90vw" className="object-cover" />
           </div>
           <div>
-            {!inv.agenda && <Label>Tempat</Label>}
+            {!inv.agenda && <Label>{inv.texts.event.place}</Label>}
             {!inv.agenda && <p className="mt-4 text-[clamp(28px,3.6vw,40px)] leading-tight">{inv.venue.name}</p>}
+            {!inv.agenda && inv.venue.address && <Label className="mt-3">{inv.texts.event.address}</Label>}
             {!inv.agenda && <p className="mt-3 text-[16px] leading-relaxed text-inv-ink/75">{inv.venue.address}</p>}
             <div className="mt-8 flex flex-wrap gap-3">
               {!inv.agenda && inv.venue.mapUrl && (
                 <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={button}>
-                  Lihat peta
+                  {inv.texts.event.map}
                 </a>
               )}
               <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={button}>
-                Simpan ke kalender
+                {inv.texts.event.calendar}
               </CalendarButton>
             </div>
           </div>
@@ -253,9 +254,9 @@ function CountdownSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="bg-inv-night py-24 text-inv-paper lg:py-32">
       <Wrap>
-        <Label className="text-inv-paper/60">Menuju hari itu</Label>
+        <Label className="text-inv-paper/60">{inv.texts.countdown.label}</Label>
         <div className="mt-8">
-          <LensaCountdown target={inv.date} />
+          <LensaCountdown target={inv.date} doneText={inv.texts.countdown.done} />
         </div>
       </Wrap>
     </section>
@@ -266,7 +267,7 @@ function GallerySection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-24 lg:py-36">
       <Wrap>
-        <Heading label="Galeri">Potongan kecil</Heading>
+        <Heading label={inv.texts.gallery.label}>{inv.texts.gallery.title}</Heading>
         <div className="mt-12">
           <Gallery photos={inv.gallery} variant="grid" />
         </div>
@@ -280,8 +281,8 @@ function RsvpSection({ inv }: { inv: InvitationView }) {
     <section className="inv-wash py-24 lg:py-36">
       <Wrap className="grid gap-12 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-16">
         <div>
-          <Label>Konfirmasi kehadiran</Label>
-          <h2 className={`${big} mt-4 text-[clamp(44px,8vw,104px)]`}>RSVP</h2>
+          <Label>{inv.texts.rsvp.label}</Label>
+          <h2 className={`${big} mt-4 text-[clamp(44px,8vw,104px)]`}>{inv.texts.rsvp.title}</h2>
         </div>
         <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
       </Wrap>
@@ -293,15 +294,19 @@ function Gifts({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-paper py-24 lg:py-36">
       <Wrap>
-        <Heading label="Tanda kasih">Doa restu cukup</Heading>
-        <p className="mt-8 max-w-[46ch] text-[17px] leading-relaxed text-inv-ink/75">Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut.</p>
+        <Heading label={inv.texts.gifts.label}>{inv.texts.gifts.title}</Heading>
+        <p className="mt-8 max-w-[46ch] text-[17px] leading-relaxed text-inv-ink/75">{inv.texts.gifts.subtitle}</p>
         <ul className="mt-6">
           {inv.gifts.map((g) => (
             <li key={g.number} className="grid gap-4 border-b border-inv-line py-8 sm:grid-cols-[minmax(0,3fr)_minmax(0,5fr)_auto] sm:items-center">
-              <Label>{g.bank}</Label>
               <div>
+                <Label>{inv.texts.gifts.bank}</Label>
+                <p className="mt-2">{g.bank}</p>
+              </div>
+              <div>
+                <Label>{inv.texts.gifts.number}</Label>
                 <p className={`${big} text-[clamp(26px,4vw,40px)] tabular-nums`}>{g.number}</p>
-                <p className="mt-2 text-[15px] text-inv-gold">a.n. {g.holder}</p>
+                <p className="mt-2 text-[15px] text-inv-gold">{inv.texts.gifts.holder} {g.holder}</p>
               </div>
               <CopyButton value={g.number} label={`nomor rekening ${g.holder}`} />
             </li>
@@ -313,8 +318,8 @@ function Gifts({ inv }: { inv: InvitationView }) {
               <Image src={inv.images.qris} alt="Kode QRIS" width={150} height={150} className="size-36" />
             </div>
             <div>
-              <Label>QRIS</Label>
-              <p className="mt-3 text-[15px]">Pindai dari aplikasi bank atau e-wallet.</p>
+              <Label>{inv.texts.gifts.qrisLabel}</Label>
+              <p className="mt-3 text-[15px]">{inv.texts.gifts.qris}</p>
               <QrisDownload src={inv.images.qris} slug={inv.slug} />
             </div>
           </div>
@@ -330,7 +335,7 @@ async function WishesSection({ inv }: { inv: InvitationView }) {
   return (
     <section className="inv-wash py-24 lg:py-36">
       <Wrap>
-        <Heading label="Doa dan ucapan">Kirim pesan</Heading>
+        <Heading label={inv.texts.wishes.label}>{inv.texts.wishes.title}</Heading>
         <div className="mt-12">
           <Wishes slug={inv.slug} initial={wishes} variant="lined" />
         </div>
@@ -347,7 +352,7 @@ function Closing({ inv }: { inv: InvitationView }) {
       <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-black/70 via-black/25 to-black/10" />
       <Wrap className="relative pt-32 pb-[max(96px,12vh)]">
         <p className="max-w-[40ch] text-[16px] leading-relaxed text-white/85">
-          Atas kehadiran dan doa restu yang Anda berikan, kami ucapkan terima kasih yang setulus-tulusnya.
+          {inv.texts.closing.thanks}
         </p>
         <p className="mt-8">
           <FitText className={big}>{inv.headline}</FitText>
