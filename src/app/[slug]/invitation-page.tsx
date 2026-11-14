@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { WaIcon } from "@/components/home/closing";
 import { CustomFontLinks } from "@/components/invitation/custom-font-links";
+import { ThemeCopyProvider } from "@/components/invitation/theme-copy";
 import { DemoOrderButton } from "@/components/invitation/demo-order-button";
 import { DemoViewSwitch } from "@/components/invitation/demo-view-switch";
 import { TrackThemeView } from "@/components/meta-pixel";
@@ -122,7 +123,9 @@ export function InvitationBody({ found, guestName }: { found: InvitationPageData
         <Inactive inactive={!found.paid && !found.demo}>
           <GuestNames allowed={found.guestNames} fixed={guestName}>
             <InvitationSlug slug={found.demo ? "" : found.view.slug}>
-              <Component inv={found.view} />
+              <ThemeCopyProvider theme={found.view.theme} values={found.view.texts}>
+                <Component inv={found.view} />
+              </ThemeCopyProvider>
             </InvitationSlug>
           </GuestNames>
         </Inactive>

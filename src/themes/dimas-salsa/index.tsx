@@ -67,7 +67,7 @@ function Story({ inv }: { inv: InvitationView }) {
           )}
           <div className="px-4 py-3">
             <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">
-              Bab {i + 1}
+              {inv.texts.story.chapter} {i + 1}
               {item.date && ` · ${item.date}`}
             </p>
             <h3 className="font-display text-[19px] leading-tight font-semibold text-inv-accent">{item.title}</h3>
@@ -91,7 +91,7 @@ function Agenda({ inv }: { inv: InvitationView }) {
       {e.place.address && <p className="mt-0.5 text-[12px] leading-relaxed text-inv-ink/70">{e.place.address}</p>}
       {e.place.mapUrl && (
         <a className={`${action} mt-3`} href={e.place.mapUrl} target="_blank" rel="noreferrer">
-          Buka peta
+          {inv.texts.event.map}
         </a>
       )}
     </article>
@@ -130,11 +130,11 @@ function Event({ inv }: { inv: InvitationView }) {
         <div className="mt-3 flex flex-wrap justify-center gap-2.5">
           {!inv.agenda && inv.venue.mapUrl && (
             <a className={action} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">
-              Buka peta
+              {inv.texts.event.map}
             </a>
           )}
           <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={action}>
-            Simpan ke kalender
+            {inv.texts.event.calendar}
           </CalendarButton>
         </div>
         </div>
@@ -150,7 +150,7 @@ function Gifts({ inv }: { inv: InvitationView }) {
         <article key={gift.number} className={`${card} px-4 py-3 text-center`}>
           <p className="text-[10px] tracking-[.16em] text-inv-gold uppercase">{gift.bank}</p>
           <p className="font-display text-[22px] leading-tight font-semibold tracking-wide">{gift.number}</p>
-          <p className="text-[12px] text-inv-ink/70">a.n. {gift.holder}</p>
+          <p className="text-[12px] text-inv-ink/70">{inv.texts.gifts.holder} {gift.holder}</p>
           <div className="mt-2 flex justify-center">
             <CopyButton value={gift.number} label={`Salin nomor ${gift.bank}`} />
           </div>
@@ -158,10 +158,11 @@ function Gifts({ inv }: { inv: InvitationView }) {
       ))}
       {inv.images.qris && (
         <article className={`${card} px-4 py-3 text-center`}>
+          <p className="mb-2 text-[10px] tracking-[.16em] text-inv-gold uppercase">{inv.texts.gifts.qris}</p>
           <div className="relative mx-auto aspect-square w-full max-w-[220px]">
             <Image src={inv.images.qris} alt="QRIS" fill sizes="220px" className="object-contain" />
           </div>
-          <div className="mt-2 flex justify-center">
+          <div className="mt-2 flex flex-col items-center justify-center gap-2">
             <QrisDownload src={inv.images.qris} slug={inv.slug} />
           </div>
         </article>
@@ -182,7 +183,7 @@ function Pelaminan({ inv, wishes }: { inv: InvitationView; wishes: Awaited<Retur
           </div>
           <div className="px-4 py-4">
             <p className="text-[13px] leading-relaxed text-inv-ink/75">
-              Terima kasih, <GuestName fallback="para tamu" />, sudah hadir dan mendoakan kami.
+              {inv.texts.closing.thanksBefore} <GuestName fallback="para tamu" /> {inv.texts.closing.thanksAfter}
             </p>
             <p className="mt-2 font-display text-[26px] leading-tight font-semibold text-inv-accent">
               {inv.groom.name} &amp; {inv.bride.name}
@@ -193,7 +194,7 @@ function Pelaminan({ inv, wishes }: { inv: InvitationView; wishes: Awaited<Retur
       )}
       {wishes && (
         <section className={`${card} gd-wishes px-4 pt-4 pb-5`}>
-          <p className="mb-4 text-center font-display text-[18px] font-semibold text-inv-accent">Buku ucapan</p>
+          <p className="mb-4 text-center font-display text-[18px] font-semibold text-inv-accent">{inv.texts.wishes.title}</p>
           <Wishes slug={inv.slug} initial={wishes} variant="dialog" desktop="stack" />
         </section>
       )}
@@ -230,10 +231,10 @@ function Opening({ inv }: { inv: InvitationView }) {
 }
 
 // Sambutan di papan atas peta dalam: nama tamu dari tautan.
-function Welcome() {
+function Welcome({ inv }: { inv: InvitationView }) {
   return (
     <p className="font-display text-[clamp(14px,4vw,17px)] leading-snug font-semibold">
-      Selamat datang, <GuestName fallback="tamu kami" />
+      {inv.texts.hero.label}, <GuestName fallback="tamu kami" />
     </p>
   );
 }
@@ -241,15 +242,15 @@ function Welcome() {
 // Penutup "Tamat" yang terbuka setelah semua pos di aula dikunjungi: foto penutup dan daftar kredit.
 function Finale({ inv }: { inv: InvitationView }) {
   const credits: [string, ReactNode][] = [
-    ["Pemeran utama", <>{inv.groom.full || inv.groom.name}<br />{inv.bride.full || inv.bride.name}</>],
-    ["Bersama keluarga", <>{inv.groom.parents}<br />{inv.bride.parents}</>],
-    ["Lokasi", `${inv.venue.name}, ${inv.cityShort}`],
-    ["Tamu istimewa", <GuestName key="guest" fallback="Kamu" />],
+    [inv.texts.closing.credit, <>{inv.groom.full || inv.groom.name}<br />{inv.bride.full || inv.bride.name}</>],
+    [inv.texts.closing.family, <>{inv.groom.parents}<br />{inv.bride.parents}</>],
+    [inv.texts.closing.location, `${inv.venue.name}, ${inv.cityShort}`],
+    [inv.texts.closing.guest, <GuestName key="guest" fallback="Kamu" />],
   ];
   return (
     <div className="px-5 pt-7 pb-4 text-center sm:px-8">
-      <p className="font-display text-[clamp(44px,12vw,64px)] leading-none font-semibold text-inv-accent">Tamat</p>
-      <p className="mt-2 text-[11px] font-bold tracking-[.2em] text-inv-gold uppercase">Terima kasih sudah berkunjung</p>
+      <p className="font-display text-[clamp(44px,12vw,64px)] leading-none font-semibold text-inv-accent">{inv.texts.closing.title}</p>
+      <p className="mt-2 text-[11px] font-bold tracking-[.2em] text-inv-gold uppercase">{inv.texts.closing.subtitle}</p>
       {inv.images.closing && (
         <div className={`${card} relative mx-auto mt-5 aspect-[4/5] w-[min(72%,280px)] overflow-hidden`}>
           <Image {...inv.frame.closing} src={inv.images.closing} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="280px" className="object-cover object-[50%_30%]" />
@@ -263,7 +264,7 @@ function Finale({ inv }: { inv: InvitationView }) {
           </div>
         ))}
       </dl>
-      <p className="mt-6 font-display text-[15px] font-semibold text-inv-accent">Sampai jumpa {inv.dateLong}</p>
+      <p className="mt-6 font-display text-[15px] font-semibold text-inv-accent">{inv.texts.closing.date}</p>
     </div>
   );
 }
@@ -293,17 +294,17 @@ export async function DimasSalsa({ inv }: { inv: InvitationView }) {
   const wishes = inv.on.wishes ? await getWishes(inv.slug) : null;
   const extras = extraItems(inv);
   const panels: (Panel | false)[] = [
-    { id: "pembuka", title: "Selamat datang", body: <Opening inv={inv} /> },
-    (wishes !== null || inv.on.closing) && { id: "pelaminan", title: wishes ? "Pelaminan dan buku ucapan" : "Pelaminan", body: <Pelaminan inv={inv} wishes={wishes} /> },
-    inv.on.couple && { id: "mempelai", title: "Mempelai", body: <Couple inv={inv} /> },
-    inv.on.gallery && inv.gallery.length > 0 && { id: "galeri", title: "Galeri", body: <Gallery photos={inv.gallery} variant="game" /> },
-    inv.postGallery.length > 0 && { id: "pasca", title: "Galeri Pasca Acara", body: <Gallery photos={inv.postGallery} variant="game" /> },
+    { id: "pembuka", title: inv.texts.hero.label, body: <Opening inv={inv} /> },
+    (wishes !== null || inv.on.closing) && { id: "pelaminan", title: wishes !== null ? inv.texts.wishes.panel : inv.texts.closing.panel, body: <Pelaminan inv={inv} wishes={wishes} /> },
+    inv.on.couple && { id: "mempelai", title: inv.texts.couple.label, body: <Couple inv={inv} /> },
+    inv.on.gallery && inv.gallery.length > 0 && { id: "galeri", title: inv.texts.gallery.label, body: <Gallery photos={inv.gallery} variant="game" /> },
+    inv.postGallery.length > 0 && { id: "pasca", title: inv.texts.gallery.postLabel, body: <Gallery photos={inv.postGallery} variant="game" /> },
     extraPanel(inv, "slot1", extras.slice(0, 1)),
-    inv.on.rsvp && { id: "rsvp", title: "Konfirmasi kehadiran", body: <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /> },
-    inv.on.story && inv.story.length > 0 && { id: "cerita", title: "Cerita kami", body: <Story inv={inv} /> },
-    inv.on.event && { id: "acara", title: "Acara", body: <Event inv={inv} /> },
+    inv.on.rsvp && { id: "rsvp", title: inv.texts.rsvp.label, body: <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /> },
+    inv.on.story && inv.story.length > 0 && { id: "cerita", title: inv.texts.story.label, body: <Story inv={inv} /> },
+    inv.on.event && { id: "acara", title: inv.texts.event.label, body: <Event inv={inv} /> },
     extraPanel(inv, "slot2", extras.slice(1)),
-    inv.on.gifts && (inv.gifts.length > 0 || Boolean(inv.images.qris)) && { id: "angpao", title: "Kotak angpao", body: <Gifts inv={inv} /> },
+    inv.on.gifts && (inv.gifts.length > 0 || Boolean(inv.images.qris)) && { id: "angpao", title: inv.texts.gifts.label, body: <Gifts inv={inv} /> },
   ];
 
   return (
@@ -314,7 +315,7 @@ export async function DimasSalsa({ inv }: { inv: InvitationView }) {
       className={`${themeFonts} min-h-dvh bg-inv-paper font-body text-inv-ink`}
       style={{ ...vars, ...inv.palette, ...inv.fonts }}
     >
-      <InteriorMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome />} finale={<Finale inv={inv} />} />
+      <InteriorMap panels={panels.filter((p): p is Panel => Boolean(p))} welcome={<Welcome inv={inv} />} finale={<Finale inv={inv} />} />
     </InvitationShell>
   );
 }

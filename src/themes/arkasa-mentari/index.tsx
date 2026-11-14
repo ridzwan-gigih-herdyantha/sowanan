@@ -36,7 +36,7 @@ const boardText = "min-h-0 shrink-0 pt-3 sm:flex sm:flex-1 sm:flex-col sm:justif
 function Start({ inv }: { inv: InvitationView }) {
   return (
     <>
-      <p className="pt-label pt-on-sky text-[11px] sm:text-[13px]">Undangan pernikahan</p>
+      <p className="pt-label pt-on-sky text-[11px] sm:text-[13px]">{inv.texts.hero.kicker}</p>
       <h1 className="pt-logo mt-3 font-script text-[clamp(38px,min(12vw,7vh),110px)] leading-[0.92] font-bold">
         <span className="block">{inv.groom.name}</span>
         <span className="my-2 flex justify-center">
@@ -46,9 +46,9 @@ function Start({ inv }: { inv: InvitationView }) {
         <span className="block">{inv.bride.name}</span>
       </h1>
       <div className="pt-dialog mt-[max(14px,2.4vh)] w-full max-w-[420px] px-5 py-3.5 text-left">
-        <p className="pt-label text-[10px] text-[color-mix(in_srgb,var(--inv-accent)_40%,#FFE3A0)]">Misi utama</p>
+        <p className="pt-label text-[10px] text-[color-mix(in_srgb,var(--inv-accent)_40%,#FFE3A0)]">{inv.texts.hero.mission}</p>
         <p className="mt-1 font-display text-[clamp(17px,5vw,22px)] leading-tight font-semibold">
-          Antar {inv.groom.name} menjemput {inv.bride.name}
+          {inv.texts.hero.missionTitle}
         </p>
         <p className="mt-1.5 text-[13px] leading-relaxed opacity-90 sm:text-[14px]">
           {inv.dateLong}
@@ -56,7 +56,7 @@ function Start({ inv }: { inv: InvitationView }) {
           {inv.venue.name}, {inv.cityShort}
         </p>
       </div>
-      <p className="pt-label pt-on-sky pt-start-slow mt-[max(12px,2vh)] text-[11px] sm:text-[13px]">Tahan &#9654; untuk berangkat, atau buka Peta</p>
+      <p className="pt-label pt-on-sky pt-start-slow mt-[max(12px,2vh)] text-[11px] sm:text-[13px]">{inv.texts.hero.instruction}</p>
     </>
   );
 }
@@ -68,7 +68,7 @@ function IntroBoard({ inv }: { inv: InvitationView }) {
         <Image {...inv.frame.hero} src={inv.images.hero} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="(min-width: 640px) 300px, 86vw" className="object-cover object-[50%_62%]" />
       </PixelPhoto>
       <div className={boardText}>
-        <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">Prolog</p>
+        <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">{inv.texts.hero.intro}</p>
         {inv.tagline && <Typewriter text={inv.tagline} className="mt-1.5 font-display text-[clamp(17px,4.4vw,22px)] leading-snug font-medium" />}
         {inv.honor && <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-inv-gold sm:line-clamp-none sm:text-[14px]">{inv.honor}</p>}
       </div>
@@ -98,7 +98,7 @@ function Player({ p, tag, label, alt }: { p: InvitationView["groom"]; tag: strin
 }
 
 // Papan cerita versi ringkas: foto kecil di kiri dan teks di kanan, dipasang rapat antar checkpoint.
-function StoryBoard({ s, i }: { s: InvitationView["story"][number]; i: number }) {
+function StoryBoard({ s, i, chapter }: { s: InvitationView["story"][number]; i: number; chapter: string }) {
   return (
     <article className="pt-box flex items-start gap-3 p-2.5 text-left text-inv-ink sm:gap-4 sm:p-3">
       <PixelPhoto className="relative aspect-square w-[30%] shrink-0 overflow-hidden bg-inv-wash">
@@ -106,7 +106,7 @@ function StoryBoard({ s, i }: { s: InvitationView["story"][number]; i: number })
       </PixelPhoto>
       <div className="min-w-0">
         <p className="pt-label text-[10px] text-inv-accent">
-          Checkpoint {i + 1}
+          {chapter} {i + 1}
           {s.date && ` / ${s.date}`}
         </p>
         <h3 className="mt-1 font-display text-[clamp(18px,4.6vw,22px)] leading-tight font-bold">{s.title}</h3>
@@ -130,7 +130,7 @@ function Agenda({ inv }: { inv: InvitationView }) {
           {e.place.address && <p className="text-[13px] leading-snug text-inv-gold">{e.place.address}</p>}
           {e.place.mapUrl && (
             <a href={e.place.mapUrl} target="_blank" rel="noopener" className={`${btn} mt-2`}>
-              &#9654; Peta
+              {inv.texts.event.map}
             </a>
           )}
         </li>
@@ -152,7 +152,7 @@ function EventBoard({ inv }: { inv: InvitationView }) {
         />
       )}
       <div className={boardText}>
-        <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">Misi utama / Hari H</p>
+        <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">{inv.texts.event.label}</p>
         <p className="mt-1 font-display text-[clamp(18px,4.6vw,24px)] leading-tight font-bold">{inv.dateLong}</p>
         {inv.agenda ? (
           // Di HP foto dan daftar acara bertumpuk, jadi daftarnya dibuat lebih pendek supaya papan tetap muat.
@@ -177,11 +177,11 @@ function EventBoard({ inv }: { inv: InvitationView }) {
         <div className="mt-3 flex flex-wrap gap-2.5">
           {!inv.agenda && inv.venue.mapUrl && (
             <a href={inv.venue.mapUrl} target="_blank" rel="noopener" className={btn}>
-              &#9654; Peta
+              {inv.texts.event.map}
             </a>
           )}
           <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendarEventOf(inv))} className={`${btn} pt-btn-light`}>
-            Kalender
+            {inv.texts.event.calendar}
           </CalendarButton>
         </div>
       </div>
@@ -192,8 +192,8 @@ function EventBoard({ inv }: { inv: InvitationView }) {
 function CountdownBoard({ inv }: { inv: InvitationView }) {
   return (
     <article className="pt-box p-3 text-center text-inv-ink sm:p-5">
-      <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">Menuju hari H</p>
-      <p className="mt-1 font-display text-[clamp(20px,5vw,30px)] leading-tight font-bold">Memuat hari bahagia</p>
+      <p className="pt-label text-[10px] text-inv-accent sm:text-[11px]">{inv.texts.countdown.label}</p>
+      <p className="mt-1 font-display text-[clamp(20px,5vw,30px)] leading-tight font-bold">{inv.texts.countdown.title}</p>
       <div className="mt-3">
         <ScoreCountdown target={inv.date} />
       </div>
@@ -219,7 +219,7 @@ function Tall({ label, title, icon, children }: { label: string; title: ReactNod
 
 function GalleryBoard({ inv }: { inv: InvitationView }) {
   return (
-    <Tall label="Album kenangan" title="Tangkapan layar">
+    <Tall label={inv.texts.gallery.label} title={inv.texts.gallery.title}>
       <Gallery photos={inv.gallery} variant="grid" />
     </Tall>
   );
@@ -227,8 +227,8 @@ function GalleryBoard({ inv }: { inv: InvitationView }) {
 
 function RsvpBoard({ inv }: { inv: InvitationView }) {
   return (
-    <Tall label="Konfirmasi kehadiran" title="Gabung ke party?" icon={LETTER}>
-      <p className="mb-4 text-[14px] leading-relaxed text-inv-ink/80">Petualangan ini lebih seru kalau kamu ikut. Kabari kami ya.</p>
+    <Tall label={inv.texts.rsvp.label} title={inv.texts.rsvp.title} icon={LETTER}>
+      <p className="mb-4 text-[14px] leading-relaxed text-inv-ink/80">{inv.texts.rsvp.subtitle}</p>
       <Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} />
     </Tall>
   );
@@ -236,8 +236,8 @@ function RsvpBoard({ inv }: { inv: InvitationView }) {
 
 function GiftsBoard({ inv }: { inv: InvitationView }) {
   return (
-    <Tall label="Tanda kasih" title="Peti hadiah" icon={CHEST}>
-      <p className="text-[14px] leading-relaxed text-inv-ink/80">Doa restu sudah lebih dari cukup. Bagi yang ingin memberi tanda kasih, dapat melalui rekening atau QRIS berikut.</p>
+    <Tall label={inv.texts.gifts.label} title={inv.texts.gifts.title} icon={CHEST}>
+      <p className="text-[14px] leading-relaxed text-inv-ink/80">{inv.texts.gifts.subtitle}</p>
       <ul className="mt-3 divide-y-2 divide-dashed divide-inv-line/20">
         {inv.gifts.map((g) => (
           <li key={g.number} className="flex flex-wrap items-center gap-3 py-3">
@@ -245,7 +245,7 @@ function GiftsBoard({ inv }: { inv: InvitationView }) {
             <div className="min-w-0 flex-1">
               <p className="pt-label text-[10px] text-inv-accent">{g.bank}</p>
               <p className="mt-0.5 font-display text-[clamp(20px,4.6vw,26px)] leading-tight font-bold tabular-nums">{g.number}</p>
-              <p className="text-[13px] text-inv-gold">a.n. {g.holder}</p>
+              <p className="text-[13px] text-inv-gold">{inv.texts.gifts.holder} {g.holder}</p>
             </div>
             <CopyButton value={g.number} label={`nomor rekening ${g.holder}`} />
           </li>
@@ -257,8 +257,7 @@ function GiftsBoard({ inv }: { inv: InvitationView }) {
             <Image src={inv.images.qris} alt="Kode QRIS" width={150} height={150} className="size-28" />
           </div>
           <div>
-            <p className="pt-label text-[10px] text-inv-accent">QRIS</p>
-            <p className="mt-1 text-[14px]">Pindai dari aplikasi bank atau e-wallet.</p>
+            <p className="pt-label text-[10px] text-inv-accent">{inv.texts.gifts.qris}</p>
             <QrisDownload src={inv.images.qris} slug={inv.slug} />
           </div>
         </div>
@@ -270,7 +269,7 @@ function GiftsBoard({ inv }: { inv: InvitationView }) {
 
 function WishesBoard({ inv, wishes }: { inv: InvitationView; wishes: Awaited<ReturnType<typeof getWishes>> }) {
   return (
-    <Tall label="Buku tamu" title="Tinggalkan pesan" icon={LETTER}>
+    <Tall label={inv.texts.wishes.label} title={inv.texts.wishes.title} icon={LETTER}>
       <Wishes slug={inv.slug} initial={wishes} variant="dialog" />
     </Tall>
   );
@@ -304,17 +303,17 @@ function GoalBoard({ inv }: { inv: InvitationView }) {
 // Penutup yang terbuka di akhir adegan: foto penutup, daftar pemeran, dan kredit undangan.
 function Finale({ inv }: { inv: InvitationView }) {
   const credits: [string, ReactNode][] = [
-    ["Pemeran utama", <>{inv.groom.full || inv.groom.name}<br />{inv.bride.full || inv.bride.name}</>],
-    ["Bersama keluarga", <>{inv.groom.parents}<br />{inv.bride.parents}</>],
-    ["Lokasi", `${inv.venue.name}, ${inv.cityShort}`],
-    ["Pemain tamu", <GuestName key="guest" fallback="Kamu" />],
+    [inv.texts.closing.credit, <>{inv.groom.full || inv.groom.name}<br />{inv.bride.full || inv.bride.name}</>],
+    [inv.texts.closing.family, <>{inv.groom.parents}<br />{inv.bride.parents}</>],
+    [inv.texts.closing.location, `${inv.venue.name}, ${inv.cityShort}`],
+    [inv.texts.closing.guest, <GuestName key="guest" fallback="Kamu" />],
   ];
   return (
     <div className="px-4 py-5 text-center sm:px-8 sm:py-7">
       {inv.on.closing && (
         <>
-          <p className="font-display text-[clamp(44px,12vw,72px)] leading-none font-bold text-inv-accent">Tamat</p>
-          <p className="pt-label mt-2 text-[10px] text-inv-gold sm:text-[11px]">Terima kasih sudah bermain bersama kami</p>
+          <p className="font-display text-[clamp(44px,12vw,72px)] leading-none font-bold text-inv-accent">{inv.texts.closing.title}</p>
+          <p className="pt-label mt-2 text-[10px] text-inv-gold sm:text-[11px]">{inv.texts.closing.subtitle}</p>
           <div className="pt-frame mx-auto mt-5 w-[min(72%,300px)]">
             <PixelPhoto className="relative aspect-[4/5] overflow-hidden bg-inv-wash">
               <Image {...inv.frame.closing} src={inv.images.closing} alt={`${inv.groom.name} dan ${inv.bride.name}`} fill sizes="300px" className="object-cover object-[50%_30%]" />
@@ -328,7 +327,7 @@ function Finale({ inv }: { inv: InvitationView }) {
               </div>
             ))}
           </dl>
-          <p className="pt-label mt-6 text-[11px] text-inv-accent">&#9654; Petualangan baru dimulai {inv.dateShort.replace(/ /g, "")}</p>
+          <p className="pt-label mt-6 text-[11px] text-inv-accent">{inv.texts.closing.date}</p>
         </>
       )}
       <p className="mt-6 border-t-2 border-dashed border-inv-line/20 pt-3 text-[12px] text-inv-gold">
@@ -356,24 +355,24 @@ async function Adventure({ inv }: { inv: InvitationView }) {
   const extra = (at: ExtraAnchor): Station[] =>
     (inv.extras[at] ?? []).map((e, i) => ({ id: `extra-${at}-${i}`, label: e.title || undefined, node: <ExtraBoard inv={inv} at={at} index={i} /> }));
   const stations: Station[] = [
-    ...(inv.tagline || inv.honor ? [{ id: "intro", label: "Prolog", node: <IntroBoard inv={inv} /> }] : []),
+    ...(inv.tagline || inv.honor ? [{ id: "intro", label: inv.texts.hero.intro, node: <IntroBoard inv={inv} /> }] : []),
     ...extra("hero"),
-    ...(inv.on.couple ? [{ id: "groom", label: "Mempelai", node: <Player p={inv.groom} tag="P1" label="Mempelai pria" alt={`Foto ${inv.groom.name}`} /> }] : []),
-    ...(inv.on.couple ? [{ id: "bride", node: <Player p={inv.bride} tag="P2" label="Mempelai wanita" alt={`Foto ${inv.bride.name}`} /> }] : []),
+    ...(inv.on.couple ? [{ id: "groom", label: inv.texts.couple.sectionLabel, node: <Player p={inv.groom} tag="P1" label={inv.texts.couple.groomLabel} alt={`Foto ${inv.groom.name}`} /> }] : []),
+    ...(inv.on.couple ? [{ id: "bride", node: <Player p={inv.bride} tag="P2" label={inv.texts.couple.brideLabel} alt={`Foto ${inv.bride.name}`} /> }] : []),
     ...extra("couple"),
-    ...(inv.on.story ? inv.story.map((s, i) => ({ id: `story-${i}`, label: i === 0 ? "Cerita" : undefined, flag: true, story: true, size: "compact" as const, node: <StoryBoard s={s} i={i} /> })) : []),
+    ...(inv.on.story ? inv.story.map((s, i) => ({ id: `story-${i}`, label: i === 0 ? inv.texts.story.label : undefined, flag: true, story: true, size: "compact" as const, node: <StoryBoard s={s} i={i} chapter={inv.texts.story.chapter ?? "Checkpoint"} /> })) : []),
     ...extra("story"),
-    ...(inv.on.event ? [{ id: "event", label: "Acara", node: <EventBoard inv={inv} /> }] : []),
+    ...(inv.on.event ? [{ id: "event", label: inv.texts.event.sectionLabel, node: <EventBoard inv={inv} /> }] : []),
     ...extra("event"),
-    ...(inv.on.countdown ? [{ id: "countdown", label: "Hitung mundur", node: <CountdownBoard inv={inv} /> }] : []),
+    ...(inv.on.countdown ? [{ id: "countdown", label: inv.texts.countdown.sectionLabel, node: <CountdownBoard inv={inv} /> }] : []),
     ...extra("countdown"),
-    ...(inv.on.gallery ? [{ id: "gallery", label: "Galeri", size: "wide" as const, node: <GalleryBoard inv={inv} /> }] : []),
+    ...(inv.on.gallery ? [{ id: "gallery", label: inv.texts.gallery.sectionLabel, size: "wide" as const, node: <GalleryBoard inv={inv} /> }] : []),
     ...extra("gallery"),
-    ...(inv.on.rsvp ? [{ id: "rsvp", label: "RSVP", node: <RsvpBoard inv={inv} /> }] : []),
+    ...(inv.on.rsvp ? [{ id: "rsvp", label: inv.texts.rsvp.sectionLabel, node: <RsvpBoard inv={inv} /> }] : []),
     ...extra("rsvp"),
-    ...(inv.on.gifts ? [{ id: "gifts", label: "Hadiah", node: <GiftsBoard inv={inv} /> }] : []),
+    ...(inv.on.gifts ? [{ id: "gifts", label: inv.texts.gifts.sectionLabel, node: <GiftsBoard inv={inv} /> }] : []),
     ...extra("gifts"),
-    ...(inv.on.wishes ? [{ id: "wishes", label: "Ucapan", size: "wide" as const, node: <WishesBoard inv={inv} wishes={wishes} /> }] : []),
+    ...(inv.on.wishes ? [{ id: "wishes", label: inv.texts.wishes.sectionLabel, size: "wide" as const, node: <WishesBoard inv={inv} wishes={wishes} /> }] : []),
     ...extra("wishes"),
     ...extra("closing"),
   ];

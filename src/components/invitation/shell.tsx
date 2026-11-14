@@ -22,6 +22,7 @@ import { MawaddahDoor, type MawaddahDoorProps } from "./mawaddah-door";
 import { NocturneDoor, type NocturneDoorProps } from "./nocturne-door";
 import { GedungDoor, type GedungProps } from "./gedung/door";
 import { PikselDoor, type PikselProps } from "./piksel/door";
+import { useThemeCopy } from "./theme-copy";
 
 
 type GuestCtx = { guest: string; setGuest: (name: string) => void };
@@ -197,6 +198,7 @@ export function InvitationShell({ door, music, synth, className, style, children
   // Naik setiap undangan ditutup kembali ke sampul, supaya sampul dipasang ulang dari keadaan awal.
   const [doorRound, setDoorRound] = useState(0);
   const [content, setContent] = useState<HTMLDivElement | null>(null);
+  const themeCopy = useThemeCopy();
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
   const fader = useRef<Fader | null>(null);
@@ -249,6 +251,41 @@ export function InvitationShell({ door, music, synth, className, style, children
     }, 1200);
     return () => window.clearTimeout(t);
   }, [content]);
+
+  // Tema lama yang masih menulis salinan langsung tetap memakai input teks tersimpan.
+  // Hanya teks yang sama persis dengan bawaan tema yang diganti, sehingga data undangan seperti nama dan alamat aman.
+  useEffect(() => {
+    if (!content) return;
+    const replacements = new Map<string, string>();
+    const ambiguous = new Set<string>();
+    for (const [group, slots] of Object.entries(themeCopy.defaults)) {
+      for (const [slot, original] of Object.entries(slots)) {
+        const value = themeCopy.values[group]?.[slot] ?? original;
+        if (value === original) continue;
+        if (replacements.has(original) && replacements.get(original) !== value) ambiguous.add(original);
+        else replacements.set(original, value);
+      }
+    }
+    for (const original of ambiguous) replacements.delete(original);
+    if (!replacements.size) return;
+
+    const apply = () => {
+      const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode() as Text | null; node; node = walker.nextNode() as Text | null) {
+        const parent = node.parentElement;
+        if (!parent || parent.closest("script,style,[data-no-edit],[contenteditable]")) continue;
+        const match = replacements.get(node.data.trim());
+        if (match === undefined) continue;
+        const leading = /^\s*/.exec(node.data)?.[0] ?? "";
+        const trailing = /\s*$/.exec(node.data)?.[0] ?? "";
+        node.data = `${leading}${match}${trailing}`;
+      }
+    };
+    apply();
+    const observer = new MutationObserver(apply);
+    observer.observe(content, { childList: true, subtree: true, characterData: true });
+    return () => observer.disconnect();
+  }, [content, themeCopy]);
 
   useEffect(() => {
     const root = document.documentElement;

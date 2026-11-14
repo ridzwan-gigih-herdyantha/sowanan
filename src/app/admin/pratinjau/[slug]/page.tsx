@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CustomFontLinks } from "@/components/invitation/custom-font-links";
+import { ThemeCopyProvider } from "@/components/invitation/theme-copy";
 import { SkipDoor } from "@/components/invitation/shell";
 import { currentAdmin } from "@/lib/admin-auth";
 import { getInvitation } from "@/lib/invitation/load";
@@ -40,10 +41,14 @@ async function Preview({ params, searchParams }: { params: Promise<{ slug: strin
       <CustomFontLinks hrefs={view.fontLinks} />
       {framing ? (
         <SkipDoor>
-          <Component inv={view} />
+          <ThemeCopyProvider theme={view.theme} values={view.texts}>
+            <Component inv={view} />
+          </ThemeCopyProvider>
         </SkipDoor>
       ) : (
-        <Component inv={view} />
+        <ThemeCopyProvider theme={view.theme} values={view.texts}>
+          <Component inv={view} />
+        </ThemeCopyProvider>
       )}
       <PreviewBridge texts={texts} media={media} sample={filled} />
     </>
