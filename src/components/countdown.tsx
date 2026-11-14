@@ -20,21 +20,21 @@ export function useTimeLeft(target: string) {
 
 export const pad = (n: number) => String(Math.max(0, n)).padStart(2, "0");
 
-export function Countdown({ target, className, cellClassName }: { target: string; className?: string; cellClassName?: string }) {
+export function Countdown({ target, className, cellClassName, labels, doneText }: { target: string; className?: string; cellClassName?: string; labels?: { days: string; hours: string; minutes: string }; doneText?: string }) {
   const t = useTimeLeft(target);
   const days = t?.days ?? 0;
   const hours = t?.hours ?? 0;
   const minutes = t?.minutes ?? 0;
 
   const cells = [
-    [days, "HARI"],
-    [hours, "JAM"],
-    [minutes, "MENIT"],
+    [days, labels?.days ?? "HARI"],
+    [hours, labels?.hours ?? "JAM"],
+    [minutes, labels?.minutes ?? "MENIT"],
   ] as const;
 
   return (
     <div className={className} role="timer" aria-label={`${days} hari ${hours} jam ${minutes} menit lagi`}>
-      {cells.map(([value, label]) => (
+      {t?.done && doneText ? <p className="col-span-3 text-center font-display text-2xl">{doneText}</p> : cells.map(([value, label]) => (
         <div key={label} className={cellClassName}>
           <span className="tabular-nums">{pad(value)}</span>
           <span className="block text-[9px] tracking-[1px] text-ink-mute">{label}</span>

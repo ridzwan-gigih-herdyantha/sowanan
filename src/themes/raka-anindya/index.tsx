@@ -46,14 +46,15 @@ function Hero({ inv }: { inv: InvitationView }) {
     <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 size-[300px] rounded-full border border-inv-line/70 sm:size-[480px]" />
     <Frame className="relative grid items-center gap-10 lg:grid-cols-[.9fr_1.1fr] lg:gap-16">
       <div className="order-2 text-center lg:order-1 lg:text-left">
-        <Kicker>UNDANGAN PERNIKAHAN · {inv.dateLong}</Kicker>
+        <Kicker>{inv.texts.hero.kicker} · {inv.dateLong}</Kicker>
         <h1 className="mt-6 font-display text-[clamp(54px,12vw,90px)] leading-[.9] tracking-[-.04em] text-inv-accent">{inv.groom.name}<span className="my-2 block font-body text-[13px] tracking-[.3em] text-inv-gold">&amp;</span>{inv.bride.name}</h1>
-        <p className="mx-auto mt-7 max-w-[34ch] font-display text-[22px] italic leading-snug text-inv-ink/75 lg:mx-0">{inv.tagline || "Dengan penuh syukur, kami mengundang Anda."}</p>
-        <p className="mt-5 text-[13px] leading-relaxed text-inv-ink/65">{inv.venue.name}<br />{inv.city}</p>
+        <p className="mx-auto mt-7 max-w-[34ch] font-display text-[22px] italic leading-snug text-inv-ink/75 lg:mx-0">{inv.tagline || inv.texts.hero.tagline}</p>
+        <p className="mt-5 text-[10px] tracking-[.2em] text-inv-accent uppercase">{inv.texts.hero.venue}</p>
+        <p className="mt-1 text-[13px] leading-relaxed text-inv-ink/65">{inv.venue.name}<br />{inv.city}</p>
         <Greeting className="mt-6 text-[13px] text-inv-accent" />
         <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
           <a className={btn} href="#acara">
-            Lihat undangan
+            {inv.texts.hero.button}
           </a>
         </div>
       </div>
@@ -70,7 +71,7 @@ function Hero({ inv }: { inv: InvitationView }) {
 }
 
 function Couple({ inv }: { inv: InvitationView }) {
-  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.045} /><Frame className="relative"><Heading overline="DUA KELUARGA">Dengan memohon restu</Heading>{inv.honor && <p className="mx-auto mt-7 max-w-[56ch] text-center text-[14px] leading-relaxed text-inv-ink/70">{inv.honor}</p>}
+  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.045} /><Frame className="relative"><Heading overline={inv.texts.couple.label}>{inv.texts.couple.title}</Heading>{inv.honor && <p className="mx-auto mt-7 max-w-[56ch] text-center text-[14px] leading-relaxed text-inv-ink/70">{inv.honor}</p>}
     <div className="mt-14 grid items-center gap-10 sm:grid-cols-[1fr_auto_1fr] sm:gap-5">
       {[inv.groom, inv.bride].map((p, i) => <div key={p.name} className={`text-center ${i ? "sm:col-start-3" : ""}`}><div className="relative mx-auto aspect-[4/5] w-[min(64vw,250px)] overflow-hidden rounded-t-full border border-inv-gold bg-inv-paper p-2 shadow-[0_16px_35px_rgba(38,42,34,.12)]"><div className="relative size-full overflow-hidden rounded-t-full border border-inv-gold-light"><Image {...p.frame} src={p.photo} alt={p.full || p.name} fill sizes="250px" className="object-cover" /></div></div><h3 className="mt-6 font-display text-[38px] text-inv-accent">{p.name}</h3><p className="mt-2 text-[13px] leading-relaxed text-inv-ink/65">{p.full}<br />{p.parents}</p></div>)}
       <span aria-hidden="true" className="row-start-2 text-center font-display text-5xl italic text-inv-gold sm:col-start-2 sm:row-start-1">&amp;</span>
@@ -80,7 +81,7 @@ function Couple({ inv }: { inv: InvitationView }) {
 
 function Story({ inv }: { inv: InvitationView }) {
   if (!inv.story.length) return null;
-  return <section className="bg-inv-paper py-20 sm:py-28"><Frame><Heading overline="CATATAN PERJALANAN">Kisah yang membawa kami ke sini</Heading>
+  return <section className="bg-inv-paper py-20 sm:py-28"><Frame><Heading overline={inv.texts.story.label}>{inv.texts.story.title}</Heading>
     <ol className="mx-auto mt-14 max-w-[780px] divide-y divide-inv-line">{inv.story.map((s, i) => <li key={`${s.title}-${i}`} className="grid gap-5 py-8 sm:grid-cols-[90px_1fr] sm:gap-10">
       <span className="font-display text-3xl text-inv-gold">{String(i + 1).padStart(2, "0")}</span>
       <div>
@@ -105,9 +106,9 @@ function Agenda({ inv }: { inv: InvitationView }) {
       <Flourish className="mt-3 w-24 text-inv-gold" />
       <p className="mt-4 font-display text-[clamp(22px,4vw,28px)] leading-tight text-inv-accent">{e.dateLabel}</p>
       {e.clock && <p className="mt-2 text-[11px] tracking-[.16em] text-inv-ink/60">{e.clock}</p>}
-      {e.place.name && <h3 className="mt-4 font-display text-xl text-inv-accent">{e.place.name}</h3>}
-      {e.place.address && <p className="mt-1.5 text-[13px] leading-relaxed text-inv-ink/70">{e.place.address}</p>}
-      {e.place.mapUrl && <a className={`${btn} mt-5 px-4 py-3`} href={e.place.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
+      {e.place.name && <><p className="mt-4 text-[10px] tracking-[.2em] text-inv-accent">{inv.texts.event.place}</p><h3 className="mt-1 font-display text-xl text-inv-accent">{e.place.name}</h3></>}
+      {e.place.address && <><p className="mt-2 text-[10px] tracking-[.2em] text-inv-accent">{inv.texts.event.address}</p><p className="mt-1.5 text-[13px] leading-relaxed text-inv-ink/70">{e.place.address}</p></>}
+      {e.place.mapUrl && <a className={`${btn} mt-5 px-4 py-3`} href={e.place.mapUrl} target="_blank" rel="noreferrer">{inv.texts.event.map}</a>}
     </article>
   </ElarisFrame>)}</div>;
 }
@@ -118,12 +119,12 @@ function Event({ inv }: { inv: InvitationView }) {
     <Pattern opacity={0.07} />
     <Frame className="relative">
       <div className="mx-auto max-w-[850px] text-center">
-        <p className="text-[10px] tracking-[.3em] text-inv-gold-light uppercase">SIMPAN TANGGALNYA</p>
+        <p className="text-[10px] tracking-[.3em] text-inv-gold-light uppercase">{inv.texts.event.label}</p>
         <p className="mt-5 font-display text-[clamp(38px,8vw,70px)] leading-none">{inv.dayLabel}</p>
         <p className="mt-2 font-body text-[12px] tracking-[.25em] text-inv-gold-light uppercase">
           {inv.dateLong}
         </p>
-        {inv.on.countdown && <Countdown target={inv.date} className="mx-auto mt-9 grid max-w-[460px] grid-cols-3 gap-3" cellClassName="border border-white/20 px-3 py-4 font-display text-3xl text-inv-paper [&>span:last-child]:font-body [&>span:last-child]:text-inv-gold-light" />}
+        {inv.on.countdown && <Countdown target={inv.date} labels={{ days: inv.texts.countdown.days, hours: inv.texts.countdown.hours, minutes: inv.texts.countdown.minutes }} doneText={inv.texts.countdown.done} className="mx-auto mt-9 grid max-w-[460px] grid-cols-3 gap-3" cellClassName="border border-white/20 px-3 py-4 font-display text-3xl text-inv-paper [&>span:last-child]:font-body [&>span:last-child]:text-inv-gold-light" />}
         {inv.agenda ? <Agenda inv={inv} /> : <div className="mx-auto mt-12 grid max-w-[760px] gap-5 text-left sm:grid-cols-2">{inv.events.map((e, i) => <ElarisFrame key={e.name} corners className="bg-inv-paper text-inv-ink shadow-[0_18px_42px_rgba(0,0,0,.12)]">
           <article className="relative flex min-h-[220px] flex-col items-center justify-center px-6 py-8 text-center sm:px-8">
             <span className="font-display text-[13px] italic text-inv-gold">{String(i + 1).padStart(2, "0")}</span>
@@ -135,12 +136,13 @@ function Event({ inv }: { inv: InvitationView }) {
         </ElarisFrame>)}</div>}
         <ElarisFrame corners className="mx-auto mt-8 max-w-[760px] bg-inv-paper text-inv-ink shadow-[0_18px_42px_rgba(0,0,0,.12)]">
           <div className="p-6 text-center sm:p-8">
-            {!inv.agenda && <p className="text-[10px] tracking-[.25em] text-inv-accent uppercase">TEMPAT PERAYAAN</p>}
+            {!inv.agenda && <p className="text-[10px] tracking-[.25em] text-inv-accent uppercase">{inv.texts.event.place}</p>}
             {!inv.agenda && <h3 className="mt-3 font-display text-3xl text-inv-accent">{inv.venue.name}</h3>}
+            {!inv.agenda && inv.venue.address && <p className="mt-3 text-[10px] tracking-[.25em] text-inv-accent uppercase">{inv.texts.event.address}</p>}
             {!inv.agenda && <p className="mx-auto mt-2 max-w-[48ch] text-[13px] leading-relaxed text-inv-ink/70">{inv.venue.address}</p>}
             <div className="mt-6 flex flex-wrap gap-3">
-              {!inv.agenda && inv.venue.mapUrl && <a className={`${btn} px-4 py-3`} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">Buka peta</a>}
-              <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className={`${btn} px-4 py-3`}>Simpan tanggal</CalendarButton>
+              {!inv.agenda && inv.venue.mapUrl && <a className={`${btn} px-4 py-3`} href={inv.venue.mapUrl} target="_blank" rel="noreferrer">{inv.texts.event.map}</a>}
+              <CalendarButton slug={inv.slug} google={googleCalendarUrl(calendar)} className={`${btn} px-4 py-3`}>{inv.texts.event.calendar}</CalendarButton>
             </div>
           </div>
         </ElarisFrame>
@@ -152,26 +154,26 @@ function Event({ inv }: { inv: InvitationView }) {
 function GallerySection({ inv }: { inv: InvitationView }) {
   if (!inv.gallery.length && !inv.couplePhotos.length) return null;
   const photos = inv.gallery.length ? inv.gallery : inv.couplePhotos.map((p) => ({ ...p, w: 1600, h: 1200 }));
-  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.04} /><Frame className="relative"><Heading overline="KILASAN HARI KAMI">Dalam bingkai kenangan</Heading><div className="mt-14 sm:mt-16"><Gallery photos={photos} stamp={inv.dateShort} variant="bleed" /></div></Frame></section>;
+  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.04} /><Frame className="relative"><Heading overline={inv.texts.gallery.label}>{inv.texts.gallery.title}</Heading><div className="mt-14 sm:mt-16"><Gallery photos={photos} stamp={inv.dateShort} variant="bleed" /></div></Frame></section>;
 }
 
 function Gifts({ inv }: { inv: InvitationView }) {
   if (!inv.gifts.length && !inv.images.qris) return null;
-  return <section className="bg-inv-wash py-20 sm:py-28"><Frame><Heading overline="TANDA KASIH">Doa Anda hadiah terbaik</Heading><p className="mx-auto mt-5 max-w-[45ch] text-center text-[13px] leading-relaxed text-inv-ink/70">Bila berkenan berbagi tanda kasih, kami menerimanya dengan penuh syukur.</p><div className="mx-auto mt-10 grid max-w-[800px] gap-4 sm:grid-cols-2">{inv.gifts.map((g) => <ElarisFrame key={g.number} corners={false} className="bg-inv-card"><article className="p-6 text-center"><p className="text-[10px] tracking-[.22em] text-inv-accent uppercase">{g.bank}</p><p className="mt-4 font-display text-2xl">{g.number}</p><p className="mt-1 text-[12px] text-inv-ink/65">a.n. {g.holder}</p><div className="mt-4"><CopyButton value={g.number} label={`nomor rekening ${g.holder}`} /></div></article></ElarisFrame>)}{inv.images.qris && <ElarisFrame corners={false} className="bg-inv-card"><div className="p-6 text-center"><p className="text-[10px] tracking-[.22em] text-inv-accent uppercase">QRIS</p><Image src={inv.images.qris} alt="Kode QRIS" width={160} height={160} className="mx-auto mt-4 size-40" /><QrisDownload src={inv.images.qris} slug={inv.slug} /></div></ElarisFrame>}</div>{inv.giftNote && <p className="mt-6 text-center text-xs text-inv-ink/65">{inv.giftNote}</p>}</Frame></section>;
+  return <section className="bg-inv-wash py-20 sm:py-28"><Frame><Heading overline={inv.texts.gifts.label}>{inv.texts.gifts.title}</Heading><p className="mx-auto mt-5 max-w-[45ch] text-center text-[13px] leading-relaxed text-inv-ink/70">{inv.texts.gifts.subtitle}</p><div className="mx-auto mt-10 grid max-w-[800px] gap-4 sm:grid-cols-2">{inv.gifts.map((g) => <ElarisFrame key={g.number} corners={false} className="bg-inv-card"><article className="p-6 text-center"><p className="text-[10px] tracking-[.22em] text-inv-accent uppercase">{inv.texts.gifts.bank}</p><p className="mt-1 text-[13px]">{g.bank}</p><p className="mt-4 text-[10px] tracking-[.22em] text-inv-accent uppercase">{inv.texts.gifts.number}</p><p className="mt-1 font-display text-2xl">{g.number}</p><p className="mt-1 text-[12px] text-inv-ink/65">{inv.texts.gifts.holder} {g.holder}</p><div className="mt-4"><CopyButton value={g.number} label={inv.texts.gifts.copy} /></div></article></ElarisFrame>)}{inv.images.qris && <ElarisFrame corners={false} className="bg-inv-card"><div className="p-6 text-center"><p className="text-[10px] tracking-[.22em] text-inv-accent uppercase">{inv.texts.gifts.qrisLabel}</p><Image src={inv.images.qris} alt="Kode QRIS" width={160} height={160} className="mx-auto mt-4 size-40" /><p className="mt-3 text-[13px]">{inv.texts.gifts.qris}</p><QrisDownload src={inv.images.qris} slug={inv.slug} /></div></ElarisFrame>}</div>{inv.giftNote && <p className="mt-6 text-center text-xs text-inv-ink/65">{inv.giftNote}</p>}</Frame></section>;
 }
 
 async function Guestbook({ inv }: { inv: InvitationView }) {
   const wishes = await getWishes(inv.slug);
-  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.035} /><Frame className="relative max-w-[900px]" style={{ maxWidth: 900 }}><Heading overline="DOA DAN UCAPAN">Sampaikan doa untuk kami</Heading><p className="mx-auto mt-5 max-w-[44ch] text-center text-[13px] leading-relaxed text-inv-ink/70">Setiap doa dan kata baik dari Anda akan menjadi kenangan berharga bagi kami.</p><ElarisFrame className="mt-10 bg-inv-card shadow-[0_18px_48px_rgba(38,42,34,.08)]"><div className="p-5 sm:p-10"><Wishes slug={inv.slug} initial={wishes} variant="elaris" desktop="stack-when-empty" /></div></ElarisFrame></Frame></section>;
+  return <section className="relative overflow-hidden bg-inv-wash py-20 sm:py-28"><Pattern opacity={0.035} /><Frame className="relative max-w-[900px]" style={{ maxWidth: 900 }}><Heading overline={inv.texts.wishes.label}>{inv.texts.wishes.title}</Heading><p className="mx-auto mt-5 max-w-[44ch] text-center text-[13px] leading-relaxed text-inv-ink/70">{inv.texts.wishes.subtitle}</p><ElarisFrame className="mt-10 bg-inv-card shadow-[0_18px_48px_rgba(38,42,34,.08)]"><div className="p-5 sm:p-10"><Wishes slug={inv.slug} initial={wishes} variant="elaris" desktop="stack-when-empty" /></div></ElarisFrame></Frame></section>;
 }
 
 function Closing({ inv }: { inv: InvitationView }) {
-  return <section className="relative isolate overflow-hidden bg-inv-accent py-24 text-center text-inv-paper sm:py-32"><Image {...inv.frame.closing} src={inv.images.closing} alt="" fill sizes="100vw" className="-z-20 object-cover opacity-25" /><div aria-hidden="true" className="absolute inset-0 -z-10 bg-inv-accent/80" /><Pattern opacity={0.08} /><div aria-hidden="true" className="absolute inset-5 border border-white/20 sm:inset-8" /><Frame className="relative max-w-[700px]"><Kicker>TERIMA KASIH</Kicker><Flourish className="mt-6 w-44 text-inv-gold-light" /><p className="mx-auto mt-7 max-w-[38ch] font-display text-[clamp(25px,5vw,38px)] italic leading-snug">Atas kehadiran dan doa yang mengiringi hari bahagia kami.</p><p className="mt-10 font-display text-[clamp(42px,10vw,72px)] leading-none">{inv.groom.name} <span className="text-inv-gold-light">&amp;</span> {inv.bride.name}</p><p className="mt-5 text-[10px] tracking-[.24em] text-inv-gold-light uppercase">{inv.dateLong}</p></Frame></section>;
+  return <section className="relative isolate overflow-hidden bg-inv-accent py-24 text-center text-inv-paper sm:py-32"><Image {...inv.frame.closing} src={inv.images.closing} alt="" fill sizes="100vw" className="-z-20 object-cover opacity-25" /><div aria-hidden="true" className="absolute inset-0 -z-10 bg-inv-accent/80" /><Pattern opacity={0.08} /><div aria-hidden="true" className="absolute inset-5 border border-white/20 sm:inset-8" /><Frame className="relative max-w-[700px]"><Kicker>{inv.texts.closing.label}</Kicker><Flourish className="mt-6 w-44 text-inv-gold-light" /><h2 className="mt-7 font-display text-[clamp(25px,5vw,38px)] leading-snug">{inv.texts.closing.title}</h2><p className="mx-auto mt-4 max-w-[38ch] font-display text-[clamp(18px,4vw,24px)] italic leading-snug">{inv.texts.closing.thanks}</p><p className="mt-10 font-display text-[clamp(42px,10vw,72px)] leading-none">{inv.groom.name} <span className="text-inv-gold-light">&amp;</span> {inv.bride.name}</p><p className="mt-5 text-[10px] tracking-[.24em] text-inv-gold-light uppercase">{inv.dateLong}</p></Frame></section>;
 }
 
 export function Elaris({ inv }: { inv: InvitationView }) {
   return <InvitationShell door={{ kind: "elaris", couple: `${inv.groom.name} & ${inv.bride.name}`, monogram: inv.monogram, date: inv.dateLong, place: inv.venue.name, photo: inv.images.hero, seal: "/img/raka-anindya-seal.svg" }} music={inv.music} className={`${themeFonts} min-h-dvh overflow-x-clip bg-inv-paper font-body text-inv-ink`} style={{ ...vars, ...inv.palette, ...inv.fonts }}>
-    <main><Hero inv={inv} /><Extras inv={inv} at="hero" />{inv.on.couple && <Couple inv={inv} />}<Extras inv={inv} at="couple" />{inv.on.story && <Story inv={inv} />}<Extras inv={inv} at="story" />{inv.on.event && <Event inv={inv} />}<Extras inv={inv} at="event" />{inv.on.gallery && <GallerySection inv={inv} />}<Extras inv={inv} at="gallery" />{inv.on.rsvp && <section className="bg-inv-paper py-20 sm:py-28"><Frame className="max-w-[650px]"><Heading overline="MOHON BALASAN">Konfirmasi kehadiran</Heading><div className="mt-8 border border-inv-line bg-inv-card p-6 sm:p-10"><Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /></div></Frame></section>}<Extras inv={inv} at="rsvp" />{inv.on.gifts && <Gifts inv={inv} />}<Extras inv={inv} at="gifts" />{inv.on.wishes && <Guestbook inv={inv} />}<Extras inv={inv} at="wishes" />{inv.on.closing && <Closing inv={inv} />}<Extras inv={inv} at="closing" /></main>
+    <main><Hero inv={inv} /><Extras inv={inv} at="hero" />{inv.on.couple && <Couple inv={inv} />}<Extras inv={inv} at="couple" />{inv.on.story && <Story inv={inv} />}<Extras inv={inv} at="story" />{inv.on.event && <Event inv={inv} />}<Extras inv={inv} at="event" />{inv.on.gallery && <GallerySection inv={inv} />}<Extras inv={inv} at="gallery" />{inv.on.rsvp && <section className="bg-inv-paper py-20 sm:py-28"><Frame className="max-w-[650px]"><Heading overline={inv.texts.rsvp.label}>{inv.texts.rsvp.title}</Heading><div className="mt-8 border border-inv-line bg-inv-card p-6 sm:p-10"><Rsvp slug={inv.slug} deadline={inv.rsvpDeadline} /></div></Frame></section>}<Extras inv={inv} at="rsvp" />{inv.on.gifts && <Gifts inv={inv} />}<Extras inv={inv} at="gifts" />{inv.on.wishes && <Guestbook inv={inv} />}<Extras inv={inv} at="wishes" />{inv.on.closing && <Closing inv={inv} />}<Extras inv={inv} at="closing" /></main>
     <footer className="bg-inv-paper py-7 text-center text-[10px] tracking-[.18em] text-inv-ink/55 uppercase">Disusun dengan penuh perhatian · <Link href="/" className="text-inv-accent underline underline-offset-4">Sowanan</Link>{inv.credit && <span> · {inv.credit}</span>}</footer>
   </InvitationShell>;
 }
